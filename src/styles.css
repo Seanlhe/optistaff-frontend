@@ -114,5 +114,5 @@ body {
 
 @font-face {
   font-family: montserrat;
-  src: url(../public/fonts/Montserrat-VariableFont_wght.ttf);
+  src: url(/fonts/Montserrat-VariableFont_wght.ttf);
 }
