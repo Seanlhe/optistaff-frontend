@@ -212,3 +212,25 @@ VITE_SUPABASE_ANON_KEY=your_production_anon_key
 - **Custom Hooks**: Reusable logic extraction
 - **Component Composition**: Radix UI component composition patterns
 
+
+
+## Recent Changes
+
+### Added Calendar Components (Jovita)
+- **Added a Calendar Component**
+  - Created `src/components/Calendar.tsx` as a reusable weekly calendar.
+  - Uses `date-fns` for date calculations and formatting.
+  - Uses Lucide icons for navigation arrows.
+
+- **Configured Import Aliases**
+  - Updated `tsconfig.app.json` to include:
+    ```json
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+    ```
+
+- **Set Up shadcn/ui**
+  - Initialized shadcn/ui for component styling.
+  - Chose the "New York" style theme. Theme color : Zinc
