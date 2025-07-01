@@ -3,7 +3,7 @@
  * @description Navigation sidebar for job seeker portal
  */
 
-import React from 'react';
+import React from "react";
 
 const JobSeekerSidebar: React.FC = () => {
   // Implementation will go here
