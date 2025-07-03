@@ -2,7 +2,7 @@ import './App.css'
 import {Route, Routes} from "react-router-dom"
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
-import Signup from './pages/Signup'
+import SignUp from './pages/Signup'
 import ClientLayout from './pages/ClientLayout'
 import ClientDashboard from './pages/employer/ClientDashboard'
 import JSLayout from './pages/JSLayout'
@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/login" element={<Login/>}/>
-        <Route path="/signup" element={<Signup/>}/>
+        <Route path="/signup" element={<SignUp/>}/>
         <Route path="/employer" element={<ClientLayout/>}>
           <Route path="dashboard" element={<ClientDashboard/>}/>
           <Route path="roster" element={<ClientDashboard/>}/>
