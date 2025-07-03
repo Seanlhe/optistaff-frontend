@@ -32,7 +32,6 @@ export default function Login(){
                         <p className="text-2xl">Don't have an account yet?</p>
                         <Link className="text-2xl underline" to="/signup">Sign Up</Link>
                     </div>
-                    
                 </form>
             </div>
         </div>
