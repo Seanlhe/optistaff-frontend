@@ -3,7 +3,6 @@
  * @description Individual shift details view for job seekers
  */
 
-
 const ShiftDetails = () => {
   // Implementation will go here
   return (

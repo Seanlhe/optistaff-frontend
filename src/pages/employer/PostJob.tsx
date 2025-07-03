@@ -3,7 +3,6 @@
  * @description Job posting creation for employers
  */
 
-
 const PostJob = () => {
   // Implementation will go here
   return (

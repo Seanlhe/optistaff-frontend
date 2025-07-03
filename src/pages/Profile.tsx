@@ -6,7 +6,7 @@
 const Profile = () => {
   // Implementation will go here
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h1>User Profile</h1>
       <p>Profile management implementation will go here</p>
     </div>

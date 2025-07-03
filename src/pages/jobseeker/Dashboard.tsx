@@ -5,7 +5,7 @@
 
 const Dashboard = () => {
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h1>Job Seeker Dashboard</h1>
       <p>Welcome to your dashboard! Dashboard implementation will go here.</p>
     </div>

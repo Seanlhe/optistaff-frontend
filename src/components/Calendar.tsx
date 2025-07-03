@@ -8,30 +8,65 @@ import { format, startOfWeek, addDays, isSameDay, set } from "date-fns";
 //addDays: Adds a number of days to a date. We'll use this to get all 7 days of the week.
 //isSameDay: Checks if two Date objects are on the exact same day.
 //set: A clean way to change a part of a date, like setting the hour or minute.
+
 //Icons
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { CalendarEvent } from "./CalendarEvent";
+
 //export interface Event says any object we call an Event must have
 // an id, title, startTime, and endTime.
 export interface Event {
   id: string;
-  title: string;
   startTime: Date;
   endTime: Date;
-  color?: string; // The '?' makes this property optional.
 }
 
 export const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
+
+  const [events, setEvents] = useState<Event[]>([]); // Starts empty
+
+  const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
+
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  const HOURS = Array.from({ length: 24 }, (_, i) => i);
+  const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const handleDoubleClick = (day: Date, hour: number) => {
+    const newSlot: Event = {
+      id: `event_${Date.now()}`, //Create a simple unique ID
+      startTime: set(day, { hours: hour, minutes: 0 }),
+      endTime: set(day, { hours: hour + 1, minutes: 0 }),
+    };
+    // Add the new slot to our events array
+    setEvents((prevEvents) => [...prevEvents, newSlot]);
+  };
+
+  // update a slot when dragged
+  const handleUpdateEvent = (updatedEvent: Event) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === updatedEvent.id ? updatedEvent : event,
+      ),
+    );
+  };
+
+  // function to delete a slot
+  const handleDeleteEvent = (eventId: string) => {
+    setEvents((prevEvents) =>
+      prevEvents.filter((event) => event.id !== eventId),
+    );
+  };
+
   // direction argument must be either the string "prev" or the string "next"
   const navigateWeek = (direction: "prev" | "next") => {
     // We update the state with a new date, either 7 days in the future or 7 days in the past.
     // addDays(...):is from date-fns function
     setCurrentWeek(addDays(currentWeek, direction === "next" ? 7 : -7));
   };
-  const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  const HOURS = Array.from({ length: 24 }, (_, i) => i);
-  const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
   // We'll add the visual part (JSX) of the component here in the next step.
   return (
     <div>
@@ -106,8 +141,24 @@ export const Calendar = () => {
           {weekDays.map((day) => (
             <div key={day.toISOString()} className="relative border-r">
               {HOURS.map((hour) => (
-                <div key={hour} className="h-16 border-b"></div>
+                <div
+                  key={hour}
+                  className="h-16 border-b"
+                  onDoubleClick={() => handleDoubleClick(day, hour)}
+                ></div>
               ))}
+
+              Drawing availibility Slots on Top
+              {events
+                .filter((event) => isSameDay(event.startTime, day))
+                .map((event) => (
+                  <CalendarEvent
+                    key={event.id}
+                    event={event}
+                    onUpdate={handleUpdateEvent}
+                    onDelete={handleDeleteEvent}
+                  />
+                ))}
             </div>
           ))}
         </div>
