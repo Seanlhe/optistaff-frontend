@@ -1,10 +1,11 @@
+import { Outlet } from "react-router-dom"
 import ClientNav from "./employer/ClientNav"
 
 export default function ClientLayout(){
-    return <div className = 'js-layout'>
+    return <div className = 'flex h-full flex-row '>
         <ClientNav/>
-        <div className = 'layout-container'>
-            job seeker layout
+        <div className = 'grow'>
+            <Outlet/>
         </div>
     </div>
 }

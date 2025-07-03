@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import ClientLayout from './pages/ClientLayout'
+import ClientDashboard from './pages/employer/ClientDashboard'
 import JSLayout from './pages/JSLayout'
 import JSNav from './pages/employee/JSNav'
 
@@ -14,7 +15,12 @@ function App() {
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/signup" element={<Signup/>}/>
-        <Route path="/employer" element={<ClientLayout/>}/>
+        <Route path="/employer" element={<ClientLayout/>}>
+          <Route path="dashboard" element={<ClientDashboard/>}/>
+          <Route path="roster" element={<ClientDashboard/>}/>
+          <Route path="settings" element={<ClientDashboard/>}/>
+          <Route path="uploadjobs" element={<ClientDashboard/>}/>
+        </Route>
         <Route path="/employee" element={<JSLayout/>}/>
         <Route path="/navbar" element={<JSNav/>}/>
       </Routes>
