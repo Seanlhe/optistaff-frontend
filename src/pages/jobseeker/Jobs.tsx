@@ -5,7 +5,7 @@
 
 const Jobs = () => {
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h1>Jobs and Earnings</h1>
       <p>Jobs and earnings implementation will go here.</p>
     </div>

@@ -2,7 +2,7 @@
  * Job Seeker Preferences Component
  * @description Job preferences and availability settings for job seekers
  */
-import { Calendar } from '../../components/Calendar';
+import { Calendar } from "../../components/Calendar";
 
 const Preferences = () => {
   // Implementation will go here

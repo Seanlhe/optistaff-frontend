@@ -3,7 +3,6 @@
  * @description Main dashboard for employers
  */
 
-
 const Dashboard = () => {
   // Implementation will go here
   return (

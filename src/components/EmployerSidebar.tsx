@@ -3,7 +3,7 @@
  * @description Navigation sidebar for employer portal
  */
 
-import React from 'react';
+import React from "react";
 
 const EmployerSidebar: React.FC = () => {
   // Implementation will go here
