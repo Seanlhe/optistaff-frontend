@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { InputFieldProps } from "../types/components"
+import CustomInputField from "../components/CustomInputField";
 import { useState } from "react";
 import { EmployeeFormData } from "../types/components";
 import { CompanyFormData } from "../types/components";
@@ -67,9 +67,9 @@ export default function SignUp(){
             <h2 className="text-4xl">Your gateway to flexible hiring</h2>
         </div>
         <div className="px-96">
-            <div className="flex flex-col gap-9 w-full px-7 py-15 bg-blue-300 items-center rounded-3xl">
+            <div className="flex flex-col gap-9 w-full px-7 py-15 bg-white shadow-2xl items-center rounded-3xl">
                 <h1 className="text-4xl text-center bold">Create an account</h1>
-                <button className="w-6/12 bg-white p-7.5 rounded-4xl text-2xl" onClick={()=>handleChangeRole()}>{role}</button>
+                <button className="w-6/12 bg-primary-blue text-white p-7.5 rounded-4xl text-2xl" onClick={()=>handleChangeRole()}>{role}</button>
                 <form className="w-full flex flex-col gap-9 items-center" onSubmit={handleSubmit}>
                     {role == "Company"? <CompanyForm handleChange={handleCompanyChange}/>: <EmployeeForm handleChange={handleEmployeeChange}/>}
                 </form>
@@ -78,13 +78,6 @@ export default function SignUp(){
     </div>
 }
 
-
-function CustomInputField({title, name, onChange}: InputFieldProps){
-    return <div className="w-full flex flex-col gap-4">
-        <label className="text-2xl">{title}</label>
-        <input name = {name} className="w-full h-15 rounded-3xl bg-white pad-3" onChange={onChange}/>
-    </div>
-}
 
 function CompanyForm({handleChange}: LoginFormProps){
     return <>
@@ -98,10 +91,10 @@ function CompanyForm({handleChange}: LoginFormProps){
         <CustomInputField name = "email" title="Email" onChange={handleChange}/>
         <CustomInputField name = "password" title="Password" onChange={handleChange}/>
         <CustomInputField name = "confirmPassword" title="Confirm Password" onChange={handleChange}/>
-        <button className="w-full bg-white px-7 py-8 rounded-3xl text-2xl">Sign Up</button>
+        <button className="w-full bg-primary-blue px-7 py-8 rounded-3xl text-2xl text-white cursor-pointer">Sign Up</button>
         <div className="flex flex-col items-center">
             <p className="text-2xl">Already have an account?</p>
-            <Link className="text-2xl underline" to="/signup">Log In</Link>
+            <Link className="text-2xl underline" to="/login">Log In</Link>
         </div>
     </>
 }
