@@ -108,7 +108,7 @@ export default function SignUp() {
           <div className="flex flex-col items-center">
             <p className="text-2xl">Already have an account?</p>
             <Link
-              className="text-2xl text-primary-blue font-montserrat-smb underline hover:opacity-60"
+              className="text-xl text-primary-blue font-montserrat underline hover:opacity-60"
               to="/login"
             >
               Log In

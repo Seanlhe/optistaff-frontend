@@ -66,12 +66,12 @@ export default function Login() {
               error={getPasswordError(loginData.password)}
             />
             <Link
-              className="text-center text-2xl font-montserrat underline hover:opacity-60"
+              className="text-center text-xl font-montserrat underline hover:opacity-60"
               to="/forgotpassword"
             >
               Forgot Password?
             </Link>
-            <button className="w-full bg-primary-blue px-7 py-8 rounded-3xl text-white text-2xl cursor-pointer hover:opacity-80">
+            <button className="w-full bg-primary-blue px-7 py-8 rounded-3xl font-montserrat text-white text-2xl cursor-pointer hover:opacity-80">
               Log in
             </button>
             <div className="flex flex-col items-center">
@@ -79,7 +79,7 @@ export default function Login() {
                 Don't have an account yet?
               </p>
               <Link
-                className="text-2xl text-primary-blue font-montserrat-smb underline hover:opacity-60"
+                className="text-xl text-primary-blue font-montserrat underline hover:opacity-60"
                 to="/signup"
               >
                 Sign Up
