@@ -18,11 +18,27 @@ export interface ShiftCardProps{
 export interface InputFieldProps{
     name: string,
     title: string,
-    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+    type?: string,
+    valid?: boolean,
+    error?: string|null
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export interface LoginFormProps{
-    handleChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+    handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+export interface CompanyFormProps{
+    handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    companyData: CompanyFormData
+}
+export interface EmployeeFormProps{
+    handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    employeeData: EmployeeFormData
+}
+
+export type LoginFormData = {
+    email: string,
+    password: string
 }
 
 export type CompanyFormData = {
