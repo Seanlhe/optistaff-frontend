@@ -7,6 +7,7 @@ import ClientLayout from './pages/ClientLayout'
 import ClientDashboard from './pages/employer/ClientDashboard'
 import JSLayout from './pages/JSLayout'
 import JSNav from './pages/employee/JSNav'
+import JSPref from './pages/employee/JSPref'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="settings" element={<ClientDashboard/>}/>
           <Route path="uploadjobs" element={<ClientDashboard/>}/>
         </Route>
+        <Route path="/preferences" element={<JSPref/>}/>
         <Route path="/employee" element={<JSLayout/>}/>
         <Route path="/navbar" element={<JSNav/>}/>
       </Routes>
