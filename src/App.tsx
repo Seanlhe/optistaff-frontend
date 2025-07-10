@@ -18,7 +18,6 @@ import Roster from './pages/employer/Roster'
 import PostJob from './pages/employer/PostJob'
 
 function App() {
-  console.log('App component rendered')
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'white', color: 'black' }}>
       <Routes>

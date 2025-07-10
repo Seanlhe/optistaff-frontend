@@ -2,14 +2,12 @@
  * Job Seeker Preferences Component
  * @description Job preferences and availability settings for job seekers
  */
-import React from "react";
 
 import { Calendar } from "../../components/Calendar";
 import ProgressIndicator from "../../components/ProgressIndicator";
 import MapExample, { Map } from "../../components/Map"; // Add this import
 
 const Preferences = () => {
-  console.log("Preferences component rendered");
   return (
     <div className="bg-zinc-50 dark:bg-zinc-900 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
