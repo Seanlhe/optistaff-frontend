@@ -20,6 +20,7 @@ function App() {
           <Route path="dashboard" element={<ClientDashboard/>}/>
           <Route path="roster" element={<ClientDashboard/>}/>
           <Route path="settings" element={<ClientDashboard/>}/>
+          <Route path="profile" element={<ClientDashboard/>}/>
           <Route path="uploadjobs" element={<ClientDashboard/>}/>
         </Route>
         <Route path="/preferences" element={<JSPref/>}/>
