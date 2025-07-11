@@ -1,5 +1,5 @@
 
-import { Calendar } from "../../components/Calendar";
+import Calendar from "../../components/Calendar";
 import ProgressIndicator from "../../components/ProgressIndicator";
 import { Map } from "../../components/Map"; // Add this import
 
