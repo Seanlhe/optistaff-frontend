@@ -70,7 +70,7 @@ export const Calendar = () => {
   // We'll add the visual part (JSX) of the component here in the next step.
   return (
     <div>
-      <header className="flex items-center justify-between p-4 border-b">
+      <header className="flex items-center justify-between p-4 border-b border-secondary-bg">
         {/* flex: horizontal row, items-center: vertically aligns in the row to the middle, justify-between: push first item to far left and last item to far right, border-b: Adds a 1-pixel border to the bottom of the header */}
         <div className="flex items-center space-x-2">
           <button
@@ -94,7 +94,7 @@ export const Calendar = () => {
         </div>
 
         <button
-          className="px-4 py-2 text-sm font-medium border rounded-md hover:bg-muted"
+          className="px-4 py-2 text-sm font-medium border border-secondary-bg rounded-md hover:bg-muted"
           onClick={() => setCurrentWeek(new Date())}
         >
           Today
@@ -105,8 +105,8 @@ export const Calendar = () => {
         {/* flex-1: Makes this container expand to fill all available vertical screen space. */}
         {/* overflow-auto: If the content gets too big, this will automatically add scrollbars. */}
         {/* Time Column (Left Side) */}
-        <div className="w-16 border-r bg-muted">
-          <div className="h-12 border-b"></div>
+        <div className="w-16 border-r border-secondary-bg bg-muted">
+          <div className="h-12 border-b border-secondary-bg"></div>
 
           {HOURS.map((hour) => (
             <div
@@ -127,7 +127,7 @@ export const Calendar = () => {
           {weekDays.map((day, index) => (
             <div
               key={day.toISOString()}
-              className="h-12 border-b border-r text-center p-1"
+              className="h-12 border-b border-r border-secondary-bg text-center p-1"
             >
               <div className="text-xs text-muted-foreground">
                 {DAYS_OF_WEEK[index]}
@@ -139,16 +139,16 @@ export const Calendar = () => {
           {/* Time Slots for each day */}
           {/* relative:  place events on top of this grid. */}
           {weekDays.map((day) => (
-            <div key={day.toISOString()} className="relative border-r">
+            <div key={day.toISOString()} className="relative border-r border-secondary-bg">
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="h-16 border-b"
+                  className="h-16 border-b border-secondary-bg"
                   onDoubleClick={() => handleDoubleClick(day, hour)}
                 ></div>
               ))}
 
-              Drawing availibility Slots on Top
+              {/* Drawing availibility Slots on Top */}
               {events
                 .filter((event) => isSameDay(event.startTime, day))
                 .map((event) => (

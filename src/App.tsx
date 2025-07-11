@@ -5,8 +5,8 @@ import Login from './pages/Login'
 import SignUp from './pages/Signup'
 import ClientLayout from './pages/ClientLayout'
 import ClientDashboard from './pages/employer/ClientDashboard'
+import UploadJobs from './pages/employer/UploadJobs'
 import JSLayout from './pages/JSLayout'
-import JSNav from './pages/employee/JSNav'
 import JSPref from './pages/employee/JSPref'
 
 function App() {
@@ -21,11 +21,11 @@ function App() {
           <Route path="roster" element={<ClientDashboard/>}/>
           <Route path="settings" element={<ClientDashboard/>}/>
           <Route path="profile" element={<ClientDashboard/>}/>
-          <Route path="uploadjobs" element={<ClientDashboard/>}/>
+          <Route path="uploadjobs" element={<UploadJobs/>}/>
         </Route>
-        <Route path="/preferences" element={<JSPref/>}/>
-        <Route path="/employee" element={<JSLayout/>}/>
-        <Route path="/navbar" element={<JSNav/>}/>
+        <Route path="/employee" element={<JSLayout/>}>
+          <Route path="preferences" element={<JSPref/>}/>
+        </Route>
       </Routes>
     </>
   )

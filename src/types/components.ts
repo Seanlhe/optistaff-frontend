@@ -1,6 +1,7 @@
 export interface IconButtonProps{
     text: string,
     src: string
+    onClick: React.MouseEventHandler<HTMLButtonElement> | undefined
 }
 
 export interface CircleButtonProps{
@@ -18,6 +19,7 @@ export interface ShiftCardProps{
 export interface InputFieldProps{
     name: string,
     title: string,
+    className?: string,
     type?: string,
     valid?: boolean,
     error?: string|null
@@ -62,4 +64,16 @@ export type EmployeeFormData = {
     email: string,
     password: string,
     confirmPassword: string
+}
+
+export type JobFormData = {
+    jobTitle: string,
+    date: string,
+    startTime: string,
+    endTime: string,
+    Address: string,
+    zipCode: string,
+    payRate: number,
+    noPax: number,
+    description: string
 }

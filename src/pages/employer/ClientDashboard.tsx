@@ -2,16 +2,33 @@ import IconButton from "../../components/IconButton"
 import CircleButton from "../../components/CircleButton"
 import ShiftCard from "../../components/ShiftCard"
 import { ShiftCardProps } from "../../types/components"
+import { useNavigate } from "react-router-dom"
 
 export default function ClientDashboard(){
+    const navigate = useNavigate();
+
     const ShiftCardData: ShiftCardProps[] = [
         {title: "Front Desk", date: "Today", time: "8:00am - 1:30pm", staffNo: 3},
         {title: "Front Desk", date: "Today", time: "8:00am - 1:30pm", staffNo: 3},
         {title: "Front Desk", date: "Today", time: "8:00am - 1:30pm", staffNo: 3},
     ]
+
+    function handleUploadClick(){
+        navigate("/employer/uploadjobs");
+    }
+
     return (
-    <div className="bg-tertiary-bg min-h-screen flex flex-col w-full px-16 py-8 gap-8 ">
-        <DashboardHeader/>
+    <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8 ">
+        <div id = "DashboardHeader" className="flex flex-row w-full justify-between">
+            <div className="flex flex-col gap-2">
+                <p className="text-2xl text-secondary-text font-montserrat-smb">Welcome Back,</p>
+                <h1 className="text-4xl text-secondary-text font-montserrat-b">Marriot Plaza</h1>
+            </div>
+            <div className = "flex flex-row items-center gap-16">
+                <IconButton onClick={()=>{handleUploadClick()}}text="Upload Jobs" src="/public/icons/uploadicon.png"/>
+                <CircleButton className="circle-button" src = "/icons/notifications.svg"/>
+            </div>
+        </div>
         <div className="flex flex-row gap-10">
             <DashboardUpcoming data = {ShiftCardData}/>
             <div className="grow flex flex-col gap-15">
@@ -23,23 +40,10 @@ export default function ClientDashboard(){
     )
 }
 
-function DashboardHeader(){
-    return <div className="flex flex-row w-full justify-between">
-            <div className="flex flex-col gap-2">
-                <p className="text-2xl text-secondary-text font-montserrat-smb">Welcome Back,</p>
-                <h1 className="text-4xl text-secondary-text font-montserrat-b">Marriot Plaza</h1>
-            </div>
-            <div className = "flex flex-row items-center gap-16">
-                <IconButton text="Upload Jobs" src="/public/icons/uploadicon.png"/>
-                <CircleButton className="circle-button" src = "/public/icons/notifications.svg"/>
-            </div>
-        </div>
-}
-
 function DashboardUpcoming({data}: {data: ShiftCardProps[]}){
     return <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
         <div className="flex flex-row gap-4 items-center">
-            <img className="h-7 w-7"src="/public/icons/calendar.svg"/>
+            <img className="h-7 w-7"src="/icons/calendar.svg"/>
             <h1 className="text-3xl text-secondary-text font-montserrat-b">Upcoming Shifts</h1>
         </div>
         <ul className="flex flex-col gap-8">
@@ -66,7 +70,7 @@ function DashboardPositions(){
 function DashboardInProgress({data}: {data: ShiftCardProps[]}){
     return <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
         <div className="flex flex-row gap-4 items-center">
-            <img className="h-7 w-7"src="/public/icons/calendar.svg"/>
+            <img className="h-7 w-7"src="/icons/calendar.svg"/>
             <h1 className="text-3xl text-secondary-text font-montserrat-b">In Progress</h1>
         </div>
         <ul className="flex flex-col gap-8">
