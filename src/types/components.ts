@@ -47,3 +47,13 @@ export type EmployeeFormData = {
     password: string,
     confirmPassword: string
 }
+export interface ClientShiftProps { 
+    id: string;
+    startTime: string;
+    endTime: string;
+    date: string;
+    location: string;
+    jobTitle: string;
+    payRate: number;
+    employeeName?: string; // Optional, as it may not be assigned yet
+}
