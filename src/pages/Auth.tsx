@@ -5,11 +5,13 @@
 
 import { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { supabase } from "../integrations/supabase/client";
+import { useAuth } from "../hooks/useAuth";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const { login, signup, loading, error, clearError } = useAuth();
 
   const mode = searchParams.get("mode") as "login" | "signup" | null;
 
@@ -18,11 +20,8 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [userType, setUserType] = useState<"jobseeker" | "employer">(
-    "jobseeker",
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [userType, setUserType] = useState<"jobseeker" | "employer">("jobseeker");
+  
   const [isSignup, setIsSignup] = useState(mode === "signup");
 
   // Job seeker specific fields
@@ -36,101 +35,28 @@ const Auth = () => {
       navigate("/");
     }
     setIsSignup(mode === "signup");
-  }, [mode, navigate]);
+    clearError(); // ✅ Clear errors when mode changes
+  }, [mode, navigate, clearError]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    clearError();
 
-    // Validation for signup
     if (isSignup) {
-      if (userType === "employer" && !companyName.trim()) {
-        setError("Company name is required for employers");
-        setLoading(false);
-        return;
-      }
+      // ✅ Simple call - hook handles validation
+      await signup({
+        email,
+        password,
+        userType,
+        firstName,
+        lastName,
+        phoneNumber,
+        companyName,
+      });
+    } else {
+      await login(email, password);
     }
-
-    try {
-      if (isSignup) {
-        // Prepare metadata based on user type
-        const metadata = {
-          first_name: firstName,
-          last_name: lastName,
-          user_type: userType === "jobseeker" ? "job-seeker" : "client", // Match your database function
-          ...(userType === "jobseeker" &&
-            phoneNumber && {
-              phone_number: phoneNumber,
-            }),
-          ...(userType === "employer" && {
-            company_name: companyName,
-            contact_email: email, // Use email as contact_email for employers
-          }),
-        };
-
-        // Sign up
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: metadata,
-          },
-        });
-
-        if (signUpError) throw signUpError;
-
-        if (data.user) {
-          // Show success message for email confirmation
-          if (!data.session) {
-            setError(
-              "Please check your email to confirm your account before signing in.",
-            );
-            setLoading(false);
-            return;
-          }
-          // If auto-confirmed, redirect
-          navigate(userType === "jobseeker" ? "/jobseeker" : "/employer");
-        }
-      } else {
-        // Sign in
-        const { data, error: signInError } =
-          await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-
-        if (signInError) throw signInError;
-
-        if (data.user) {
-          // Get user role from metadata or database
-          const userRole = data.user.user_metadata?.user_type;
-          if (userRole === "job-seeker") {
-            navigate("/jobseeker");
-          } else if (userRole === "client") {
-            navigate("/employer");
-          } else {
-            // Fallback: check database tables
-            const { data: jobSeekerData } = await supabase
-              .from("job_seekers")
-              .select("user_id")
-              .eq("user_id", data.user.id)
-              .single();
-
-            if (jobSeekerData) {
-              navigate("/jobseeker");
-            } else {
-              navigate("/employer");
-            }
-          }
-        }
-      }
-    } catch (error: any) {
-      setError(error.message || "An error occurred during authentication");
-    } finally {
-      setLoading(false);
-    }
-  };
+  };;
 
   if (!mode) {
     return null;
