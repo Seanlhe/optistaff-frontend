@@ -1,5 +1,5 @@
 // useState to manage component's data )current date and events)
-import React, { useState } from "react";
+import { useState } from "react";
 
 // Date and Time Library
 import { format, startOfWeek, addDays, isSameDay, set } from "date-fns";
@@ -22,7 +22,7 @@ export interface Event {
   endTime: Date;
 }
 
-export const Calendar = () => {
+const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   const [events, setEvents] = useState<Event[]>([]); // Starts empty
@@ -67,34 +67,33 @@ export const Calendar = () => {
     setCurrentWeek(addDays(currentWeek, direction === "next" ? 7 : -7));
   };
 
-  // We'll add the visual part (JSX) of the component here in the next step.
   return (
     <div>
-      <header className="flex items-center justify-between p-4 border-b border-secondary-bg">
-        {/* flex: horizontal row, items-center: vertically aligns in the row to the middle, justify-between: push first item to far left and last item to far right, border-b: Adds a 1-pixel border to the bottom of the header */}
-        <div className="flex items-center space-x-2">
+      <header className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center">
           <button
-            className="p-2 rounded-full hover:bg-accent"
+            className="p-2 rounded hover:bg-accent"
             onClick={() => navigateWeek("prev")}
           >
-            {/* change later */}
             <ChevronLeft className="h-5 w-5" />
           </button>
 
-          <h1 className="text-xl font-semibold text-foreground">
-            {format(weekStart, "MMMM yyyy")}
-          </h1>
-
           <button
-            className="p-2 rounded-full hover:bg-accent"
+            className="p-2 rounded hover:bg-accent"
             onClick={() => navigateWeek("next")}
           >
             <ChevronRight className="h-5 w-5" />
           </button>
+
+          <h1 className="text-xl font-semibold mx-4 text-center">
+            {format(weekStart, "MMMM yyyy")}
+          </h1>
+
+          
         </div>
 
         <button
-          className="px-4 py-2 text-sm font-medium border border-secondary-bg rounded-md hover:bg-muted"
+          className="px-4 py-2 text-sm border rounded hover:bg-muted"
           onClick={() => setCurrentWeek(new Date())}
         >
           Today
@@ -105,13 +104,13 @@ export const Calendar = () => {
         {/* flex-1: Makes this container expand to fill all available vertical screen space. */}
         {/* overflow-auto: If the content gets too big, this will automatically add scrollbars. */}
         {/* Time Column (Left Side) */}
-        <div className="w-16 border-r border-secondary-bg bg-muted">
-          <div className="h-12 border-b border-secondary-bg"></div>
+        <div className="w-16 border-r bg-muted">
+          <div className="h-12 border-b"></div>
 
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-16 flex items-center justify-center text-xs text-muted-foreground"
+              className="h-12 flex items-center justify-center text-xs text-muted-foreground"
             >
               {format(set(new Date(), { hours: hour, minutes: 0 }), "H:mm")}
             </div>
@@ -127,7 +126,7 @@ export const Calendar = () => {
           {weekDays.map((day, index) => (
             <div
               key={day.toISOString()}
-              className="h-12 border-b border-r border-secondary-bg text-center p-1"
+              className="h-12 border-b border-r text-center p-1"
             >
               <div className="text-xs text-muted-foreground">
                 {DAYS_OF_WEEK[index]}
@@ -139,16 +138,14 @@ export const Calendar = () => {
           {/* Time Slots for each day */}
           {/* relative:  place events on top of this grid. */}
           {weekDays.map((day) => (
-            <div key={day.toISOString()} className="relative border-r border-secondary-bg">
+            <div key={day.toISOString()} className="relative border-r">
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="h-16 border-b border-secondary-bg"
+                  className="h-12 border-b"
                   onDoubleClick={() => handleDoubleClick(day, hour)}
                 ></div>
               ))}
-
-              {/* Drawing availibility Slots on Top */}
               {events
                 .filter((event) => isSameDay(event.startTime, day))
                 .map((event) => (
@@ -166,3 +163,5 @@ export const Calendar = () => {
     </div>
   );
 };
+
+export default Calendar;  
