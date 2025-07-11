@@ -35,14 +35,14 @@ export default function Login() {
 
   return (
     <div className="flex flex-col py-18 gap-15">
-      <div className="flex flex-row gap-10 justify-center items-center">
+      <div id="login-header" className="flex flex-row gap-10 justify-center items-center">
         <img className="" src="/public/images/optistafflogo.svg"></img>
         <h1 className="text-4xl font-montserrat-b text-primary-blue">
           Your gateway to flexible hiring
         </h1>
       </div>
-      <div className="px-96">
-        <div className="w-full px-7 py-15 bg-white rounded-3xl shadow-2xl">
+      <div id="login-form-container" className="px-110">
+        <div id="login-form" className="w-full px-7 py-12 bg-white rounded-3xl shadow-2xl">
           <form
             className="w-full flex flex-col gap-8 items-center"
             onSubmit={handleSubmit}
@@ -71,7 +71,7 @@ export default function Login() {
             >
               Forgot Password?
             </Link>
-            <button className="w-full bg-primary-blue px-7 py-8 rounded-3xl font-montserrat text-white text-2xl cursor-pointer hover:opacity-80">
+            <button className="w-full bg-primary-blue py-4 rounded-3xl font-montserrat text-white text-base cursor-pointer hover:opacity-80">
               Log in
             </button>
             <div className="flex flex-col items-center">

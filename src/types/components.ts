@@ -71,9 +71,20 @@ export type JobFormData = {
     date: string,
     startTime: string,
     endTime: string,
-    Address: string,
+    address: string,
     zipCode: string,
     payRate: number,
     noPax: number,
     description: string
+}
+
+export interface ClientShiftProps { 
+    id: string;
+    startTime: string;
+    endTime: string;
+    date: string;
+    location: string;
+    jobTitle: string;
+    payRate: number;
+    employeeName?: string; // Optional, as it may not be assigned yet
 }

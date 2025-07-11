@@ -10,7 +10,7 @@ export default function ClientNav(){
         setSelected(name);
     }
     return(
-    <div className='box-border col-span-1 min-h-screen flex flex-col gap-1 bg-gradient-to-b from-[#0A32A9] to-[#3767F3] px-4 py-8'>
+    <div className='box-border col-span-1 min-h-screen m flex flex-col gap-1 bg-gradient-to-b from-[#0A32A9] to-[#3767F3] px-4 py-8'>
         <div className = 'flex flex-col gap-1'>
             <h1 className = 'font-montserrat-smb text-white text-center text-3xl' >OptiStaff</h1>
             <h2 className = 'font-montserrat text-white text-center text-xl mb-8'>Client Portal</h2>

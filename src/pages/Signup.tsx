@@ -73,15 +73,15 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex flex-col py-18 gap-15">
+    <div id="signup-header" className="flex flex-col py-18 gap-15">
       <div className="flex flex-row gap-10 justify-center items-center">
         <img src="/public/images/optistafflogo.svg"></img>
         <h2 className="text-4xl text-primary-blue font-montserrat-b">
           Your gateway to flexible hiring
         </h2>
       </div>
-      <div className="px-96">
-        <div className="flex flex-col gap-9 w-full px-7 py-15 bg-white shadow-2xl items-center rounded-3xl">
+      <div id="signup-form-container" className="px-110">
+        <div className="flex flex-col gap-9 w-full px-7 py-12 bg-white shadow-2xl items-center rounded-3xl">
           <h1 className="text-4xl text-center font-montserrat-b">
             Create an account
           </h1>
@@ -101,7 +101,7 @@ export default function SignUp() {
                 employeeData={employeeData}
               />
             )}
-            <button className="hover:cursor-pointer hover:opacity-80 w-full bg-primary-blue px-7 py-8 rounded-3xl text-2xl font-montserrat text-white cursor-pointer">
+            <button className="hover:cursor-pointer hover:opacity-80 w-full bg-primary-blue py-4 rounded-3xl text-base font-montserrat text-white cursor-pointer">
               Sign Up
             </button>
           </form>

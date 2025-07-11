@@ -26,7 +26,7 @@ export default function ToggleSwitchButton({
 
       <button
         onClick={onClick}
-        className={`hover:cursor-pointer relative z-10 w-1/2 px-8 py-8 text-2xl font-montserrat transition duration-200 rounded-4xl ${
+        className={`hover:cursor-pointer relative z-10 w-1/2 px-8 py-3 text-lg font-montserrat transition duration-200 rounded-4xl ${
           selected === option1 ? "text-white" : "text-black opacity-50"
         }`}
       >
@@ -35,7 +35,7 @@ export default function ToggleSwitchButton({
 
       <button
         onClick={onClick}
-        className={`hover:cursor-pointer relative z-10 w-1/2 px-8 py-8 text-2xl font-montserrat transition duration-200 rounded-4xl ${
+        className={`hover:cursor-pointer relative z-10 w-1/2 px-8 py-3 text-lg font-montserrat transition duration-200 rounded-4xl ${
           selected === option2 ? "text-white" : "text-black opacity-50"
         }`}
       >

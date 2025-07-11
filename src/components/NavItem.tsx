@@ -9,9 +9,9 @@ export default function NavItem({
   onClick,
 }: NavItemProps) {
   const inactive: string =
-    "hover:bg-[#5680E9] hover:text-white font-montserrat text-white box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-4 rounded-lg";
+    "hover:bg-[#5680E9] hover:text-white font-montserrat text-white/90 box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-4 rounded-lg";
   const active: string =
-    "bg-white border-r-4 border-[#49E9FD] font-montserrat-smb text-black box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-4 rounded-lg";
+    "bg-white border-r-4 border-[#49E9FD] font-montserrat-smb text-black box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-4 rounded-lg transition-all duration-200 ease-in-out";
     const activeImage: string = "brightness-0";
     const inactiveImage: string = "brightness-100 invert-1";
   return (

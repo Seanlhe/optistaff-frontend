@@ -8,6 +8,7 @@ import ClientDashboard from './pages/employer/ClientDashboard'
 import UploadJobs from './pages/employer/UploadJobs'
 import JSLayout from './pages/JSLayout'
 import JSPref from './pages/employee/JSPref'
+import ClientRoster from './pages/employer/ClientRoster'
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
         <Route path="/signup" element={<SignUp/>}/>
         <Route path="/employer" element={<ClientLayout/>}>
           <Route path="dashboard" element={<ClientDashboard/>}/>
-          <Route path="roster" element={<ClientDashboard/>}/>
+          <Route path="roster" element={<ClientRoster/>}/>
           <Route path="settings" element={<ClientDashboard/>}/>
           <Route path="profile" element={<ClientDashboard/>}/>
           <Route path="uploadjobs" element={<UploadJobs/>}/>
