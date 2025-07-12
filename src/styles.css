@@ -10,6 +10,7 @@
   --color-tertiary-bg: oklch(0.96 0.01 262.41);      /* hsl(228, 71%, 97%) */
   --color-gradient-start: oklch(0.36 0.26 266.63);   /* hsl(225, 89%, 35%) */
   --color-gradient-end: oklch(0.65 0.18 267.37);     /* hsl(225, 89%, 58%) */
+  --color-landing-bg: hsl(197, 60%, 86%);
   --font-montserrat: "montserrat-medium";
   --font-montserrat-smb: "montserrat-semibold";
   --font-montserrat-b: "montserrat-bold";
