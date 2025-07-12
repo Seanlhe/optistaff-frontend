@@ -4,7 +4,7 @@
  */
 
 import { supabase } from '../integrations/supabase/client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface User {
@@ -40,7 +40,7 @@ export const useAuth = () => {
   });
 
   // Helper function to update user state
-  const updateUserState = (user: any, shouldNavigate = false) => {
+  const updateUserState = useCallback((user: any, shouldNavigate = false) => {
     // ✅ Fixed role mapping to match what we send in metadata
     const userType = user.user_metadata?.user_type;
     const role = userType === 'job-seeker' ? 'jobseeker' : 'employer';
@@ -59,16 +59,16 @@ export const useAuth = () => {
     if (shouldNavigate) {
       navigate(role === 'jobseeker' ? '/jobseeker' : '/employer');
     }
-  };
+  }, [navigate]);
 
   // Helper function to clear user state
-  const clearUserState = (errorMessage?: string) => {
+  const clearUserState = useCallback((errorMessage?: string) => {
     setAuthState({
       user: null,
       loading: false,
       error: errorMessage || null,
     });
-  };
+  }, []);
 
   useEffect(() => {
     // check if user is already logged in 
@@ -91,7 +91,7 @@ export const useAuth = () => {
       }
     };
     checkUser();
-  }, []);
+  }, [updateUserState, clearUserState]);
 
   const login = async (email: string, password: string) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
@@ -174,9 +174,9 @@ export const useAuth = () => {
     }
   };
   
-  const clearError = () => {
+  const clearError = useCallback(() => {
     setAuthState(prev => ({ ...prev, error: null }));
-  };
+  }, []);
 
   return {
     ...authState, 

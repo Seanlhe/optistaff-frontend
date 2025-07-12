@@ -41,13 +41,25 @@ const Auth = () => {
   // Employer specific fields
   const [companyName, setCompanyName] = useState("");
 
+  // Handle navigation when no mode is present
   useEffect(() => {
     if (!mode) {
       navigate("/");
     }
-    setIsSignup(mode === "signup");
-    clearError();
-  }, [mode, navigate, clearError]);
+  }, [mode, navigate]);
+
+  // Handle mode changes
+  useEffect(() => {
+    if (mode) {
+      setIsSignup(mode === "signup");
+      clearError();
+    }
+  }, [mode, clearError]);
+
+  // Early return if no mode is provided
+  if (!mode) {
+    return null;
+  }
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,10 +79,6 @@ const Auth = () => {
       await login(email, password);
     }
   };
-
-  if (!mode) {
-    return null;
-  }
 
   // Prepare form data for child components
   const formData = {
