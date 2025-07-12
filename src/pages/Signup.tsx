@@ -13,12 +13,12 @@ import {
   EmployeeFormProps,
 } from "../types/components";
 import { CompanyFormData } from "../types/components";
-import { useNavigate } from "react-router-dom";
 import ToggleSwitchButton from "../components/ToggleSwitchButton";
+import { useAuth } from "../hooks/useAuth";
 
 export default function SignUp() {
   const [role, setRole] = useState<string>("Company");
-  const navigate = useNavigate();
+  const { signup, loading, error } = useAuth();
 
   const [employeeData, setEmployeeData] = useState<EmployeeFormData>({
     firstName: "",
@@ -42,14 +42,37 @@ export default function SignUp() {
     confirmPassword: "",
   });
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (role == "Company") {
-      console.log(JSON.stringify(companyData));
+    
+    if (role === "Company") {
+      if (companyData.password !== companyData.confirmPassword) {
+        return; // Passwords don't match
+      }
+      
+      await signup({
+        email: companyData.email,
+        password: companyData.password,
+        userType: 'employer',
+        firstName: '',
+        lastName: '',
+        phoneNumber: companyData.mobileNo,
+        companyName: companyData.companyName,
+      });
     } else {
-      console.log(JSON.stringify(employeeData));
+      if (employeeData.password !== employeeData.confirmPassword) {
+        return; // Passwords don't match
+      }
+      
+      await signup({
+        email: employeeData.email,
+        password: employeeData.password,
+        userType: 'jobseeker',
+        firstName: employeeData.firstName,
+        lastName: employeeData.lastName,
+        phoneNumber: employeeData.mobileNo,
+      });
     }
-    navigate("/login");
   }
 
   function handleEmployeeChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -90,6 +113,11 @@ export default function SignUp() {
             className="w-full flex flex-col gap-9 items-center"
             onSubmit={handleSubmit}
           >
+            {error && (
+              <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-center">
+                {error}
+              </div>
+            )}
             {role == "Company" ? (
               <CompanyForm
                 handleChange={handleCompanyChange}
@@ -101,8 +129,19 @@ export default function SignUp() {
                 employeeData={employeeData}
               />
             )}
-            <button className="hover:cursor-pointer hover:opacity-80 w-full bg-primary-blue py-4 rounded-3xl text-base font-montserrat text-white cursor-pointer">
-              Sign Up
+            <button 
+              type="submit"
+              disabled={loading}
+              className="hover:cursor-pointer hover:opacity-80 w-full bg-primary-blue py-4 rounded-3xl text-base font-montserrat text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Creating Account...
+                </>
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </form>
           <div className="flex flex-col items-center">

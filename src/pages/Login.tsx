@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CustomInputField from "../components/CustomInputField";
 import { LoginFormData } from "@/types/components";
 import {
@@ -8,10 +8,10 @@ import {
   getEmailError,
   getPasswordError,
 } from "../utils/authentication";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const [role, setRole] = useState<string>("Company");
+  const { login, loading, error } = useAuth();
   const [loginData, setLoginData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -23,13 +23,10 @@ export default function Login() {
     setLoginData((prevData: LoginFormData) => ({ ...prevData, [name]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    console.log(loginData);
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (role == "Company") {
-      navigate("/employer/dashboard");
-    } else {
-      navigate("/employee/dashboard");
+    if (isValidEmail(loginData.email) && isValidPassword(loginData.password)) {
+      await login(loginData.email, loginData.password);
     }
   }
 
@@ -47,6 +44,11 @@ export default function Login() {
             className="w-full flex flex-col gap-8 items-center"
             onSubmit={handleSubmit}
           >
+            {error && (
+              <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-center">
+                {error}
+              </div>
+            )}
             <CustomInputField
               title="Email"
               name="email"
@@ -71,8 +73,19 @@ export default function Login() {
             >
               Forgot Password?
             </Link>
-            <button className="w-full bg-primary-blue py-4 rounded-3xl font-montserrat text-white text-base cursor-pointer hover:opacity-80">
-              Log in
+            <button 
+              type="submit"
+              disabled={loading || !isValidEmail(loginData.email) || !isValidPassword(loginData.password)}
+              className="w-full bg-primary-blue py-4 rounded-3xl font-montserrat text-white text-base cursor-pointer hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Logging in...
+                </>
+              ) : (
+                "Log in"
+              )}
             </button>
             <div className="flex flex-col items-center">
               <p className="text-2xl font-montserrat">
