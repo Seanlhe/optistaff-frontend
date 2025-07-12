@@ -22,7 +22,7 @@ export interface Event {
   endTime: Date;
 }
 
-export default function Calendar() {
+const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   const [events, setEvents] = useState<Event[]>([]); // Starts empty
@@ -163,3 +163,6 @@ export default function Calendar() {
     </div>
   );
 };
+
+export { Calendar };
+export default Calendar;  
