@@ -16,7 +16,7 @@
 // TODO: Implement useAvailability hook
 // This hook will manage job seeker availability windows for shift scheduling
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from './useAuth';
 
@@ -30,23 +30,30 @@ export interface TimeBlock {
 
 export const useAvailability = () => {
 
-  // Get the currently authenticated user
-  const { user } = useAuth();
+  // Get the currently authenticated user and auth loading state
+  const { user, loading: authLoading } = useAuth();
   // const user = { id: "5338ab04-7955-4a16-89d5-e9aee541d343" }; // TESTING ONLY
 
-  // State to indicate loading state of async operations
-  const [loading, setLoading] = useState(false);
+  // State to indicate loading state of different operations
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
   // State to capture any errors during async calls
   const [error, setError] = useState<string | null>(null);
 
   // Fetch availability for a given cycle
-  const getAvailability = async (cycle: 'PRIMARY' | 'SECONDARY'): Promise<TimeBlock[]> => {
-    setLoading(true);
+  const getAvailability = useCallback(async (cycle: 'PRIMARY' | 'SECONDARY'): Promise<TimeBlock[]> => {
+    setFetchLoading(true);
     setError(null);
+
+    // Wait for auth to complete first - FIX FOR RACE CONDITION
+    if (authLoading) {
+      setFetchLoading(false);
+      return [];
+    }
 
     // Check if user is authenticated
     if (!user) {
-      setLoading(false);
+      setFetchLoading(false);
       setError('User not authenticated');
       return [];
     }
@@ -59,7 +66,7 @@ export const useAvailability = () => {
       .eq('submission_cycle', cycle);
 
       
-    setLoading(false);
+    setFetchLoading(false);
 
     // Handle any errors from Supabase
     if (supaError) {
@@ -69,18 +76,24 @@ export const useAvailability = () => {
 
     // Return the fetched availability records
     return data as TimeBlock[];
-  };
+  }, [user, authLoading]); // Dependencies: user and authLoading
 
   // Save new set of availability windows
-  const setAvailability = async (
+  const setAvailability = useCallback(async (
     timeBlocks: Omit<TimeBlock, 'user_id'>[]
   ): Promise<boolean> => {
-    setLoading(true);
+    setSaveLoading(true);
     setError(null);
+
+    // Wait for auth to complete first - FIX FOR RACE CONDITION
+    if (authLoading) {
+      setSaveLoading(false);
+      return false;
+    }
 
     // Check if user is authenticated
     if (!user) {
-      setLoading(false);
+      setSaveLoading(false);
       setError('User not authenticated');
       return false;
     }
@@ -108,7 +121,7 @@ export const useAvailability = () => {
       .from('availability')
       .insert(blocksWithUser);
 
-    setLoading(false);
+    setSaveLoading(false);
 
     // Handle errors from Supabase insert
     if (supaError) {
@@ -116,13 +129,15 @@ export const useAvailability = () => {
       return false;
     }
     return true;
-  };
+  }, [user, authLoading]); // Dependencies: user and authLoading
 
   // Return the functions and state to the component using this hook
   return {
     getAvailability,
     setAvailability,
-    loading,
+    fetchLoading,
+    saveLoading,
+    loading: fetchLoading || saveLoading || authLoading, // Combined loading state for convenience
     error,
   };
 };
