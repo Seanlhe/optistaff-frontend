@@ -3,7 +3,7 @@ export default function LandingPage(){
     const images: string[] = ["/images/capitaland.svg", "images/fourseasons.svg", "images/marriot.svg", "images/mercure.svg", "images/sats.svg", "images/tripdotcom.svg"]
 
     return <div id="landing-container" className="flex flex-col">
-        <div id="landing-header" className="flex flex-row justify-between items-center pt-4 px-37.5">
+        <div id="landing-header" className="sticky top-0 z-50 pt-4 pb-4 px-37.5 bg-white flex flex-row justify-between items-center ">
             <img className="h-23" src="/images/optistafflogo.svg"/>
             <div className="flex flex-row gap-15">
                 <Link className="hover:underline font-montserrat text-lg text-primary-blue" to="/hire">Employers</Link>
@@ -72,14 +72,18 @@ export default function LandingPage(){
                 <img className="w-full h-auto"src="/images/dashboard.svg"/>
             </div>
             <div id="landing-testimonials" className="grid grid-cols-2 gap-x-37.5 px-37.5 justify-between">
-                <div className="col-span-1 grid grid-cols-2 gap-y-15 p-15 rounded-4xl rounded-bl-none bg-landing-bg">
-                    <img className="h-20 w-20 col-span-1 rounded-full" src="/icons/personicon.svg" />
-                    <p className="col-span-1 font-montserrat-smb text-2xl">Sean Leng<br/><span className="font-montserrat text-2xl/10">HR Lead at FinAscend</span></p>
+                <div className="flex flex-col gap-15 p-15 rounded-4xl rounded-bl-none bg-landing-bg">
+                    <div className="col-span-2 flex flex-row items-center">
+                        <img className="h-20 w-20 rounded-full" src="/icons/personicon.svg" />
+                        <p className="font-montserrat-smb text-2xl/10">Sean Leng<br/><span className="font-montserrat text-2xl/10">HR Lead at FinAscend</span></p>
+                    </div>
                     <p className="col-span-2 font-montserrat text-2xl/10">I used to spend days working spreadsheets and advertising to get manpower. With FlexiStaff <span className="font-montserrat-smb text-2xl/10">I can upload my job details and leave it aside.</span></p>
                 </div>
-                <div className="col-span-1 grid grid-cols-2 gap-y-15 p-15 rounded-4xl rounded-bl-none bg-landing-bg">
-                    <img className="h-20 w-20 col-span-1 rounded-full" src="/icons/personicon.svg" />
-                    <p className="col-span-1 font-montserrat-smb text-2xl">Aaron Lim<br/><span className="font-montserrat text-2xl/10">University Student</span></p>
+                <div className="col-span-1 flex flex-col gap-15 p-15 rounded-4xl rounded-bl-none bg-landing-bg">
+                    <div className="col-span-2 flex flex-row items-center gap-15">
+                        <img className="h-20 w-20 rounded-full" src="/icons/personicon.svg" />
+                        <p className="font-montserrat-smb text-2xl/10">Aaron Lim<br/><span className="font-montserrat text-2xl/10">University Student</span></p>
+                    </div>
                     <p className="col-span-2 font-montserrat text-2xl/10">As a part-time student, having the <span className="font-montserrat-smb text-2xl/10">flexibility to choose when I work </span> perfectly suits my lifestyle. It’s the first time I truly feel I can balance earning an income while staying on top of my studies.</p>
                 </div>
             </div>
@@ -88,8 +92,8 @@ export default function LandingPage(){
                 <p className="text-justify font-montserrat-smb text-2xl">Searching for a job that works for you?</p>
                 <p className="text-justify font-montserrat text-2xl">Let OptiStaff handle your future staffing needs with next-generation scheduling technology.</p>
                 <p className="text-justify font-montserrat text-2xl">Optistaff matches you with work, on your terms. Enjoy flexible working hours, competitive pay and discover jobs you love.</p>
-                <button className="hover:cursor-pointer hover:opacity-80 bg-primary-blue font-montserrat text-2xl text-white p-2.5 rounded-xl">Start hiring</button>
-                <button className="hover:cursor-pointer hover:bg-gray-100 border-2 bg-white border-primary-blue font-montserrat text-2xl text-primary-blue p-2.5 rounded-xl">Start working</button>
+                <button className="hover:cursor-pointer hover:opacity-80 bg-primary-blue font-montserrat text-xl text-white p-2.5 rounded-xl">Start hiring</button>
+                <button className="hover:cursor-pointer hover:bg-gray-100 border-2 bg-white border-primary-blue font-montserrat text-xl text-primary-blue p-2.5 rounded-xl">Start working</button>
             </div>
         </div>
         <div id="landing-end" className="bg-white px-37.5 pt-15 pb-4 flex flex-row justify-between">
