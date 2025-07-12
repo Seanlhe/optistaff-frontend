@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { format, differenceInMinutes, addMinutes, addDays } from "date-fns";
 import type { Event } from "./Calendar";
 
 interface CalendarEventProps {
   event: Event;
-  onUpdate: (event: Event) => void; // Callback for when an event is updated
-  onDelete: (eventId: string) => void; // Callback for when an event is deleted
+  onUpdate: (event: Event) => void;
+  onDelete: (eventId: string) => void;
 }
 
 export const CalendarEvent = ({
@@ -14,15 +14,15 @@ export const CalendarEvent = ({
   onDelete,
 }: CalendarEventProps) => {
   // Constants
-  const HOUR_HEIGHT = 64;
-  const DAY_WIDTH = 200; // Approximate width of each day column (variable needed to drag events between days)
-  
+  const HOUR_HEIGHT = 48;
+  const DAY_WIDTH = 200;
+
   // Calculate display properties
-  const duration = differenceInMinutes(event.endTime, event.startTime); // Duration of the event in minutes
-  const height = (duration / 60) * HOUR_HEIGHT; // height of the event in pixels
-  const topOffset = 
-    event.startTime.getHours() * HOUR_HEIGHT + 
-    (event.startTime.getMinutes() / 60) * HOUR_HEIGHT; // Vertical position of the event
+  const duration = differenceInMinutes(event.endTime, event.startTime);
+  const height = (duration / 60) * HOUR_HEIGHT;
+  const topOffset =
+    event.startTime.getHours() * HOUR_HEIGHT +
+    (event.startTime.getMinutes() / 60) * HOUR_HEIGHT;
 
   // State
   const [isDragging, setIsDragging] = useState(false);
@@ -43,32 +43,34 @@ export const CalendarEvent = ({
     }
   }, [isSelected, event.id, onDelete]);
 
-  // Handle dragging the entire event
-  const handleDragStart = (mouseEvent: React.MouseEvent) => {
-    mouseEvent.preventDefault(); // Prevent browser drag behavior
+  // Handle dragging and selection
+  const handleMouseDown = (mouseEvent: React.MouseEvent) => {
+    mouseEvent.preventDefault();
     mouseEvent.stopPropagation();
-    
+
+    setIsSelected((prev) => !prev);
+
+    if (
+      eventRef.current &&
+      mouseEvent.target instanceof Node &&
+      eventRef.current.querySelector('.resize-handle')?.contains(mouseEvent.target)
+    ) {
+      return;
+    }
+
     setIsDragging(true);
-    setIsSelected(true);
-    
     const startX = mouseEvent.clientX;
     const startY = mouseEvent.clientY;
     const originalStart = event.startTime;
     const originalEnd = event.endTime;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      // Calculate time change (vertical movement)
       const deltaY = moveEvent.clientY - startY;
-      const minutesMoved = Math.round((deltaY / HOUR_HEIGHT) * 60 / 15) * 15; // Snap to 15 mnits intervals
-      
-      // Calculate day change (horizontal movement)
+      const minutesMoved = Math.round((deltaY / HOUR_HEIGHT) * 60 / 15) * 15;
       const deltaX = moveEvent.clientX - startX;
       const daysMoved = Math.round(deltaX / DAY_WIDTH);
-      
-      // Update event times
       const newStart = addDays(addMinutes(originalStart, minutesMoved), daysMoved);
       const newEnd = addDays(addMinutes(originalEnd, minutesMoved), daysMoved);
-      
       onUpdate({ ...event, startTime: newStart, endTime: newEnd });
     };
 
@@ -82,23 +84,20 @@ export const CalendarEvent = ({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Handle resizing by dragging bottom of the event
+  // Handle resizing
   const handleResizeStart = (mouseEvent: React.MouseEvent) => {
     mouseEvent.preventDefault();
     mouseEvent.stopPropagation();
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!eventRef.current) return;
-      
       const rect = eventRef.current.getBoundingClientRect();
       const newHeight = Math.max(HOUR_HEIGHT, moveEvent.clientY - rect.top);
-      const newDuration = Math.round((newHeight / HOUR_HEIGHT) * 60 / 15) * 15; // Snap to 15 minutes
+      const newDuration = Math.round((newHeight / HOUR_HEIGHT) * 60 / 15) * 15;
       const newEndTime = addMinutes(event.startTime, newDuration);
-      
       onUpdate({ ...event, endTime: newEndTime });
     };
-    
-    // Function to handle mouse release after resize
+
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -106,12 +105,6 @@ export const CalendarEvent = ({
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // Handle selection
-  const handleClick = (clickEvent: React.MouseEvent) => {
-    clickEvent.stopPropagation();
-    setIsSelected(!isSelected);
   };
 
   // Handle double-click delete
@@ -125,35 +118,32 @@ export const CalendarEvent = ({
       ref={eventRef}
       className={`
         absolute left-1 right-1 rounded border p-1 cursor-grab select-none
-        ${isSelected 
-          ? 'bg-blue-200 border-blue-500 ring-2 ring-blue-300' 
+        ${isSelected
+          ? 'bg-blue-200 border-blue-500'
           : 'bg-blue-100 border-blue-300'
         }
         ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
-        hover:bg-blue-150 transition-colors
+        hover:bg-blue-150
       `}
       style={{
         top: `${topOffset}px`,
         height: `${height}px`,
         userSelect: "none",
       }}
-      tabIndex={0} // Make focusable for keyboard events
-      onMouseDown={handleDragStart}
-      onClick={handleClick}
+      tabIndex={0}
+      onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
       onFocus={() => setIsSelected(true)}
       onBlur={() => setIsSelected(false)}
     >
-      {/* Event content */}
-      <div className="text-xs text-muted-foreground overflow-hidden h-full pointer-events-none">
+      <div className="text-xs text-muted-foreground overflow-hidden h-full">
         {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
       </div>
-
-      {/* Resize handle */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-2 bg-blue-400 cursor-ns-resize rounded-b opacity-0 hover:opacity-100 transition-opacity"
+        className="absolute bottom-0 left-0 right-0 h-2 bg-blue-400 cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
         onMouseDown={handleResizeStart}
       />
     </div>
   );
 };
+export default CalendarEvent; 

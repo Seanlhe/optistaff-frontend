@@ -1,5 +1,8 @@
-// useState to manage component's data )current date and events)
-import React, { useState } from "react";
+// useState and useEffect to manage component's data (current date and events)
+import { useState, useEffect } from "react";
+
+// Import custom hook to fetch and manage availability data from Supabase
+import { useAvailability } from "../hooks/useAvailability";
 
 // Date and Time Library
 import { format, startOfWeek, addDays, isSameDay, set } from "date-fns";
@@ -22,10 +25,20 @@ export interface Event {
   endTime: Date;
 }
 
-export const Calendar = () => {
+// Define the cycle for which we are managing availability
+const CYCLE: "PRIMARY" | "SECONDARY" = "PRIMARY"; 
+
+
+
+const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
-  const [events, setEvents] = useState<Event[]>([]); // Starts empty
+  // State to hold the events (availability slots)
+  const [events, setEvents] = useState<Event[]>([]); 
+
+  // Use the custom hook to manage availability data
+  const { getAvailability, setAvailability, loading, error } = useAvailability();
+
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
 
@@ -34,9 +47,26 @@ export const Calendar = () => {
   const HOURS = Array.from({ length: 24 }, (_, i) => i);
   const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+  // Load availability from Supabase
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      const timeBlocks = await getAvailability(CYCLE);
+      setEvents(
+        timeBlocks.map((tb) => ({
+          id: tb.id || `event_${tb.start_time}`,
+          startTime: new Date(tb.start_time),
+          endTime: new Date(tb.end_time),
+        }))
+      );
+    };
+    fetchAvailability();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleDoubleClick = (day: Date, hour: number) => {
     const newSlot: Event = {
-      id: `event_${Date.now()}`, //Create a simple unique ID
+       //Create a simple unique ID
+      id: `event_${Date.now()}`,
       startTime: set(day, { hours: hour, minutes: 0 }),
       endTime: set(day, { hours: hour + 1, minutes: 0 }),
     };
@@ -67,40 +97,58 @@ export const Calendar = () => {
     setCurrentWeek(addDays(currentWeek, direction === "next" ? 7 : -7));
   };
 
-  // We'll add the visual part (JSX) of the component here in the next step.
+  // Save events to Supabase
+  const handleSaveAvailability = async () => {
+    const timeBlocks = events.map((event) => ({
+      start_time: event.startTime.toISOString(),
+      end_time: event.endTime.toISOString(),
+      submission_cycle: CYCLE,
+    }));
+    await setAvailability(timeBlocks);
+  };
+
   return (
     <div>
       <header className="flex items-center justify-between p-4 border-b">
-        {/* flex: horizontal row, items-center: vertically aligns in the row to the middle, justify-between: push first item to far left and last item to far right, border-b: Adds a 1-pixel border to the bottom of the header */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <button
-            className="p-2 rounded-full hover:bg-accent"
+            className="p-2 rounded hover:bg-accent"
             onClick={() => navigateWeek("prev")}
           >
-            {/* change later */}
             <ChevronLeft className="h-5 w-5" />
           </button>
 
-          <h1 className="text-xl font-semibold text-foreground">
-            {format(weekStart, "MMMM yyyy")}
-          </h1>
-
           <button
-            className="p-2 rounded-full hover:bg-accent"
+            className="p-2 rounded hover:bg-accent"
             onClick={() => navigateWeek("next")}
           >
             <ChevronRight className="h-5 w-5" />
           </button>
+
+          <h1 className="text-xl font-semibold mx-4 text-center">
+            {format(weekStart, "MMMM yyyy")}
+          </h1>
+
+          
         </div>
 
         <button
-          className="px-4 py-2 text-sm font-medium border rounded-md hover:bg-muted"
+          className="px-4 py-2 text-sm border rounded hover:bg-muted"
           onClick={() => setCurrentWeek(new Date())}
         >
           Today
         </button>
-      </header>
 
+         <button
+          className="ml-4 px-4 py-2 text-sm border rounded bg-blue-500 text-white hover:bg-blue-600"
+          onClick={handleSaveAvailability}
+          disabled={loading}
+        >
+          {loading ? "Saving..." : "Save Availability"}
+        </button>
+
+      </header>
+      {error && <div className="text-red-500 p-2">{error}</div>}
       <div className="flex flex-1 overflow-auto">
         {/* flex-1: Makes this container expand to fill all available vertical screen space. */}
         {/* overflow-auto: If the content gets too big, this will automatically add scrollbars. */}
@@ -111,7 +159,7 @@ export const Calendar = () => {
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-16 flex items-center justify-center text-xs text-muted-foreground"
+              className="h-12 flex items-center justify-center text-xs text-muted-foreground"
             >
               {format(set(new Date(), { hours: hour, minutes: 0 }), "H:mm")}
             </div>
@@ -143,12 +191,10 @@ export const Calendar = () => {
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="h-16 border-b"
+                  className="h-12 border-b"
                   onDoubleClick={() => handleDoubleClick(day, hour)}
                 ></div>
               ))}
-
-              Drawing availibility Slots on Top
               {events
                 .filter((event) => isSameDay(event.startTime, day))
                 .map((event) => (
@@ -166,3 +212,5 @@ export const Calendar = () => {
     </div>
   );
 };
+
+export default Calendar;  
