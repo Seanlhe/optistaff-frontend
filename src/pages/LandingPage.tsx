@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 export default function LandingPage(){
-    const images: string[] = ["/images/capitaland.svg", "images/fourseasons.svg", "images/marriot.svg", "images/mercure.svg", "images/sats.svg", "images/tripdotcom.svg"]
+    const images: string[] = ["/images/capitaland.svg", "images/fourseasons.svg", "images/marriot.svg", "images/mercure.svg", "images/sats.svg", "images/tripdotcom.svg", "images/fourseasons.svg"]
 
     return <div id="landing-container" className="flex flex-col">
         <div id="landing-header" className="sticky top-0 z-50 pt-4 pb-4 px-37.5 bg-white flex flex-row justify-between items-center ">
@@ -27,10 +27,10 @@ export default function LandingPage(){
             <div id="landing-brands" className="flex flex-col align-middle gap-12">
                 <p className="text-center font-montserrat-b text-primary-blue text-4xl">Recognised by trusted brands</p>
                 <div id="brands-carousell" className="overflow-hidden whitespace-nowrap">
-                    <div className="animate-slide inline-block whitespace-nowrap ml-15">
-                        {images.map((image: string) => {return <img className="mr-15 h-18 inline-block"src={image}/>})}
+                    <div className="animate-slide inline-block whitespace-nowrap">
+                        {images.map((image: string) => {return <img className="mr-15 h-18 inline-block" src={image}/>})}
                     </div>
-                    <div className="animate-slide inline-block whitespace-nowrap mr-15">
+                    <div className="animate-slide inline-block whitespace-nowrap">
                         {images.map((image: string) => {return <img className="mr-15 h-18 inline-block" src={image}/>})}
                     </div>
                 </div>

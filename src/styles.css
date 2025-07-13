@@ -26,7 +26,7 @@
       transform: translateX(-100%);
     }
 }
-  --animate-slide: slide 4s infinite linear;
+  --animate-slide: slide 5s linear infinite;
   
   
   --color-primary: hsl(240 5.9% 10%);
