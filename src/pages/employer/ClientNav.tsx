@@ -43,10 +43,10 @@ export default function ClientNav() {
         )}
       </div>
       <div className="flex flex-col mb-8">
-        <h3 className="text-white font-montserrat text-xs mb-5 opacity-80">
+        <h3 className="text-grey-100 font-montserrat text-xs mb-5 opacity-80">
           Admin Tools
         </h3>
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-2.5">
           {adminNavItems.map((navItemProps) => (
             <NavItem
               key={navItemProps.name}
@@ -58,10 +58,10 @@ export default function ClientNav() {
         </ul>
       </div>
       <div className="nav-body">
-        <h3 className="text-white font-montserrat text-xs mb-5 opacity-80">
+        <h3 className="text-grey-100 font-montserrat text-xs mb-5 opacity-80">
           Preferences
         </h3>
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-2.5">
           {prefNavItems.map((navItemProps) => (
             <NavItem
               key={navItemProps.name}
