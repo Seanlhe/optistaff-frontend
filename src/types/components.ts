@@ -77,3 +77,17 @@ export type JobFormData = {
     noPax: number,
     description: string
 }
+
+export interface ClientShiftProps { 
+    id: number;
+    startTime: string;
+    endTime: string;
+    date: number;
+    location: string;
+    title: string;
+    descrption?: string; // Optional, as it may not be provided
+    payRate: number;
+    employeeName?: string; // Optional, as it may not be assigned yet
+    filled: number; 
+    required: number;
+}
