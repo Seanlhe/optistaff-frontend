@@ -71,7 +71,7 @@ export type JobFormData = {
     date: string,
     startTime: string,
     endTime: string,
-    Address: string,
+    address: string,
     zipCode: string,
     payRate: number,
     noPax: number,

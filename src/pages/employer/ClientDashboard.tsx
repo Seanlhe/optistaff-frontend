@@ -24,7 +24,7 @@ export default function ClientDashboard(){
                 <p className="text-2xl text-secondary-text font-montserrat-smb">Welcome Back,</p>
                 <h1 className="text-4xl text-secondary-text font-montserrat-b">Marriot Plaza</h1>
             </div>
-            <div className = "flex flex-row items-center gap-16">
+            <div className = "flex flex-row items-center gap-12">
                 <IconButton onClick={()=>{handleUploadClick()}}text="Upload Jobs" src="/public/icons/uploadicon.png"/>
                 <CircleButton className="circle-button" src = "/icons/notifications.svg"/>
             </div>

@@ -18,7 +18,7 @@ export default function ShiftCard({title, date, time, staffNo}: ShiftCardProps){
                 <p className="text-l font-montserrat text-secondary-text">{staffNo}</p>
             </div>
         </div>
-        <button className="hover:cursor-pointer hover:bg-gray-100 hover:border-3 hover: text-secondary-text hover:opacity-80 bg-white rounded-md text-secondary-text py-2.5 px-4 border border-secondary-text font-montserrat-smb text-lg"
+        <button className="hover:cursor-pointer hover:bg-gray-100 hover: text-secondary-text hover:opacity-80 bg-white rounded-md text-secondary-text py-2.5 px-4 border border-secondary-text font-montserrat-smb text-lg"
         onClick={()=>handleManageClick()}
         >Manage</button>
     </div>

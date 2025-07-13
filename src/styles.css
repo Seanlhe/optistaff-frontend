@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --fill-b
   --color-primary-text: oklch(0.16 0 0);             /* hsl(0, 0%, 5%) */
   --color-secondary-text: oklch(0.43 0 0);           /* hsl(0, 0%, 30%) */
   --color-primary-blue: oklch(0.48 0.27 263.26);     /* hsl(227, 70%, 50%) */
@@ -11,6 +10,7 @@
   --color-tertiary-bg: oklch(0.96 0.01 262.41);      /* hsl(228, 71%, 97%) */
   --color-gradient-start: oklch(0.36 0.26 266.63);   /* hsl(225, 89%, 35%) */
   --color-gradient-end: oklch(0.65 0.18 267.37);     /* hsl(225, 89%, 58%) */
+  --color-landing-bg: hsl(197, 60%, 86%);
   --font-montserrat: "montserrat-medium";
   --font-montserrat-smb: "montserrat-semibold";
   --font-montserrat-b: "montserrat-bold";
@@ -332,17 +332,17 @@ body {
 
 @font-face {
   font-family: montserrat-medium;
-  src: url(../public/fonts/Montserrat-Medium.ttf);
+  src: url(/fonts/Montserrat-Medium.ttf);
 }
 @font-face {
   font-family: montserrat-semibold;
-  src: url(../public/fonts/Montserrat-SemiBold.ttf);
+  src: url(/fonts/Montserrat-SemiBold.ttf);
 }
 @font-face {
   font-family: montserrat-bold;
-  src: url(../public/fonts/Montserrat-Bold.ttf);
+  src: url(/fonts/Montserrat-Bold.ttf);
 }
 @font-face {
   font-family: montserrat-italic;
-  src: url(../public/fonts/Montserrat-Italic.ttf);
+  src: url(/fonts/Montserrat-Italic.ttf);
 }
