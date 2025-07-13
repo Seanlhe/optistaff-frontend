@@ -34,6 +34,9 @@ const Calendar = () => {
   // State to hold the events (availability slots)
   const [events, setEvents] = useState<Event[]>([]); 
 
+  // Track if we've loaded initial data to prevent refetching
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+
   // Use the custom hook to manage availability data
   const { getAvailability, setAvailability, fetchLoading, saveLoading, loading, error } = useAvailability();
 
@@ -44,26 +47,31 @@ const Calendar = () => {
   const HOURS = Array.from({ length: 24 }, (_, i) => i);
   const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  // Load availability from Supabase
+  // Load availability from Supabase only once when component mounts and auth is ready
   useEffect(() => {
     const fetchAvailability = async () => {
-      if (loading) return; // Don't fetch if still loading auth
+      if (loading || hasLoadedInitialData) return; // Don't fetch if still loading auth or already loaded
       
-      const timeBlocks = await getAvailability(CYCLE);
-      setEvents(
-        timeBlocks.map((tb) => ({
-          id: tb.id || `event_${tb.start_time}`,
-          startTime: new Date(tb.start_time),
-          endTime: new Date(tb.end_time),
-        }))
-      );
+      try {
+        const timeBlocks = await getAvailability(CYCLE);
+        setEvents(
+          timeBlocks.map((tb) => ({
+            id: tb.id || `event_${tb.start_time}`,
+            startTime: new Date(tb.start_time),
+            endTime: new Date(tb.end_time),
+          }))
+        );
+        setHasLoadedInitialData(true); // Mark as loaded to prevent refetching
+      } catch (err) {
+        console.error('Error fetching availability:', err);
+      }
     };
     
-    // Only fetch when auth loading is complete
-    if (!loading) {
+    // Only fetch when auth loading is complete and we haven't loaded yet
+    if (!loading && !hasLoadedInitialData) {
       fetchAvailability();
     }
-  }, [loading]); // Only depend on loading state, not the function
+  }, [loading, hasLoadedInitialData, getAvailability, CYCLE]); // Include all dependencies
 
   const handleDoubleClick = (day: Date, hour: number) => {
     const newSlot: Event = {
@@ -93,12 +101,39 @@ const Calendar = () => {
 
   // Save events to Supabase
   const handleSaveAvailability = async () => {
-    const timeBlocks = events.map((event) => ({
-      start_time: event.startTime.toISOString(),
-      end_time: event.endTime.toISOString(),
-      submission_cycle: CYCLE,
-    }));
-    await setAvailability(timeBlocks);
+    try {
+      const timeBlocks = events.map((event) => ({
+        start_time: event.startTime.toISOString(),
+        end_time: event.endTime.toISOString(),
+        submission_cycle: CYCLE,
+      }));
+      
+      const success = await setAvailability(timeBlocks);
+      
+      if (success) {
+        // Optionally refresh data from database after successful save
+        // For now, we'll keep the local state as is since it should match the saved data
+        console.log('Availability saved successfully');
+      }
+    } catch (err) {
+      console.error('Error saving availability:', err);
+    }
+  };
+
+  // Function to refresh data from database (useful after save or to discard local changes)
+  const handleRefreshAvailability = async () => {
+    try {
+      const timeBlocks = await getAvailability(CYCLE);
+      setEvents(
+        timeBlocks.map((tb) => ({
+          id: tb.id || `event_${tb.start_time}`,
+          startTime: new Date(tb.start_time),
+          endTime: new Date(tb.end_time),
+        }))
+      );
+    } catch (err) {
+      console.error('Error refreshing availability:', err);
+    }
   };
 
   // direction argument must be either the string "prev" or the string "next"
@@ -129,24 +164,32 @@ const Calendar = () => {
           <h1 className="text-xl font-semibold mx-4 text-center">
             {format(weekStart, "MMMM yyyy")}
           </h1>
-
-          
         </div>
 
-        <button
-          className="px-4 py-2 text-sm border rounded hover:bg-muted"
-          onClick={() => setCurrentWeek(new Date())}
-        >
-          Today
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            className="px-4 py-2 text-sm border rounded hover:bg-muted"
+            onClick={() => setCurrentWeek(new Date())}
+          >
+            Today
+          </button>
 
-        <button
-          className="ml-4 px-4 py-2 text-sm border rounded bg-blue-500 text-white hover:bg-blue-600"
-          onClick={handleSaveAvailability}
-          disabled={saveLoading}
-        >
-          {saveLoading ? "Saving..." : "Save Availability"}
-        </button>
+          <button
+            className="px-4 py-2 text-sm border rounded bg-blue-500 text-white hover:bg-blue-600"
+            onClick={handleSaveAvailability}
+            disabled={saveLoading}
+          >
+            {saveLoading ? "Saving..." : "Save Availability"}
+          </button>
+
+          <button
+            className="px-4 py-2 text-sm border rounded bg-gray-500 text-white hover:bg-gray-600"
+            onClick={handleRefreshAvailability}
+            disabled={fetchLoading}
+          >
+            {fetchLoading ? "Loading..." : "Refresh"}
+          </button>
+        </div>
       </header>
       {error && <div className="text-red-500 p-2">{error}</div>}
 
