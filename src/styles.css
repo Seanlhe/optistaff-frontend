@@ -19,6 +19,15 @@
   --color-ring: hsl(240 10% 3.9%);
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(240 10% 3.9%);
+  @keyframes slide {
+    from{
+      transform: translateX(0);
+    }to{
+      transform: translateX(-100%);
+    }
+}
+  --animate-slide: slide 4s infinite linear;
+  
   
   --color-primary: hsl(240 5.9% 10%);
   --color-primary-foreground: hsl(0 0% 98%);
