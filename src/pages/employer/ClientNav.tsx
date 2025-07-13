@@ -18,13 +18,13 @@ export default function ClientNav(){
     }
     
     return(
-    <div className='box-border col-span-1 min-h-screen m flex flex-col gap-1 bg-gradient-to-b from-[#0A32A9] to-[#3767F3] px-4 py-8'>
+    <div id="navbar-container" className='sticky top-0 box-border col-span-1 h-screen flex flex-col gap-1 bg-gradient-to-b from-[#0A32A9] to-[#3767F3] px-4 py-8'>
         <div className = 'flex flex-col gap-1'>
             <h1 className = 'font-montserrat-smb text-white text-center text-3xl' >OptiStaff</h1>
             <h2 className = 'font-montserrat text-white text-center text-xl mb-8'>Client Portal</h2>
             {user && (
-                <p className="text-white text-center text-sm opacity-80 mb-4">
-                    Welcome, {user.email}
+                <p className="text-white text-center text-sm/6 opacity-80 mb-5 font-montserrat">
+                    Welcome, <br/> {user.email}
                 </p>
             )}
         </div>
