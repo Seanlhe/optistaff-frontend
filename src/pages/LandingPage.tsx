@@ -28,10 +28,10 @@ export default function LandingPage(){
                 <p className="text-center font-montserrat-b text-primary-blue text-4xl">Recognised by trusted brands</p>
                 <div id="brands-carousell" className="overflow-hidden whitespace-nowrap">
                     <div className="animate-slide inline-block whitespace-nowrap ml-15">
-                        {images.map((image: string) => {return <img className="mr-15 h-15 inline-block"src={image}/>})}
+                        {images.map((image: string) => {return <img className="mr-15 h-18 inline-block"src={image}/>})}
                     </div>
                     <div className="animate-slide inline-block whitespace-nowrap mr-15">
-                        {images.map((image: string) => {return <img className="mr-15 h-15 inline-block" src={image}/>})}
+                        {images.map((image: string) => {return <img className="mr-15 h-18 inline-block" src={image}/>})}
                     </div>
                 </div>
             </div>
