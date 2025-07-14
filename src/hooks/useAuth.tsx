@@ -6,6 +6,7 @@
 import { supabase } from '../integrations/supabase/client';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -40,7 +41,7 @@ export const useAuth = () => {
   });
 
   // Helper function to update user state
-  const updateUserState = useCallback((user: any, shouldNavigate = false) => {
+  const updateUserState = useCallback((user: SupabaseUser, shouldNavigate = false) => {
     // ✅ Fixed role mapping to match what we send in metadata
     const userType = user.user_metadata?.user_type;
     const role = userType === 'job-seeker' ? 'jobseeker' : 'employer';
@@ -86,8 +87,9 @@ export const useAuth = () => {
         else {
           clearUserState();
           };
-      } catch (error: any) {
-        clearUserState(error.message);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        clearUserState(errorMessage);
       }
     };
     checkUser();
@@ -106,11 +108,12 @@ export const useAuth = () => {
       if (data.user){
         updateUserState(data.user, true); // Navigate after successful login
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
       setAuthState(prev => ({
         ...prev,
         loading: false,
-        error: error.message,
+        error: errorMessage,
       }));
     }
   };
@@ -123,11 +126,12 @@ export const useAuth = () => {
 
       clearUserState();
       navigate('/'); // Navigate to home after logout
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Logout failed';
       setAuthState(prev => ({
         ...prev,
         loading: false,
-        error: error.message,
+        error: errorMessage,
       }));
     }
   };
@@ -150,7 +154,6 @@ export const useAuth = () => {
         password: signupData.password,
         options: {
           data: {
-            // ✅ Fixed field names to match database function expectations
             user_type: signupData.userType === 'jobseeker' ? 'job-seeker' : 'client',
             first_name: signupData.firstName,
             last_name: signupData.lastName,
@@ -165,11 +168,12 @@ export const useAuth = () => {
       if (data.user) {
         updateUserState(data.user, true); 
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Signup failed';
       setAuthState(prev => ({
         ...prev,
         loading: false,
-        error: error.message || 'Signup failed',
+        error: errorMessage,
       }));
     }
   };
