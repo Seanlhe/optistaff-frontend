@@ -13,20 +13,11 @@
  * Related Tables: Manages records in the public.availability table
  */
 
-// TODO: Implement useAvailability hook
 // This hook will manage job seeker availability windows for shift scheduling
-
 import { useState, useCallback } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from './useAuth';
-
-export interface TimeBlock {
-  id?: string;
-  user_id: string;
-  start_time: string; // ISO string
-  end_time: string;   // ISO string
-  submission_cycle: 'PRIMARY' | 'SECONDARY'; // Scheduling cycle
-}
+import { TimeBlock } from '../types/hooks';
 
 export const useAvailability = () => {
 

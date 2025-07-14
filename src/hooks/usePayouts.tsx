@@ -5,10 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
-
-interface Payout {
-  // TODO: Define payout interface
-}
+import { Payout } from '../types/hooks';
 
 export const usePayouts = () => {
   const [payouts, setPayouts] = useState<Payout[]>([]);

@@ -7,28 +7,7 @@ import { supabase } from '../integrations/supabase/client';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-
-interface User {
-  id: string;
-  email: string;
-  role: 'jobseeker' | 'employer';
-}
-
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-}
-interface SignupData {
-  email: string;
-  password: string;
-  userType: 'jobseeker' | 'employer';
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  companyName?: string;
-}
-
+import { AuthState, SignupData } from '../types/hooks';
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -41,10 +20,60 @@ export const useAuth = () => {
   });
 
   // Helper function to update user state
-  const updateUserState = useCallback((user: SupabaseUser, shouldNavigate = false) => {
-    // ✅ Fixed role mapping to match what we send in metadata
+  const updateUserState = useCallback(async (user: SupabaseUser, shouldNavigate = false) => {
     const userType = user.user_metadata?.user_type;
-    const role = userType === 'job-seeker' ? 'jobseeker' : 'employer';
+    
+    let role: 'jobseeker' | 'employer' | undefined = undefined;
+    
+    if (userType === 'job-seeker' || userType === 'jobseeker') {
+      role = 'jobseeker';
+    } else if (userType === 'client' || userType === 'employer') {
+      role = 'employer';
+    } else if (!userType) {
+      // Fallback: Check database tables to determine role
+      try {
+        const { data: jobSeekerData } = await supabase
+          .from('job_seekers')
+          .select('user_id')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (jobSeekerData) {
+          role = 'jobseeker';
+        } else {
+          // Check if user exists in clients table
+          const { data: clientData } = await supabase
+            .from('clients')
+            .select('client_id')
+            .eq('client_id', user.id)
+            .single();
+            
+          if (clientData) {
+            role = 'employer';
+          }
+          // If neither, default to jobseeker
+        }
+      } catch (error) {
+        console.log('🔍 Auth Debug - Database role check failed, using default');
+      }
+    }
+    
+    // Debug logging
+    console.log('🔍 Auth Debug - User metadata:', user.user_metadata);
+    console.log('🔍 Auth Debug - Extracted userType:', userType);
+    console.log('🔍 Auth Debug - Mapped role:', role);
+    console.log('🔍 Auth Debug - Should navigate:', shouldNavigate);
+    
+    // Only set auth state if role was determined
+    if (!role) {
+      console.log('🔍 Auth Debug - ERROR: No role could be determined for user');
+      setAuthState({
+        user: null,
+        loading: false,
+        error: 'Unable to determine user role',
+      });
+      return;
+    }
     
     setAuthState({
       user: {
@@ -58,7 +87,9 @@ export const useAuth = () => {
 
     // Navigate to appropriate dashboard if needed
     if (shouldNavigate) {
-      navigate(role === 'jobseeker' ? '/employee/preferences' : '/employer/dashboard');
+      const targetRoute = role === 'jobseeker' ? '/employee/preferences' : '/employer/dashboard';
+      console.log('🔍 Auth Debug - Navigating to:', targetRoute);
+      navigate(targetRoute);
     }
   }, [navigate]);
 
@@ -72,8 +103,8 @@ export const useAuth = () => {
   }, []);
 
   useEffect(() => {
-    // check if user is already logged in 
-    const checkUser = async () => {
+    // IIFE to handle async operations directly
+    (async () => {
       try {
         const response = await supabase.auth.getSession();
         const data = response.data;
@@ -81,18 +112,17 @@ export const useAuth = () => {
 
         //if session exists and has a user, set the auth state
         if (session?.user){
-          updateUserState(session.user);
+          await updateUserState(session.user);
         }
         // if no session or user, set user to null and loading to false
         else {
           clearUserState();
-          };
+        }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
         clearUserState(errorMessage);
       }
-    };
-    checkUser();
+    })();
   }, [updateUserState, clearUserState]);
 
   const login = async (email: string, password: string) => {
@@ -106,7 +136,7 @@ export const useAuth = () => {
       if (error) throw error;
       
       if (data.user){
-        updateUserState(data.user, true); // Navigate after successful login
+        await updateUserState(data.user, true); // Navigate after successful login
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
@@ -166,7 +196,7 @@ export const useAuth = () => {
       if (error) throw error;
 
       if (data.user) {
-        updateUserState(data.user, true); 
+        await updateUserState(data.user, true); 
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Signup failed';

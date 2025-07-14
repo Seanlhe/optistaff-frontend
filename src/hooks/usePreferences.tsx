@@ -5,10 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
-
-interface UserPreferences {
-  // TODO: Define user preferences interface
-}
+import { UserPreferences } from '../types/hooks'; // Assuming you have defined UserPreferences type in hooks.ts
 
 export const usePreferences = () => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
