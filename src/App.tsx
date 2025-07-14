@@ -10,6 +10,7 @@ import ClientDashboard from './pages/employer/ClientDashboard'
 import UploadJobs from './pages/employer/UploadJobs'
 import JSLayout from './pages/JSLayout'
 import JSPref from './pages/employee/JSPref'
+import JSDashboard from './pages/employee/JSDashboard'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
@@ -47,6 +48,7 @@ function App() {
             <JSLayout/>
           </ProtectedRoute>
         }>
+          <Route path="dashboard" element={<JSDashboard/>}/>
           <Route path="preferences" element={<JSPref/>}/>
         </Route>
       </Routes>
