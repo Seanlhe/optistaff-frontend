@@ -1,9 +1,9 @@
 import { JSX } from "react";
 import { ClientShiftProps } from "../types/components";
 
-function onClick() {
-  // Handle click event, e.g., navigate to shift details
-  console.log("Shift card clicked");
+interface ClientShiftCardProps extends ClientShiftProps {
+  onShiftClick?: (shift: ClientShiftProps) => void;
+  isSelected?: boolean;
 }
 
 export default function ClientShiftCard({
@@ -17,30 +17,49 @@ export default function ClientShiftCard({
   employeeName,
   filled,
   required,
-}: ClientShiftProps): JSX.Element {
+  onShiftClick,
+  isSelected = false,
+}: ClientShiftCardProps): JSX.Element {
   const isFilled = filled >= required;
   const borderColor = isFilled ? "border-l-green-400" : "border-l-red-500";
   const bgColor = isFilled ? "bg-green-50" : "bg-red-50";
   const statusIcon = isFilled ? "✓" : "ⓘ";
 
+  const handleClick = () => {
+    if (onShiftClick) {
+      onShiftClick({
+        id,
+        startTime,
+        endTime,
+        date,
+        location,
+        title,
+        payRate,
+        employeeName,
+        filled,
+        required,
+      });
+    }
+  };
+
   return (
     <div
-      onClick={onClick}
-      className={`${borderColor} ${bgColor} border-l-4 cursor-pointer p-2 rounded mb-1`}
+      onClick={handleClick}
+      className={`${borderColor} ${bgColor} border-l-4 cursor-pointer p-2 rounded mb-1 transition-all duration-200 ${
+        isSelected ? "ring-2 ring-gray-300 ring-opacity-50" : "hover:shadow-sm"
+      }`}
     >
       <div className="flex justify-between items-start mb-1">
         <span className="text-sm font-medium text-gray-900">{startTime}</span>
         <span className="text-gray-500 text-sm">{statusIcon}</span>
       </div>
 
-      <p className="text-xs font-medium text-gray-900 mb-1">
-        {title} @ {location}
-      </p>
+      <p className="text-xs font-medium text-gray-900 mb-1">{title}</p>
       <div className="flex items-center text-xs text-gray-600">
         <img
-          src="/icons/personicon.svg"
+          src="/icons/person.svg"
           alt="Calendar Icon"
-          className="h-3 w-3 mr-1"
+          className="h-3 w-3 mr-1 brightness-0"
         />
         <span>
           {filled}/{required}

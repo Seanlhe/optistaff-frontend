@@ -82,7 +82,7 @@ export interface ClientShiftProps {
     id: number;
     startTime: string;
     endTime: string;
-    date: number;
+    date: string;
     location: string;
     title: string;
     descrption?: string; // Optional, as it may not be provided
