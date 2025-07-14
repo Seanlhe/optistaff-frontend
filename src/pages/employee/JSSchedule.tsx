@@ -1,6 +1,6 @@
-// import EmployeeShiftDetails from "../../components/EmployeeShiftDetails";
+import EmployeeShiftDetails from "../../components/EmployeeShiftDetails";
+import EmployeeCalendarDay from "../../components/EmployeeCalendarDay";
 import EmployeeCalendarHeader from "../../components/EmployeeCalendarHeader";
-// import EmployeeCalendarDay from "../../components/EmployeeCalendarDay";
 import { EmployeeShiftProps } from "../../types/components";
 import { useState } from "react";
 
@@ -70,7 +70,38 @@ export default function JSSchedule() {
       >
         {/* Calendar Header */}
         <EmployeeCalendarHeader days={days} />
+
+        {/* Calendar Days */}
+        <div className="grow grid grid-cols-7 divide-x-2 divide-gray-200 px-4 pt-2 pb-4">
+          {days.map((day) => (
+            <EmployeeCalendarDay
+              key={day.date}
+              day={day}
+              shiftData={shiftData}
+              selectedShift={selectedShift}
+              onShiftClick={handleShiftClick}
+            />
+          ))}
+        </div>
       </div>
+
+      {/* Shift Details Overlay */}
+      {selectedShift && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-opacity-50"
+          onClick={handleCloseDetails}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-auto overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <EmployeeShiftDetails
+              {...selectedShift}
+              onClose={handleCloseDetails}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

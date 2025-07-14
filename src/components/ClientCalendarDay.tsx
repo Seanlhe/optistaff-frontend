@@ -4,7 +4,7 @@ import {
   filterShiftsByDateAndLocation,
   sortShiftsByTime,
   formatDateDisplay,
-} from "../utils/ClientShiftUtils";
+} from "../utils/clientShifts";
 
 interface CalendarDayProps {
   day: { name: string; date: string };

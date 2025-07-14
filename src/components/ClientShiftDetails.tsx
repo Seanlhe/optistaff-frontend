@@ -17,8 +17,6 @@ export default function ClientShiftDetails({
   required,
   onClose,
 }: ClientShiftDetailsProps) {
-  const isFilled = filled >= required;
-
   return (
     <div className="bg-white p-4 rounded-lg">
       {/* Header with Close Button */}
