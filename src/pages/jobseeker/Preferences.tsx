@@ -9,17 +9,17 @@ const Preferences = () => {
   const [activeTab, setActiveTab] = useState<Tab>('PreferencesForm');
 
   return (
-    <div className="bg-[color:var(--primary-gray)] min-h-screen p-6">
+    <div className="bg-primary-gray min-h-screen p-6">
       <div className="max-w-5xl mx-auto">
         {/* The tab buttons container */}
         <div className="py-8 mb-6">
-          <div className="inline-flex p-1 bg-[color:var(--secondary-gray)] rounded-lg gap-1">
+          <div className="inline-flex p-1 bg-secondary-gray rounded-lg gap-1">
             <button
               onClick={() => setActiveTab('PreferencesForm')}
-              className={`px-3 py-2 rounded-lg font-semibold text-[color:var(--text-main)] ${
+              className={`px-3 py-2 rounded-lg font-semibold text-main ${
                 activeTab === 'PreferencesForm'
-                  ? 'bg-[color:var(--card-color)] shadow'
-                  : 'hover:bg-[color:var(--accent-gray)]'
+                  ? 'bg-card-color shadow'
+                  : 'hover:bg-accent-gray'
               }`}
             >
               Preferences
@@ -27,10 +27,10 @@ const Preferences = () => {
 
             <button
               onClick={() => setActiveTab('Availability')}
-              className={`px-3 py-2 rounded-lg font-semibold text-[color:var(--text-main)] ${
+              className={`px-3 py-2 rounded-lg font-semibold text-main ${
                 activeTab === 'Availability'
-                  ? 'bg-[color:var(--card-color)] shadow'
-                  : 'hover:bg-[color:var(--accent-gray)]'
+                  ? 'bg-card-color shadow'
+                  : 'hover:bg-accent-gray'
               }`}
             >
               Availability

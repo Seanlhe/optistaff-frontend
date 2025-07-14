@@ -117,13 +117,13 @@ export const CalendarEvent = ({
     <div
       ref={eventRef}
       className={`
-        absolute left-1 right-1 rounded border p-1 cursor-grab select-none
+        absolute left-1 right-1 rounded border-card-color p-1 cursor-grab select-none
         ${isSelected
-          ? 'bg-blue-200 border-blue-500'
-          : 'bg-blue-100 border-blue-300'
+          ? 'bg-primary-blue border-primary-blue'
+          : 'bg-secondary-blue border-secondary-blue'
         }
         ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
-        hover:bg-blue-150
+        hover:bg-accent-blue
       `}
       style={{
         top: `${topOffset}px`,
@@ -136,14 +136,14 @@ export const CalendarEvent = ({
       onFocus={() => setIsSelected(true)}
       onBlur={() => setIsSelected(false)}
     >
-      <div className="text-xs text-muted-foreground overflow-hidden h-full">
+      <div className="text-xs text-secondary-text overflow-hidden h-full">
         {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
       </div>
       <div
-        className="absolute bottom-0 left-0 right-0 h-2 bg-blue-400 cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
+        className="absolute bottom-0 left-0 right-0 h-2 bg-primary-blue-hover cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
         onMouseDown={handleResizeStart}
       />
     </div>
   );
 };
-export default CalendarEvent; 
+export default CalendarEvent;

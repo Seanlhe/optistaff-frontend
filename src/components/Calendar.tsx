@@ -144,38 +144,38 @@ const Calendar = () => {
   };
 
   return (
-    <div>
-      <header className="flex items-center justify-between p-4 border-b">
+    <div className="bg-primary-blue/5">
+      <header className="flex items-center justify-between p-4 border-b bg-card-color">
         <div className="flex items-center">
           <button
-            className="p-2 rounded hover:bg-accent"
+            className="p-2 rounded hover:bg-primary-blue/10"
             onClick={() => navigateWeek("prev")}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5 text-primary-blue" />
           </button>
 
           <button
-            className="p-2 rounded hover:bg-accent"
+            className="p-2 rounded hover:bg-primary-blue/10"
             onClick={() => navigateWeek("next")}
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-5 w-5 text-primary-blue" />
           </button>
 
-          <h1 className="text-xl font-semibold mx-4 text-center">
+          <h1 className="text-xl font-semibold mx-4 text-center text-main">
             {format(weekStart, "MMMM yyyy")}
           </h1>
         </div>
 
         <div className="flex items-center gap-2">
           <button
-            className="px-4 py-2 text-sm border rounded hover:bg-muted"
+            className="px-4 py-2 text-sm border rounded hover:bg-primary-blue/10 text-main"
             onClick={() => setCurrentWeek(new Date())}
           >
             Today
           </button>
 
           <button
-            className="px-4 py-2 text-sm border rounded bg-blue-500 text-white hover:bg-blue-600"
+            className="px-4 py-2 text-sm border rounded bg-primary-blue text-white hover:bg-primary-blue-hover"
             onClick={handleSaveAvailability}
             disabled={saveLoading}
           >
@@ -183,7 +183,7 @@ const Calendar = () => {
           </button>
 
           <button
-            className="px-4 py-2 text-sm border rounded bg-gray-500 text-white hover:bg-gray-600"
+            className="px-4 py-2 text-sm border rounded bg-primary-blue/10 text-main hover:bg-primary-blue/20"
             onClick={handleRefreshAvailability}
             disabled={fetchLoading}
           >
@@ -191,19 +191,19 @@ const Calendar = () => {
           </button>
         </div>
       </header>
-      {error && <div className="text-red-500 p-2">{error}</div>}
+      {error && <div className="text-error-red bg-card-color p-2">{error}</div>}
 
-      <div className="flex flex-1 overflow-auto">
+      <div className="flex flex-1 overflow-auto bg-card-color">
         {/* flex-1: Makes this container expand to fill all available vertical screen space. */}
         {/* overflow-auto: If the content gets too big, this will automatically add scrollbars. */}
         {/* Time Column (Left Side) */}
-        <div className="w-16 border-r bg-muted">
+        <div className="w-16 border-r bg-primary-blue/10">
           <div className="h-12 border-b"></div>
 
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-12 flex items-center justify-center text-xs text-muted-foreground"
+              className="h-12 flex items-center justify-center text-xs text-muted"
             >
               {format(set(new Date(), { hours: hour, minutes: 0 }), "H:mm")}
             </div>
@@ -219,19 +219,19 @@ const Calendar = () => {
           {weekDays.map((day, index) => (
             <div
               key={day.toISOString()}
-              className="h-12 border-b border-r text-center p-1"
+              className="h-12 border-b border-r text-center p-1 bg-card-color"
             >
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted">
                 {DAYS_OF_WEEK[index]}
               </div>
-              <div className="text-lg">{format(day, "d")}</div>
+              <div className="text-lg text-main">{format(day, "d")}</div>
             </div>
           ))}
 
           {/* Time Slots for each day */}
           {/* relative:  place events on top of this grid. */}
           {weekDays.map((day) => (
-            <div key={day.toISOString()} className="relative border-r">
+            <div key={day.toISOString()} className="relative border-r bg-card-color">
               {HOURS.map((hour) => (
                 <div
                   key={hour}
@@ -258,4 +258,4 @@ const Calendar = () => {
 };
 
 export { Calendar };
-export default Calendar;  
+export default Calendar;

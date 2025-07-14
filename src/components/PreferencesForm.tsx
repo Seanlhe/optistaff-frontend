@@ -1,34 +1,21 @@
-
 import { Map } from "./Map";
 import PreferencesJobType from "./PreferencesJobType";
+import PreferencesMaximum from "./PreferencesMaximum";
 import PreferencesPay from "./PreferencesPay";
 
 const PreferencesForm = () => {
   return (
-    
-    <div>
-      <div>
-        <label className="block text-sm mb-2">
-          Maximum Hours per Week
-        </label>
-        <input 
-          type="number"  
-          className="p-2 border rounded-lg w-24 mb-5"
-          min="1"
-          max="44"
-          placeholder="44"
-        />
-      </div>
+    <div className="bg-card-color p-8 rounded-xl shadow mb-8">
+      <PreferencesMaximum />
       <PreferencesPay />
       <PreferencesJobType />
- 
       <Map />
-      <div className="flex justify-end mb-4">
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+      <div className="flex justify-end mt-6">
+        <button className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-primary-blue-hover">
           Submit
         </button>
       </div>
-  </div>
+    </div>
   );
 };
 
