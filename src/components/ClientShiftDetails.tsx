@@ -73,14 +73,6 @@ export default function ClientShiftDetails({
         <p className="text-lg font-medium text-gray-900">
           {filled} / {required}
         </p>
-
-        <p
-          className={`text-lg font-medium ${
-            isFilled ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {isFilled ? "Full" : "Understaffed"}
-        </p>
       </div>
     </div>
   );
