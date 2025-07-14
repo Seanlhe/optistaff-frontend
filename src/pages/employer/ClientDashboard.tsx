@@ -60,9 +60,11 @@ function DashboardUpcoming({data}: {data: ShiftCardProps[]}){
             <img className="h-7 w-7"src="/icons/calendar.svg"/>
             <h1 className="text-3xl text-secondary-text font-montserrat-b">Upcoming Shifts</h1>
         </div>
-        <ul className="flex flex-col gap-8">
-            {data.map((prop) => <li><ShiftCard {...prop}/></li>)}
-        </ul>
+        <div className="overflow-hidden">
+            <ul className="z-50 flex flex-col gap-8 animate-slidedown">
+                {data.map((prop) => <li><ShiftCard {...prop}/></li>)}
+            </ul>
+        </div>
     </div>
 }
 
@@ -99,8 +101,10 @@ function DashboardInProgress({data}: {data: ShiftCardProps[]}){
             <img className="h-7 w-7"src="/icons/calendar.svg"/>
             <h1 className="text-3xl text-secondary-text font-montserrat-b">In Progress</h1>
         </div>
-        <ul className="flex flex-col gap-8">
-            {data.map((prop) => <li><ShiftCard {...prop}/></li>)}
-        </ul>
+        <div className="overflow-hidden">
+            <ul className="flex flex-col gap-8 animate-slidedown">
+                {data.map((prop) => <li><ShiftCard {...prop}/></li>)}
+            </ul>
+        </div>
     </div>
 }

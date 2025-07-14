@@ -35,25 +35,25 @@ export default function LandingPage(){
                     </div>
                 </div>
             </div>
-            <div id="landing-benefits" className="flex flex-row justify-between bg-landing-bg gap-25 px-37.5 py-15">
+            <div id="landing-benefits" className="grid grid-cols-3 justify-between bg-landing-bg gap-25 px-37.5 py-15">
                 <div className="flex flex-col gap-8">
                     <img className="h-12 w-12" src="/icons/calendaricon.svg"/>
-                    <p className="font-montserrat-smb text-2xl text-black">Hands free rostering</p>
-                    <p className="font-montserrat text-xl text-black">
+                    <p className="font-montserrat-smb text-justify text-2xl text-black">Hands free rostering</p>
+                    <p className="font-montserrat text-justify text-xl text-black">
                     We take care of scheduling so you can focus on what matters most.
                     </p>
                 </div>
                 <div className="flex flex-col gap-8">
                     <img className="h-12 w-12" src="/icons/calendaricon.svg"/>
-                    <p className="font-montserrat-smb text-2xl text-black">Work with trusted staff</p>
-                    <p className="font-montserrat text-xl text-black">
+                    <p className="font-montserrat-smb text-justify text-2xl text-black">Work with trusted staff</p>
+                    <p className="font-montserrat text-justify text-xl text-black">
                     We match you with employees based on past ratings, your preferences and job requirements.
                     </p>
                 </div>
                 <div className="flex flex-col gap-8">
                     <img className="h-12 w-12" src="/icons/calendaricon.svg"/>
-                    <p className="font-montserrat-smb text-2xl text-black">Reliable replacements, fast</p>
-                    <p className="font-montserrat text-xl text-black">
+                    <p className="font-montserrat-smb text-justify text-2xl text-black">Reliable replacements, fast</p>
+                    <p className="font-montserrat text-justify text-xl text-black">
                     If someone drops out, we’ll quickly find a suitable replacement so your operations stay smooth.
                     </p>
                 </div>
@@ -106,9 +106,9 @@ export default function LandingPage(){
         <div id="landing-end" className="bg-white px-37.5 pt-15 pb-4 flex flex-row justify-between">
                 <p className="text-primary-blue text-xl font-montserrat">OptiStaff Pte Ltd © 2025</p>
                 <div className="flex flex-row gap-33">
-                    <button className="hover:cursor-pointer hover:underline text-primary-blue text-xl font-montserrat">Privacy Policy</button>
-                    <button className="hover:cursor-pointer hover:underline text-primary-blue text-xl font-montserrat">Terms of Use</button>
-                    <Link className="hover:cursor-pointer hover:underline text-primary-blue text-xl font-montserrat" to="/contact">Contact Us</Link>
+                    <button className="hover:cursor-pointer hover:underline text-primary-blue text-l font-montserrat">Privacy Policy</button>
+                    <button className="hover:cursor-pointer hover:underline text-primary-blue text-l font-montserrat">Terms of Use</button>
+                    <Link className="hover:cursor-pointer hover:underline text-primary-blue text-l font-montserrat" to="/contact">Contact Us</Link>
                 </div>
         </div>
     </div>
