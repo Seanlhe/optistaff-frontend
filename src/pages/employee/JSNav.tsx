@@ -29,7 +29,7 @@ export default function JSNav() {
   }
 
   return (
-    <div className="sticky top-0 box-border col-span-1 min-h-screen flex flex-col gap-1 bg-gradient-to-b from-[#0A32A9] to-[#3767F3] px-4 py-8">
+    <div className="sticky top-0 box-border col-span-1 min-h-screen flex flex-col gap-1 bg-gradient-to-b from-[#324d3e] to-[#738a6b] px-4 py-8">
       <div className="flex flex-col gap-1">
         <h1 className="font-montserrat-smb text-white text-center text-3xl">
           OptiStaff

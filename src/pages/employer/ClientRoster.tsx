@@ -72,7 +72,7 @@ export default function ClientRoster() {
 
   return (
     <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-4">
-      <p className="text-4xl text-secondary-text font-montserrat-b">
+      <p className="text-3xl text-secondary-text font-montserrat-b">
         Weekly Roster
       </p>
 

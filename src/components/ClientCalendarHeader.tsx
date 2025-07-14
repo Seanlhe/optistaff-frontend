@@ -37,18 +37,19 @@ export default function ClientCalendarHeader({
       </div>
 
       <h2 className="text-2xl font-semibold">{getMonthYear()}</h2>
-
-      <select
-        className="bg-gray-50 border border-gray-300 px-3 py-1 rounded focus:outline-none w-48"
-        value={selectedLocation}
-        onChange={(e) => onLocationChange(e.target.value)}
-      >
-        {availableLocations.map((location) => (
-          <option key={location} value={location}>
-            {location}
-          </option>
-        ))}
-      </select>
+      <form className="relative w-48 bg-gray-50 border border-gray-300 px-3 py-1 rounded focus:outline-none">
+        <select
+          className="w-full outline-none"
+          value={selectedLocation}
+          onChange={(e) => onLocationChange(e.target.value)}
+        >
+          {availableLocations.map((location) => (
+            <option key={location} value={location}>
+              {location}
+            </option>
+          ))}
+        </select>
+      </form>
     </div>
   );
 }
