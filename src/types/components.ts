@@ -20,6 +20,7 @@ export interface ShiftCardProps{
 export interface InputFieldProps{
     name: string,
     title: string,
+    placeholder?: string,
     className?: string,
     type?: string,
     valid?: boolean,
