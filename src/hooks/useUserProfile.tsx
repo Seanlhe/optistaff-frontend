@@ -5,10 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
-
-interface UserProfile {
-  // TODO: Define user profile interface
-}
+import { UserProfile } from '../types/hooks'; 
 
 export const useUserProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);

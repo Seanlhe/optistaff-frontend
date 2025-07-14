@@ -7,28 +7,7 @@ import { supabase } from '../integrations/supabase/client';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-
-interface User {
-  id: string;
-  email: string;
-  role: 'jobseeker' | 'employer';
-}
-
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-}
-interface SignupData {
-  email: string;
-  password: string;
-  userType: 'jobseeker' | 'employer';
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  companyName?: string;
-}
-
+import { AuthState, SignupData } from '../types/hooks';
 
 export const useAuth = () => {
   const navigate = useNavigate();
