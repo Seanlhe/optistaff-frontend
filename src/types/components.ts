@@ -91,3 +91,13 @@ export interface ClientShiftProps {
     filled: number; 
     required: number;
 }
+
+export interface EmployeeShiftProps {
+    id: number;
+    startTime: string;
+    endTime: string;
+    date: string;
+    location: string;
+    title: string;
+    payRate: number;
+}
