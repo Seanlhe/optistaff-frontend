@@ -109,19 +109,20 @@ const PasswordChangeModal = ({
 
           <div className="flex gap-2 pt-4">
             <Button 
-              type="submit" 
-              className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 rounded-lg py-2 font-montserrat"
-              disabled={isLoading || Object.keys(passwordErrors).some(key => passwordErrors[key])}
-            >
-              {isLoading ? 'Updating...' : 'Update Password'}
-            </Button>
-            <Button 
               type="button" 
               className="flex-1 bg-secondary-bg text-primary-text hover:bg-secondary-bg/80 border border-border rounded-lg py-2 font-montserrat"
               onClick={onClose}
             >
               Cancel
             </Button>
+            <Button 
+              type="submit" 
+              className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 rounded-lg py-2 font-montserrat"
+              disabled={isLoading || Object.keys(passwordErrors).some(key => passwordErrors[key])}
+            >
+              {isLoading ? 'Updating...' : 'Update Password'}
+            </Button>
+            
           </div>
         </form>
       </div>

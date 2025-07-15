@@ -26,12 +26,16 @@ export const TemplateNameDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-secondary-text/50 flex items-center justify-center z-50">
-      <div className="bg-card-color rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border">
+    <div
+      className="fixed inset-0 bg-secondary-text/50 flex items-center justify-center z-50"
+    >
+      <div
+        className="bg-card-color rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border"
+      >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-primary-text">Save Template</h2>
           <button
-            onClick={handleClose}
+            onClick={handleClose} // Close popup only when clicking the X button
             className="p-1 hover:bg-secondary-bg rounded transition-colors"
             disabled={loading}
           >
