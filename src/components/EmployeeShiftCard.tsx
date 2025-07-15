@@ -34,7 +34,7 @@ export default function EmployeeShiftCard({
   return (
     <div
       onClick={handleClick}
-      className={`bg-[#d9e5d7] cursor-pointer p-2 rounded mb-1 transition-all duration-200 ${
+      className={`bg-card-color cursor-pointer p-2 rounded mb-1 transition-all duration-200 ${
         isSelected ? "ring-2 ring-gray-300 ring-opacity-50" : "hover:shadow-sm"
       }`}
     >

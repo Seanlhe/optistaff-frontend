@@ -6,14 +6,14 @@ import { Map } from "./Map";
 
 const PreferencesForm = () => {
   return (
-    <div>
+    <div className="bg-white rounded-xl p-6">
       <Map />
-      <div className="flex justify-end mb-4">
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+      <div className="flex justify-end">
+        <button className="px-4 py-2 bg-button-color text-white rounded-md hover:bg-blue-700">
           Submit
         </button>
       </div>
-  </div>
+    </div>
   );
 };
 

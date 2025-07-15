@@ -4,15 +4,17 @@
   --color-primary-text: oklch(0.16 0 0);             /* hsl(0, 0%, 5%) */
   --color-secondary-text: oklch(0.43 0 0);           /* hsl(0, 0%, 30%) */
   --color-primary-blue: oklch(0.48 0.27 263.26);     /* hsl(227, 70%, 50%) */
-  --color-card-color: oklch(1 0 0);                  /* white */
+  --color-card-color: #d9e5d7;      
+  --color-button-color: #8ea58b;
+  --color-button-hover: #738a6e;
+  --color-card-red: #E4B7B7;
+  --color-card-red-accent: #C47C7C;
   --color-bg: oklch(0.96 0.01 262.41);               /* hsl(228, 71%, 97%) */
   --color-secondary-bg: oklch(0.93 0.02 262.44);     /* hsl(228, 40%, 95%) */
   /* --color-tertiary-bg: oklch(0.96 0.01 262.41);      hsl(228, 71%, 97%) */
   --color-tertiary-bg: #d9e5e7;
   /* --color-gradient-start: oklch(0.36 0.26 266.63);   hsl(225, 89%, 35%) */
   /* --color-gradient-end: oklch(0.65 0.18 267.37);     hsl(225, 89%, 58%) */
-  --color-gradient-start: #9fbefc;
-  --color-gradient-end: #c1d3fe;
   --color-landing-bg: hsl(197, 60%, 86%);
   --font-montserrat: "montserrat-medium";
   --font-montserrat-smb: "montserrat-semibold";
@@ -62,7 +64,7 @@
   --secondary-text: hsl(0, 0%, 30%);
   --primary-blue: hsl(227, 70%, 50%);
   --card-color: white;
-  --bg: hsl(228, 71%, 97%);
+  /* --bg: hsl(228, 71%, 97%); */
   --secondary-bg: hsl(228, 40%, 95%);
   font-size: 16px;
 }

@@ -32,13 +32,20 @@ const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   // State to hold the events (availability slots)
-  const [events, setEvents] = useState<Event[]>([]); 
+  const [events, setEvents] = useState<Event[]>([]);
 
   // Track if we've loaded initial data to prevent refetching
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
 
   // Use the custom hook to manage availability data
-  const { getAvailability, setAvailability, fetchLoading, saveLoading, loading, error } = useAvailability();
+  const {
+    getAvailability,
+    setAvailability,
+    fetchLoading,
+    saveLoading,
+    loading,
+    error,
+  } = useAvailability();
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
 
@@ -51,7 +58,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchAvailability = async () => {
       if (loading || hasLoadedInitialData) return; // Don't fetch if still loading auth or already loaded
-      
+
       try {
         const timeBlocks = await getAvailability(CYCLE);
         setEvents(
@@ -63,10 +70,10 @@ const Calendar = () => {
         );
         setHasLoadedInitialData(true); // Mark as loaded to prevent refetching
       } catch (err) {
-        console.error('Error fetching availability:', err);
+        console.error("Error fetching availability:", err);
       }
     };
-    
+
     // Only fetch when auth loading is complete and we haven't loaded yet
     if (!loading && !hasLoadedInitialData) {
       fetchAvailability();
@@ -87,15 +94,15 @@ const Calendar = () => {
   const handleUpdateEvent = (updatedEvent: Event) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
-        event.id === updatedEvent.id ? updatedEvent : event,
-      ),
+        event.id === updatedEvent.id ? updatedEvent : event
+      )
     );
   };
 
   // function to delete a slot
   const handleDeleteEvent = (eventId: string) => {
     setEvents((prevEvents) =>
-      prevEvents.filter((event) => event.id !== eventId),
+      prevEvents.filter((event) => event.id !== eventId)
     );
   };
 
@@ -107,16 +114,16 @@ const Calendar = () => {
         end_time: event.endTime.toISOString(),
         submission_cycle: CYCLE,
       }));
-      
+
       const success = await setAvailability(timeBlocks);
-      
+
       if (success) {
         // Optionally refresh data from database after successful save
         // For now, we'll keep the local state as is since it should match the saved data
-        console.log('Availability saved successfully');
+        console.log("Availability saved successfully");
       }
     } catch (err) {
-      console.error('Error saving availability:', err);
+      console.error("Error saving availability:", err);
     }
   };
 
@@ -132,7 +139,7 @@ const Calendar = () => {
         }))
       );
     } catch (err) {
-      console.error('Error refreshing availability:', err);
+      console.error("Error refreshing availability:", err);
     }
   };
 
@@ -145,7 +152,7 @@ const Calendar = () => {
 
   return (
     <div>
-      <header className="flex items-center justify-between p-4 border-b">
+      <header className="flex items-center justify-between mt-2 pb-3 border-b">
         <div className="flex items-center">
           <button
             className="p-2 rounded hover:bg-accent"
@@ -175,7 +182,7 @@ const Calendar = () => {
           </button>
 
           <button
-            className="px-4 py-2 text-sm border rounded bg-blue-500 text-white hover:bg-blue-600"
+            className="px-4 py-2 text-sm border rounded bg-button-color text-white hover:bg-button-hover"
             onClick={handleSaveAvailability}
             disabled={saveLoading}
           >
@@ -183,7 +190,7 @@ const Calendar = () => {
           </button>
 
           <button
-            className="px-4 py-2 text-sm border rounded bg-gray-500 text-white hover:bg-gray-600"
+            className="px-4 py-2 text-sm border rounded bg-gray-400 text-white hover:bg-gray-600"
             onClick={handleRefreshAvailability}
             disabled={fetchLoading}
           >
@@ -191,19 +198,19 @@ const Calendar = () => {
           </button>
         </div>
       </header>
-      {error && <div className="text-red-500 p-2">{error}</div>}
+      {error && <div className="text-color-red p-2">{error}</div>}
 
       <div className="flex flex-1 overflow-auto">
         {/* flex-1: Makes this container expand to fill all available vertical screen space. */}
         {/* overflow-auto: If the content gets too big, this will automatically add scrollbars. */}
         {/* Time Column (Left Side) */}
-        <div className="w-16 border-r bg-muted">
+        <div className="w-16 border-r border-l bg-muted">
           <div className="h-12 border-b"></div>
 
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-12 flex items-center justify-center text-xs text-muted-foreground"
+              className="h-12 flex items-center justify-center text-sm text-muted-foreground"
             >
               {format(set(new Date(), { hours: hour, minutes: 0 }), "H:mm")}
             </div>
@@ -258,4 +265,4 @@ const Calendar = () => {
 };
 
 export { Calendar };
-export default Calendar;  
+export default Calendar;

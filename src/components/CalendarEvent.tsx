@@ -32,14 +32,17 @@ export const CalendarEvent = ({
   // Handle keyboard delete
   useEffect(() => {
     const handleKeyDown = (keyEvent: KeyboardEvent) => {
-      if (isSelected && (keyEvent.key === 'Delete' || keyEvent.key === 'Backspace')) {
+      if (
+        isSelected &&
+        (keyEvent.key === "Delete" || keyEvent.key === "Backspace")
+      ) {
         onDelete(event.id);
       }
     };
 
     if (isSelected) {
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [isSelected, event.id, onDelete]);
 
@@ -53,7 +56,9 @@ export const CalendarEvent = ({
     if (
       eventRef.current &&
       mouseEvent.target instanceof Node &&
-      eventRef.current.querySelector('.resize-handle')?.contains(mouseEvent.target)
+      eventRef.current
+        .querySelector(".resize-handle")
+        ?.contains(mouseEvent.target)
     ) {
       return;
     }
@@ -66,22 +71,25 @@ export const CalendarEvent = ({
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const deltaY = moveEvent.clientY - startY;
-      const minutesMoved = Math.round((deltaY / HOUR_HEIGHT) * 60 / 15) * 15;
+      const minutesMoved = Math.round(((deltaY / HOUR_HEIGHT) * 60) / 15) * 15;
       const deltaX = moveEvent.clientX - startX;
       const daysMoved = Math.round(deltaX / DAY_WIDTH);
-      const newStart = addDays(addMinutes(originalStart, minutesMoved), daysMoved);
+      const newStart = addDays(
+        addMinutes(originalStart, minutesMoved),
+        daysMoved
+      );
       const newEnd = addDays(addMinutes(originalEnd, minutesMoved), daysMoved);
       onUpdate({ ...event, startTime: newStart, endTime: newEnd });
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   // Handle resizing
@@ -93,18 +101,19 @@ export const CalendarEvent = ({
       if (!eventRef.current) return;
       const rect = eventRef.current.getBoundingClientRect();
       const newHeight = Math.max(HOUR_HEIGHT, moveEvent.clientY - rect.top);
-      const newDuration = Math.round((newHeight / HOUR_HEIGHT) * 60 / 15) * 15;
+      const newDuration =
+        Math.round(((newHeight / HOUR_HEIGHT) * 60) / 15) * 15;
       const newEndTime = addMinutes(event.startTime, newDuration);
       onUpdate({ ...event, endTime: newEndTime });
     };
 
     const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   // Handle double-click delete
@@ -118,12 +127,9 @@ export const CalendarEvent = ({
       ref={eventRef}
       className={`
         absolute left-1 right-1 rounded border p-1 cursor-grab select-none
-        ${isSelected
-          ? 'bg-blue-200 border-blue-500'
-          : 'bg-blue-100 border-blue-300'
-        }
-        ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
-        hover:bg-blue-150
+        ${isSelected ? "bg-card-color" : "bg-button-color"}
+        ${isDragging ? "opacity-50 cursor-grabbing" : ""}
+      
       `}
       style={{
         top: `${topOffset}px`,
@@ -140,10 +146,10 @@ export const CalendarEvent = ({
         {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
       </div>
       <div
-        className="absolute bottom-0 left-0 right-0 h-2 bg-blue-400 cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
+        className="absolute bottom-0 left-0 right-0 h-2 bg-button-hover cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
         onMouseDown={handleResizeStart}
       />
     </div>
   );
 };
-export default CalendarEvent; 
+export default CalendarEvent;

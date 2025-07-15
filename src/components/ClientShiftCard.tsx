@@ -21,8 +21,10 @@ export default function ClientShiftCard({
   isSelected = false,
 }: ClientShiftCardProps): JSX.Element {
   const isFilled = filled >= required;
-  const borderColor = isFilled ? "border-l-green-400" : "border-l-red-500";
-  const bgColor = isFilled ? "bg-green-50" : "bg-red-50";
+  const borderColor = isFilled
+    ? "border-l-button-color"
+    : "border-l-card-red-accent";
+  const bgColor = isFilled ? "bg-card-color" : "bg-card-red";
   const statusIcon = isFilled ? "✓" : "ⓘ";
 
   const handleClick = () => {
