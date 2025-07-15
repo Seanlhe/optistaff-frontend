@@ -7,28 +7,31 @@
 ### Technology Stack
 
 - **Frontend Framework**: React 18.3.1 with TypeScript
-- **Build Tool**: Vite 
-- **State Management**: TanStack React Query (v5.56.2)
-- **Styling**: Tailwind CSS 4.x with custom theming
-- **Backend**: Supabase (Authentication & Database)
-- **Routing**: React Router DOM v6.26.2
-- **Maps**: Leaflet & React Leaflet
-- **UI Components**: Radix UI primitives
-- **Date Handling**: date-fns v3.6.0
+- **Build Tool**: Vite with optimized development workflow
+- **State Management**: TanStack React Query (v5.56.2) for server state
+- **Styling**: Tailwind CSS 4.x with custom theming and utility classes
+- **Backend**: Supabase (Authentication, Database & Real-time subscriptions)
+- **Routing**: React Router DOM v6.26.2 with protected routes
+- **Maps**: Leaflet & React Leaflet for interactive location features
+- **UI Components**: Radix UI primitives for accessible component foundation
+- **Date Handling**: date-fns v3.6.0 for date manipulation and formatting
+- **Icons**: Lucide React for consistent iconography
+- **Utilities**: clsx, tailwind-merge for className management
 
 ## Root Directory Structure
 
 ```
 optistaff-main/
-├── docs/                          # Project documentation
+├── docs/                          # Project documentation & planning
 ├── public/                        # Static assets
 ├── src/                          # Source code
 ├── supabase/                     # Supabase configuration
-├── tests/                        # Test files
+├── tests/                        # Test files (placeholder)
 ├── package.json                  # Project dependencies and scripts
 ├── vite.config.ts               # Vite configuration
 ├── tailwind.config.ts           # Tailwind CSS configuration
 ├── tsconfig.json                # TypeScript configuration
+├── eslint.config.js             # ESLint configuration
 └── README.md                    # Project readme
 ```
 
@@ -44,11 +47,13 @@ optistaff-main/
 ### Components (`src/components/`)
 
 #### Core Components
-- **`Availability.tsx`**: Availability management interface
-- **`Calendar.tsx`**: Calendar view for scheduling
+- **`Availability.tsx`**: Availability management interface with calendar integration
+- **`Calendar.tsx`**: Calendar view for scheduling with useAvailability hook integration
 - **`CalendarEvent.tsx`**: Individual calendar event component
 - **`Map.tsx`**: Interactive map using Leaflet for location selection
 - **`ProtectedRoute.tsx`**: Route protection based on authentication
+- **`AuthDebugger.tsx`**: Development authentication debugging component
+- **`NavItem.tsx`**: Navigation item component for sidebars
 
 #### UI Components (`src/components/ui/`)
 - **`button.tsx`**: Reusable button component with variants
@@ -75,12 +80,28 @@ optistaff-main/
 
 ### Custom Hooks (`src/hooks/`)
 
+**Authentication & User Management:**
 - **`useAuth.tsx`**: Authentication state management
   - User login/logout
   - Session management
   - Role-based access control
+  - Real-time auth state synchronization
+- **`useUserProfile.tsx`**: User profile data management
+- **`usePreferences.tsx`**: Job seeker preferences management
+
+**Scheduling & Availability:**
 - **`useAvailability.tsx`**: Availability data management
+  - Calendar integration
+  - Time slot management
+  - Availability saving and retrieval
 - **`useShifts.tsx`**: Shift data management and operations
+  - Shift listing and filtering
+  - Shift assignment operations
+
+**Business Operations:**
+- **`useAssignments.tsx`**: Job assignment management
+- **`usePayouts.tsx`**: Payment and payout tracking
+- **`useFeedback.tsx`**: User feedback and rating system
 
 ### Pages (`src/pages/`)
 
@@ -111,10 +132,12 @@ optistaff-main/
 
 ### Integrations (`src/integrations/`)
 
-- **`supabase/client.ts`**: Supabase client configuration
-  - Database connection
-  - Authentication setup
+#### Supabase Integration (`src/integrations/supabase/`)
+- **`client.ts`**: Supabase client configuration
+  - Database connection setup
+  - Authentication configuration
   - Real-time subscriptions
+  - Environment-based configuration
 
 ### Utilities (`src/utils/`)
 
@@ -148,6 +171,22 @@ optistaff-main/
 
 ### Fonts (`public/fonts/`)
 - Montserrat font family variants: Bold, Italic, Medium, SemiBold
+
+## Documentation (`docs/`)
+
+### Project Documentation Files
+- **`project-structure.md`**: This comprehensive project structure documentation
+- **`auth-page-enhancement-plan.md`**: Detailed plan for authentication page enhancements with Google Maps integration
+- **`comprehensive-integration-plan.md`**: Full integration strategy and implementation plan
+- **`integration-completion-status.md`**: Current status of integration work and progress tracking
+- **`integration-changes-log.md`**: Log of all integration changes and modifications
+
+### Development Branch Documentation
+- **`dev-hooks-auth-branch-changes.md`**: Changes and updates in the authentication hooks development branch
+- **`dev-hooks-avail-branch-changes.md`**: Availability management development branch documentation
+- **`dev-hooks-useShifts-documentation.md`**: Shift management hooks development documentation
+- **`useShifts-merge-demo-branch.md`**: Demo branch merge documentation for shift management
+- **`auth-debugging-guide.md`**: Authentication debugging and troubleshooting guide
 
 ## Configuration Files
 
@@ -207,6 +246,47 @@ optistaff-main/
 4. Domain-specific pages and components
 5. Real-time data synchronization
 
+## Current Development Status
+
+### Recent Major Updates (July 2025)
+
+#### Authentication System Overhaul
+- **Complete authentication refactor** with modern React patterns
+- **New authentication components** in `src/components/auth/` directory
+- **Enhanced useAuth hook** with real-time state management
+- **Unified Auth.tsx page** replacing separate login/signup flows
+- **Role-based routing** with automatic redirection based on user type
+- **Authentication debugging tools** for development workflow
+
+#### Hooks Architecture Implementation
+- **Comprehensive custom hooks** for all major business logic
+- **Availability management** with calendar integration
+- **Shift management** system with advanced filtering
+- **User profile and preferences** management
+- **Assignment and payout** tracking systems
+- **Feedback system** implementation
+
+#### UI Component System Enhancement
+- **Radix UI integration** for accessible component primitives
+- **shadcn/ui style components** for consistent design system
+- **Enhanced form components** with better validation
+- **Improved navigation components** with role-based visibility
+- **Better loading states** and error handling throughout
+
+#### Integration Improvements
+- **Supabase client optimization** with proper error handling
+- **Real-time subscription management** for live data updates
+- **Environment-based configuration** for different deployment stages
+- **Enhanced security** with proper route protection
+
+### Branch Status
+- **Current Branch**: `devnew`
+- **Integration Status**: 95% complete
+- **Major Features**: Authentication, Availability, Basic Shift Management
+- **Ready for**: Comprehensive testing and additional feature development
+
+---
+
 ## Future Considerations
 
 ### Potential Enhancements
@@ -225,4 +305,4 @@ optistaff-main/
 
 ---
 
-*This documentation reflects the current project structure as of July 2025. Please update as the project evolves.*
+*This documentation reflects the current project structure as of July 14, 2025, including recent major updates to authentication system, hooks architecture, and UI components. The project is in active development with significant progress in core functionality implementation.*

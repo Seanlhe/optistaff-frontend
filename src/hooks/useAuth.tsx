@@ -22,11 +22,16 @@ interface AuthState {
 interface SignupData {
   email: string;
   password: string;
+  confirmPassword: string;
   userType: 'jobseeker' | 'employer';
   firstName: string;
   lastName: string;
   phoneNumber?: string;
+  dateOfBirth?: string;        // New field for job seekers
+  address?: string;            // New field for both user types
+  postalCode?: string;         // New field for both user types
   companyName?: string;
+  officeNumber?: string;       // New field for employers
 }
 
 
@@ -190,11 +195,32 @@ export const useAuth = () => {
   const signup = async (signupData: SignupData) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
+    // Validate required fields based on user type
     if (signupData.userType === 'employer' && !signupData.companyName?.trim()) {
       setAuthState(prev => ({
         ...prev,
         loading: false,
         error: 'Company name is required for employers',
+      }));
+      return;
+    }
+
+    // Validate password confirmation
+    if (signupData.password !== signupData.confirmPassword) {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: 'Passwords do not match',
+      }));
+      return;
+    }
+
+    // Validate postal code format (Singapore 6-digit format)
+    if (signupData.postalCode && !/^[0-9]{6}$/.test(signupData.postalCode)) {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: 'Postal code must be 6 digits',
       }));
       return;
     }
@@ -209,7 +235,11 @@ export const useAuth = () => {
             first_name: signupData.firstName,
             last_name: signupData.lastName,
             ...(signupData.phoneNumber && { phone_number: signupData.phoneNumber }),
+            ...(signupData.dateOfBirth && { date_of_birth: signupData.dateOfBirth }),
+            ...(signupData.address && { address: signupData.address }),
+            ...(signupData.postalCode && { postal_code: signupData.postalCode }),
             ...(signupData.companyName && { company_name: signupData.companyName }),
+            ...(signupData.officeNumber && { office_number: signupData.officeNumber }),
           },
         },
       });
@@ -217,6 +247,45 @@ export const useAuth = () => {
       if (error) throw error;
 
       if (data.user) {
+        // Insert user data into the appropriate table
+        if (signupData.userType === 'jobseeker') {
+          const { error: insertError } = await supabase
+            .from('job_seekers')
+            .insert({
+              user_id: data.user.id,
+              first_name: signupData.firstName,
+              last_name: signupData.lastName,
+              phone_number: signupData.phoneNumber || null,
+              date_of_birth: signupData.dateOfBirth || null,
+              home_location: signupData.address || null,
+              postal_code: signupData.postalCode || null,
+            });
+
+          if (insertError) {
+            console.error('Failed to create job seeker profile:', insertError);
+            throw new Error('Failed to complete registration');
+          }
+        } else {
+          const { error: insertError } = await supabase
+            .from('clients')
+            .insert({
+              client_id: data.user.id,
+              company_name: signupData.companyName!,
+              first_name: signupData.firstName,
+              last_name: signupData.lastName,
+              phone: signupData.phoneNumber || null,
+              address: signupData.address || null,
+              postal_code: signupData.postalCode || null,
+              office_number: signupData.officeNumber || null,
+              contact_email: signupData.email,
+            });
+
+          if (insertError) {
+            console.error('Failed to create client profile:', insertError);
+            throw new Error('Failed to complete registration');
+          }
+        }
+
         await updateUserState(data.user, true); 
       }
     } catch (error: unknown) {

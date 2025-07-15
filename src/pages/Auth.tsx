@@ -29,17 +29,24 @@ const Auth = () => {
   // Common fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userType, setUserType] = useState<"jobseeker" | "employer">("jobseeker");
   
   const [isSignup, setIsSignup] = useState(mode === "signup");
 
-  // Job seeker specific fields
+  // Contact fields
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+
+  // Job seeker specific fields
+  const [dateOfBirth, setDateOfBirth] = useState("");
 
   // Employer specific fields
   const [companyName, setCompanyName] = useState("");
+  const [officeNumber, setOfficeNumber] = useState("");
 
   // Handle navigation when no mode is present and update isSignup when mode changes
   useEffect(() => {
@@ -62,11 +69,16 @@ const Auth = () => {
       await signup({
         email,
         password,
+        confirmPassword,
         userType,
         firstName,
         lastName,
-        phoneNumber: userType === "jobseeker" ? phoneNumber : undefined,
+        phoneNumber,
+        dateOfBirth: userType === "jobseeker" ? dateOfBirth : undefined,
+        address,
+        postalCode,
         companyName: userType === "employer" ? companyName : undefined,
+        officeNumber: userType === "employer" ? officeNumber : undefined,
       });
     } else {
       await login(email, password);
@@ -77,19 +89,29 @@ const Auth = () => {
   const formData = {
     email,
     password,
+    confirmPassword,
     firstName,
     lastName,
     phoneNumber,
+    dateOfBirth,
+    address,
+    postalCode,
     companyName,
+    officeNumber,
   };
 
   const setFormData = {
     setEmail,
     setPassword,
+    setConfirmPassword,
     setFirstName,
     setLastName,
     setPhoneNumber,
+    setDateOfBirth,
+    setAddress,
+    setPostalCode,
     setCompanyName,
+    setOfficeNumber,
   };
 
   return (
