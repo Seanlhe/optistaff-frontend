@@ -35,6 +35,7 @@ const Auth = () => {
   const [userType, setUserType] = useState<"jobseeker" | "employer">("jobseeker");
   
   const [isSignup, setIsSignup] = useState(mode === "signup");
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Contact fields
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -57,16 +58,35 @@ const Auth = () => {
     }
   }, [mode, navigate]);
 
+  // Check for signup success message from sessionStorage
+  useEffect(() => {
+    const signupSuccess = sessionStorage.getItem('signup_success');
+    if (signupSuccess && mode === 'login') {
+      // Display the success message
+      console.log('✅ Signup Success:', signupSuccess);
+      setSuccessMessage(signupSuccess);
+      // Clear the message so it doesn't show again
+      sessionStorage.removeItem('signup_success');
+      
+      // Clear the success message after 10 seconds
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 10000);
+    }
+  }, [mode]);
+
   // Clear errors when mode or userType changes
   useEffect(() => {
     clearError();
+    setSuccessMessage(""); // Also clear success message when switching modes
   }, [isSignup, userType, clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isSignup) {
-      await signup({
+      // Debug logging to see what data we're passing to signup
+      const signupData = {
         email,
         password,
         confirmPassword,
@@ -79,7 +99,11 @@ const Auth = () => {
         postalCode,
         companyName: userType === "employer" ? companyName : undefined,
         officeNumber: userType === "employer" ? officeNumber : undefined,
-      });
+      };
+      
+      console.log('🔍 Auth Debug - Signup data being passed:', signupData);
+      
+      await signup(signupData);
     } else {
       await login(email, password);
     }
@@ -124,6 +148,12 @@ const Auth = () => {
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {successMessage && (
+            <Alert>
+              <AlertDescription>{successMessage}</AlertDescription>
             </Alert>
           )}
 
