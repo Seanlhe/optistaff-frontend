@@ -221,46 +221,33 @@ export const useAuth = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Insert user data into the appropriate table
-        if (signupData.userType === 'jobseeker') {
-          const { error: insertError } = await supabase
-            .from('job_seekers')
-            .insert({
-              user_id: data.user.id,
-              first_name: signupData.firstName,
-              last_name: signupData.lastName,
-              phone_number: signupData.phoneNumber || null,
-              date_of_birth: signupData.dateOfBirth || null,
-              home_location: signupData.address || null,
-              postal_code: signupData.postalCode || null,
-            });
-
-          if (insertError) {
-            console.error('Failed to create job seeker profile:', insertError);
-            throw new Error('Failed to complete registration');
-          }
-        } else {
-          const { error: insertError } = await supabase
-            .from('clients')
-            .insert({
-              client_id: data.user.id,
-              company_name: signupData.companyName!,
-              first_name: signupData.firstName,
-              last_name: signupData.lastName,
-              phone: signupData.phoneNumber || null,
-              address: signupData.address || null,
-              postal_code: signupData.postalCode || null,
-              office_number: signupData.officeNumber || null,
-              contact_email: signupData.email,
-            });
-
-          if (insertError) {
-            console.error('Failed to create client profile:', insertError);
-            throw new Error('Failed to complete registration');
-          }
+        console.log('🔍 Signup Debug - User created successfully');
+        console.log('🔍 Signup Debug - User metadata stored:', data.user.user_metadata);
+        
+        // Check if the user needs email confirmation immediately
+        if (data.user && !data.session) {
+          console.log('🔍 Signup Debug - Email confirmation required, redirecting to login');
+          // User was created but needs to confirm email before they can log in
+          // Set a success message and navigate to login page immediately
+          setAuthState({
+            user: null,
+            loading: false,
+            error: null, // No error - this is expected behavior
+          });
+          
+          // Store success message for the login page to display
+          sessionStorage.setItem('signup_success', 'Account created successfully! Please check your email and confirm your account, then log in.');
+          
+          // Navigate to login page immediately
+          navigate('/auth?mode=login');
+          return;
         }
-
-        await updateUserState(data.user, true); 
+        
+        // If we have a session (auto-login worked), proceed with navigation
+        if (data.session && data.user) {
+          await updateUserState(data.user, true);
+          return;
+        } 
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Signup failed';

@@ -149,16 +149,16 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
         
         <div className="text-xs text-gray-500">
           {validationState === 'idle' && (
-            <p>click "Validate" to auto-fill postal code</p>
+            <p>Click "Validate" to auto-fill postal code</p>
           )}
           {validationState === 'validating' && (
-            <p className="text-blue-600">Validating address...</p>
+            <p className="text-blue-600">Validating address... (this may take up to 10 seconds)</p>
           )}
           {validationState === 'valid' && (
             <p className="text-green-600">✓ Valid address - postal code auto-filled</p>
           )}
           {validationState === 'invalid' && (
-            <p className="text-red-600">✗ Invalid address - please check and try again</p>
+            <p className="text-red-600">✗ Please check address or enter postal code manually</p>
           )}
         </div>
       </div>
