@@ -54,8 +54,8 @@ export const PreferenceJobType: React.FC = () => {
                 className={`
                   flex items-center p-3 rounded-radius cursor-pointer transition-colors
                   ${selectedJobs[job]
-                    ? 'bg-secondary-bg text-primary-blue' 
-                    : 'bg-card-color text-secondary-text hover:bg-secondary-bg' 
+                    ? 'bg-primary-blue/5 text-gradient-end' 
+                    : 'bg-card-color text-secondary-text hover:bg-border/30' 
                   }
                 `}
               >

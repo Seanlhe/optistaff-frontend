@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const ProgressIndicator = () => {
   const [currentStep, setCurrentStep] = useState(1);

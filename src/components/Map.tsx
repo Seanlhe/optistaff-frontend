@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, Circle, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
+import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Singapore's approximate boundaries
@@ -89,17 +89,20 @@ export const Map: React.FC = () => {
       </div>
 
       {/* radius slider */}
-      <div className="mb-6">
-        <h3 className="mb-4">Adjust Radius</h3>
+      <div className="my-6">
+        <h3 className="my-4">Adjust Radius</h3>
         <div className="flex">
           <input
-            type="range"
-            className="w-64"
-            min="500"
-            max="50000"
-            value={radius}
-            onChange={(e) => setRadius(parseInt(e.target.value, 10))}
-          />
+              type="range"
+              className="
+                w-64 h-2 bg-secondary-bg rounded-full appearance-none cursor-pointer
+                accent-primary-blue border border-border
+              "
+              min="500"
+              max="50000"
+              value={radius}
+              onChange={(e) => setRadius(parseInt(e.target.value, 10))}
+            />
         </div>
       </div>
 

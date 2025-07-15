@@ -66,11 +66,48 @@ export const CalendarEvent = ({
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const deltaY = moveEvent.clientY - startY;
-      const minutesMoved = Math.round((deltaY / HOUR_HEIGHT) * 60 / 15) * 15;
       const deltaX = moveEvent.clientX - startX;
+      
+      // Calculate minutes moved vertically
+      const minutesMoved = Math.round((deltaY / HOUR_HEIGHT) * 60 / 15) * 15;
+      
+      // Calculate days moved horizontally
       const daysMoved = Math.round(deltaX / DAY_WIDTH);
-      const newStart = addDays(addMinutes(originalStart, minutesMoved), daysMoved);
-      const newEnd = addDays(addMinutes(originalEnd, minutesMoved), daysMoved);
+      
+      // Apply time changes (vertical movement)
+      let newStart = addMinutes(originalStart, minutesMoved);
+      let newEnd = addMinutes(originalEnd, minutesMoved);
+      
+      // Apply day changes (horizontal movement)
+      if (daysMoved !== 0) {
+        newStart = addDays(newStart, daysMoved);
+        newEnd = addDays(newEnd, daysMoved);
+      }
+      
+      // Clamp within current day boundaries (only for vertical movement)
+      const currentDay = daysMoved !== 0 ? addDays(originalStart, daysMoved) : originalStart;
+      const dayStart = new Date(currentDay);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(currentDay);
+      dayEnd.setHours(23, 59, 59, 999);
+      
+      const duration = differenceInMinutes(originalEnd, originalStart);
+      
+      // Only clamp if we're still in the same day (vertical movement only)
+      if (daysMoved === 0) {
+        if (newStart < dayStart) {
+          newStart = new Date(dayStart);
+          newEnd = addMinutes(newStart, duration);
+        }
+        if (newEnd > dayEnd) {
+          newEnd = new Date(dayEnd);
+          newStart = addMinutes(newEnd, -duration);
+          if (newStart < dayStart) {
+            newStart = new Date(dayStart);
+          }
+        }
+      }
+      
       onUpdate({ ...event, startTime: newStart, endTime: newEnd });
     };
 
@@ -117,13 +154,12 @@ export const CalendarEvent = ({
     <div
       ref={eventRef}
       className={`
-        absolute left-1 right-1 rounded border-card-color p-1 cursor-grab select-none
+        absolute left-1 right-1 rounded border p-1 cursor-grab select-none
         ${isSelected
-          ? 'bg-primary-blue border-primary-blue'
-          : 'bg-secondary-blue border-secondary-blue'
-        }
+          ? 'bg-gradient-end border-gradient-end'
+          : 'bg-gradient-end/40 border-gradient-end/60'}
+        ${!isSelected ? 'hover:bg-gradient-end/80 hover:border-gradient-end' : ''}
         ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
-        hover:bg-accent-blue
       `}
       style={{
         top: `${topOffset}px`,
@@ -136,11 +172,11 @@ export const CalendarEvent = ({
       onFocus={() => setIsSelected(true)}
       onBlur={() => setIsSelected(false)}
     >
-      <div className="text-xs text-secondary-text overflow-hidden h-full">
+      <div className="text-xs text-white overflow-hidden h-full">
         {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
       </div>
       <div
-        className="absolute bottom-0 left-0 right-0 h-2 bg-primary-blue-hover cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
+        className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-end cursor-ns-resize rounded-b opacity-0 hover:opacity-100"
         onMouseDown={handleResizeStart}
       />
     </div>

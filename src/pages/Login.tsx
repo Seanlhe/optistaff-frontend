@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import CustomInputField from "../components/CustomInputField";
-import { LoginFormData } from "@/types/components";
+import { LoginFormData } from "../types/components";
 import {
   isValidEmail,
   isValidPassword,

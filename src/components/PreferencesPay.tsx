@@ -15,7 +15,7 @@ export const PreferencesPay: React.FC = () => {
 
       <div className="flex items-center gap-4 mt-4 mb-6">
         {/* display of the selected pay rate */}
-        <span className="text-2xl font-bold text-primary-blue w-16">
+        <span className="text-2xl font-bold text-gradient-end w-16">
           ${payRate}
         </span>
 
@@ -42,7 +42,7 @@ export const PreferencesPay: React.FC = () => {
           onChange={(e) => setConsiderLower(e.target.checked)}
           className="
             h-5 w-5 rounded border-border cursor-pointer
-            accent-primary-blue focus:ring-primary-blue
+           focus:ring-primary-blue
           "
         />
         <label

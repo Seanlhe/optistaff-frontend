@@ -9,6 +9,7 @@ import ClientLayout from './pages/ClientLayout'
 import ClientDashboard from './pages/employer/ClientDashboard'
 import UploadJobs from './pages/employer/UploadJobs'
 import JSLayout from './pages/JSLayout'
+import JSSettings from './pages/employee/JSSettings'
 import JSPref from './pages/employee/JSPref'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
@@ -48,6 +49,7 @@ function App() {
           </ProtectedRoute>
         }>
           <Route path="preferences" element={<JSPref/>}/>
+          <Route path="settings" element={<JSSettings/>}/>
         </Route>
       </Routes>
     </QueryClientProvider>

@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-text: oklch(0.16 0 0);             /* hsl(0, 0%, 5%) */
-  --color-secondary-text: oklch(0.43 0 0);           /* hsl(0, 0%, 30%) */
-  --color-primary-blue: oklch(0.48 0.27 263.26);     /* hsl(227, 70%, 50%) */
-  --color-card-color: oklch(1 0 0);                  /* white */
-  --color-bg: oklch(0.96 0.01 262.41);               /* hsl(228, 71%, 97%) */
-  --color-secondary-bg: oklch(0.93 0.02 262.44);     /* hsl(228, 40%, 95%) */
-  --color-tertiary-bg: oklch(0.96 0.01 262.41);      /* hsl(228, 71%, 97%) */
-  --color-gradient-start: oklch(0.36 0.26 266.63);   /* hsl(225, 89%, 35%) */
-  --color-gradient-end: oklch(0.65 0.18 267.37);     /* hsl(225, 89%, 58%) */
+  --color-primary-text: oklch(0.16 0 0);             
+  --color-secondary-text: oklch(0.43 0 0);           
+  --color-primary-blue: oklch(0.48 0.27 263.26);     
+  --color-card-color: oklch(1 0 0);                  
+  --color-bg: oklch(0.96 0.01 262.41);               
+  --color-secondary-bg: oklch(0.93 0.02 262.44);     
+  --color-tertiary-bg: oklch(0.96 0.01 262.41);      
+  --color-gradient-start: oklch(0.36 0.26 266.63);   
+  --color-gradient-end: oklch(0.65 0.18 267.37);     
   --color-landing-bg: hsl(197, 60%, 86%);
   --font-montserrat: "montserrat-medium";
   --font-montserrat-smb: "montserrat-semibold";
@@ -69,4 +69,38 @@
 @font-face {
   font-family: montserrat-italic;
   src: url(/fonts/Montserrat-Italic.ttf);
-}
+} 
+
+/* 
+@theme {
+--color-primary-text: hsl(0, 0%, 12%)
+--color-secondary-text: hsl(0, 0%, 40%)
+--color-desc-text: hsl(226, 0%, 60%)
+
+--color-primary-blue: hsl(210, 90%, 55%)
+--color-primary-blue-hover-darker: hsl(210, 90%, 45%)
+--color-primary-blue-hover-lighter: hsl(212, 92%, 70%)
+--color-primary-blue-clicked: hsl(210, 90%, 35%)
+
+--color-white: hsl(0, 0%, 100%)
+--color-white-hover-darker: hsl(0, 0%, 96%)
+--color-white-clicked: hsl(0, 0%, 92%)
+
+--color-border: hsl(0, 0%, 92%)
+--color-border-clicked: hsl(210, 100%, 56%)
+
+--color-red: hsl(0, 80%, 60%)
+--color-red-hovered-darker: hsl(0, 80%, 50%)
+--color-red-hovered-lighter: hsl(0, 80%, 70%)
+
+--color-green: hsl(142, 65%, 45%)
+--color-green-hovered-darker: hsl(142, 65%, 35%)
+--color-green-hovered-lighter: hsl(142, 65%, 70%)
+
+--color-yellow: hsl(43, 100%, 60%)
+--color-yellow-hovered-darker: hsl(43, 100%, 50%)
+--color-yellow-hovered-lighter: hsl(43, 100%, 80%)
+
+--color-card-color: hsl(0, 100%, 100%);            
+--color-bg: hsl(0, 0%, 98%);               
+} */

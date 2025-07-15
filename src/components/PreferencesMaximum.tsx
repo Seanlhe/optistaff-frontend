@@ -5,7 +5,7 @@ const PreferencesMaximum = () => {
         <label className="block text-sm mb-2 text-main">Maximum Hours per Week</label>
         <input
           type="number"
-          className="p-2 border-card-color bg-card-color text-main rounded-lg w-24"
+          className="p-2 border border-border bg-card-color text-main rounded-lg w-24"
           min="1"
           max="44"
           placeholder="20"
@@ -15,7 +15,7 @@ const PreferencesMaximum = () => {
         <label className="block text-sm mb-2 text-main">Maximum Hours per Shift</label>
         <input
           type="number"
-          className="p-2 border-card-color bg-card-color text-main rounded-lg w-24"
+          className="p-2 border border-border bg-card-color text-main rounded-lg w-24"
           min="1"
           max="12"
           placeholder="8"
