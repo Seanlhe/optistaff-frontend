@@ -78,7 +78,7 @@ export const TemplateSelectDialog = ({
                 {templates.map((template) => (
                   <label
                     key={template.id}
-                    className="flex items-center justify-between p-3 border border-border rounded-md hover:bg-secondary-bg cursor-pointer transition-colors"
+                    className="flex items-center justify-between p-3 border border-border rounded-md : cursor-pointer transition-colors"
                   >
                     <div className="flex-1">
                       <div className="font-medium text-primary-text">{template.name}</div>
@@ -118,13 +118,13 @@ export const TemplateSelectDialog = ({
               >
                 Cancel
               </button>
-              <button
+              {/* <button
                 type="submit"
                 disabled={!selectedTemplate || loading}
                 className="px-4 py-2 text-sm bg-gradient-end text-white rounded-md hover:bg-gradient-end/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Loading..." : "Use Template"}
-              </button>
+              </button> */}
             </div>
           </div>
         </form>

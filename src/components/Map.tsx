@@ -47,7 +47,7 @@ export const Map: React.FC = () => {
       
 
       <div 
-        className="border rounded-lg shadow-lg" 
+        className="border border-border rounded-lg shadow-lg" 
         style={{ height: '500px' }}
       >
         <MapContainer

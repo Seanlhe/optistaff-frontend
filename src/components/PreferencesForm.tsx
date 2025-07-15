@@ -5,7 +5,7 @@ import PreferencesPay from "./PreferencesPay";
 
 const PreferencesForm = () => {
   return (
-    <div className="bg-card-color p-8 rounded-xl shadow mb-8">
+    <div className="bg-card-color p-8 rounded-xl border border-border">
       <PreferencesMaximum />
       <PreferencesPay />
       <PreferencesJobType />
