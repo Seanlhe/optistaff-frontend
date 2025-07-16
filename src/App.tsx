@@ -13,6 +13,8 @@ import JSPref from './pages/employee/JSPref'
 import JSDashboard from './pages/employee/JSDashboard'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import JSDashboard from './pages/employee/JSDashboard'
+import EmployeeHistory from './pages/employee/EmployeeHistory';
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -50,6 +52,8 @@ function App() {
         }>
           <Route path="dashboard" element={<JSDashboard/>}/>
           <Route path="preferences" element={<JSPref/>}/>
+          <Route path="dashboard" element={<JSDashboard/>}/>
+          <Route path="history" element={<EmployeeHistory/>}/>
         </Route>
       </Routes>
     </QueryClientProvider>
