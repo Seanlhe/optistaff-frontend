@@ -39,7 +39,9 @@ export default function EmployeeShiftCard({
       }`}
     >
       <div className="flex justify-between items-start mb-1">
-        <span className="text-sm font-medium text-gray-900">{startTime}</span>
+        <span className="text-sm font-medium text-gray-900">
+          {startTime} - {endTime}
+        </span>
       </div>
 
       <p className="text-xs font-medium text-gray-900 mb-1">{title}</p>

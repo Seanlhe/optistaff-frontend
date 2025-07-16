@@ -52,7 +52,9 @@ export default function ClientShiftCard({
       }`}
     >
       <div className="flex justify-between items-start mb-1">
-        <span className="text-sm font-medium text-gray-900">{startTime}</span>
+        <span className="text-sm font-medium text-gray-900">
+          {startTime} - {endTime}
+        </span>
         <span className="text-gray-500 text-sm">{statusIcon}</span>
       </div>
 
