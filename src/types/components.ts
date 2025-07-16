@@ -13,12 +13,14 @@ export interface ShiftCardProps{
     title: string,
     date: string,
     time: string,
-    staffNo: number
+    staffNo: number,
+    unfilledStaff: number
 }
 
 export interface InputFieldProps{
     name: string,
     title: string,
+    placeholder?: string,
     className?: string,
     type?: string,
     valid?: boolean,
