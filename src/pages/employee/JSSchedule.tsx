@@ -1,20 +1,15 @@
-import ClientShiftDetails from "../../components/ClientShiftDetails";
-import ClientCalendarHeader from "../../components/ClientCalendarHeader";
-import ClientCalendarDay from "../../components/ClientCalendarDay";
-import { ClientShiftProps } from "../../types/components";
+import EmployeeShiftDetails from "../../components/EmployeeShiftDetails";
+import EmployeeCalendarDay from "../../components/EmployeeCalendarDay";
+import EmployeeCalendarHeader from "../../components/EmployeeCalendarHeader";
+import { EmployeeShiftProps } from "../../types/components";
 import { useState } from "react";
 
-export default function ClientRoster() {
-  const availableLocations = ["Tangs Plaza", "JW"];
-  const [selectedLocation, setSelectedLocation] = useState(
-    availableLocations[0]
-  );
-
-  const [selectedShift, setSelectedShift] = useState<ClientShiftProps | null>(
+export default function JSSchedule() {
+  const [selectedShift, setSelectedShift] = useState<EmployeeShiftProps | null>(
     null
   );
 
-  const shiftData: ClientShiftProps[] = [
+  const shiftData: EmployeeShiftProps[] = [
     {
       id: 1,
       startTime: "8:00 AM",
@@ -23,9 +18,6 @@ export default function ClientRoster() {
       location: "Tangs Plaza",
       title: "Front Desk Receptionist",
       payRate: 20,
-      employeeName: "John Doe",
-      filled: 2,
-      required: 2,
     },
     {
       id: 2,
@@ -35,9 +27,6 @@ export default function ClientRoster() {
       location: "Tangs Plaza",
       title: "Housekeeping Staff",
       payRate: 18,
-      employeeName: "Jane Smith",
-      filled: 15,
-      required: 20,
     },
     {
       id: 3,
@@ -47,11 +36,9 @@ export default function ClientRoster() {
       location: "JW",
       title: "Kitchen Staff",
       payRate: 22,
-      employeeName: "Alice Johnson",
-      filled: 10,
-      required: 15,
     },
   ];
+
   const days = [
     { name: "Mon", date: "22 May 2025" },
     { name: "Tue", date: "23 May 2025" },
@@ -62,7 +49,7 @@ export default function ClientRoster() {
     { name: "Sun", date: "28 May 2025" },
   ];
 
-  const handleShiftClick = (shift: ClientShiftProps) => {
+  const handleShiftClick = (shift: EmployeeShiftProps) => {
     setSelectedShift(shift);
   };
 
@@ -73,7 +60,7 @@ export default function ClientRoster() {
   return (
     <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-4">
       <p className="text-3xl text-secondary-text font-montserrat-b">
-        Weekly Roster
+        Weekly Schedule
       </p>
 
       <div
@@ -82,21 +69,15 @@ export default function ClientRoster() {
         }`}
       >
         {/* Calendar Header */}
-        <ClientCalendarHeader
-          selectedLocation={selectedLocation}
-          onLocationChange={setSelectedLocation}
-          availableLocations={availableLocations}
-          days={days}
-        />
+        <EmployeeCalendarHeader days={days} />
 
         {/* Calendar Days */}
         <div className="grow grid grid-cols-7 divide-x-2 divide-gray-200 px-4 pt-2 pb-4">
           {days.map((day) => (
-            <ClientCalendarDay
+            <EmployeeCalendarDay
               key={day.date}
               day={day}
               shiftData={shiftData}
-              selectedLocation={selectedLocation}
               selectedShift={selectedShift}
               onShiftClick={handleShiftClick}
             />
@@ -114,7 +95,7 @@ export default function ClientRoster() {
             className="bg-white rounded-2xl shadow-2xl w-auto overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <ClientShiftDetails
+            <EmployeeShiftDetails
               {...selectedShift}
               onClose={handleCloseDetails}
             />
