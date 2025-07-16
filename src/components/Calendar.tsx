@@ -6,16 +6,13 @@ import { useAvailability } from "../hooks/useAvailability";
 
 // Date and Time Library
 import { format, startOfWeek, addDays, isSameDay, set } from "date-fns";
-//format: Turns a Date object into a readable string (e.g., "July 2025" or "10:00").
-//startOfWeek: Finds the first day (Monday, in our case) of any given week.
-//addDays: Adds a number of days to a date. We'll use this to get all 7 days of the week.
-//isSameDay: Checks if two Date objects are on the exact same day.
-//set: A clean way to change a part of a date, like setting the hour or minute.
 
 //Icons
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, File, RefreshCw } from "lucide-react";
 
 import { CalendarEvent } from "./CalendarEvent";
+import { TemplateNameDialog } from "./TemplateNameDialog";
+import { TemplateSelectDialog } from "./TemplateSelectDialog";
 
 //export interface Event says any object we call an Event must have
 // an id, title, startTime, and endTime.
@@ -36,6 +33,12 @@ const Calendar = () => {
 
   // Track if we've loaded initial data to prevent refetching
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+
+  // Template dialog states
+  const [showTemplateNameDialog, setShowTemplateNameDialog] = useState(false);
+  const [showTemplateSelectDialog, setShowTemplateSelectDialog] = useState(false);
+  const [templateSaveLoading, setTemplateSaveLoading] = useState(false);
+  const [templateLoadLoading, setTemplateLoadLoading] = useState(false);
 
   // Use the custom hook to manage availability data
   const { getAvailability, setAvailability, fetchLoading, saveLoading, loading, error } = useAvailability();
@@ -136,6 +139,51 @@ const Calendar = () => {
     }
   };
 
+  // Template functions
+  const handleSaveTemplate = async (templateName: string) => {
+    setTemplateSaveLoading(true);
+    try {
+      // Mock API call - replace with actual implementation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Saving template:', templateName, 'with events:', events);
+      setShowTemplateNameDialog(false);
+    } catch (err) {
+      console.error('Error saving template:', err);
+    } finally {
+      setTemplateSaveLoading(false);
+    }
+  };
+
+  const handleUseTemplate = async (templateId: string) => {
+    setTemplateLoadLoading(true);
+    try {
+      // Mock API call - replace with actual implementation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Loading template:', templateId);
+      
+      // Mock template data - replace with actual template loading
+      const mockTemplateEvents: Event[] = [
+        {
+          id: `template_event_1`,
+          startTime: set(weekDays[0], { hours: 9, minutes: 0 }),
+          endTime: set(weekDays[0], { hours: 10, minutes: 0 }),
+        },
+        {
+          id: `template_event_2`,
+          startTime: set(weekDays[1], { hours: 14, minutes: 0 }),
+          endTime: set(weekDays[1], { hours: 15, minutes: 40 }),
+        },
+      ];
+      
+      setEvents(mockTemplateEvents);
+      setShowTemplateSelectDialog(false);
+    } catch (err) {
+      console.error('Error loading template:', err);
+    } finally {
+      setTemplateLoadLoading(false);
+    }
+  };
+
   // direction argument must be either the string "prev" or the string "next"
   const navigateWeek = (direction: "prev" | "next") => {
     // We update the state with a new date, either 7 days in the future or 7 days in the past.
@@ -145,97 +193,105 @@ const Calendar = () => {
 
   return (
     <div>
-      <header className="flex items-center justify-between p-4 border-b">
+      <header className="flex items-center justify-between p-4 border-b border-border bg-card-color">
         <div className="flex items-center">
           <button
-            className="p-2 rounded hover:bg-accent"
+            className="p-2 rounded-md hover:bg-secondary-bg transition-colors"
             onClick={() => navigateWeek("prev")}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5 text-secondary-text" />
           </button>
 
           <button
-            className="p-2 rounded hover:bg-accent"
+            className="p-2 rounded-md hover:bg-secondary-bg transition-colors"
             onClick={() => navigateWeek("next")}
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-5 w-5 text-secondary-text" />
           </button>
 
-          <h1 className="text-xl font-semibold mx-4 text-center">
+          <h1 className="text-xl font-semibold mx-4 text-primary-text">
             {format(weekStart, "MMMM yyyy")}
           </h1>
         </div>
 
         <div className="flex items-center gap-2">
           <button
-            className="px-4 py-2 text-sm border rounded hover:bg-muted"
+            className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors"
             onClick={() => setCurrentWeek(new Date())}
           >
             Today
           </button>
 
           <button
-            className="px-4 py-2 text-sm border rounded bg-blue-500 text-white hover:bg-blue-600"
-            onClick={handleSaveAvailability}
-            disabled={saveLoading}
+            className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors flex items-center gap-2"
+            onClick={() => setShowTemplateSelectDialog(true)}
           >
-            {saveLoading ? "Saving..." : "Save Availability"}
+            <File className="h-4 w-4" />
+            Templates
           </button>
 
           <button
-            className="px-4 py-2 text-sm border rounded bg-gray-500 text-white hover:bg-gray-600"
+            className="px-4 py-2 text-sm bg-gradient-end text-white rounded-md hover:bg-gradient-end/80 transition-colors flex items-center gap-2"
+            onClick={handleSaveAvailability}
+            disabled={saveLoading}
+          >
+            <Save className="h-4 w-4" />
+            {saveLoading ? 'Saving...' : 'Save'}
+          </button>
+
+          <button
+            className="p-2 text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors"
             onClick={handleRefreshAvailability}
             disabled={fetchLoading}
+            title="Refresh"
           >
-            {fetchLoading ? "Loading..." : "Refresh"}
+            <RefreshCw className={`h-4 w-4 ${fetchLoading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </header>
-      {error && <div className="text-red-500 p-2">{error}</div>}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 text-sm">
+          {error}
+        </div>
+      )}
 
       <div className="flex flex-1 overflow-auto">
-        {/* flex-1: Makes this container expand to fill all available vertical screen space. */}
-        {/* overflow-auto: If the content gets too big, this will automatically add scrollbars. */}
         {/* Time Column (Left Side) */}
-        <div className="w-16 border-r bg-muted">
-          <div className="h-12 border-b"></div>
+        <div className="w-16 border-r border-border bg-secondary-text/5">
+          <div className="h-12 border-b border-border"></div>
 
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-12 flex items-center justify-center text-xs text-muted-foreground"
+              className="h-12 flex items-center justify-center text-xs text-secondary-text"
             >
               {format(set(new Date(), { hours: hour, minutes: 0 }), "H:mm")}
             </div>
           ))}
-          {/* w-16: Sets a fixed width for the column. */}
-          {/* border-r: Adds a right border to separate it from the days grid. */}
         </div>
 
         {/* Days Grid */}
-        {/* h-12: Sets a fixed height for the header row.
-            border-b, border-r: Adds bottom and right borders to each header cell. */}
         <div className="flex-1 grid grid-cols-7">
           {weekDays.map((day, index) => (
             <div
               key={day.toISOString()}
-              className="h-12 border-b border-r text-center p-1"
+              className="h-12 border-b border-r border-border text-center p-1 bg-white"
             >
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-secondary-text">
                 {DAYS_OF_WEEK[index]}
               </div>
-              <div className="text-lg">{format(day, "d")}</div>
+              <div className="text-lg text-secondary-text">{format(day, "d")}</div>
             </div>
           ))}
 
           {/* Time Slots for each day */}
-          {/* relative:  place events on top of this grid. */}
           {weekDays.map((day) => (
-            <div key={day.toISOString()} className="relative border-r">
+            <div key={day.toISOString()} className="relative border-r border-border">
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="h-12 border-b"
+                  className="h-12 border-b border-border hover:bg-secondary-text/4 cursor-pointer"
                   onDoubleClick={() => handleDoubleClick(day, hour)}
                 ></div>
               ))}
@@ -253,9 +309,25 @@ const Calendar = () => {
           ))}
         </div>
       </div>
+
+      {/* Template and Save Dialogs */}
+      <TemplateSelectDialog
+        isOpen={showTemplateSelectDialog}
+        onClose={() => setShowTemplateSelectDialog(false)}
+        onSelect={handleUseTemplate}
+        onSaveTemplate={() => setShowTemplateNameDialog(true)}
+        loading={templateLoadLoading}
+      />
+
+      <TemplateNameDialog
+        isOpen={showTemplateNameDialog}
+        onClose={() => setShowTemplateNameDialog(false)}
+        onSave={handleSaveTemplate}
+        loading={templateSaveLoading}
+      />
     </div>
   );
 };
 
 export { Calendar };
-export default Calendar;  
+export default Calendar;

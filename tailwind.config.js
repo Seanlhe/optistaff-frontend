@@ -13,6 +13,8 @@ export default {
         'card-color': 'var(--color-card-color)',
         'bg': 'var(--color-bg)',
         'secondary-bg': 'var(--color-secondary-bg)',
+        'gradient-end': 'var(--color-gradient-end)',
+        'border': 'var(--color-border)',
       }
     },
   },
