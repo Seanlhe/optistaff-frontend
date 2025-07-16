@@ -1,13 +1,13 @@
-# Dev-Hooks-Auth Branch - Change Documentation
+# useAuth Hook - Development Documentation
 
-## Branch Overview
-**Branch Name:** `dev-hooks-auth`  
-**Base Branch:** `dev`  
-**Author:** wongkang01  
-**Date Range:** July 11-12, 2025  
+## Hook Overview
+**Hook Name:** `useAuth`  
+**Primary Author:** wongkang01  
+**Development Period:** July 11-12, 2025  
+**Current Status:** Production Ready
 
 ## Summary
-This branch implements a comprehensive authentication system refactor and introduces the foundational hooks architecture for the OptiStaff application. The changes focus on creating reusable authentication components, implementing the `useAuth` hook, and establishing the structure for other business logic hooks.
+This document details the development and implementation of the `useAuth` hook, which provides comprehensive authentication functionality for the OptiStaff application. The hook manages user sessions, login/logout operations, role-based navigation, and integrates seamlessly with Supabase authentication services.
 
 ---
 
