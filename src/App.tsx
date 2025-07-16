@@ -12,6 +12,7 @@ import JSLayout from './pages/JSLayout'
 import JSPref from './pages/employee/JSPref'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import UploadCSV from './pages/employer/UploadCSV'
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -41,6 +42,7 @@ function App() {
           <Route path="settings" element={<ClientDashboard/>}/>
           <Route path="profile" element={<ClientDashboard/>}/>
           <Route path="uploadjobs" element={<UploadJobs/>}/>
+          <Route path="uploadcsv" element={<UploadCSV/>}/>
         </Route>
         <Route path="/employee" element={
           <ProtectedRoute allowedRoles={['jobseeker']}>
@@ -48,6 +50,7 @@ function App() {
           </ProtectedRoute>
         }>
           <Route path="preferences" element={<JSPref/>}/>
+          
         </Route>
       </Routes>
     </QueryClientProvider>
