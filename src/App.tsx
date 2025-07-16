@@ -11,6 +11,7 @@ import UploadJobs from './pages/employer/UploadJobs'
 import JSLayout from './pages/JSLayout'
 import JSSettings from './pages/employee/JSSettings'
 import JSPref from './pages/employee/JSPref'
+import JSDashboard from './pages/employee/JSDashboard'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import UploadCSV from './pages/employer/UploadCSV'
@@ -57,6 +58,7 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="dashboard" element={<JSDashboard />} />
           <Route path="preferences" element={<JSPref />} />
           <Route path="schedule" element={<JSSchedule />} />
           <Route path="settings" element={<JSSettings />} />
