@@ -13,6 +13,7 @@ const JSSettings = () => {
     email: '',
     phone: '',
     address: '',
+    zipcode: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
@@ -84,7 +85,6 @@ const JSSettings = () => {
                   </Button>
                   <div>
                     <h3 className="text-xl font-semibold text-primary-text">Alex Johnson</h3>
-                    <p className="text-secondary-text">Job Seeker</p>
                   </div>
                 </div>
                 
@@ -175,7 +175,26 @@ const JSSettings = () => {
                       className="bg-input/50 text-primary-text"
                     />
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="zipcode" className="flex items-center gap-2 text-secondary-text">
+                      <MapPin className="h-4 w-4" />
+                      Zip Code
+                    </Label>
+                    <Input
+                      id="zipcode"
+                      placeholder=""
+                      value={formData.zipcode}
+                      onChange={(e) => handleInputChange("zipcode", e.target.value)}
+                      disabled={!isEditing}
+                      className="bg-input/50 text-primary-text"
+                    />
+                  </div>
+
                 </div>
+                
+
+                
 
                 {/* Password Section */}
                 <div className="border-t pt-6">

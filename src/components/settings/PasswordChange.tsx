@@ -99,6 +99,12 @@ const PasswordChangeModal = ({
                 Passwords match
               </p>
             )}
+            {passwordData.confirmPassword && passwordData.confirmPassword !== passwordData.newPassword && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <AlertCircle className="h-4 w-4" />
+                Passwords do not match
+              </p>
+            )}
             {passwordErrors.confirmPassword && (
               <p className="text-sm text-red-500 flex items-center gap-1">
                 <AlertCircle className="h-4 w-4" />
@@ -118,7 +124,11 @@ const PasswordChangeModal = ({
             <Button 
               type="submit" 
               className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 rounded-lg py-2 font-montserrat"
-              disabled={isLoading || Object.keys(passwordErrors).some(key => passwordErrors[key])}
+              disabled={
+                isLoading || 
+                Object.keys(passwordErrors).some(key => passwordErrors[key]) || 
+                passwordData.newPassword !== passwordData.confirmPassword
+              }
             >
               {isLoading ? 'Updating...' : 'Update Password'}
             </Button>

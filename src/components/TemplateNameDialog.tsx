@@ -35,7 +35,7 @@ export const TemplateNameDialog = ({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-primary-text">Save Template</h2>
           <button
-            onClick={handleClose} // Close popup only when clicking the X button
+            onClick={handleClose} 
             className="p-1 hover:bg-secondary-bg rounded transition-colors"
             disabled={loading}
           >
