@@ -29,17 +29,25 @@ const Auth = () => {
   // Common fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userType, setUserType] = useState<"jobseeker" | "employer">("jobseeker");
   
   const [isSignup, setIsSignup] = useState(mode === "signup");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Contact fields
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [postalCode, setPostalCode] = useState("");
 
   // Job seeker specific fields
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
 
   // Employer specific fields
   const [companyName, setCompanyName] = useState("");
+  const [officeNumber, setOfficeNumber] = useState("");
 
   // Handle navigation when no mode is present and update isSignup when mode changes
   useEffect(() => {
@@ -50,24 +58,52 @@ const Auth = () => {
     }
   }, [mode, navigate]);
 
+  // Check for signup success message from sessionStorage
+  useEffect(() => {
+    const signupSuccess = sessionStorage.getItem('signup_success');
+    if (signupSuccess && mode === 'login') {
+      // Display the success message
+      console.log('✅ Signup Success:', signupSuccess);
+      setSuccessMessage(signupSuccess);
+      // Clear the message so it doesn't show again
+      sessionStorage.removeItem('signup_success');
+      
+      // Clear the success message after 10 seconds
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 10000);
+    }
+  }, [mode]);
+
   // Clear errors when mode or userType changes
   useEffect(() => {
     clearError();
+    setSuccessMessage(""); // Also clear success message when switching modes
   }, [isSignup, userType, clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isSignup) {
-      await signup({
+      // Debug logging to see what data we're passing to signup
+      const signupData = {
         email,
         password,
+        confirmPassword,
         userType,
         firstName,
         lastName,
-        phoneNumber: userType === "jobseeker" ? phoneNumber : undefined,
+        phoneNumber,
+        dateOfBirth: userType === "jobseeker" ? dateOfBirth : undefined,
+        address,
+        postalCode,
         companyName: userType === "employer" ? companyName : undefined,
-      });
+        officeNumber: userType === "employer" ? officeNumber : undefined,
+      };
+      
+      console.log('🔍 Auth Debug - Signup data being passed:', signupData);
+      
+      await signup(signupData);
     } else {
       await login(email, password);
     }
@@ -77,19 +113,29 @@ const Auth = () => {
   const formData = {
     email,
     password,
+    confirmPassword,
     firstName,
     lastName,
     phoneNumber,
+    dateOfBirth,
+    address,
+    postalCode,
     companyName,
+    officeNumber,
   };
 
   const setFormData = {
     setEmail,
     setPassword,
+    setConfirmPassword,
     setFirstName,
     setLastName,
     setPhoneNumber,
+    setDateOfBirth,
+    setAddress,
+    setPostalCode,
     setCompanyName,
+    setOfficeNumber,
   };
 
   return (
@@ -102,6 +148,12 @@ const Auth = () => {
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {successMessage && (
+            <Alert>
+              <AlertDescription>{successMessage}</AlertDescription>
             </Alert>
           )}
 

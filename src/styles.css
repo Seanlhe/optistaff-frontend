@@ -346,3 +346,25 @@ body {
   font-family: montserrat-italic;
   src: url(/fonts/Montserrat-Italic.ttf);
 }
+
+/* Enhanced placeholder styling for auth forms */
+.react-datepicker__input-container input::placeholder {
+  color: #d1d5db !important; /* gray-300 */
+  opacity: 1;
+}
+
+/* Ensure all input placeholders are consistently faint */
+input::placeholder,
+textarea::placeholder {
+  color: #d1d5db; /* gray-300 */
+  opacity: 1;
+}
+
+/* DatePicker specific placeholder styling */
+.react-datepicker__input-container input {
+  color: inherit;
+}
+
+.react-datepicker__input-container input:placeholder-shown {
+  color: #d1d5db; /* gray-300 */
+}
