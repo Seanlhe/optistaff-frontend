@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import './App.css'
 import { Route, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -15,23 +14,7 @@ import JSPref from './pages/employee/JSPref'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import UploadCSV from './pages/employer/UploadCSV'
-=======
-import "./App.css";
-import { Route, Routes } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import LandingPage from "./pages/LandingPage";
-import Login from "./pages/Login";
-import SignUp from "./pages/Signup";
-import Auth from "./pages/Auth";
-import ClientLayout from "./pages/ClientLayout";
-import ClientDashboard from "./pages/employer/ClientDashboard";
-import UploadJobs from "./pages/employer/UploadJobs";
-import JSLayout from "./pages/JSLayout";
-import JSPref from "./pages/employee/JSPref";
-import ClientRoster from "./pages/employer/ClientRoster";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import UploadCSV from "./pages/employer/UploadCSV";
-import JSSchedule from "./pages/employee/JSSchedule";
+import JSSchedule from './pages/employee/JSSchedule'
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -41,7 +24,7 @@ const queryClient = new QueryClient({
       retry: false,
     },
   },
-});
+})
 
 function App() {
   return (
@@ -83,4 +66,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
