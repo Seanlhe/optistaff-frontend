@@ -59,35 +59,42 @@ export const useAddressLookup = () => {
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       try {
-        // Geocode the address to get postal code with timeout
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}+Singapore&key=${apiKey}`,
-          { 
-            signal: controller.signal,
-            headers: {
-              'Cache-Control': 'no-cache'
-            }
-          }
-        );
+        console.log('🔍 Address Lookup Debug - Validating address:', address);
+        
+        // Use Vite development proxy to bypass CORS
+        const isProduction = import.meta.env.PROD;
+        let geocodeUrl: string;
+        
+        if (isProduction) {
+          // For production, we'll need server-side geocoding or a paid proxy service
+          // For now, throw an error with helpful message
+          throw new Error('Address validation not available in production. Please enter postal code manually.');
+        } else {
+          // For development, use Vite proxy
+          geocodeUrl = `/api/geocode/json?address=${encodeURIComponent(address + ', Singapore')}&key=${apiKey}`;
+        }
+        
+        console.log('🔍 Address Lookup Debug - Using development proxy');
+        
+        const response = await fetch(geocodeUrl, { 
+          signal: controller.signal,
+          method: 'GET'
+        });
 
         clearTimeout(timeoutId);
+        
+        console.log('🔍 Address Lookup Debug - Response status:', response.status);
 
         if (!response.ok) {
-          // Handle HTTP errors
-          if (response.status === 400) {
-            throw new Error('Invalid address');
-          } else if (response.status === 403) {
-            throw new Error('Service unavailable');
-          } else {
-            throw new Error('Validation failed');
-          }
+          throw new Error('Network error');
         }
 
         let data;
         try {
           data = await response.json();
+          console.log('🔍 Address Lookup Debug - API Response:', data);
         } catch (parseError) {
-          throw new Error('Invalid address');
+          throw new Error('Invalid response');
         }
 
         if (data.status === 'ZERO_RESULTS') {
@@ -118,6 +125,30 @@ export const useAddressLookup = () => {
           let formattedAddress = geocodeResult.formatted_address;
           formattedAddress = formattedAddress.replace(/, Singapore$/, '');
 
+          // Validate that the returned address is reasonably similar to input
+          const inputAddressNormalized = address.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+          const returnedAddressNormalized = formattedAddress.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+          
+          // Check if Google significantly changed the street name
+          const inputStreetWords = inputAddressNormalized.split(/\s+/).filter(word => word.length > 2);
+          const returnedStreetWords = returnedAddressNormalized.split(/\s+/).filter(word => word.length > 2);
+          
+          // Count how many significant words from input appear in the result
+          const matchingWords = inputStreetWords.filter(word => 
+            returnedStreetWords.some(returnedWord => 
+              returnedWord.includes(word) || word.includes(returnedWord)
+            )
+          );
+          
+          // If less than 50% of the input words match, it might be an approximate/incorrect match
+          if (matchingWords.length < inputStreetWords.length * 0.5) {
+            console.log('🔍 Address Lookup Debug - Possible approximate match detected');
+            console.log('🔍 Address Lookup Debug - Input:', inputAddressNormalized);
+            console.log('🔍 Address Lookup Debug - Returned:', returnedAddressNormalized);
+            console.log('🔍 Address Lookup Debug - Matching words:', matchingWords.length, 'of', inputStreetWords.length);
+            throw new Error('Address not found - please check spelling');
+          }
+
           setResult({
             address: formattedAddress,
             postalCode: extractedPostalCode,
@@ -134,17 +165,10 @@ export const useAddressLookup = () => {
           throw new Error('Validation timed out');
         }
         
-        if (fetchError instanceof TypeError && fetchError.message.includes('NetworkError')) {
-          throw new Error('Invalid address');
-        }
-        
-        if (fetchError instanceof TypeError && fetchError.message.includes('Failed to fetch')) {
-          throw new Error('Network error');
-        }
-        
         throw fetchError;
       }
     } catch (error) {
+      console.log('🔍 Address Lookup Debug - Error caught:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to lookup address';
       setResult(prev => ({
         ...prev,
@@ -154,6 +178,13 @@ export const useAddressLookup = () => {
     }
   }, []);
 
+  const clearError = useCallback(() => {
+    setResult(prev => ({
+      ...prev,
+      error: null,
+    }));
+  }, []);
+
   const clearResults = useCallback(() => {
     setResult({
       address: '',
@@ -161,13 +192,6 @@ export const useAddressLookup = () => {
       loading: false,
       error: null,
     });
-  }, []);
-
-  const clearError = useCallback(() => {
-    setResult(prev => ({
-      ...prev,
-      error: null,
-    }));
   }, []);
 
   return {

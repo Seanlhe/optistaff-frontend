@@ -35,24 +35,31 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
   const [isManualEdit, setIsManualEdit] = useState(false);
   const [validationState, setValidationState] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
 
+  // Update validation state based on loading state
+  useEffect(() => {
+    if (loading) {
+      setValidationState('validating');
+    }
+  }, [loading]);
+
   // Update postal code and validation state when lookup result changes
   useEffect(() => {
-    if (lookupResult && !isManualEdit) {
+    if (lookupResult && !isManualEdit && !loading) {
       onPostalCodeChange(lookupResult);
       setValidationState('valid');
     }
-  }, [lookupResult, isManualEdit, onPostalCodeChange]);
+  }, [lookupResult, isManualEdit, onPostalCodeChange, loading]);
 
   // Update validation state based on errors
   useEffect(() => {
-    if (error && !isManualEdit) {
+    if (error && !loading) {
       setValidationState('invalid');
     }
-  }, [error, isManualEdit]);
+  }, [error, loading]);
 
   const handleLookup = async () => {
     if (!address || address.trim().length < 5) return;
-    setValidationState('validating');
+    clearError(); // Clear any previous errors
     await lookupPostalCode(address);
   };
 
