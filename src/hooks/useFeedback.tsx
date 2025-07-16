@@ -5,10 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
-
-interface Feedback {
-  // TODO: Define feedback interface
-}
+import { Feedback } from '../types/hooks';
 
 export const useFeedback = () => {
   const [feedback, setFeedback] = useState<Feedback[]>([]);

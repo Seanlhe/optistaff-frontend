@@ -6,10 +6,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '../integrations/supabase/client';
+import { Assignment } from '../types/hooks'; // Assuming you have defined Assignment type in hooks.ts
 
-interface Assignment {
-  // TODO: Define assignment interface
-}
 
 export const useAssignments = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);

@@ -6,23 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '../integrations/supabase/client';
-
-interface Shift {
-  shift_id: string;
-  client_id: string;
-  title: string;
-  description: string;
-  start_time: Date;
-  end_time: Date;
-  pay_rate: number;
-  job_location: string;
-  staff_needed: number;
-  staff_assigned: number;
-  submission_cycle: 'PRIMARY' | 'SECONDARY';
-  created_at: Date;
-  break_duration?: number; // in minutes
-  status: 0 | 1 | 2;
-}
+import { Shift } from '../types/hooks';
 
 export const useShifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
