@@ -169,11 +169,32 @@ export const useAuth = () => {
   const signup = async (signupData: SignupData) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
+    // Validate required fields based on user type
     if (signupData.userType === 'employer' && !signupData.companyName?.trim()) {
       setAuthState(prev => ({
         ...prev,
         loading: false,
         error: 'Company name is required for employers',
+      }));
+      return;
+    }
+
+    // Validate password confirmation
+    if (signupData.password !== signupData.confirmPassword) {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: 'Passwords do not match',
+      }));
+      return;
+    }
+
+    // Validate postal code format (Singapore 6-digit format)
+    if (signupData.postalCode && !/^[0-9]{6}$/.test(signupData.postalCode)) {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: 'Postal code must be 6 digits',
       }));
       return;
     }
@@ -188,7 +209,11 @@ export const useAuth = () => {
             first_name: signupData.firstName,
             last_name: signupData.lastName,
             ...(signupData.phoneNumber && { phone_number: signupData.phoneNumber }),
+            ...(signupData.dateOfBirth && { date_of_birth: signupData.dateOfBirth }),
+            ...(signupData.address && { address: signupData.address }),
+            ...(signupData.postalCode && { postal_code: signupData.postalCode }),
             ...(signupData.companyName && { company_name: signupData.companyName }),
+            ...(signupData.officeNumber && { office_number: signupData.officeNumber }),
           },
         },
       });
@@ -196,7 +221,33 @@ export const useAuth = () => {
       if (error) throw error;
 
       if (data.user) {
-        await updateUserState(data.user, true); 
+        console.log('🔍 Signup Debug - User created successfully');
+        console.log('🔍 Signup Debug - User metadata stored:', data.user.user_metadata);
+        
+        // Check if the user needs email confirmation immediately
+        if (data.user && !data.session) {
+          console.log('🔍 Signup Debug - Email confirmation required, redirecting to login');
+          // User was created but needs to confirm email before they can log in
+          // Set a success message and navigate to login page immediately
+          setAuthState({
+            user: null,
+            loading: false,
+            error: null, // No error - this is expected behavior
+          });
+          
+          // Store success message for the login page to display
+          sessionStorage.setItem('signup_success', 'Account created successfully! Please check your email and confirm your account, then log in.');
+          
+          // Navigate to login page immediately
+          navigate('/auth?mode=login');
+          return;
+        }
+        
+        // If we have a session (auto-login worked), proceed with navigation
+        if (data.session && data.user) {
+          await updateUserState(data.user, true);
+          return;
+        } 
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Signup failed';
