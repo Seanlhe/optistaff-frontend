@@ -12,7 +12,6 @@ import JSLayout from './pages/JSLayout'
 import JSPref from './pages/employee/JSPref'
 import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import { AuthDebugger } from './components/AuthDebugger'
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -27,7 +26,6 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthDebugger />
       <Routes>
         <Route path="/" element={<LandingPage/>}/>
         <Route path="/auth" element={<Auth/>}/>

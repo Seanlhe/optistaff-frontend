@@ -54,19 +54,12 @@ export const useAuth = () => {
           // If neither, default to jobseeker
         }
       } catch (error) {
-        console.log('🔍 Auth Debug - Database role check failed, using default');
+        // Database role check failed, using default
       }
     }
     
-    // Debug logging
-    console.log('🔍 Auth Debug - User metadata:', user.user_metadata);
-    console.log('🔍 Auth Debug - Extracted userType:', userType);
-    console.log('🔍 Auth Debug - Mapped role:', role);
-    console.log('🔍 Auth Debug - Should navigate:', shouldNavigate);
-    
     // Only set auth state if role was determined
     if (!role) {
-      console.log('🔍 Auth Debug - ERROR: No role could be determined for user');
       setAuthState({
         user: null,
         loading: false,
@@ -88,7 +81,6 @@ export const useAuth = () => {
     // Navigate to appropriate dashboard if needed
     if (shouldNavigate) {
       const targetRoute = role === 'jobseeker' ? '/employee/preferences' : '/employer/dashboard';
-      console.log('🔍 Auth Debug - Navigating to:', targetRoute);
       navigate(targetRoute);
     }
   }, [navigate]);
@@ -221,12 +213,8 @@ export const useAuth = () => {
       if (error) throw error;
 
       if (data.user) {
-        console.log('🔍 Signup Debug - User created successfully');
-        console.log('🔍 Signup Debug - User metadata stored:', data.user.user_metadata);
-        
         // Check if the user needs email confirmation immediately
         if (data.user && !data.session) {
-          console.log('🔍 Signup Debug - Email confirmation required, redirecting to login');
           // User was created but needs to confirm email before they can log in
           // Set a success message and navigate to login page immediately
           setAuthState({

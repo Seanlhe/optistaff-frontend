@@ -101,8 +101,6 @@ const Auth = () => {
         officeNumber: userType === "employer" ? officeNumber : undefined,
       };
       
-      console.log('🔍 Auth Debug - Signup data being passed:', signupData);
-      
       await signup(signupData);
     } else {
       await login(email, password);
