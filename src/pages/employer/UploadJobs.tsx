@@ -1,5 +1,5 @@
 import CustomInputField from "../../components/CustomInputField"
-import { JobFormData } from "@/types/components"
+import { JobFormData } from "../../types/components"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {checkTimeValid, getTimeError} from "../../utils/uploadjobs"

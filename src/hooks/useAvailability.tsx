@@ -32,7 +32,7 @@ export const useAvailability = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch availability for a given cycle
-  const getAvailability = useCallback(async (cycle: 'PRIMARY' | 'SECONDARY'): Promise<TimeBlock[]> => {
+  const getAvailability = useCallback(async (cycle: 'PRIMARY' | 'SECONDARY') => {
     setFetchLoading(true);
     setError(null);
 
@@ -72,7 +72,7 @@ export const useAvailability = () => {
   // Save new set of availability windows
   const setAvailability = useCallback(async (
     timeBlocks: Omit<TimeBlock, 'user_id'>[]
-  ): Promise<boolean> => {
+  ) => {
     setSaveLoading(true);
     setError(null);
 
