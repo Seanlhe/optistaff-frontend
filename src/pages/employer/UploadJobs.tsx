@@ -2,9 +2,12 @@ import CustomInputField from "../../components/CustomInputField"
 import { JobFormData } from "../../types/components"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import {checkTimeValid, getTimeError} from "../../utils/uploadjobs"
+import { useShifts } from "../../hooks/useShifts";
+import { Shift } from "../../types/hooks";
+import {checkTimeValid, getTimeError, getDateForm} from "../../utils/uploadjobs"
 export default function UploadJobs(){
     const navigate = useNavigate();
+    const {createShift, error, loading} = useShifts();
     const [jobForm, setJobForm] = useState<JobFormData>({
         jobTitle: "",
         date: "",
@@ -12,8 +15,8 @@ export default function UploadJobs(){
         endTime: "",
         address: "",
         zipCode: "",
-        payRate: 10,
-        noPax: 1,
+        payRate: 0,
+        noPax: 0,
         description: ""
     })
 
@@ -23,13 +26,33 @@ export default function UploadJobs(){
         setJobForm((prevData: JobFormData)=> ({...prevData, [name]:value}));
     }
 
-    function handleSubmit(e: React.MouseEvent<HTMLButtonElement>){
-        e.preventDefault();
-        console.log(jobForm);
-    }
-
     function handleCancel(){
         navigate("/employer/dashboard");
+    }
+
+    async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        const {
+            jobTitle, date, startTime, endTime, address, zipCode,
+            payRate, noPax, description
+        } = jobForm;
+        console.log(date, startTime);
+        const start_date = getDateForm(date, startTime);
+        console.log(start_date);
+        const end_date = getDateForm(date, endTime);
+        const newShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"> = {
+            title: jobTitle,
+            description: description,
+            start_time: start_date,
+            end_time: end_date,
+            job_location: `${address} ${zipCode}`,
+            pay_rate: parseFloat(String(payRate)),
+            staff_needed: parseInt(String(noPax)),
+            submission_cycle: "PRIMARY",
+            break_duration: 20
+        };
+        await createShift(newShift);
+        console.log("Submitted shift:", newShift);
     }
 
     return <div id="upload-jobs-content" className="min-h-full flex flex-col px-16 py-8 gap-10 bg-tertiary-bg">

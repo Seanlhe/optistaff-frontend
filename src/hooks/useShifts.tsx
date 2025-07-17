@@ -46,7 +46,7 @@ export const useShifts = () => {
     fetchShifts();
   }, [fetchShifts]);
 
-  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned">) => {
+  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => {
     // Create shift implementation will go here
     setLoading(true);
     setError(null);
@@ -55,8 +55,12 @@ export const useShifts = () => {
       return;
     }
 
+    const new_shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned"> = {
+      ...shift_data,
+      client_id: user.id
+    }
     const { error } = await supabase.rpc('create_shift', {
-      ...shift_data
+      ...new_shift_data
     });
 
     if (error) {
@@ -67,9 +71,7 @@ export const useShifts = () => {
 
     // Optionally, you can refetch shifts after creating a new one
     await fetchShifts();
-
     setLoading(false);
-
   };
 
   const updateShift = async (shift_id: string, shift_data: Partial<Shift>) => {

@@ -8,15 +8,10 @@
   --color-bg: hsl(219, 45%, 97%);         /* hsl(228, 71%, 97%) */
   --color-secondary-bg:hsl(217, 66%, 93%);        /* oklch(0.93 0.02 262.44); */
   --color-tertiary-bg: hsl(228, 71%, 98%);            /* oklch(0.96 0.01 262.41)  */
-<<<<<<< Updated upstream
   --color-red: hsl(346, 70%, 75%);
   --color-red-dark: hsl(339, 63%, 61%);
   --color-green: hsl(167, 62%, 65%);
   --color-green-dark: hsl(169, 59%, 48%);
-=======
-    --color-red: hsl(346, 70%, 60%);
-  --color-green: hsl(169, 59%, 48%);
->>>>>>> Stashed changes
   --color-landing-bg: hsl(197, 60%, 86%);
   --color-border: hsl(0, 0%, 92%);
   --font-montserrat: "montserrat-medium";
@@ -37,16 +32,6 @@
       transform: translateY(0);
     }
   }
-}
-
-:root {
-  --primary-text: hsl(0, 0%, 5%);
-  --secondary-text: hsl(0, 0%, 30%);
-  --primary-blue: hsl(227, 70%, 50%);
-  --card-color: white;
-  --bg: hsl(228, 71%, 97%);
-  --secondary-bg: hsl(228, 40%, 95%);
-  font-size: 16px;
 }
 
 
