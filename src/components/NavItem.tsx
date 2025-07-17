@@ -11,15 +11,9 @@ export default function NavItem({
   const inactive: string =
     "hover:bg-button-hover hover:text-white font-montserrat text-white/90 box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-2.5 rounded-lg";
   const active: string =
-<<<<<<< Updated upstream
     "bg-white border-r-5 border-button-color font-montserrat-smb text-black box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-2.5 rounded-lg transition-all duration-200 ease-in-out";
   const activeImage: string = "brightness-0";
   const inactiveImage: string = "brightness-100 invert-1";
-=======
-    "bg-white border-r-4 border-[#b1c9ef] font-montserrat-smb text-black box-border w-full flex flex-row items-center gap-2.5 justify-start px-2 py-4 rounded-lg transition-all duration-200 ease-in-out";
-    const activeImage: string = "brightness-0";
-    const inactiveImage: string = "brightness-100 invert-1";
->>>>>>> Stashed changes
   return (
     <Link
       to={to}

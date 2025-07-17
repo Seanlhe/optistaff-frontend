@@ -1,26 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-<<<<<<< Updated upstream
-   --color-primary-text:  hsl(0, 0%, 12%);        /* hsl(0, 0%, 5%) */
-=======
     --color-primary-text:  hsl(0, 0%, 12%);        /* hsl(0, 0%, 5%) */
->>>>>>> Stashed changes
   --color-secondary-text: hsl(0, 0%, 40%);         /* hsl(0, 0%, 30%) */
   --color-primary-blue: hsl(215, 50%, 50%);   /* hsl(227, 70%, 50%) */
   --color-card-color: hsl(0, 0%, 100%);               /* white */
   --color-bg: hsl(219, 45%, 97%);         /* hsl(228, 71%, 97%) */
   --color-secondary-bg:hsl(217, 66%, 93%);        /* oklch(0.93 0.02 262.44); */
   --color-tertiary-bg: hsl(228, 71%, 98%);            /* oklch(0.96 0.01 262.41)  */
-<<<<<<< Updated upstream
   --color-red: hsl(346, 70%, 75%);
   --color-red-dark: hsl(339, 63%, 61%);
   --color-green: hsl(167, 62%, 65%);
   --color-green-dark: hsl(169, 59%, 48%);
-=======
-    --color-red: hsl(346, 70%, 60%);
-  --color-green: hsl(169, 59%, 48%);
->>>>>>> Stashed changes
   --color-landing-bg: hsl(197, 60%, 86%);
   --color-border: hsl(0, 0%, 92%);
   --font-montserrat: "montserrat-medium";
@@ -43,6 +34,50 @@
   }
   --animate-slidedown: slidedown 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
   --animate-slide: slide 15s linear infinite;
+  
+  
+  --color-primary: hsl(240 5.9% 10%);
+  --color-primary-foreground: hsl(0 0% 98%);
+  
+  --color-secondary: hsl(240 4.8% 95.9%);
+  --color-secondary-foreground: hsl(240 5.9% 10%);
+  
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+  
+  --color-muted: hsl(240 4.8% 95.9%);
+  --color-muted-foreground: hsl(240 3.8% 46.1%);
+  
+  --color-accent: hsl(240 4.8% 95.9%);
+  --color-accent-foreground: hsl(240 5.9% 10%);
+  
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(240 10% 3.9%);
+  
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(240 10% 3.9%);
+  
+  --color-chart-1: hsl(12 76% 61%);
+  --color-chart-2: hsl(173 58% 39%);
+  --color-chart-3: hsl(197 37% 24%);
+  --color-chart-4: hsl(43 74% 66%);
+  --color-chart-5: hsl(27 87% 67%);
+  
+  --radius: 0.5rem;
+
+  --font-base: "montserrat-medium";
+  --font-smb: "montserrat-semibold";
+  --font-bold: "montserrat-bold";
+}
+
+:root {
+  --primary-text: hsl(0, 0%, 5%);
+  --secondary-text: hsl(0, 0%, 30%);
+  --primary-blue: hsl(227, 70%, 50%);
+  --card-color: white;
+  --bg: hsl(228, 71%, 97%);
+  --secondary-bg: hsl(228, 40%, 95%);
+  font-size: 16px;
 }
 
 
