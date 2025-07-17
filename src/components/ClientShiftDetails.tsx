@@ -1,8 +1,9 @@
 import { Shift } from "../types/hooks";
 import { format } from "date-fns";
-
+import { useState } from "react";
 interface ClientShiftDetailsProps extends Shift {
   onClose?: () => void;
+  onDelete?: (shift_id: string) => Promise<void>;
 }
 
 export default function ClientShiftDetails({
@@ -21,7 +22,27 @@ export default function ClientShiftDetails({
   break_duration,
   status,
   onClose,
+  onDelete,
 }: ClientShiftDetailsProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!onDelete) return;
+
+    try {
+      setIsDeleting(true);
+      await onDelete(shift_id);
+
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to delete shift:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // Format times for display
   const startTimeFormatted = format(start_time, "h:mm a");
   const endTimeFormatted = format(end_time, "h:mm a");
@@ -77,6 +98,28 @@ export default function ClientShiftDetails({
         <p className="text-lg font-medium">
           {staff_assigned} / {staff_needed}
         </p>
+      </div>
+
+      {/* Edit and Delete Buttons */}
+      <div className="mt-6 flex justify-end gap-4">
+        <button
+          className="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors"
+          onClick={() => {
+            // Handle edit action
+            console.log("Edit shift", shift_id);
+          }}
+        >
+          Edit
+        </button>
+        <button
+          className={`bg-red-dark text-white px-4 py-2 rounded-lg hover:bg-red transition-colors ${
+            isDeleting ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          onClick={handleDelete}
+          disabled={isDeleting}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

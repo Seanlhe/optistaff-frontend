@@ -12,7 +12,7 @@ export default function ClientRoster() {
   // Dynamic calendar state
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
-  const { shifts, loading, error } = useShifts();
+  const { shifts, loading, error, deleteShift } = useShifts();
 
   const availableLocations = useMemo(() => {
     if (!shifts || shifts.length === 0) return [];
@@ -147,6 +147,7 @@ export default function ClientRoster() {
             <ClientShiftDetails
               {...selectedShift}
               onClose={handleCloseDetails}
+              onDelete={deleteShift}
             />
           </div>
         </div>
