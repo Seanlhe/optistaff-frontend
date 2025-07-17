@@ -18,7 +18,11 @@ export default function ClientNav(){
     }
     
     return(
+<<<<<<< Updated upstream
     <div id="navbar-container" className='sticky top-0 box-border col-span-1 h-screen flex flex-col gap-1 bg-gradient-to-b from-[#395886] to-[#628ECB] px-4 py-8'>
+=======
+    <div id="navbar-container" className='sticky top-0 box-border col-span-1 h-screen flex flex-col gap-1 bg-gradient-to-b from-[#395886] to-[#628ecb] px-4 py-8'>
+>>>>>>> Stashed changes
         <div className = 'flex flex-col gap-1'>
             <h1 className = 'font-montserrat-smb text-white text-center text-3xl' >OptiStaff</h1>
             <h2 className = 'font-montserrat text-white text-center text-xl mb-8'>Client Portal</h2>
