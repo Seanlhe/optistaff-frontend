@@ -1,68 +1,52 @@
 import ClientShiftDetails from "../../components/ClientShiftDetails";
 import ClientCalendarHeader from "../../components/ClientCalendarHeader";
 import ClientCalendarDay from "../../components/ClientCalendarDay";
-import { ClientShiftProps } from "../../types/components";
-import { useState } from "react";
+import { Shift } from "../../types/hooks";
+import { useShifts } from "../../hooks/useShifts";
+import { useMemo, useState } from "react";
+import { format, startOfWeek, addDays } from "date-fns";
 
 export default function ClientRoster() {
-  const availableLocations = ["Tangs Plaza", "JW"];
+  const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
+
+  // Dynamic calendar state
+  const [currentWeek, setCurrentWeek] = useState(new Date());
+
+  const { shifts, loading, error } = useShifts();
+
+  const availableLocations = useMemo(() => {
+    if (!shifts || shifts.length === 0) return [];
+
+    // Get unique locations from shifts
+    const locations = [...new Set(shifts.map((shift) => shift.job_location))];
+    return locations;
+  }, [shifts]);
+
   const [selectedLocation, setSelectedLocation] = useState(
     availableLocations[0]
   );
 
-  const [selectedShift, setSelectedShift] = useState<ClientShiftProps | null>(
-    null
-  );
+  // Calculate dynamic week days
+  const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Start on Monday
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const date = addDays(weekStart, i);
+    const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    return {
+      name: dayNames[i],
+      date: format(date, "dd MMM yyyy"), // Format: "22 May 2025"
+    };
+  });
 
-  const shiftData: ClientShiftProps[] = [
-    {
-      id: 1,
-      startTime: "8:00 AM",
-      endTime: "4:00 PM",
-      date: "23 May 2025",
-      location: "Tangs Plaza",
-      title: "Front Desk Receptionist",
-      payRate: 20,
-      employeeName: "John Doe",
-      filled: 2,
-      required: 2,
-    },
-    {
-      id: 2,
-      startTime: "9:00 AM",
-      endTime: "5:00 PM",
-      date: "25 May 2025",
-      location: "Tangs Plaza",
-      title: "Housekeeping Staff",
-      payRate: 18,
-      employeeName: "Jane Smith",
-      filled: 15,
-      required: 20,
-    },
-    {
-      id: 3,
-      startTime: "7.00 AM",
-      endTime: "3.00 PM",
-      date: "22 May 2025",
-      location: "JW",
-      title: "Kitchen Staff",
-      payRate: 22,
-      employeeName: "Alice Johnson",
-      filled: 10,
-      required: 15,
-    },
-  ];
-  const days = [
-    { name: "Mon", date: "22 May 2025" },
-    { name: "Tue", date: "23 May 2025" },
-    { name: "Wed", date: "24 May 2025" },
-    { name: "Thu", date: "25 May 2025" },
-    { name: "Fri", date: "26 May 2025" },
-    { name: "Sat", date: "27 May 2025" },
-    { name: "Sun", date: "28 May 2025" },
-  ];
+  // Navigation functions
+  const navigateWeek = (direction: "prev" | "next") => {
+    setCurrentWeek(addDays(currentWeek, direction === "next" ? 7 : -7));
+  };
 
-  const handleShiftClick = (shift: ClientShiftProps) => {
+  const goToToday = () => {
+    setCurrentWeek(new Date());
+  };
+
+  const handleShiftClick = (shift: Shift) => {
     setSelectedShift(shift);
   };
 
@@ -70,8 +54,52 @@ export default function ClientRoster() {
     setSelectedShift(null);
   };
 
+  if (loading) {
+    return (
+      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-secondary-text text-lg">Loading shifts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-lg text-red">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!shifts || shifts.length === 0) {
+    return (
+      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+        <h1 className="text-3xl text-secondary-text font-montserrat-b">
+          Weekly Roster
+        </h1>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-lg text-secondary-text">No shifts found</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render until we have locations
+  if (availableLocations.length === 0) {
+    return (
+      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-lg">Processing shifts...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-4">
+    <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
       <p className="text-3xl text-secondary-text font-montserrat-b">
         Weekly Roster
       </p>
@@ -87,6 +115,8 @@ export default function ClientRoster() {
           onLocationChange={setSelectedLocation}
           availableLocations={availableLocations}
           days={days}
+          onNavigateWeek={navigateWeek}
+          onGoToToday={goToToday}
         />
 
         {/* Calendar Days */}
@@ -95,7 +125,7 @@ export default function ClientRoster() {
             <ClientCalendarDay
               key={day.date}
               day={day}
-              shiftData={shiftData}
+              shiftData={shifts}
               selectedLocation={selectedLocation}
               selectedShift={selectedShift}
               onShiftClick={handleShiftClick}

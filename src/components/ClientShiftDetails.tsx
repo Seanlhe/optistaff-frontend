@@ -1,29 +1,37 @@
-import { ClientShiftProps } from "../types/components";
+import { Shift } from "../types/hooks";
+import { format } from "date-fns";
 
-interface ClientShiftDetailsProps extends ClientShiftProps {
+interface ClientShiftDetailsProps extends Shift {
   onClose?: () => void;
 }
 
 export default function ClientShiftDetails({
-  id,
-  startTime,
-  endTime,
-  date,
-  location,
+  shift_id,
+  client_id,
   title,
-  payRate,
-  employeeName,
-  filled,
-  required,
+  description,
+  start_time,
+  end_time,
+  pay_rate,
+  job_location,
+  staff_needed,
+  staff_assigned,
+  submission_cycle,
+  created_at,
+  break_duration,
+  status,
   onClose,
 }: ClientShiftDetailsProps) {
+  // Format times for display
+  const startTimeFormatted = format(start_time, "h:mm a");
+  const endTimeFormatted = format(end_time, "h:mm a");
   return (
-    <div className="bg-white p-4 rounded-lg">
+    <div className="bg-white p-4 rounded-lg w-150">
       {/* Header with Close Button */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <p className="text-gray-500 text-sm mb-1">Title</p>
-          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+          <p className="text-secondary-text text-sm mb-1">Title</p>
+          <h2 className="text-xl font-semibold">{title}</h2>
         </div>
         <button
           onClick={onClose}
@@ -37,39 +45,37 @@ export default function ClientShiftDetails({
 
       {/* Shift Time */}
       <div className="mb-4">
-        <p className="text-gray-500 text-sm mb-1">Shift Time</p>
-        <p className="text-lg font-medium text-gray-900">
-          {startTime} - {endTime}
+        <p className="text-secondary-text text-sm mb-1">Shift Time</p>
+        <p className="text-lg font-medium">
+          {startTimeFormatted} - {endTimeFormatted}
         </p>
       </div>
 
       {/* Location */}
       <div className="mb-4">
-        <p className="text-gray-500 text-sm mb-1">Location</p>
-        <p className="text-lg font-medium text-gray-900">{location}</p>
+        <p className="text-secondary-text text-sm mb-1">Location</p>
+        <p className="text-lg font-medium">{job_location}</p>
       </div>
 
       {/* Pay Rate */}
       <div className="mb-4">
-        <p className="text-gray-500 text-sm mb-1">Pay Rate</p>
-        <p className="text-lg font-medium text-gray-900">
-          ${payRate.toFixed(2)}
-        </p>
+        <p className="text-secondary-text text-sm mb-1">Pay Rate</p>
+        <p className="text-lg font-medium">${pay_rate.toFixed(2)}</p>
       </div>
 
-      {/* Assigned Employee */}
-      {employeeName && (
+      {/* Description */}
+      {description && (
         <div className="mb-4">
-          <p className="text-gray-500 text-sm mb-1">Assigned Employee</p>
-          <p className="text-lg font-medium text-gray-900">{employeeName}</p>
+          <p className="text-secondary-text text-sm mb-1">Description</p>
+          <p className="text-lg font-medium">{description}</p>
         </div>
       )}
 
       {/* Filled / Required */}
       <div>
-        <p className="text-gray-500 text-sm mb-1">Filled / Required</p>
-        <p className="text-lg font-medium text-gray-900">
-          {filled} / {required}
+        <p className="text-secondary-text text-sm mb-1">Filled / Required</p>
+        <p className="text-lg font-medium">
+          {staff_assigned} / {staff_needed}
         </p>
       </div>
     </div>
