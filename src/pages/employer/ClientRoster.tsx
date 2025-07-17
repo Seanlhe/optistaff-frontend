@@ -12,7 +12,7 @@ export default function ClientRoster() {
   // Dynamic calendar state
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
-  const { shifts, loading, error, deleteShift } = useShifts();
+  const { shifts, loading, error, deleteShift, updateShift } = useShifts();
 
   const availableLocations = useMemo(() => {
     if (!shifts || shifts.length === 0) return [];
@@ -100,7 +100,7 @@ export default function ClientRoster() {
 
   return (
     <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
-      <p className="text-3xl text-secondary-text font-montserrat-b">
+      <p className="text-3xl text-primary-text font-montserrat-b">
         Weekly Roster
       </p>
 

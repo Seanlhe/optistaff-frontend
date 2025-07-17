@@ -4,6 +4,7 @@ import { useState } from "react";
 interface ClientShiftDetailsProps extends Shift {
   onClose?: () => void;
   onDelete?: (shift_id: string) => Promise<void>;
+  onEdit?: (shift: Shift) => void;
 }
 
 export default function ClientShiftDetails({
@@ -23,6 +24,7 @@ export default function ClientShiftDetails({
   status,
   onClose,
   onDelete,
+  onEdit,
 }: ClientShiftDetailsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -102,24 +104,21 @@ export default function ClientShiftDetails({
 
       {/* Edit and Delete Buttons */}
       <div className="mt-6 flex justify-end gap-4">
-        <button
-          className="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors"
-          onClick={() => {
-            // Handle edit action
-            console.log("Edit shift", shift_id);
-          }}
-        >
+        <button className="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors">
           Edit
         </button>
-        <button
-          className={`bg-red-dark text-white px-4 py-2 rounded-lg hover:bg-red transition-colors ${
-            isDeleting ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          onClick={handleDelete}
-          disabled={isDeleting}
-        >
-          Delete
-        </button>
+        {/* Delete Button - Only show if status is NOT 2 (completed) */}
+        {status !== 2 && (
+          <button
+            className={`bg-red-dark text-white px-4 py-2 rounded-lg hover:bg-red transition-colors ${
+              isDeleting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+        )}
       </div>
     </div>
   );
