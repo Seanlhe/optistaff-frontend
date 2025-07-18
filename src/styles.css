@@ -54,7 +54,7 @@
   src: url(/fonts/Montserrat-Italic.ttf);
 }
 
-/* Set default font for the entire application */
+/* JOVITA EDIT : Set default font for the entire application */
 body {
   font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
