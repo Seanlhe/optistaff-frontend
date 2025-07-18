@@ -13,9 +13,9 @@ const Alert = React.forwardRef<
     className={cn(
       "relative w-full rounded-lg border p-4",
       {
-        "bg-red-50 border-color-red text-red-800": variant === "destructive",
-        "bg-blue-50 border-blue-200 text-blue-800": variant === "default",
-        "bg-yellow-50 border-yellow-200 text-yellow-800": variant === "warning",
+        "bg-tertiary-bg border-error text-error-dark": variant === "destructive",
+        "bg-tertiary-bg border-primary-blue text-primary-blue": variant === "default",
+        "bg-tertiary-bg border-border-color text-secondary-text": variant === "warning",
       },
       className
     )}

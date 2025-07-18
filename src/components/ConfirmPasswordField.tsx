@@ -32,15 +32,15 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
 
   const getValidationColor = () => {
     if (!showValidation) return '';
-    return passwordsMatch ? 'border-green-500' : 'border-red-500';
+    return passwordsMatch ? 'border-success' : 'border-error';
   };
 
   const getValidationIcon = () => {
     if (!showValidation) return null;
     return passwordsMatch ? (
-      <Check className="h-4 w-4 text-green-500" />
+      <Check className="h-4 w-4 text-success" />
     ) : (
-      <X className="h-4 w-4 text-red-500" />
+      <X className="h-4 w-4 text-error" />
     );
   };
 
@@ -51,14 +51,14 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
     
     if (passwordsMatch) {
       return (
-        <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
+        <p className="text-sm text-success-dark flex items-center gap-1 mt-1">
           <Check className="h-3 w-3" />
           Passwords match
         </p>
       );
     } else {
       return (
-        <p className="text-sm text-red-600 flex items-center gap-1 mt-1">
+        <p className="text-sm text-error-dark flex items-center gap-1 mt-1">
           <X className="h-3 w-3" />
           Passwords do not match
         </p>
@@ -70,7 +70,7 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
     <div className="space-y-2">
       <Label htmlFor="confirmPassword">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-error ml-1">*</span>}
       </Label>
       
       <div className="relative">
@@ -90,7 +90,7 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-secondary-text hover:text-primary-text"
             disabled={disabled}
             tabIndex={-1}
           >
@@ -106,7 +106,7 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
       {getValidationMessage()}
       
       {required && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-secondary-text">
           Password confirmation is required
         </p>
       )}
