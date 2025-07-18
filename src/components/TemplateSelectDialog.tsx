@@ -52,10 +52,10 @@ export const TemplateSelectDialog = ({
         className="bg-card-color rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border"
       >
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold text-primary-text">Templates</h2>
+          <h2 className="text-lg font-bold text-primary-text">Templates</h2>
           <button
             onClick={handleClose} // Close popup only when clicking the X button
-            className="p-1 hover:bg-secondary-bg rounded transition-colors"
+            className="p-1 hover:bg-bg rounded transition-colors"
             disabled={loading}
           >
             <X className="h-5 w-5 text-secondary-text" />
@@ -67,14 +67,14 @@ export const TemplateSelectDialog = ({
             <button
               type="button"
               onClick={() => onSaveTemplate && onSaveTemplate()}
-              className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors disabled:opacity-50"
               disabled={loading}
             >
               Save as A New Template
             </button>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-primary-text mb-2">
+            <label className="block text-base font-semibold text-primary-text mb-2">
               Select a template
             </label>
             
@@ -95,7 +95,7 @@ export const TemplateSelectDialog = ({
                     className="flex items-center justify-between p-3 border border-border rounded-md : cursor-pointer transition-colors"
                   >
                     <div className="flex-1">
-                      <div className="font-medium text-primary-text">{template.name}</div>
+                      <div className="text-base font-semibold text-primary-text">{template.name}</div>
                       <div className="text-sm text-secondary-text">
                         Created: {new Date(template.created_at).toLocaleDateString()}
                       </div>
@@ -103,7 +103,7 @@ export const TemplateSelectDialog = ({
                     <button
                       type="button"
                       onClick={() => onSelect(template.id)}
-                      className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors"
+                      className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
                     >
                       Use Template
                     </button>
