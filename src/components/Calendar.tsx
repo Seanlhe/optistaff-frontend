@@ -196,14 +196,14 @@ const Calendar = () => {
       <header className="flex items-center justify-between p-4 border-b border-border bg-card-color">
         <div className="flex items-center">
           <button
-            className="p-2 rounded-md hover:bg-bg transition-colors"
+            className="p-2 rounded-md hover:bg-secondary-bg transition-colors"
             onClick={() => navigateWeek("prev")}
           >
             <ChevronLeft className="h-5 w-5 text-secondary-text" />
           </button>
 
           <button
-            className="p-2 rounded-md hover:bg-bg transition-colors"
+            className="p-2 rounded-md hover:bg-secondary-bg transition-colors"
             onClick={() => navigateWeek("next")}
           >
             <ChevronRight className="h-5 w-5 text-secondary-text" />
@@ -216,14 +216,14 @@ const Calendar = () => {
 
         <div className="flex items-center gap-2">
           <button
-            className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
+            className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors"
             onClick={() => setCurrentWeek(new Date())}
           >
             Today
           </button>
 
           <button
-            className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors flex items-center gap-2"
             onClick={() => setShowTemplateSelectDialog(true)}
           >
             <File className="h-4 w-4" />
@@ -231,7 +231,7 @@ const Calendar = () => {
           </button>
 
           <button
-            className="px-4 py-2 text-sm bg-primary-blue text-white rounded-md bg-primary-blue/80 transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm bg-gradient-end text-white rounded-md hover:bg-gradient-end/80 transition-colors flex items-center gap-2"
             onClick={handleSaveAvailability}
             disabled={saveLoading}
           >
@@ -240,7 +240,7 @@ const Calendar = () => {
           </button>
 
           <button
-            className="p-2 text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
+            className="p-2 text-secondary-text border border-border rounded-md hover:bg-secondary-bg transition-colors"
             onClick={handleRefreshAvailability}
             disabled={fetchLoading}
             title="Refresh"
@@ -291,7 +291,7 @@ const Calendar = () => {
               {HOURS.map((hour) => (
                 <div
                   key={hour}
-                  className="h-12 border-b border-border hover:bg-bg cursor-pointer"
+                  className="h-12 border-b border-border hover:bg-secondary-text/4 cursor-pointer"
                   onDoubleClick={() => handleDoubleClick(day, hour)}
                 ></div>
               ))}
