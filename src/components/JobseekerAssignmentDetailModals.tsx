@@ -14,7 +14,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg mx-auto">
+      <DialogContent className="bg-bg max-w-lg mx-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-primary-text">
             {shift.title}
@@ -27,7 +27,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
 
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 gap-3">
-            <div className="flex items-start space-x-3 p-3 bg-secondary-bg rounded-lg">
+            <div className="flex items-start space-x-3 p-3 bg-card-color border border-border rounded-lg">
               <Clock className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
                 <p className="font-medium text-primary-text">Schedule</p>
@@ -36,7 +36,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 p-3 bg-secondary-bg rounded-lg">
+            <div className="flex items-start space-x-3 p-3 bg-card-color border border-border rounded-lg">
               <MapPin className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
                 <p className="font-medium text-primary-text">Location</p>
@@ -44,7 +44,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 p-3 bg-secondary-bg rounded-lg">
+            <div className="flex items-start space-x-3 p-3 bg-card-color border border-border rounded-lg">
               <DollarSign className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
                 <p className="font-medium text-primary-text">Compensation</p>
@@ -78,7 +78,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
           )}
 
           {shift.status === "completed" && shift.employerFeedback && (
-            <div className="space-y-3 border-t border-border pt-4">
+            <div className="space-y-3 border border-border pt-4">
               <div className="flex items-center space-x-2">
                 <Star className="w-4 h-4 text-primary-blue" />
                 <h4 className="font-medium text-primary-text">Employer Feedback</h4>
@@ -103,17 +103,6 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
                 {shift.employerFeedback}
               </p>
             </div>
-          )}
-        </div>
-
-        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-border">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-          {shift.status === "upcoming" && (
-            <Button variant="default">
-              Apply for Shift
-            </Button>
           )}
         </div>
       </DialogContent>

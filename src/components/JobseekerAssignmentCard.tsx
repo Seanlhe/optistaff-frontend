@@ -26,7 +26,7 @@ interface JobseekerAssignmentDetailModals {
   onClose?: () => void;
 }
 
-export const ShiftCard = ({ shift, onViewDetails, showStatus = false, onClick }: JobseekerAssignmentDetailModals & { onClick?: () => void }) => {
+export const JobseekerAssignmentCard = ({ shift, onViewDetails, showStatus = false, onClick }: JobseekerAssignmentDetailModals & { onClick?: () => void }) => {
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'completed':
@@ -34,12 +34,12 @@ export const ShiftCard = ({ shift, onViewDetails, showStatus = false, onClick }:
       case 'cancelled':
         return 'bg-color-ring text-color-foreground';
       default:
-        return 'bg-primary-blue text-primary-text';
+        return 'bg-primary-blue text-white';
     }
   };
 
   return (
-    <Card className="p-6 hover:shadow-md transition-all duration-200 border border-border bg-card-color" onClick={onClick}>
+    <Card className="p-6 transition-all duration-200 border border-border bg-card-color shadow-none" onClick={onClick}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <h3 className="font-montserrat-smb text-lg text-primary-text mb-1">
@@ -71,31 +71,11 @@ export const ShiftCard = ({ shift, onViewDetails, showStatus = false, onClick }:
 
       <Button 
         onClick={() => onViewDetails(shift)}
-        className="w-full bg-primary-blue text-primary-text hover:bg-gradient-end hover:text-gradient-start"
+        className="w-full bg-primary-blue text-white hover:bg-primary-blue/80"
         variant="default"
       >
         View Details
       </Button>
     </Card>
-  );
-};
-
-export const JobseekerAssignmentDetailModal = ({ shift, isOpen, onClose }: JobseekerAssignmentDetailModals) => {
-  if (!shift) return null;
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg mx-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-primary-text">
-            {shift.title}
-          </DialogTitle>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-sm text-secondary-text">{shift.company}</span>
-            <span className="text-lg font-bold text-primary-text">${shift.hourlyRate}/hr</span>
-          </div>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
   );
 };
