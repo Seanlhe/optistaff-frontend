@@ -220,9 +220,9 @@ export const CalendarEvent = ({
       className={`
         absolute left-1 right-1 rounded border p-1 cursor-grab select-none
         ${isSelected
-          ? 'bg-gradient-end border-gradient-end'
-          : 'bg-gradient-end/40 border-gradient-end/60'}
-        ${!isSelected ? 'hover:bg-gradient-end/80 hover:border-gradient-end' : ''}
+          ? 'bg-primary-blue border-primary-blue'
+          : 'bg-primary-blue/40 border-primary-blue/60'}
+        ${!isSelected ? 'hover:bg-primary-blue/80 hover:border-primary-blue' : ''}
         ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
       `}
       style={{
@@ -245,7 +245,7 @@ export const CalendarEvent = ({
         {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
       </div>
       <div
-        className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-end cursor-ns-resize rounded-b opacity-0 hover:opacity-100 resize-handle"
+        className="absolute bottom-0 left-0 right-0 h-2 bg-primary-blue cursor-ns-resize rounded-b opacity-0 hover:opacity-100 resize-handle"
         onMouseDown={handleResizeStart}
       />
     </div>

@@ -14,14 +14,14 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-bg max-w-lg mx-auto">
+      <DialogContent className="bg-white max-w-lg mx-auto border border-none">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-primary-text">
+          <DialogTitle className="text-lg font-bold text-primary-text">
             {shift.title}
           </DialogTitle>
           <div className="flex items-center justify-between mt-2">
             <span className="text-sm text-secondary-text">{shift.company}</span>
-            <span className="text-lg font-bold text-primary-text">${shift.hourlyRate}/hr</span>
+            <span className="text-base font-bold text-primary-text">${shift.hourlyRate}/hr</span>
           </div>
         </DialogHeader>
 
@@ -30,7 +30,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
             <div className="flex items-start space-x-3 p-3 bg-card-color border border-border rounded-lg">
               <Clock className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
-                <p className="font-medium text-primary-text">Schedule</p>
+                <p className="text-base font-semibold text-primary-text">Schedule</p>
                 <p className="text-sm text-secondary-text">{shift.date}</p>
                 <p className="text-sm text-secondary-text">{shift.time}</p>
               </div>
@@ -39,7 +39,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
             <div className="flex items-start space-x-3 p-3 bg-card-color border border-border rounded-lg">
               <MapPin className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
-                <p className="font-medium text-primary-text">Location</p>
+                <p className="text-base font-semibold text-primary-text">Location</p>
                 <p className="text-sm text-secondary-text">{shift.location}</p>
               </div>
             </div>
@@ -47,7 +47,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
             <div className="flex items-start space-x-3 p-3 bg-card-color border border-border rounded-lg">
               <DollarSign className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
-                <p className="font-medium text-primary-text">Compensation</p>
+                <p className="text-base font-semibold text-primary-text">Compensation</p>
                 <p className="text-sm text-secondary-text">${shift.hourlyRate} per hour</p>
               </div>
             </div>
@@ -57,7 +57,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Briefcase className="w-4 h-4 text-primary-blue" />
-                <h4 className="font-medium text-primary-text">Job Description</h4>
+                <h4 className="text-base font-semibold text-primary-text">Job Description</h4>
               </div>
               <p className="text-sm text-secondary-text leading-relaxed">
                 {shift.description}
@@ -69,7 +69,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-primary-blue" />
-                <h4 className="font-medium text-primary-text">Requirements</h4>
+                <h4 className="text-base font-semibold text-primary-text">Requirements</h4>
               </div>
               <p className="text-sm text-secondary-text leading-relaxed">
                 {shift.requirements}
@@ -81,7 +81,7 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
             <div className="space-y-3 border border-border pt-4">
               <div className="flex items-center space-x-2">
                 <Star className="w-4 h-4 text-primary-blue" />
-                <h4 className="font-medium text-primary-text">Employer Feedback</h4>
+                <h4 className="text-base font-semibold text-primary-text">Employer Feedback</h4>
               </div>
               {shift.rating && (
                 <div className="flex items-center space-x-2">

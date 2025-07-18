@@ -42,7 +42,7 @@ export const JobseekerAssignmentCard = ({ shift, onViewDetails, showStatus = fal
     <Card className="p-6 transition-all duration-200 border border-border bg-card-color shadow-none" onClick={onClick}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="font-montserrat-smb text-lg text-primary-text mb-1">
+          <h3 className="text-base font-bold text-primary-text mb-1">
             {shift.title}
           </h3>
           <p className="text-secondary-text text-sm">{shift.company}</p>
@@ -65,13 +65,13 @@ export const JobseekerAssignmentCard = ({ shift, onViewDetails, showStatus = fal
         </div>
         <div className="flex items-center text-secondary-text">
           <DollarSign className="w-4 h-4 mr-2" />
-          <span className="text-sm font-montserrat-b">${shift.hourlyRate}/hr</span>
+          <span className="text-sm font-bold">${shift.hourlyRate}/hr</span>
         </div>
       </div>
 
       <Button 
         onClick={() => onViewDetails(shift)}
-        className="w-full bg-primary-blue text-white hover:bg-primary-blue/80"
+        className="w-full bg-primary-blue text-white hover:bg-primary-blue/80 text-sm"
         variant="default"
       >
         View Details

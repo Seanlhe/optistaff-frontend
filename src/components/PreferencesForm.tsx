@@ -11,7 +11,7 @@ const PreferencesForm = () => {
       <PreferencesJobType />
       <Map />
       <div className="flex justify-end mt-6">
-        <button className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-primary-blue-hover">
+        <button className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-primary-blue-hover text-sm">
           Submit
         </button>
       </div>

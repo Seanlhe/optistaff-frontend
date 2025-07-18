@@ -72,7 +72,7 @@ const Dashboard = () => {
 		<div className="min-h-screen bg-bg p-8 pr-12">
 			{/* Header */}
 			<div className="flex justify-between items-center mb-4">
-				<h1 className="text-2xl font-montserrat-b text-primary-text">
+				<h1 className="text-xl font-bold text-primary-text">
 					Welcome Back, <span className="text-primary-blue">{getUserName()}</span>
 				</h1>
 			</div>
@@ -85,12 +85,12 @@ const Dashboard = () => {
 				<div className="bg-card-color rounded-xl p-6 w-full md:order-1">
 					{displayAssignments.length === 0 ? (
 						<div className="flex items-center justify-center h-32">
-							<div className="text-secondary-text">No upcoming assignments</div>
+							<div className="text-secondary-text text-sm">No upcoming assignments</div>
 						</div>
 					) : (
 						<div className="grid grid-cols-1 gap-4">
 							<div className="flex justify-between items-center mb-2 w-full">
-									<h2 className="text-xl font-montserrat-smb text-primary-text">
+									<h2 className="text-base font-bold text-primary-text">
 										Upcoming Assignments
 									</h2>
 									<p className="text-sm text-secondary-text">14 Jun – 15 Jun</p>

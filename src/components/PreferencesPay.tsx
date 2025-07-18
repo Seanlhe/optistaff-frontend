@@ -8,8 +8,8 @@ export const PreferencesPay: React.FC = () => {
   const [considerLower, setConsiderLower] = useState<boolean>(false);
 
   return (
-    <div className="p-6 bg-card-color rounded-lg font-base">
-      <h3 className="text-lg font-smb text-primary-text">
+    <div className="p-6 bg-card-color rounded-lg">
+      <h3 className="text-base font-semibold text-primary-text">
         Desired Hourly Pay Rate ($):
       </h3>
 
@@ -47,7 +47,7 @@ export const PreferencesPay: React.FC = () => {
         />
         <label
           htmlFor="consider-lower-rate"
-          className="ml-3 text-secondary-text cursor-pointer"
+          className="ml-3 text-sm text-secondary-text cursor-pointer"
         >
           Consider me for a job with lower rate
         </label>

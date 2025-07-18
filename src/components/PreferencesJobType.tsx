@@ -30,18 +30,18 @@ export const PreferenceJobType: React.FC = () => {
 
   return (
     <div className="p-4 rounded-lg bg-card-color">
-      <h3 className="text-xl font-bold text-primary-text mb-1">
+      <h3 className="text-lg font-bold text-primary-text mb-1">
         Preferred Job Type
       </h3>
 
-      <p className="text-secondary-text mb-6 font-base">
+      <p className="text-secondary-text mb-6 text-sm">
         Select all job types you're interested in
       </p>
 
       {/* map over each category in the job data */}
       {Object.entries(jobData).map(([category, jobs]) => (
         <div key={category} className="mb-6 last:mb-0">
-          <h4 className="font-smb text-lg mt-4 mb-3 text-primary-text border-b border-border pb-2">
+          <h4 className="text-base font-semibold mt-4 mb-3 text-primary-text border-b border-border pb-2">
             {category}
           </h4>
 
@@ -67,7 +67,7 @@ export const PreferenceJobType: React.FC = () => {
                   onChange={handleCheckboxChange}
                   className="h-4 w-4 rounded-sm border-border text-primary-blue focus:ring-primary-blue"
                 />
-                <span className="ml-3 font-base">{job}</span>
+                <span className="ml-3 text-sm">{job}</span>
               </label>
             ))}
           </div>

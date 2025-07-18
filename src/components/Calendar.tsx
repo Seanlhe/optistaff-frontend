@@ -231,7 +231,7 @@ const Calendar = () => {
           </button>
 
           <button
-            className="px-4 py-2 text-sm bg-primary-blue text-white rounded-md bg-primary-blue/80 transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm bg-primary-blue text-white rounded-md hover:bg-primary-blue/80 flex items-center gap-2"
             onClick={handleSaveAvailability}
             disabled={saveLoading}
           >

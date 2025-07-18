@@ -21,6 +21,7 @@ export default {
         'outline': 'var(--color-outline)',
       },
       fontFamily: {
+        'sans': ['var(--font-montserrat)', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Added by Jovita
         'montserrat': 'var(--font-montserrat)',
         'montserrat-smb': 'var(--font-montserrat-smb)',
         'montserrat-b': 'var(--font-montserrat-b)',
