@@ -54,10 +54,10 @@ const JSSettings = () => {
           <h1 className="text-3xl font-bold text-primary-text">Profile Settings</h1>
           <p className="text-secondary-text">Manage your personal information and account settings</p>
         </div>
-
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Profile Stats Card */}
-          <Card>
+          <Card className="bg-white">
             <CardContent className="p-6">
               
               <div className="text-center space-y-4">
@@ -66,7 +66,7 @@ const JSSettings = () => {
                 </div>
                 {/* Avatar Section */}
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="w-35 h-35 flex items-center justify-center bg-gray-200 rounded-full">
+                  <div className="w-35 h-35 flex items-center justify-center bg-bg rounded-full">
                     {profileImage ? (
                       <img src={profileImage} alt="Profile" className="w-full h-full object-cover rounded-full" />
                     ) : (
@@ -80,7 +80,7 @@ const JSSettings = () => {
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <Button onClick={handleAddProfileImage} variant="outline" size="sm">
+                  <Button onClick={handleAddProfileImage} variant="outline" size="sm" className="hover:bg-bg">
                     Add Profile Image
                   </Button>
                   <div>
@@ -88,7 +88,6 @@ const JSSettings = () => {
                   </div>
                 </div>
                 
-                <div className="space-y-3 pt-4">
                   <div className="flex justify-between">
                     <span className="text-sm text-secondary-text">Rating</span>
                     <div className="flex items-center gap-1">
@@ -105,24 +104,24 @@ const JSSettings = () => {
                     <span className="font-medium">Jan 2023</span>
                   </div>
                 </div>
-              </div>
+
             </CardContent>
           </Card>
 
           {/* Personal Information Card */}
-          <Card>
+          <Card className="bg-white">
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-primary-text">Personal Information</h3>
                   {!isEditing ? (
                     <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                      <Edit className="h-4 w-4 mr-2" />
+                      <Edit className="h-4 w-4 mr-2 hover:bg-bg"  />
                       Edit Profile
                     </Button>
                   ) : (
-                    <Button onClick={handleSave} size="sm">
-                      <Save className="h-4 w-4 mr-2" />
+                    <Button onClick={handleSave} size="sm" className="bg-primary-blue text-white hover:bg-primary-blue/80">
+                      <Save className="h-4 w-4 mr-2 button-btn" />
                       Save Details
                     </Button>
                   )}
@@ -141,7 +140,7 @@ const JSSettings = () => {
                       value={formData.email}
                       onChange={(e) => handleInputChange("email", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-input/50 text-primary-text"
+                      className="bg-bg text-primary-text border border-border"
                     />
                   </div>
 
@@ -157,7 +156,7 @@ const JSSettings = () => {
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-input/50 text-primary-text"
+                      className="bg-bg text-primary-text border border-border"
                     />
                   </div>
 
@@ -172,7 +171,7 @@ const JSSettings = () => {
                       value={formData.address}
                       onChange={(e) => handleInputChange("address", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-input/50 text-primary-text"
+                      className="bg-bg text-primary-text border border-border"
                     />
                   </div>
 
@@ -187,7 +186,7 @@ const JSSettings = () => {
                       value={formData.zipcode}
                       onChange={(e) => handleInputChange("zipcode", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-input/50 text-primary-text"
+                      className="bg-bg text-primary-text border border-border"
                     />
                   </div>
 
@@ -197,7 +196,7 @@ const JSSettings = () => {
                 
 
                 {/* Password Section */}
-                <div className="border-t pt-6">
+                <div className="border-border"> 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Lock className="h-5 w-5 text-secondary-text" />
@@ -206,7 +205,7 @@ const JSSettings = () => {
                         <p className="text-sm text-secondary-text">Last changed 3 months ago</p>
                       </div>
                     </div>
-                    <Button variant="outline" onClick={() => setIsPasswordModalOpen(true)}>
+                    <Button className="hover:bg-bg" variant="outline" onClick={() => setIsPasswordModalOpen(true)}>
                       Change Password
                     </Button>
                   </div>
@@ -215,7 +214,6 @@ const JSSettings = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
 
       {/* Password Change Modal */}
       <PasswordChangeModal
