@@ -1,44 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-text:  hsl(0, 0%, 12%);        /* hsl(0, 0%, 5%) */
+   --color-primary-text:  hsl(0, 0%, 12%);        /* hsl(0, 0%, 5%) */
   --color-secondary-text: hsl(0, 0%, 40%);         /* hsl(0, 0%, 30%) */
   --color-primary-blue: hsl(215, 50%, 50%);   /* hsl(227, 70%, 50%) */
   --color-card-color: hsl(0, 0%, 100%);               /* white */
   --color-bg: hsl(219, 45%, 97%);         /* hsl(228, 71%, 97%) */
   --color-secondary-bg:hsl(217, 66%, 93%);        /* oklch(0.93 0.02 262.44); */
   --color-tertiary-bg: hsl(228, 71%, 98%);            /* oklch(0.96 0.01 262.41)  */
-    --color-red: hsl(346, 70%, 60%);
-  --color-green: hsl(169, 59%, 48%);
+  --color-red: hsl(346, 70%, 75%);
+  --color-red-dark: hsl(339, 63%, 61%);
+  --color-green: hsl(167, 62%, 65%);
+  --color-green-dark: hsl(169, 59%, 48%);
   --color-landing-bg: hsl(197, 60%, 86%);
   --color-border: hsl(0, 0%, 92%);
   --font-montserrat: "montserrat-medium";
   --font-montserrat-smb: "montserrat-semibold";
   --font-montserrat-b: "montserrat-bold";
+  @keyframes slide {
+    from{
+      transform: translateX(0);
+    }to{
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes slidedown{
+    from{
+      transform: translateY(-100%)
+    }
+    to{
+      transform: translateY(0);
+    }
+  }
+  --animate-slidedown: slidedown 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  --animate-slide: slide 15s linear infinite;
 }
 
-:root {
-  font-size: 14px;
-}
-
-  /* --color-primary-text: hsl(0, 0%, 12%);
-  --color-secondary-text: hsl(0, 0%, 40%);
-  --color-desc-text: hsl(226, 0%, 60%);
-  --color-blue-text: hsl(216, 40%, 37%);
-  --color-bg: hsl(219, 45%, 95%);
-  --color-card: hsl(217, 66%, 90%);
-
-  --color-hover-btnlight: hsl(219, 49%, 60%);
-  --color-button: hsl(215, 50%, 50%);
-  --color-hover-btndark: hsl(216, 50%, 43%);
-
-
-
-  --font-montserrat: "montserrat-medium";
-  --font-montserrat-smb: "montserrat-semibold";
-  --font-montserrat-b: "montserrat-bold";
-
-  --color-outline: hsl(0, 0%, 92%); */
 
 @font-face {
   font-family: montserrat-medium;
@@ -56,3 +53,4 @@
   font-family: montserrat-italic;
   src: url(/fonts/Montserrat-Italic.ttf);
 }
+

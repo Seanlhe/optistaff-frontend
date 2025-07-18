@@ -22,9 +22,9 @@ export default function ClientShiftCard({
 }: ClientShiftCardProps): JSX.Element {
   const isFilled = filled >= required;
   const borderColor = isFilled
-    ? "border-l-button-color"
-    : "border-l-card-red-accent";
-  const bgColor = isFilled ? "bg-card-color" : "bg-card-red";
+    ? "border-l-green-dark"
+    : "border-l-red-dark";
+  const bgColor = isFilled ? "bg-green" : "bg-red";
   const statusIcon = isFilled ? "✓" : "ⓘ";
 
   const handleClick = () => {
@@ -55,7 +55,7 @@ export default function ClientShiftCard({
         <span className="text-sm font-medium text-gray-900">
           {startTime} - {endTime}
         </span>
-        <span className="text-gray-500 text-sm">{statusIcon}</span>
+        <span className="text-secondary-text text-sm">{statusIcon}</span>
       </div>
 
       <p className="text-xs font-medium text-gray-900 mb-1">{title}</p>
