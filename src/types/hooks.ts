@@ -14,18 +14,18 @@ export interface AuthState {
 }
 
 export interface SignupData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  userType: 'jobseeker' | 'employer';
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;        // New field for job seekers
-  address?: string;            // New field for both user types
-  postalCode?: string;         // New field for both user types
-  companyName?: string;
-  officeNumber?: string;       // New field for employers
+    email: string;
+    password: string;
+    confirmPassword: string;
+    userType: 'jobseeker' | 'employer';
+    firstName: string;
+    lastName: string;
+    phoneNumber?: string;
+    dateOfBirth?: string;        // New field for job seekers
+    address?: string;            // New field for both user types
+    postalCode?: string;         // New field for both user types
+    companyName?: string;
+    officeNumber?: string;       // New field for employers
 }
 
 // useShifts interfaces
@@ -65,8 +65,20 @@ export type UserPreferences = Record<string, unknown>;
 export type Payout = Record<string, unknown>;
 
 // useAssignments interfaces
-export type Assignment = Record<string, unknown>;
+export interface Assignment {
+    assignment_id: string;
+    break_hours: number;
+    check_in_time: string | null;
+    check_out_time: string | null;
+    created_at: string;
+    job_title: string;
+    name: string;
+    status: string;
+}
 
 // useFeedback interfaces
 export type Feedback = Record<string, unknown>;
+
+// General status type for assignment cancellation
+export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
 
