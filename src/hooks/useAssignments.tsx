@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '../integrations/supabase/client';
-import { Assignment } from '../types/hooks'; // Assuming you have defined Assignment type in hooks.ts
+import { Assignment, Status } from '../types/hooks'; // Assuming you have defined Assignment type in hooks.ts
 
 
 export const useAssignments = () => {
@@ -17,7 +17,7 @@ export const useAssignments = () => {
 
   // TODO: Implement assignment management functions
   const fetchAssignments = useCallback(async () => {
-    if(!user) {
+    if (!user) {
       setLoading(false);
       setError('User not authenticated');
       return;
@@ -51,14 +51,49 @@ export const useAssignments = () => {
     // Implementation to be added
   };
 
-  const deleteAssignment = async (assignmentId: string) => {
-    // Implementation to be added
+
+  /**
+   * Update the status of an assignment
+   *
+   * @param assignmentId - The id of the assignment to update
+   * @param status_name - use cancel_by_empoyer or cancel_by_employee or confirmed
+   * @returns affected rows count
+   */
+  const cancelAssignment = async (assignmentId: string, status_name: Status ) => {
+    if (!user) {
+      setLoading(false);
+      setError('User not authenticated');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.rpc('update_assignment_status', { p_assignment_id: assignmentId, p_status_name: status_name });
+      console.log('Assignment status updated:', data);
+      if (error) {
+        console.error('Error updating assignment status:', error);
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+      return data;
+    } catch (err) {
+      setError((err as Error).message);
+      return 0;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  const deleteAssignment = async (assignmentId: string, p_status_name) => {
   };
 
   return {
     assignments,
     loading,
     error,
+    cancelAssignment,
     createAssignment,
     updateAssignment,
     deleteAssignment,

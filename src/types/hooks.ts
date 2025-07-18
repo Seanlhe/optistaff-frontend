@@ -79,3 +79,6 @@ export interface Assignment {
 // useFeedback interfaces
 export type Feedback = Record<string, unknown>;
 
+// General status type for assignment cancellation
+export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
+
