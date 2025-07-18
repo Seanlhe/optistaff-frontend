@@ -59,7 +59,54 @@ export interface TimeBlock {
 export type UserProfile = Record<string, unknown>;
 
 // usePreferences interfaces
-export type UserPreferences = Record<string, unknown>;
+export interface UserPreferences {
+  preference_id?: string;
+  user_id: string;
+  min_pay_rate: number;
+  max_travel_km: number;
+  desired_roles: string[]; // Array of job_type_id UUIDs
+  max_hours_per_week: number; // Now required with default value 40
+  max_hours_per_shift: number; // Now required with default value 8
+  consider_lower_rate: boolean; // Now required with default value false
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Form data interface for frontend components
+export interface PreferencesFormData {
+  payRate: number;
+  considerLowerRate: boolean;
+  maxHoursPerWeek: number;
+  maxHoursPerShift: number;
+  maxTravelKm: number;
+  selectedJobNames: string[]; // Job names from frontend
+}
+
+// Job Types and Categories interfaces
+export interface JobCategory {
+  category_id: string;
+  category_name: string;
+  description?: string;
+  parent_category_id?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JobType {
+  job_type_id: string;
+  type_name: string;
+  category_id: string;
+  description?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  category?: JobCategory; // For joined queries
+}
+
+export interface JobTypesByCategory {
+  [categoryName: string]: JobType[];
+}
 
 // usePayouts interfaces
 export type Payout = Record<string, unknown>;
