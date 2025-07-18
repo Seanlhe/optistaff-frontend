@@ -31,7 +31,7 @@ export interface SignupData {
 // useShifts interfaces
 export interface Shift {
     shift_id: string;
-    client_id: string;
+    client_name: string;
     title: string;
     description: string;
     start_time: Date;
@@ -43,7 +43,8 @@ export interface Shift {
     submission_cycle: 'PRIMARY' | 'SECONDARY';
     created_at: Date;
     break_duration?: number; // in minutes
-    status: 0 | 1 | 2;
+    status: string;
+    job_name: string;
 }
 
 // useAvailability interfaces

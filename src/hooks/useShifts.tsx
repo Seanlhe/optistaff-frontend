@@ -25,9 +25,9 @@ export const useShifts = () => {
     try {
       // Fetch shifts from the database
       const { data, error } = await supabase
-        .from('shifts')
-        .select('*')
-        .eq('client_id', user.id);
+        .rpc('get_shifts_by_client', {
+          p_client_id: user.id
+        });
 
       if (error) {
         setError(error.message);
