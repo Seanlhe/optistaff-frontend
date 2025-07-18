@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import StatsCard from "../../components/StatsCard";
+import PayoutSummaryCard from "../../components/PayoutSummaryCard";
 import { ShiftDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
 import { JobseekerAssignmentCard, JobseekerAssignmentCard as JobseekerAssignmentCardType } from "../../components/JobseekerAssignmentCard";
-import { DollarSign, Star, Clock } from "lucide-react";
+import { Star, Clock } from "lucide-react";
 import MonthlyCalendar from "../../components/MonthlyCalendar";
 import { useAssignments } from "../../hooks/useAssignments";
 import { useUserProfile } from "../../hooks/useUserProfile";
@@ -119,11 +120,7 @@ const Dashboard = () => {
 							}
 							icon={<Clock />}
 						/>
-						<StatsCard
-							title="Earnings This Week"
-							value="$600.00"
-							icon={<DollarSign />}
-						/>
+						<PayoutSummaryCard timeframe="week" />
 						<StatsCard
 							title="Rating"
 							value={typeof profile === 'object' && profile && 'rating' in profile 

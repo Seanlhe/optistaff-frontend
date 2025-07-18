@@ -62,7 +62,16 @@ export type UserProfile = Record<string, unknown>;
 export type UserPreferences = Record<string, unknown>;
 
 // usePayouts interfaces
-export type Payout = Record<string, unknown>;
+export interface Payout {
+  payout_id: string;
+  user_id: string;
+  amount: number;
+  start_period: string;
+  end_period: string;
+  created_at: string;
+  status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
+}
+
 
 // useAssignments interfaces
 export type Assignment = Record<string, unknown>;
