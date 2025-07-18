@@ -17,8 +17,31 @@ export const useAssignments = () => {
 
   // TODO: Implement assignment management functions
   const fetchAssignments = useCallback(async () => {
-    // Implementation to be added
+    if(!user) {
+      setLoading(false);
+      setError('User not authenticated');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.rpc('get_assignment_by_jobseeker', { p_user_id: user.id });
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return;
+      }
+      setAssignments(data as Assignment[]);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [fetchAssignments]);
 
   const createAssignment = async (assignmentData: Partial<Assignment>) => {
     // Implementation to be added
