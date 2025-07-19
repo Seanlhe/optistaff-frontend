@@ -107,8 +107,8 @@ export default function ClientShiftDetails({
         <button className="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors">
           Edit
         </button>
-        {/* Delete Button - Only show if status is NOT 2 (completed) */}
-        {status !== 2 && (
+        {/* Delete Button - Only show if status is NOT "Completed" */}
+        {status !== "Completed" && (
           <button
             className={`bg-red-dark text-white px-4 py-2 rounded-lg hover:bg-red transition-colors ${
               isDeleting ? "opacity-50 cursor-not-allowed" : ""

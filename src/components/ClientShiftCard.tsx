@@ -9,7 +9,7 @@ interface ClientShiftCardProps extends Shift {
 
 export default function ClientShiftCard({
   shift_id,
-  client_id,
+  client_name,
   title,
   description,
   start_time,
@@ -37,7 +37,7 @@ export default function ClientShiftCard({
     if (onShiftClick) {
       onShiftClick({
         shift_id,
-        client_id,
+        client_name,
         title,
         description,
         start_time,
@@ -50,6 +50,7 @@ export default function ClientShiftCard({
         created_at,
         break_duration,
         status,
+        job_name: "",
       });
     }
   };
