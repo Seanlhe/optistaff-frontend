@@ -6,22 +6,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
-import { useJobTypes } from "./useJobTypes";
 import { supabase } from "../integrations/supabase/client";
 import { UserPreferences, PreferencesFormData } from "../types/hooks";
+import { validatePreferences } from "../utils/preferencesValidator";
 
 export const usePreferences = () => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  const {
-    convertJobNamesToIds,
-    convertJobIdsToNames,
-    loading: jobTypesLoading,
-  } = useJobTypes();
 
-  // Fetch user preferences
+  // Fetch user preferences - desired_roles now stores job names directly
   const fetchPreferences = useCallback(async () => {
     if (!user) {
       setError("User not authenticated");
@@ -48,6 +43,7 @@ export const usePreferences = () => {
         return;
       }
 
+      // desired_roles is now a JSONB array of job names (strings)
       setPreferences(data);
     } catch (err) {
       setError((err as Error).message);
@@ -67,7 +63,7 @@ export const usePreferences = () => {
       user_id: user.id,
       min_pay_rate: 15,
       max_travel_km: 50,
-      desired_roles: [],
+      desired_roles: [], // Empty array of job names
       max_hours_per_week: 40,
       max_hours_per_shift: 8,
       consider_lower_rate: false,
@@ -99,8 +95,20 @@ export const usePreferences = () => {
         return false;
       }
 
-      if (jobTypesLoading) {
-        setError("Job types are still loading");
+      // Validate preferences before saving
+      const tempPreferences: UserPreferences = {
+        user_id: user.id,
+        min_pay_rate: formData.payRate,
+        max_travel_km: formData.maxTravelKm,
+        desired_roles: formData.selectedJobNames,
+        max_hours_per_week: formData.maxHoursPerWeek,
+        max_hours_per_shift: formData.maxHoursPerShift,
+        consider_lower_rate: formData.considerLowerRate,
+      };
+
+      const validation = validatePreferences(tempPreferences);
+      if (!validation.isValid) {
+        setError(validation.errors.join(", "));
         return false;
       }
 
@@ -108,15 +116,34 @@ export const usePreferences = () => {
       setError(null);
 
       try {
-        // Convert job names to IDs
-        const jobTypeIds = convertJobNamesToIds(formData.selectedJobNames);
+        // Validate that selected job names exist in the database
+        if (formData.selectedJobNames.length > 0) {
+          const { data: existingJobTypes, error: validationError } =
+            await supabase
+              .from("job_types")
+              .select("type_name")
+              .in("type_name", formData.selectedJobNames)
+              .eq("is_active", true);
 
-        // Validate that all job names were successfully converted
-        if (formData.selectedJobNames.length > 0 && jobTypeIds.length === 0) {
-          setError("Invalid job types selected");
-          return false;
+          if (validationError) {
+            setError(validationError.message);
+            return false;
+          }
+
+          const validJobNames = existingJobTypes.map((jt) => jt.type_name);
+          const invalidJobNames = formData.selectedJobNames.filter(
+            (name) => !validJobNames.includes(name)
+          );
+
+          if (invalidJobNames.length > 0) {
+            setError(
+              `Invalid job types selected: ${invalidJobNames.join(", ")}`
+            );
+            return false;
+          }
         }
 
+        // Save preferences with job names directly in desired_roles JSONB field
         const preferencesData: Omit<
           UserPreferences,
           "preference_id" | "created_at" | "updated_at"
@@ -124,7 +151,7 @@ export const usePreferences = () => {
           user_id: user.id,
           min_pay_rate: formData.payRate,
           max_travel_km: formData.maxTravelKm,
-          desired_roles: jobTypeIds,
+          desired_roles: formData.selectedJobNames, // Store job names directly
           max_hours_per_week: formData.maxHoursPerWeek,
           max_hours_per_shift: formData.maxHoursPerShift,
           consider_lower_rate: formData.considerLowerRate,
@@ -150,7 +177,7 @@ export const usePreferences = () => {
         setLoading(false);
       }
     },
-    [user, convertJobNamesToIds, jobTypesLoading]
+    [user]
   );
 
   // Update specific preference fields
@@ -199,7 +226,7 @@ export const usePreferences = () => {
     const defaultPreferences: Partial<UserPreferences> = {
       min_pay_rate: 15,
       max_travel_km: 50,
-      desired_roles: [],
+      desired_roles: [], // Empty array of job names
       max_hours_per_week: 40,
       max_hours_per_shift: 8,
       consider_lower_rate: false,
@@ -218,38 +245,37 @@ export const usePreferences = () => {
       maxHoursPerWeek: preferences.max_hours_per_week,
       maxHoursPerShift: preferences.max_hours_per_shift,
       maxTravelKm: preferences.max_travel_km,
-      selectedJobNames: convertJobIdsToNames(preferences.desired_roles),
+      selectedJobNames: preferences.desired_roles, // Now directly job names
     };
-  }, [preferences, convertJobIdsToNames]);
+  }, [preferences]);
 
   // Helper to check if user has specific job preference
   const hasJobPreference = useCallback(
-    (jobTypeId: string): boolean => {
-      return preferences?.desired_roles.includes(jobTypeId) || false;
+    (jobTypeName: string): boolean => {
+      return preferences?.desired_roles.includes(jobTypeName) || false;
     },
     [preferences]
   );
 
-  // Helper to get preferred job types with details
+  // Helper to get preferred job types
   const getPreferredJobTypes = useCallback(() => {
     if (!preferences) return [];
-    // This would use the job types from useJobTypes hook
     return preferences.desired_roles;
   }, [preferences]);
 
   // Load preferences on mount or user change
   useEffect(() => {
-    if (user && !jobTypesLoading) {
+    if (user) {
       fetchPreferences();
     }
-  }, [user, jobTypesLoading, fetchPreferences]);
+  }, [user, fetchPreferences]);
 
   return {
     // Data
     preferences,
 
     // State
-    loading: loading || jobTypesLoading,
+    loading,
     error,
 
     // Actions

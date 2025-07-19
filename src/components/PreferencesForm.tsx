@@ -5,13 +5,11 @@ import PreferencesMaximum from "./PreferencesMaximum";
 import PreferencesPay from "./PreferencesPay";
 import { usePreferences } from "../hooks/usePreferences";
 import { PreferencesFormData } from "../types/hooks";
-import { isPreferencesSchemaUpToDate } from "../utils/preferencesValidator";
 
 const PreferencesForm = () => {
   const { preferences, savePreferences, loading, error, getFormData } = usePreferences();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [schemaError, setSchemaError] = useState<string | null>(null);
 
   // Form state - this will be populated by child components
   const [formData, setFormData] = useState<PreferencesFormData>({
@@ -23,14 +21,7 @@ const PreferencesForm = () => {
     selectedJobNames: []
   });
 
-  // Check if preferences schema is up to date
-  useEffect(() => {
-    if (preferences && !isPreferencesSchemaUpToDate(preferences)) {
-      setSchemaError("Your preferences schema is outdated. Please contact support.");
-    } else {
-      setSchemaError(null);
-    }
-  }, [preferences]);
+
 
   // Load existing preferences into form
   useEffect(() => {
@@ -62,11 +53,7 @@ const PreferencesForm = () => {
         </div>
       )}
       
-      {schemaError && (
-        <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 text-yellow-700 rounded-md">
-          {schemaError}
-        </div>
-      )}
+
       
       {submitSuccess && (
         <div className="mb-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded-md">

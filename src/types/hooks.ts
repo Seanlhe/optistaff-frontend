@@ -64,7 +64,7 @@ export interface UserPreferences {
   user_id: string;
   min_pay_rate: number;
   max_travel_km: number;
-  desired_roles: string[]; // Array of job_type_id UUIDs
+  desired_roles: string[]; // Array of job type names (changed from UUIDs)
   max_hours_per_week: number; // Now required with default value 40
   max_hours_per_shift: number; // Now required with default value 8
   consider_lower_rate: boolean; // Now required with default value false
@@ -79,7 +79,7 @@ export interface PreferencesFormData {
   maxHoursPerWeek: number;
   maxHoursPerShift: number;
   maxTravelKm: number;
-  selectedJobNames: string[]; // Job names from frontend
+  selectedJobNames: string[]; // Job names - now matches database storage
 }
 
 // Job Types and Categories interfaces

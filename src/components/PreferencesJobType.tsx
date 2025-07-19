@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useJobTypes } from '../hooks/useJobTypes';
-import { usePreferences } from '../hooks/usePreferences';
 import { PreferenceJobTypeProps } from '../types/components';
 
 export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({ 
@@ -9,26 +8,23 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
 }) => {
   // Use hooks for data management
   const { jobTypesByCategory, loading: jobTypesLoading, error: jobTypesError } = useJobTypes();
-  const { preferences, loading: preferencesLoading } = usePreferences();
   
   // state to hold the selected jobs
   const [selectedJobs, setSelectedJobs] = useState<{ [key: string]: boolean }>({});
 
   // Load existing preferences when component mounts
   useEffect(() => {
-    if (preferences && preferences.desired_roles) {
-      // Convert job type IDs to job names for form display
+    if (formData.selectedJobNames) {
+      // Convert job names array to selection object
       const selectedJobNames: { [key: string]: boolean } = {};
       
-      Object.values(jobTypesByCategory).flat().forEach(jobType => {
-        if (preferences.desired_roles.includes(jobType.job_type_id)) {
-          selectedJobNames[jobType.type_name] = true;
-        }
+      formData.selectedJobNames.forEach(jobName => {
+        selectedJobNames[jobName] = true;
       });
       
       setSelectedJobs(selectedJobNames);
     }
-  }, [preferences, jobTypesByCategory]);
+  }, [formData.selectedJobNames]);
 
   // handle changes when a checkbox is clicked.
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +49,7 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
   };
 
   // Show loading state
-  if (jobTypesLoading || preferencesLoading) {
+  if (jobTypesLoading) {
     return (
       <div className="p-4 rounded-lg bg-card-color">
         <div className="animate-pulse">
