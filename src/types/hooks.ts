@@ -1,5 +1,16 @@
 // Centralized hook interfaces
 
+// Location-related type definitions
+export type Coordinates = [number, number]; // [latitude, longitude] tuple
+export type LocationString = string; // Formatted address string
+
+// Location data from job_seekers table
+export interface UserLocationData {
+  home_location?: string; // Stored as "latitude,longitude" string in database
+  postal_code?: string; // Singapore postal code
+  address?: string; // Full address string
+}
+
 // useAuth interfaces
 interface User {
     id: string;
@@ -80,6 +91,10 @@ export interface PreferencesFormData {
   maxHoursPerShift: number;
   maxTravelKm: number;
   selectedJobNames: string[]; // Job names - now matches database storage
+  
+  // Location fields (read-only from job_seekers table)
+  homeLocation?: [number, number]; // [latitude, longitude] coordinates for map display
+  homeAddress?: string; // Formatted address string for display purposes
 }
 
 // Job Types and Categories interfaces
@@ -128,4 +143,28 @@ export type Feedback = Record<string, unknown>;
 
 // General status type for assignment cancellation
 export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
+
+// Enhanced usePreferences hook return type with location support
+export interface UsePreferencesReturn {
+  // Existing properties
+  preferences: UserPreferences | null;
+  loading: boolean;
+  error: string | null;
+  
+  // Existing methods
+  fetchPreferences: () => Promise<void>;
+  savePreferences: (formData: PreferencesFormData) => Promise<boolean>;
+  updatePreferences: (updates: Partial<UserPreferences>) => Promise<boolean>;
+  resetPreferences: () => Promise<boolean>;
+  createDefaultPreferences: () => Promise<void>;
+  getFormData: () => PreferencesFormData | null;
+  hasJobPreference: (jobTypeName: string) => boolean;
+  getPreferredJobTypes: () => string[];
+  
+  // New location-related properties and methods
+  homeLocation: [number, number] | null; // User's home coordinates from job_seekers table
+  homeAddress: string | null; // User's formatted home address
+  loadLocationData: () => Promise<void>; // Load home location from job_seekers table
+  geocodeHomeLocation: () => Promise<[number, number] | null>; // Convert address to coordinates
+}
 

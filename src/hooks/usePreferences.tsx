@@ -7,14 +7,32 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { supabase } from "../integrations/supabase/client";
-import { UserPreferences, PreferencesFormData } from "../types/hooks";
+import {
+  UserPreferences,
+  PreferencesFormData,
+  UserLocationData,
+} from "../types/hooks";
 import { validatePreferences } from "../utils/preferencesValidator";
+import { useLocationGeocoding } from "./useLocationGeocoding";
 
 export const usePreferences = () => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [homeLocation, setHomeLocation] = useState<[number, number] | null>(
+    null
+  );
+  const [homeAddress, setHomeAddress] = useState<string | null>(null);
+  const [locationData, setLocationData] = useState<UserLocationData | null>(
+    null
+  );
   const { user } = useAuth();
+  const {
+    geocodeAddress,
+    reverseGeocode,
+    loading: geocodingLoading,
+    error: geocodingError,
+  } = useLocationGeocoding();
 
   // Fetch user preferences - desired_roles now stores job names directly
   const fetchPreferences = useCallback(async () => {
@@ -62,7 +80,7 @@ export const usePreferences = () => {
     > = {
       user_id: user.id,
       min_pay_rate: 15,
-      max_travel_km: 50,
+      max_travel_km: 15, // More reasonable default for Singapore
       desired_roles: [], // Empty array of job names
       max_hours_per_week: 40,
       max_hours_per_shift: 8,
@@ -225,7 +243,7 @@ export const usePreferences = () => {
 
     const defaultPreferences: Partial<UserPreferences> = {
       min_pay_rate: 15,
-      max_travel_km: 50,
+      max_travel_km: 15, // More reasonable default for Singapore
       desired_roles: [], // Empty array of job names
       max_hours_per_week: 40,
       max_hours_per_shift: 8,
@@ -235,19 +253,28 @@ export const usePreferences = () => {
     return await updatePreferences(defaultPreferences);
   }, [user, updatePreferences]);
 
-  // Convert preferences to form data for frontend
-  const getFormData = useCallback((): PreferencesFormData | null => {
-    if (!preferences) return null;
+  // Enhanced getFormData method to include location information
+  const getFormDataWithLocation =
+    useCallback((): PreferencesFormData | null => {
+      if (!preferences) return null;
 
-    return {
-      payRate: preferences.min_pay_rate,
-      considerLowerRate: preferences.consider_lower_rate,
-      maxHoursPerWeek: preferences.max_hours_per_week,
-      maxHoursPerShift: preferences.max_hours_per_shift,
-      maxTravelKm: preferences.max_travel_km,
-      selectedJobNames: preferences.desired_roles, // Now directly job names
-    };
-  }, [preferences]);
+      return {
+        payRate: preferences.min_pay_rate,
+        considerLowerRate: preferences.consider_lower_rate,
+        maxHoursPerWeek: preferences.max_hours_per_week,
+        maxHoursPerShift: preferences.max_hours_per_shift,
+        maxTravelKm: preferences.max_travel_km,
+        selectedJobNames: preferences.desired_roles,
+        // Include location data for map display
+        homeLocation: homeLocation || undefined,
+        homeAddress: homeAddress || undefined,
+      };
+    }, [preferences, homeLocation, homeAddress]);
+
+  // Convert preferences to form data for frontend (kept for backward compatibility)
+  const getFormData = useCallback((): PreferencesFormData | null => {
+    return getFormDataWithLocation();
+  }, [getFormDataWithLocation]);
 
   // Helper to check if user has specific job preference
   const hasJobPreference = useCallback(
@@ -263,20 +290,171 @@ export const usePreferences = () => {
     return preferences.desired_roles;
   }, [preferences]);
 
-  // Load preferences on mount or user change
+  // Load home location data from job_seekers table with enhanced error handling
+  const loadLocationData = useCallback(async () => {
+    if (!user) {
+      setError("User not authenticated");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await supabase
+        .from("job_seekers")
+        .select("home_location, postal_code")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) {
+        // If no job seeker record found, this is expected for new users
+        if (error.code === "PGRST116") {
+          setLocationData(null);
+          setHomeLocation(null);
+          setHomeAddress(null);
+          return;
+        }
+        
+        // Enhanced error handling for different database errors
+        let errorMessage = "Failed to load location data";
+        if (error.code === "PGRST301") {
+          errorMessage = "Database connection error. Please try again.";
+        } else if (error.code === "PGRST204") {
+          errorMessage = "Location data not found. Please update your profile.";
+        } else {
+          errorMessage = `Location data error: ${error.message}`;
+        }
+        
+        setError(errorMessage);
+        return;
+      }
+
+      const locationData: UserLocationData = {
+        home_location: data.home_location,
+        postal_code: data.postal_code,
+        address: undefined, // No address column in job_seekers table
+      };
+
+      setLocationData(locationData);
+
+      // Parse coordinates from home_location string if available with validation
+      if (data.home_location) {
+        try {
+          const [lat, lng] = data.home_location.split(",").map(Number);
+          
+          // Validate coordinates are valid numbers and within Singapore bounds
+          if (!isNaN(lat) && !isNaN(lng)) {
+            // Singapore bounds validation
+            if (lat >= 1.2290 && lat <= 1.4784 && lng >= 103.6000 && lng <= 104.0120) {
+              setHomeLocation([lat, lng]);
+            } else {
+              console.warn("Home location coordinates are outside Singapore bounds:", [lat, lng]);
+              setError("Home location appears to be outside Singapore. Please update your profile.");
+            }
+          } else {
+            console.warn("Invalid home location coordinates:", data.home_location);
+            setError("Invalid location data format. Please update your profile.");
+          }
+        } catch (parseError) {
+          console.warn("Failed to parse home_location coordinates:", parseError);
+          setError("Unable to parse location data. Please update your profile.");
+        }
+      }
+
+      // Set home address from available data (only postal_code since no address column exists)
+      setHomeAddress(data.postal_code || null);
+    } catch (err) {
+      // Network or unexpected errors
+      const errorMessage = err instanceof Error 
+        ? `Network error loading location: ${err.message}`
+        : "Unexpected error loading location data";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  // Geocode home location using address or postal code with enhanced error handling
+  const geocodeHomeLocation = useCallback(async (): Promise<
+    [number, number] | null
+  > => {
+    if (!locationData) {
+      setError("No location data available to geocode");
+      return null;
+    }
+
+    // Try to use existing coordinates first
+    if (homeLocation) {
+      return homeLocation;
+    }
+
+    // Try to geocode from postal code (no address column exists in job_seekers table)
+    const addressToGeocode = locationData.postal_code;
+    if (!addressToGeocode) {
+      setError("No postal code available for geocoding. Please update your profile with a valid Singapore postal code.");
+      return null;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const coordinates = await geocodeAddress(addressToGeocode);
+      
+      if (coordinates) {
+        setHomeLocation(coordinates);
+
+        // Try to get formatted address from coordinates since we only have postal code
+        try {
+          const formattedAddress = await reverseGeocode(coordinates);
+          if (formattedAddress) {
+            setHomeAddress(formattedAddress);
+          }
+        } catch (reverseError) {
+          // Don't fail the whole operation if reverse geocoding fails
+          console.warn("Reverse geocoding failed:", reverseError);
+        }
+      } else {
+        // Handle case where geocoding returns null (already handled by geocoding hook)
+        if (geocodingError) {
+          setError(`Location lookup failed: ${geocodingError.message}`);
+        } else {
+          setError("Unable to find location for the provided postal code. Please verify your postal code in your profile.");
+        }
+      }
+      
+      return coordinates;
+    } catch (err) {
+      // Handle unexpected errors
+      const errorMessage = err instanceof Error 
+        ? `Geocoding error: ${err.message}`
+        : "Unexpected error during location lookup";
+      setError(errorMessage);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [locationData, homeLocation, geocodeAddress, reverseGeocode, geocodingError]);
+
+  // Load preferences and location data on mount or user change
   useEffect(() => {
     if (user) {
-      fetchPreferences();
+      // Load both preferences and location data
+      const loadData = async () => {
+        await Promise.all([fetchPreferences(), loadLocationData()]);
+      };
+      loadData();
     }
-  }, [user, fetchPreferences]);
+  }, [user, fetchPreferences, loadLocationData]);
 
   return {
     // Data
     preferences,
 
     // State
-    loading,
-    error,
+    loading: loading || geocodingLoading,
+    error: error || (geocodingError ? geocodingError.message : null),
 
     // Actions
     fetchPreferences,
@@ -289,5 +467,11 @@ export const usePreferences = () => {
     getFormData,
     hasJobPreference,
     getPreferredJobTypes,
+
+    // Location-related properties and methods
+    homeLocation,
+    homeAddress,
+    loadLocationData,
+    geocodeHomeLocation,
   };
 };
