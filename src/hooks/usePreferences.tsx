@@ -2,6 +2,7 @@
  * Preferences Hook
  * @description Custom hook for user preferences management
  * @author OptiStaff Team
+ * @author OptiStaff Team
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -34,6 +35,7 @@ export const usePreferences = () => {
     error: geocodingError,
   } = useLocationGeocoding();
 
+  // Fetch user preferences - desired_roles now stores job names directly
   // Fetch user preferences - desired_roles now stores job names directly
   const fetchPreferences = useCallback(async () => {
     if (!user) {
@@ -449,6 +451,7 @@ export const usePreferences = () => {
   }, [user, fetchPreferences, loadLocationData]);
 
   return {
+    // Data
     // Data
     preferences,
 
