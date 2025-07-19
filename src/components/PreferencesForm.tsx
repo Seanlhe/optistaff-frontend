@@ -6,8 +6,6 @@ import PreferencesMaximum from "./PreferencesMaximum";
 import PreferencesPay from "./PreferencesPay";
 import { usePreferences } from "../hooks/usePreferences";
 import { PreferencesFormData } from "../types/hooks";
-import { usePreferences } from "../hooks/usePreferences";
-import { PreferencesFormData } from "../types/hooks";
 
 const PreferencesForm = () => {
   const { 

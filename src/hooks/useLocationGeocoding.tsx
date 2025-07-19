@@ -87,7 +87,7 @@ export const useLocationGeocoding = (): LocationGeocodingHook => {
   };
 
   // Generic retry wrapper with exponential backoff
-  const withRetry = async <T>(
+  const withRetry = async <T,>(
     operation: () => Promise<T>,
     operationName: string
   ): Promise<T> => {
