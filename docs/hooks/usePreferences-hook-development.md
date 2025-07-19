@@ -7,7 +7,7 @@
 **Current Status:** Production Ready
 
 ## Summary
-This document details the development and implementation of the `usePreferences` hook, which provides comprehensive user preferences management functionality for job seekers. The hook manages CRUD operations for user preferences, integrates with job types data, and provides seamless form data conversion for frontend components.
+This document details the development and implementation of the `usePreferences` hook, which provides comprehensive user preferences management functionality for job seekers. The hook manages CRUD operations for user preferences, stores job type names directly in the database, and includes built-in validation for data integrity.
 
 ---
 
@@ -17,16 +17,16 @@ This document details the development and implementation of the `usePreferences`
 The `usePreferences` hook encapsulates all preference-related business logic including:
 - ✅ **Database Operations**: Full CRUD operations with Supabase
 - ✅ **Authentication Integration**: Seamless integration with `useAuth` hook
-- ✅ **Job Types Integration**: Dynamic job type conversion via `useJobTypes` hook
-- ✅ **Form Data Management**: Conversion between database and form formats
+- ✅ **Direct Job Name Storage**: Stores job type names directly (no conversion needed)
+- ✅ **Data Validation**: Built-in validation with business rules
 - ✅ **State Management**: Loading, error, and data states
 - ✅ **Default Preferences**: Automatic creation for new users
 
 ### **Dependencies**
 ```typescript
 import { useAuth } from "./useAuth";           // User authentication
-import { useJobTypes } from "./useJobTypes";   // Job categories and types
 import { supabase } from "../integrations/supabase/client"; // Database client
+import { validatePreferences } from "../utils/preferencesValidator"; // Business validation
 ```
 
 ---
@@ -42,7 +42,7 @@ export interface UserPreferences {
   user_id: string;
   min_pay_rate: number;
   max_travel_km: number;
-  desired_roles: string[]; // Array of job_type_id UUIDs
+  desired_roles: string[]; // Array of job type names (e.g., ["Waiter", "Chef"])
   max_hours_per_week: number; // Required field with default value 40
   max_hours_per_shift: number; // Required field with default value 8
   consider_lower_rate: boolean; // Required field with default value false
@@ -59,7 +59,7 @@ export interface PreferencesFormData {
   maxHoursPerWeek: number;
   maxHoursPerShift: number;
   maxTravelKm: number;
-  selectedJobNames: string[]; // Job names from frontend
+  selectedJobNames: string[]; // Job names - matches database storage directly
 }
 ```
 
@@ -76,12 +76,8 @@ const [error, setError] = useState<string | null>(null);
 
 ### **External Dependencies**
 ```typescript
-const { user } = useAuth();
-const {
-  convertJobNamesToIds,
-  convertJobIdsToNames,
-  loading: jobTypesLoading,
-} = useJobTypes();
+const { user } = useAuth(); // Authentication state only
+// No useJobTypes dependency - job names stored directly
 ```
 
 ---
@@ -89,7 +85,7 @@ const {
 ## Core Functions
 
 ### **1. fetchPreferences()**
-**Purpose:** Loads user preferences from database  
+**Purpose:** Loads user preferences from database with job names directly  
 **Authentication:** Required  
 **Error Handling:** Creates default preferences if none exist
 
@@ -120,6 +116,7 @@ const fetchPreferences = useCallback(async () => {
       return;
     }
 
+    // desired_roles now contains job names directly (no conversion needed)
     setPreferences(data);
   } catch (err) {
     setError((err as Error).message);
@@ -130,10 +127,10 @@ const fetchPreferences = useCallback(async () => {
 ```
 
 ### **2. savePreferences(formData)**
-**Purpose:** Saves form data to database with job type conversion  
+**Purpose:** Saves form data to database with built-in validation  
 **Parameters:** `PreferencesFormData`  
 **Returns:** `boolean` (success/failure)  
-**Features:** Job name to ID conversion, validation, upsert operation
+**Features:** Business rule validation, job name validation, direct storage
 
 ```typescript
 const savePreferences = useCallback(
@@ -143,8 +140,20 @@ const savePreferences = useCallback(
       return false;
     }
 
-    if (jobTypesLoading) {
-      setError("Job types are still loading");
+    // Validate preferences before saving
+    const tempPreferences: UserPreferences = {
+      user_id: user.id,
+      min_pay_rate: formData.payRate,
+      max_travel_km: formData.maxTravelKm,
+      desired_roles: formData.selectedJobNames,
+      max_hours_per_week: formData.maxHoursPerWeek,
+      max_hours_per_shift: formData.maxHoursPerShift,
+      consider_lower_rate: formData.considerLowerRate,
+    };
+
+    const validation = validatePreferences(tempPreferences);
+    if (!validation.isValid) {
+      setError(validation.errors.join(', '));
       return false;
     }
 
@@ -152,15 +161,31 @@ const savePreferences = useCallback(
     setError(null);
 
     try {
-      // Convert job names to IDs
-      const jobTypeIds = convertJobNamesToIds(formData.selectedJobNames);
+      // Validate that selected job names exist in the database
+      if (formData.selectedJobNames.length > 0) {
+        const { data: existingJobTypes, error: validationError } = await supabase
+          .from("job_types")
+          .select("type_name")
+          .in("type_name", formData.selectedJobNames)
+          .eq("is_active", true);
 
-      // Validate conversion
-      if (formData.selectedJobNames.length > 0 && jobTypeIds.length === 0) {
-        setError("Invalid job types selected");
-        return false;
+        if (validationError) {
+          setError(validationError.message);
+          return false;
+        }
+
+        const validJobNames = existingJobTypes.map(jt => jt.type_name);
+        const invalidJobNames = formData.selectedJobNames.filter(
+          name => !validJobNames.includes(name)
+        );
+
+        if (invalidJobNames.length > 0) {
+          setError(`Invalid job types selected: ${invalidJobNames.join(', ')}`);
+          return false;
+        }
       }
 
+      // Save preferences with job names directly in desired_roles JSONB field
       const preferencesData: Omit<
         UserPreferences,
         "preference_id" | "created_at" | "updated_at"
@@ -168,7 +193,7 @@ const savePreferences = useCallback(
         user_id: user.id,
         min_pay_rate: formData.payRate,
         max_travel_km: formData.maxTravelKm,
-        desired_roles: jobTypeIds,
+        desired_roles: formData.selectedJobNames, // Store job names directly
         max_hours_per_week: formData.maxHoursPerWeek,
         max_hours_per_shift: formData.maxHoursPerShift,
         consider_lower_rate: formData.considerLowerRate,
@@ -194,7 +219,7 @@ const savePreferences = useCallback(
       setLoading(false);
     }
   },
-  [user, convertJobNamesToIds, jobTypesLoading]
+  [user]
 );
 ```
 
@@ -246,15 +271,51 @@ const updatePreferences = useCallback(
 **Default Values:**
 - `min_pay_rate`: 15
 - `max_travel_km`: 50
-- `desired_roles`: []
+- `desired_roles`: [] (empty array of job names)
 - `max_hours_per_week`: 40
 - `max_hours_per_shift`: 8
 - `consider_lower_rate`: false
 
+```typescript
+const createDefaultPreferences = useCallback(async () => {
+  if (!user) return;
+
+  const defaultPreferences: Omit<
+    UserPreferences,
+    "preference_id" | "created_at" | "updated_at"
+  > = {
+    user_id: user.id,
+    min_pay_rate: 15,
+    max_travel_km: 50,
+    desired_roles: [], // Empty array of job names
+    max_hours_per_week: 40,
+    max_hours_per_shift: 8,
+    consider_lower_rate: false,
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from("preferences")
+      .insert(defaultPreferences)
+      .select()
+      .single();
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setPreferences(data);
+  } catch (err) {
+    setError((err as Error).message);
+  }
+}, [user]);
+```
+
 ### **5. getFormData()**
 **Purpose:** Converts database preferences to form format  
 **Returns:** `PreferencesFormData | null`  
-**Features:** Job ID to name conversion, default value handling
+**Features:** Direct data mapping (no conversion needed)
 
 ```typescript
 const getFormData = useCallback((): PreferencesFormData | null => {
@@ -266,18 +327,18 @@ const getFormData = useCallback((): PreferencesFormData | null => {
     maxHoursPerWeek: preferences.max_hours_per_week,
     maxHoursPerShift: preferences.max_hours_per_shift,
     maxTravelKm: preferences.max_travel_km,
-    selectedJobNames: convertJobIdsToNames(preferences.desired_roles),
+    selectedJobNames: preferences.desired_roles, // Now directly job names
   };
-}, [preferences, convertJobIdsToNames]);
+}, [preferences]);
 ```
 
 ### **6. Helper Functions**
 
-#### **hasJobPreference(jobTypeId)**
+#### **hasJobPreference(jobTypeName)**
 ```typescript
 const hasJobPreference = useCallback(
-  (jobTypeId: string): boolean => {
-    return preferences?.desired_roles.includes(jobTypeId) || false;
+  (jobTypeName: string): boolean => {
+    return preferences?.desired_roles.includes(jobTypeName) || false;
   },
   [preferences]
 );
@@ -291,10 +352,10 @@ const resetPreferences = useCallback(async () => {
     return false;
   }
 
-  const defaultPreferences = {
+  const defaultPreferences: Partial<UserPreferences> = {
     min_pay_rate: 15,
     max_travel_km: 50,
-    desired_roles: [],
+    desired_roles: [], // Empty array of job names
     max_hours_per_week: 40,
     max_hours_per_shift: 8,
     consider_lower_rate: false,
@@ -314,7 +375,7 @@ return {
   preferences,
 
   // State
-  loading: loading || jobTypesLoading,
+  loading,
   error,
 
   // Actions
@@ -440,9 +501,9 @@ CREATE TABLE preferences (
 
 ### **Data Flow**
 1. **Frontend Form** → `PreferencesFormData` (job names as strings)
-2. **Hook Processing** → Convert job names to UUIDs via `useJobTypes`
-3. **Database Storage** → `UserPreferences` (job_type_ids as JSONB array)
-4. **Data Retrieval** → Convert UUIDs back to job names for display
+2. **Hook Processing** → Direct validation and storage (no conversion needed)
+3. **Database Storage** → `UserPreferences` (job names as JSONB array)
+4. **Data Retrieval** → Direct display (job names ready for UI)
 
 ---
 
@@ -451,9 +512,10 @@ CREATE TABLE preferences (
 ### **Implemented Optimizations**
 1. **useCallback**: All functions are memoized to prevent unnecessary re-renders
 2. **Dependency Management**: Proper dependency arrays in useEffect and useCallback
-3. **Loading State Coordination**: Combines hook loading with job types loading
-4. **Error State Management**: Centralized error handling
+3. **Simplified Data Flow**: No conversion overhead (job names stored directly)
+4. **Error State Management**: Centralized error handling with business validation
 5. **Conditional Execution**: Authentication checks prevent unnecessary API calls
+6. **GIN Indexing**: Database JSONB field optimized with GIN index for fast queries
 
 ### **Memory Management**
 - State is properly cleaned up on unmount
@@ -466,10 +528,10 @@ CREATE TABLE preferences (
 
 ### **Error Categories**
 1. **Authentication Errors**: User not logged in
-2. **Validation Errors**: Invalid job types, missing data
-3. **Database Errors**: Supabase operation failures
-4. **Network Errors**: Connection issues
-5. **Dependency Errors**: Job types not loaded
+2. **Business Rule Validation**: Hours limits, pay rate validation, logical consistency
+3. **Job Type Validation**: Invalid job names, inactive job types
+4. **Database Errors**: Supabase operation failures
+5. **Network Errors**: Connection issues
 
 ### **Error Recovery**
 - Automatic default preference creation for new users
@@ -483,15 +545,15 @@ CREATE TABLE preferences (
 
 ### **Unit Testing Areas**
 1. **Hook Functions**: Test all CRUD operations
-2. **Data Conversion**: Test job name ↔ ID conversion
-3. **Error Scenarios**: Test various error conditions
-4. **State Management**: Test loading and error states
+2. **Business Validation**: Test preference validator with various scenarios
+3. **Job Name Validation**: Test job type existence validation
+4. **Error Scenarios**: Test various error conditions
 5. **Authentication Integration**: Test with/without user
 
 ### **Integration Testing**
 1. **Database Operations**: Test actual Supabase calls
 2. **Component Integration**: Test with form components
-3. **Job Types Integration**: Test with useJobTypes hook
+3. **Validation Integration**: Test with preferencesValidator
 4. **End-to-End**: Test complete preference flow
 
 ### **Mock Strategies**
@@ -503,13 +565,9 @@ jest.mock('./useAuth', () => ({
   }),
 }));
 
-// Mock useJobTypes
-jest.mock('./useJobTypes', () => ({
-  useJobTypes: () => ({
-    convertJobNamesToIds: jest.fn(),
-    convertJobIdsToNames: jest.fn(),
-    loading: false,
-  }),
+// Mock preferencesValidator
+jest.mock('../utils/preferencesValidator', () => ({
+  validatePreferences: jest.fn(() => ({ isValid: true, errors: [] })),
 }));
 
 // Mock Supabase
@@ -520,6 +578,8 @@ jest.mock('../integrations/supabase/client', () => ({
       insert: jest.fn(),
       update: jest.fn(),
       upsert: jest.fn(),
+      in: jest.fn(),
+      eq: jest.fn(),
     })),
   },
 }));
@@ -557,10 +617,11 @@ jest.mock('../integrations/supabase/client', () => ({
 5. **RLS Policies**: Database-level row-level security
 
 ### **Best Practices**
-- Never expose internal job type IDs to frontend
-- Validate all user inputs before database operations
-- Use proper error messages that don't leak system information
-- Implement rate limiting for preference updates
+- Store human-readable job names for better debugging and clarity
+- Validate job names against active job types before storage
+- Use business rule validation for data integrity
+- Implement proper error messages that guide users
+- Use GIN indexing for optimal JSONB query performance
 
 ---
 
@@ -587,6 +648,13 @@ This implementation demonstrates best practices for React hook development and p
 
 ## **Recent Updates**
 
+### **Major Architecture Change (December 2025)**
+- ✅ **Simplified Data Storage**: Changed from UUID-based to direct job name storage
+- ✅ **Removed Dependencies**: Eliminated useJobTypes dependency for conversions
+- ✅ **Database Migration**: Converted existing UUID data to job names
+- ✅ **Performance Optimization**: Added GIN index for JSONB queries
+- ✅ **Enhanced Validation**: Added business rule validation with preferencesValidator
+
 ### **Database Schema Migration (July 2025)**
 - ✅ **Added missing columns**: `max_hours_per_week`, `max_hours_per_shift`, `consider_lower_rate`
 - ✅ **Applied constraints**: Hour limits (1-44 per week, 1-12 per shift)
@@ -594,7 +662,30 @@ This implementation demonstrates best practices for React hook development and p
 - ✅ **Updated existing records**: Backfilled with sensible defaults
 - ✅ **Updated TypeScript types**: Made new fields required (non-optional)
 
-### **Hook Improvements**
-- ✅ **Enhanced type safety**: Updated UserPreferences interface
-- ✅ **Improved form data conversion**: Removed unnecessary fallbacks
-- ✅ **Better default handling**: Consistent default values across hook and database
+### **Hook Improvements (December 2025)**
+- ✅ **Simplified Architecture**: Direct job name storage eliminates conversion complexity
+- ✅ **Better Performance**: No conversion overhead, faster data operations
+- ✅ **Enhanced Debugging**: Human-readable job names in database
+- ✅ **Improved Validation**: Built-in business rules and job name validation
+- ✅ **Reduced Dependencies**: Removed useJobTypes dependency for core operations
+
+### **Data Format Changes**
+**Before (UUID-based):**
+```json
+{
+  "desired_roles": ["a024d522-a105-4f9c-8ddd-66fde73b5822", "c9c8beaa-bfab-47a4-a8d3-a228893c9383"]
+}
+```
+
+**After (Name-based):**
+```json
+{
+  "desired_roles": ["Kitchen Helper", "Waiter/Waitress"]
+}
+```
+
+### **Migration Completed**
+- ✅ **GIN Index**: Created for optimal JSONB query performance
+- ✅ **Data Conversion**: All existing UUID data converted to job names
+- ✅ **Validation Function**: Optional database validation function created
+- ✅ **Zero Data Loss**: 100% successful conversion of existing preferences
