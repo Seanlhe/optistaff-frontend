@@ -16,6 +16,7 @@ import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import UploadCSV from './pages/employer/UploadCSV'
 import JSSchedule from './pages/employee/JSSchedule'
+import Review from './pages/employer/Review'
 import EmployeeHistory from './pages/employee/EmployeeHistory';
 
 // Create a client for React Query
@@ -50,7 +51,8 @@ function App() {
           <Route path="profile" element={<ClientDashboard />} />
           <Route path="uploadjobs" element={<UploadJobs />} />
           <Route path="uploadcsv" element={<UploadCSV />} />
-        </Route>
+          <Route path="review" element={<Review />} /> 
+        </Route>  
         <Route path="/employee" element={
           <ProtectedRoute allowedRoles={['jobseeker']}>
             <JSLayout />

@@ -77,7 +77,16 @@ export interface Assignment {
 }
 
 // useFeedback interfaces
-export type Feedback = Record<string, unknown>;
+export interface Feedback {
+  feedback_id: string;
+  assignment_id: string;
+  reviewer_id: string;
+  reviewee_id: string;
+  rating_score: number;
+  comment: string;
+  review_type: string;
+  created_at?: string;
+}
 
 // General status type for assignment cancellation
 export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
