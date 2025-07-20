@@ -213,7 +213,7 @@ Based on the Supabase table analysis:
 - ✅ first_name (VARCHAR)
 - ✅ last_name (VARCHAR) 
 - ✅ phone_number (VARCHAR)
-- ✅ home_location (VARCHAR)
+- ✅ address_coordinates (VARCHAR)
 - ✅ rating (NUMERIC)
 - ✅ client_id_internal (UUID)
 - ✅ status (VARCHAR)
