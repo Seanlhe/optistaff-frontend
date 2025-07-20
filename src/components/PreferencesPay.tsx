@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { PreferencesPayProps } from '../types/components';
 
-export const PreferencesPay: React.FC = () => {
-  // manage the numerical value of the slider
-  const [payRate, setPayRate] = useState<number>(20);
+export const PreferencesPay: React.FC<PreferencesPayProps> = ({ formData, setFormData }) => {
+  const handlePayRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value);
+    setFormData({
+      ...formData,
+      payRate: value
+    });
+  };
 
-  // state of the checkbox.
-  const [considerLower, setConsiderLower] = useState<boolean>(false);
+  const handleConsiderLowerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      considerLowerRate: e.target.checked
+    });
+  };
 
   return (
     <div className="p-6 bg-card-color rounded-lg">
@@ -16,7 +25,7 @@ export const PreferencesPay: React.FC = () => {
       <div className="flex items-center gap-4 mt-4 mb-6">
         {/* display of the selected pay rate */}
         <span className="text-2xl font-bold text-gradient-end w-16">
-          ${payRate}
+          ${formData.payRate}
         </span>
 
         {/* slider input */}
@@ -24,8 +33,8 @@ export const PreferencesPay: React.FC = () => {
           type="range"
           min="5" // Minimum selectable pay rate
           max="30" // Maximum selectable pay rate
-          value={payRate}
-          onChange={(e) => setPayRate(Number(e.target.value))}
+          value={formData.payRate}
+          onChange={handlePayRateChange}
           className="
             w-1/3 h-2 bg-secondary-bg rounded-full appearance-none cursor-pointer
     accent-primary-blue
@@ -38,8 +47,8 @@ export const PreferencesPay: React.FC = () => {
         <input
           type="checkbox"
           id="consider-lower-rate"
-          checked={considerLower}
-          onChange={(e) => setConsiderLower(e.target.checked)}
+          checked={formData.considerLowerRate}
+          onChange={handleConsiderLowerChange}
           className="
             h-5 w-5 rounded border-border cursor-pointer
            focus:ring-primary-blue

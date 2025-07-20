@@ -1,5 +1,16 @@
 // Centralized hook interfaces
 
+// Location-related type definitions
+export type Coordinates = [number, number]; // [latitude, longitude] tuple
+export type LocationString = string; // Formatted address string
+
+// Location data from job_seekers table
+export interface UserLocationData {
+  home_location?: string; // Stored as "latitude,longitude" string in database
+  postal_code?: string; // Singapore postal code
+  address?: string; // Full address string
+}
+
 // useAuth interfaces
 interface User {
     id: string;
@@ -59,7 +70,58 @@ export interface TimeBlock {
 export type UserProfile = Record<string, unknown>;
 
 // usePreferences interfaces
-export type UserPreferences = Record<string, unknown>;
+export interface UserPreferences {
+  preference_id?: string;
+  user_id: string;
+  min_pay_rate: number;
+  max_travel_km: number;
+  desired_roles: string[]; // Array of job type names (changed from UUIDs)
+  max_hours_per_week: number; // Now required with default value 40
+  max_hours_per_shift: number; // Now required with default value 8
+  consider_lower_rate: boolean; // Now required with default value false
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Form data interface for frontend components
+export interface PreferencesFormData {
+  payRate: number;
+  considerLowerRate: boolean;
+  maxHoursPerWeek: number;
+  maxHoursPerShift: number;
+  maxTravelKm: number;
+  selectedJobNames: string[]; // Job names - now matches database storage
+  
+  // Location fields (read-only from job_seekers table)
+  homeLocation?: [number, number]; // [latitude, longitude] coordinates for map display
+  homeAddress?: string; // Formatted address string for display purposes
+}
+
+// Job Types and Categories interfaces
+export interface JobCategory {
+  category_id: string;
+  category_name: string;
+  description?: string;
+  parent_category_id?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JobType {
+  job_type_id: string;
+  type_name: string;
+  category_id: string;
+  description?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  category?: JobCategory; // For joined queries
+}
+
+export interface JobTypesByCategory {
+  [categoryName: string]: JobType[];
+}
 
 // usePayouts interfaces
 export type Payout = Record<string, unknown>;
@@ -81,4 +143,28 @@ export type Feedback = Record<string, unknown>;
 
 // General status type for assignment cancellation
 export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
+
+// Enhanced usePreferences hook return type with location support
+export interface UsePreferencesReturn {
+  // Existing properties
+  preferences: UserPreferences | null;
+  loading: boolean;
+  error: string | null;
+  
+  // Existing methods
+  fetchPreferences: () => Promise<void>;
+  savePreferences: (formData: PreferencesFormData) => Promise<boolean>;
+  updatePreferences: (updates: Partial<UserPreferences>) => Promise<boolean>;
+  resetPreferences: () => Promise<boolean>;
+  createDefaultPreferences: () => Promise<void>;
+  getFormData: () => PreferencesFormData | null;
+  hasJobPreference: (jobTypeName: string) => boolean;
+  getPreferredJobTypes: () => string[];
+  
+  // New location-related properties and methods
+  homeLocation: [number, number] | null; // User's home coordinates from job_seekers table
+  homeAddress: string | null; // User's formatted home address
+  loadLocationData: () => Promise<void>; // Load home location from job_seekers table
+  geocodeHomeLocation: () => Promise<[number, number] | null>; // Convert address to coordinates
+}
 
