@@ -45,12 +45,13 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Primary Key**: `shift_id` (UUID)
 - **Key Fields**:
   - `client_id`: Foreign key to clients table
+  - `job_type_id`: Foreign key to job_types table
   - `title`, `description`: Shift details
   - `start_time`, `end_time`: Shift timing (timestamptz)
   - `pay_rate`: Hourly rate (numeric, must be > 0)
   - `job_location`: Work location
   - `staff_needed`, `staff_assigned`: Capacity management
-  - `status`: Shift status (1=OPEN, 2=FILLED, 3=CANCELLED, 4=COMPLETED)
+  - `status`: Foreign key to status table (references standardized status values)
   - `submission_cycle`: PRIMARY or SECONDARY
   - `break_duration`: Break time in minutes
 - **Automated Features**:
@@ -110,10 +111,13 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Purpose**: Job seeker work preferences and filters
 - **Primary Key**: `preference_id` (UUID)
 - **Key Fields**:
-  - `user_id`: Unique job seeker reference
-  - `min_pay_rate`: Minimum acceptable hourly rate
-  - `max_travel_km`: Maximum travel distance
-  - `desired_roles`: JSONB array of preferred job types
+  - `user_id`: Unique job seeker reference (unique constraint)
+  - `min_pay_rate`: Minimum acceptable hourly rate (default: 0.00, constraint: >= 0)
+  - `max_travel_km`: Maximum travel distance (default: 50, constraint: >= 0)
+  - `desired_roles`: JSONB array of preferred job types (default: '[]')
+  - `max_hours_per_week`: Maximum hours per week (constraint: > 0 AND <= 44)
+  - `max_hours_per_shift`: Maximum hours per shift (constraint: > 0 AND <= 12)
+  - `consider_lower_rate`: Whether to consider lower pay rates (default: false)
 
 #### `payouts`
 - **Purpose**: Financial records and earnings tracking
@@ -237,6 +241,16 @@ auth.users
     ├── shifts (1:many)
     └── job_seekers (1:many, internal clients)
 
+job_categories
+├── job_categories (1:many, self-referencing)
+└── job_types (1:many)
+
+job_types
+└── shifts (1:many)
+
+status
+└── shifts (1:many)
+
 shifts
 ├── assignments (1:many)
 └── feedback (through assignments)
@@ -255,12 +269,52 @@ assignments
 6. **Feedback Window**: 24-hour edit limit on feedback submissions
 7. **Financial Integrity**: Duplicate payout prevention with date ranges
 
+### 5. Database Views
+
+#### `shift_status_view`
+- **Purpose**: Denormalized view of shifts with status information
+- **Key Fields**: All shift fields plus `status_name` and `status_code`
+- **Usage**: Simplifies queries that need both shift and status information
+- **Performance**: Optimized for dashboard and listing queries
+
+### 6. Job Classification Tables
+
+#### `job_categories`
+- **Purpose**: Hierarchical categorization of job types
+- **Primary Key**: `category_id` (UUID)
+- **Key Fields**:
+  - `category_name`: Unique category name
+  - `description`: Category description
+  - `parent_category_id`: Self-referencing for hierarchy
+  - `is_active`: Active status flag
+- **Features**: Supports nested categories for job organization
+
+#### `job_types`
+- **Purpose**: Specific job types within categories
+- **Primary Key**: `job_type_id` (UUID)
+- **Key Fields**:
+  - `type_name`: Job type name
+  - `category_id`: Foreign key to job_categories
+  - `description`: Job type description
+  - `is_active`: Active status flag
+- **Relationships**: Many-to-one with job_categories, one-to-many with shifts
+
+#### `status`
+- **Purpose**: Standardized status values for shifts
+- **Primary Key**: `status_id` (integer, identity)
+- **Key Fields**:
+  - `name`: Status name (unique)
+- **Usage**: Referenced by shifts table for status management
+
 ## Migration History
 
 Recent migrations focus on:
 - Enhanced user registration fields (postal codes, addresses)
 - Availability template system for recurring schedules  
 - Postal code validation and indexing
+- Job classification system (categories and types)
+- Enhanced preferences system with work hour limits
+- Status standardization for shift management
 - Improved user onboarding flow
 
 This backend architecture supports a scalable staffing platform with automated business logic, secure data access, and comprehensive audit trails.

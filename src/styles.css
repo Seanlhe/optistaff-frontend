@@ -54,3 +54,23 @@
   src: url(/fonts/Montserrat-Italic.ttf);
 }
 
+/* JOVITA EDIT : Set default font for the entire application */
+body {
+  font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* LocationAwareMap circle transition styles */
+.leaflet-interactive.circle-adjusting {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Enhanced slider styles for better visual feedback */
+input[type="range"]::-webkit-slider-thumb {
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="range"]::-moz-range-thumb {
+  transition: all 0.2s ease-in-out;
+}
+
