@@ -22,14 +22,15 @@ export const useFeedback = () => {
       setError('User not authenticated');
       return;
     }
-    setLoading(true);
     setError(null);
     try{
       // Fetch feedback from the database
       const { data, error } = await supabase
         .from('feedback')
         .select('*')
-        .eq('reviewee_id', user.id);
+        .eq('reviewer_id', user.id);
+
+          console.log('Query all response:', { data, error });
 
       if (error) {
         setError(error.message);
@@ -45,8 +46,10 @@ export const useFeedback = () => {
   }, [user]);
 
   useEffect(() => {
+  if (user) {
     fetchFeedback();
-  }, [fetchFeedback]);
+  }
+}, [user, fetchFeedback]);
 
   const submitFeedback = async (feedbackData: Partial<Feedback>) => {
     if (!user) {
@@ -80,7 +83,7 @@ export const useFeedback = () => {
       setLoading(false);
       setError('User not authenticated');
       return;
-    } m
+    } 
 
     const { error } = await supabase
       .from('feedback')   
@@ -123,6 +126,8 @@ export const useFeedback = () => {
     await fetchFeedback();
     setLoading(false);
   };
+
+  
 
   return {
     feedback,
