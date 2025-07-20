@@ -1,3 +1,4 @@
+import { Shift } from "./hooks"
 export interface IconButtonProps{
     text: string,
     src: string
@@ -7,14 +8,6 @@ export interface IconButtonProps{
 export interface CircleButtonProps{
     className: string,
     src: string
-}
-
-export interface ShiftCardProps{
-    title: string,
-    date: string,
-    time: string,
-    staffNo: number,
-    unfilledStaff: number
 }
 
 export interface InputFieldProps{
