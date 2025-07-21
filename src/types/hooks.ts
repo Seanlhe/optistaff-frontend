@@ -42,19 +42,21 @@ export interface SignupData {
 // useShifts interfaces
 export interface Shift {
     shift_id: string;
-    client_id: string;
-    title: string;
-    description: string;
+    employee_name: string;
+    job_title: string;
+    job_location: string;
+    job_description: string | null;
+    job_requirements: string | null;
+    job_type: string;
+    pay_rate: number;
     start_time: Date;
     end_time: Date;
-    pay_rate: number;
-    job_location: string;
+    break_duration: number | null; // in minutes
     staff_needed: number;
     staff_assigned: number;
     submission_cycle: 'PRIMARY' | 'SECONDARY';
+    status: Status;
     created_at: Date;
-    break_duration?: number; // in minutes
-    status: 0 | 1 | 2;
 }
 
 // useAvailability interfaces
@@ -129,20 +131,30 @@ export type Payout = Record<string, unknown>;
 // useAssignments interfaces
 export interface Assignment {
     assignment_id: string;
+    employee_name: string;
+    employer_name: string;
+    job_title: string;
+    job_location: string;
+    job_description: string | null;
+    job_requirements: string | null;
+    job_type: string;
+    pay_rate: number;
+    start_time: Date;
+    end_time: Date;
     break_hours: number;
+    contact_number: string;
+    contact_email: string;
     check_in_time: string | null;
     check_out_time: string | null;
-    created_at: string;
-    job_title: string;
-    name: string;
     status: string;
+    created_at: string;
 }
 
 // useFeedback interfaces
 export type Feedback = Record<string, unknown>;
 
 // General status type for assignment cancellation
-export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
+export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending' | 'active' | 'completed' | 'no_show';
 
 // Enhanced usePreferences hook return type with location support
 export interface UsePreferencesReturn {

@@ -29,7 +29,7 @@ export const useAssignments = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase.rpc('get_assignment_by_jobseeker', { p_user_id: user.id });
+      const { data, error } = await supabase.rpc('get_assignments_by_jobseeker', { p_user_id: user.id });
       if (error) {
         setError(error.message);
         setLoading(false);
