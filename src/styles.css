@@ -60,3 +60,17 @@ body {
   font-size: 14px;
 }
 
+/* LocationAwareMap circle transition styles */
+.leaflet-interactive.circle-adjusting {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Enhanced slider styles for better visual feedback */
+input[type="range"]::-webkit-slider-thumb {
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="range"]::-moz-range-thumb {
+  transition: all 0.2s ease-in-out;
+}
+
