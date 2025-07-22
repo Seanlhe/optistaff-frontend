@@ -30,7 +30,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
   // Render assignment-specific information section
   const renderAssignmentDetails = () => (
     <div className="space-y-4">
-      <div className="border-t pt-4">
+      <div className="border-t border-t-border pt-4">
         <h4 className="font-semibold text-primary-text mb-3">Assignment Details</h4>
         
         <div className="grid grid-cols-2 gap-4">
@@ -54,7 +54,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
     
     return (
       <div className="space-y-4">
-        <div className="border-t pt-4">
+        <div className="border-t border-t-border pt-4">
           <h4 className="font-semibold text-primary-text mb-3">Contact Information</h4>
           
           <div className="space-y-3">
@@ -87,10 +87,10 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
   const renderCancelButton = () => {
     if (assignment.status === 'upcoming') {
       return (
-        <div className="pt-4 border-t">
+        <div>
           <Button 
             onClick={handleCancelAssignment}
-            className="w-full bg-error text-white hover:bg-error/80"
+            className="w-full bg-primary-blue text-white hover:bg-error/80"
             variant="destructive"
           >
             Cancel Assignment
@@ -177,7 +177,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
           )}
 
           {assignment.requirements && (
-            <div className="space-y-2">
+            <div className="space-y-2 border-t border-t-border pt-4">
               <div className="flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-primary-blue" />
                 <h4 className="text-base font-semibold text-primary-text">Requirements</h4>
@@ -196,7 +196,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
           {renderCancelButton()}
 
           {assignment.status === "completed" && assignment.employerFeedback && (
-            <div className="space-y-3 border-t pt-4">
+            <div className="space-y-3 border-t border-t-border pt-4">
               <div className="flex items-center space-x-2">
                 <Star className="w-4 h-4 text-primary-blue" />
                 <h4 className="text-base font-semibold text-primary-text">Employer Feedback</h4>

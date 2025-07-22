@@ -15,7 +15,7 @@ export interface JobseekerAssignmentCard {
   hourlyRate: number;
   description?: string;
   requirements?: string;
-  status?: 'upcoming' | 'completed' | 'cancelled';
+  status?: 'upcoming' | 'completed' | 'cancel_by_employer' | 'cancel_by_employee';
   employerFeedback?: string;
   rating?: number;
   contactNumber?: string;
@@ -40,7 +40,8 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
     switch (status) {
       case 'completed':
         return 'bg-green-dark text-white border-green-dark';
-      case 'cancelled':
+      case 'cancel_by_employer':
+      case 'cancel_by_employee':
         return 'bg-red-dark text-white border-red-dark';
       case 'upcoming':
         return 'bg-yellow-500 text-white border-yellow-500';
@@ -55,10 +56,12 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
         return 'Upcoming';
       case 'completed':
         return 'Completed';
-      case 'cancelled':
-        return 'Cancelled';
+      case 'cancel_by_employer':
+        return 'Cancelled by Employer';
+      case 'cancel_by_employee':
+        return 'Cancelled by Employee';
       default:
-        return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+        return status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown';
     }
   };
 
@@ -87,13 +90,6 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
             variant="outline"
           >
             View Details
-          </Button>
-          <Button 
-            onClick={handleCancelAssignment}
-            className="px-4 bg-primary-blue text-white hover:bg-primary-blue/80 text-sm"
-            variant="default"
-          >
-            Cancel
           </Button>
         </div>
       );

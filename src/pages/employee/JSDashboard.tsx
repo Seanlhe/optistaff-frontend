@@ -63,7 +63,7 @@ const Dashboard = () => {
 	};
 
 	// Status mapping based on actual database status values
-	const mapAssignmentStatusToCardStatus = (status: string): 'upcoming' | 'completed' | 'cancelled' => {
+	const mapAssignmentStatusToCardStatus = (status: string): 'upcoming' | 'completed' | 'cancel_by_employer' | 'cancel_by_employee' => {
 		switch (status?.toLowerCase()) {
 			case 'confirmed':
 			case 'pending':
@@ -72,9 +72,9 @@ const Dashboard = () => {
 			case 'completed':
 				return 'completed';
 			case 'cancel_by_employer':
+				return 'cancel_by_employer';
 			case 'cancel_by_employee':
-			case 'no_show':
-				return 'cancelled';
+				return 'cancel_by_employee';
 			default:
 				return 'upcoming';
 		}
@@ -130,14 +130,6 @@ const Dashboard = () => {
 		return `${formatDateForRange(minDate)} – ${formatDateForRange(maxDate)}`;
 	};
 
-	const getNextAssignment = () => {
-		const upcomingAssignments = displayAssignments.filter(a => a.status === 'upcoming');
-		if (upcomingAssignments.length === 0) return "No upcoming assignments";
-		
-		const next = upcomingAssignments[0];
-		return `${next.title}\n${next.company}\n${next.location}, ${next.time}`;
-	};
-
 	return (
 		<div className="min-h-screen bg-bg p-8 pr-12">
 			{/* Header */}
@@ -176,7 +168,6 @@ const Dashboard = () => {
 									<JobseekerAssignmentCard
 										key={assignment.id}
 										assignment={assignment}
-										// onClick={() => handleViewDetails(assignment)}
 										onViewDetails={handleViewDetails}
 									/>
 								))}
@@ -187,11 +178,6 @@ const Dashboard = () => {
 					{/* Stats and Calendar */}
 					<div className="bg-card-color rounded-xl p-6 w-full md:order-2 text-primary-blue">
 						<div className="space-y-4">
-							<StatsCard
-								title="Next Assignment"
-								value={getNextAssignment()}
-								icon={<Clock />}
-							/>
 							<PayoutSummaryCard timeframe="week" />
 							<StatsCard
 								title="Rating"
