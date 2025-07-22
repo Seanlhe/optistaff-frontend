@@ -54,8 +54,10 @@ function App() {
           <Route path="uploadcsv" element={<UploadCSV />} />
           <Route path="edit" element={<EditListing shift={{
             shift_id: "shift_001",
-            client_id: "client_123",
-            title: "Event Support Staff",
+            employer_name: "client_123",
+            job_title: "Event Support Staff",
+            job_requirements: "Bring a black shirt" , 
+            job_type: "waiter",
             description: "Assist with event logistics and crowd control.",
             start_time: new Date("2025-08-01T09:00:00"),
             end_time: new Date("2025-08-01T17:00:00"),
@@ -66,7 +68,7 @@ function App() {
             submission_cycle: "PRIMARY",
             created_at: new Date("2025-07-20T12:00:00"),
             break_duration: 60,
-            status: 1
+            status: "pending"
           }} />}/>
           <Route path="history" element={<ClientHistory/>}/>
         </Route>

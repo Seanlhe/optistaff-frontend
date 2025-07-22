@@ -30,6 +30,19 @@ export interface InputFieldProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+export interface SelectProps{
+  name: string;
+  title: string;
+  options: {label: string, value: string}[];
+  placeholder?: string;
+  className?: string;
+  value?: string| number
+  type?: string;
+  valid?: boolean;
+  error?: string | null;
+  onInput: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
 export interface InputAreaProps {
   name: string;
   title: string;

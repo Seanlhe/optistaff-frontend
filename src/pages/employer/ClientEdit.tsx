@@ -88,7 +88,7 @@ function UpdateForm({shift}: {shift: Shift}){
             <CustomInputField className="col-span-3"  placeholder="Eg. 7000" name="pay_rate" title="Pay Rate (/hr)" value={formData.pay_rate} type="number" onChange={handleDataChange}/>
             <CustomInputField className="col-span-3" placeholder="Eg. 10" name="staff_needed" title="No. Pax" type="number" value={formData.staff_needed}  onChange={handleDataChange}/>
             <div id="upload-btns" className="col-span-6 flex flex-row gap-4 justify-end">
-                <button type="button" className="hover:cursor-pointer hover:opacity-80 w-full p-3 bg-primary-blue font-montserrat-smb text-white text-base rounded-lg" onClick={(e: React.MouseEvent<HTMLButtonElement>)=>handleSubmit(e)}>Post Job</button> 
+                <button type="button" className="hover:cursor-pointer hover:opacity-80 w-full p-3 bg-primary-blue font-montserrat-smb text-white text-base rounded-lg" onClick={()=>handleSubmit()}>Post Job</button> 
                 <button type="button" className="hover:cursor-pointer hover:bg-gray-100 w-full p-3 border-2 bg-white border-secondary-text font-montserrat-smb text-secondary-text text-base rounded-lg" onClick={handleCancel}>Cancel</button>
             </div>
         </form>

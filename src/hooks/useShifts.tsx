@@ -44,7 +44,7 @@ export const useShifts = () => {
     fetchShifts();
   }, [fetchShifts]);
 
-  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => {
+  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"| "employer_name"| "submission_cycle">) => {
     // Create shift implementation will go here
     setLoading(true);
     setError(null);

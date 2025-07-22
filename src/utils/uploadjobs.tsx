@@ -103,9 +103,9 @@ export const getError = (shiftObject:  Omit<Shift, "shift_id" | "created_at" | "
 }
 
 const getEmptyError = (shiftObject:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned"| "client_id">) =>{
-    if (shiftObject.title.length == 0){
+    if (shiftObject.job_title.length == 0){
         return getEmptyMessage("title")
-    }else if (shiftObject.description.length == 0){
+    }else if (shiftObject.description && shiftObject.description.length == 0){
         return getEmptyMessage("description")
     // }else if (shiftObject.category.length == 0){
     //     return getEmptyMessage("category")

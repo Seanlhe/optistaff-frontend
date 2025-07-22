@@ -56,7 +56,7 @@ function DashboardUpcoming({ shifts }: { shifts: Shift[] }){
         </div>
         {shifts && <div className="overflow-hidden">
                 <ul className="z-50 flex flex-col gap-8 animate-slidedown">
-                    {shifts.map((shift) => shift.staff_assigned == shift.staff_needed? <li><ShiftCard {...shift}/></li>: null)}
+                    {shifts.map((shift) => shift.staff_assigned == shift.staff_needed? <li key={shift.shift_id}><ShiftCard {...shift}/></li>: null)}
                 </ul>
         </div>
         }
@@ -98,7 +98,7 @@ function DashboardInProgress({ shifts }: { shifts: Shift[] }){
         </div>
         <div className="overflow-hidden">
             <ul className="flex flex-col gap-8 animate-slidedown">
-                {shifts.map((shift) => shift.staff_assigned < shift.staff_needed? <li><ShiftCard {...shift}/></li> : null)}
+                {shifts.map((shift) => shift.staff_assigned < shift.staff_needed? <li key={shift.shift_id}><ShiftCard {...shift}/></li> : null)}
             </ul>
         </div>
     </div>
