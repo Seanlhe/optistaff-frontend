@@ -12,14 +12,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-card-color transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-text focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           {
-            "bg-primary-blue text-card-color hover:bg-primary-blue/90": variant === "default",
-            "bg-error text-card-color hover:bg-error-dark": variant === "destructive",
-            "border border-border-color bg-card-color hover:bg-secondary-bg hover:text-primary-text": variant === "outline",
-            "bg-secondary-bg text-primary-text hover:bg-tertiary-bg": variant === "secondary",
-            "hover:bg-secondary-bg hover:text-primary-text": variant === "ghost",
-            "text-primary-blue underline-offset-4 hover:underline": variant === "link",
+            "bg-blue-600 text-white hover:bg-blue-700": variant === "default",
+            "bg-red-500 text-white hover:bg-red-600": variant === "destructive",
+            "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900": variant === "outline",
+            "bg-slate-100 text-slate-900 hover:bg-slate-200": variant === "secondary",
+            "hover:bg-slate-100 hover:text-slate-900": variant === "ghost",
+            "text-blue-600 underline-offset-4 hover:underline": variant === "link",
           },
           {
             "h-10 px-4 py-2": size === "default",

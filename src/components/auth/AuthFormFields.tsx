@@ -1,38 +1,38 @@
-import { FormField } from "./FormField";
-import { PasswordField } from "../PasswordField";
-import { DateInput } from "../DateInput";
-import { AddressLookupField } from "../AddressLookupField";
-import { ConfirmPasswordField } from "../ConfirmPasswordField";
+import { FormField } from "./FormField"
+import { PasswordField } from "../PasswordField"
+import { DateInput } from "../DateInput"
+import { AddressLookupField } from "../AddressLookupField"
+import { ConfirmPasswordField } from "../ConfirmPasswordField"
 
 interface AuthFormFieldsProps {
-  isSignup: boolean;
-  userType: "jobseeker" | "employer";
+  isSignup: boolean
+  userType: "jobseeker" | "employer"
   formData: {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    dateOfBirth: string;
-    address: string;
-    postalCode: string;
-    companyName: string;
-    officeNumber: string;
-  };
+    email: string
+    password: string
+    confirmPassword: string
+    firstName: string
+    lastName: string
+    phoneNumber: string
+    dateOfBirth: string
+    address: string
+    postalCode: string
+    companyName: string
+    officeNumber: string
+  }
   setFormData: {
-    setEmail: (value: string) => void;
-    setPassword: (value: string) => void;
-    setConfirmPassword: (value: string) => void;
-    setFirstName: (value: string) => void;
-    setLastName: (value: string) => void;
-    setPhoneNumber: (value: string) => void;
-    setDateOfBirth: (value: string) => void;
-    setAddress: (value: string) => void;
-    setPostalCode: (value: string) => void;
-    setCompanyName: (value: string) => void;
-    setOfficeNumber: (value: string) => void;
-  };
+    setEmail: (value: string) => void
+    setPassword: (value: string) => void
+    setConfirmPassword: (value: string) => void
+    setFirstName: (value: string) => void
+    setLastName: (value: string) => void
+    setPhoneNumber: (value: string) => void
+    setDateOfBirth: (value: string) => void
+    setAddress: (value: string) => void
+    setPostalCode: (value: string) => void
+    setCompanyName: (value: string) => void
+    setOfficeNumber: (value: string) => void
+  }
 }
 
 export const AuthFormFields = ({
@@ -46,10 +46,10 @@ export const AuthFormFields = ({
       {/* Personal Information Section */}
       {isSignup && (
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-primary-text border-b border-border-color pb-2">
+          <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
             Personal Information
           </h3>
-
+          
           <div className="grid grid-cols-2 gap-4">
             <FormField
               id="firstName"
@@ -96,10 +96,10 @@ export const AuthFormFields = ({
       {/* Contact Information Section */}
       {isSignup && (
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-primary-text border-b border-border-color pb-2">
+          <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
             Contact Information
           </h3>
-
+          
           <FormField
             id="phoneNumber"
             label={userType === "jobseeker" ? "Mobile Number" : "Phone Number"}
@@ -124,16 +124,8 @@ export const AuthFormFields = ({
 
           {/* Address Fields */}
           <AddressLookupField
-            label={
-              userType === "employer"
-                ? "Company Address"
-                : "Residential Address"
-            }
-            placeholder={
-              userType === "employer"
-                ? "Enter your company address"
-                : "Enter your residential address"
-            }
+            label={userType === "employer" ? "Company Address" : "Residential Address"}
+            placeholder={userType === "employer" ? "Enter your company address" : "Enter your residential address"}
             postalCode={formData.postalCode}
             address={formData.address}
             onPostalCodeChange={setFormData.setPostalCode}
@@ -146,11 +138,11 @@ export const AuthFormFields = ({
       {/* Account Credentials Section */}
       <div className="space-y-4">
         {isSignup && (
-          <h3 className="text-sm font-medium text-primary-text border-b border-border-color pb-2">
+          <h3 className="text-sm font-medium text-gray-700 border-b pb-2">
             Account Credentials
           </h3>
         )}
-
+        
         <FormField
           id="email"
           label="Email Address"
@@ -181,5 +173,5 @@ export const AuthFormFields = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}

@@ -13,10 +13,10 @@ const Preferences = () => {
       <div className="max-w-5xl mx-auto">
         {/* The tab buttons container */}
         <div className="py-8">
-          <div className="inline-flex p-1 bg-secondary-bg rounded-lg gap-1">
+          <div className="inline-flex p-1 bg-gray-200 rounded-lg gap-1">
             <button
               onClick={() => setActiveTab("PreferencesForm")}
-              className={`px-3 py-2 rounded-lg text-sm ${
+              className={`px-3 py-2 rounded-lg ${
                 activeTab === "PreferencesForm"
                   ? "bg-white" // Active styles
                   : "hover:bg-white/60" // Inactive styles
@@ -27,7 +27,7 @@ const Preferences = () => {
 
             <button
               onClick={() => setActiveTab("Availability")}
-              className={`px-3 py-2 rounded-lg text-sm ${
+              className={`px-3 py-2 rounded-lg ${
                 activeTab === "Availability"
                   ? "bg-white" // Active styles
                   : "hover:bg-white/60" // Inactive styles

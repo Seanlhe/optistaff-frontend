@@ -30,11 +30,11 @@ const PasswordChangeModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-card-color border border-border rounded-xl shadow-xl max-w-md w-full mx-4">
         <div className="p-6 border-b border-border">
-          <h3 className="text-lg font-bold text-primary-text">Change Password</h3>
+          <h3 className="text-xl font-montserrat-smb text-primary-text">Change Password</h3>
         </div>
         <form onSubmit={onSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword" className="text-base font-semibold text-primary-text">
+            <Label htmlFor="currentPassword" className="text-primary-text font-montserrat">
               Current Password
             </Label>
             <Input
@@ -54,7 +54,7 @@ const PasswordChangeModal = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword" className="text-base font-semibold text-primary-text">
+            <Label htmlFor="newPassword" className="text-primary-text font-montserrat">
               New Password
             </Label>
             <Input
@@ -82,7 +82,7 @@ const PasswordChangeModal = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-base font-semibold text-primary-text">
+            <Label htmlFor="confirmPassword" className="text-primary-text font-montserrat">
               Confirm New Password
             </Label>
             <Input
@@ -116,14 +116,14 @@ const PasswordChangeModal = ({
           <div className="flex gap-2 pt-4">
             <Button 
               type="button" 
-              className="flex-1 bg-secondary-bg text-primary-text hover:bg-secondary-bg/80 border border-border rounded-lg py-2 text-sm"
+              className="flex-1 bg-secondary-bg text-primary-text hover:bg-secondary-bg/80 border border-border rounded-lg py-2 font-montserrat"
               onClick={onClose}
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
-              className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 rounded-lg py-2 text-sm"
+              className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 rounded-lg py-2 font-montserrat"
               disabled={
                 isLoading || 
                 Object.keys(passwordErrors).some(key => passwordErrors[key]) || 

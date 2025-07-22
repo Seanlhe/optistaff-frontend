@@ -8,11 +8,11 @@ export const AuthFooter = ({ isSignup }: AuthFooterProps) => {
   return (
     <div className="space-y-4 text-center">
       {/* Toggle Mode */}
-      <p className="text-sm text-secondary-text">
+      <p className="text-sm text-slate-600">
         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
         <Link
           to={`/auth?mode=${isSignup ? "login" : "signup"}`}
-          className="text-primary-blue hover:text-primary-blue/80 font-semibold transition-colors"
+          className="text-blue-600 hover:text-blue-500 font-semibold transition-colors"
         >
           {isSignup ? "Sign In" : "Sign Up"}
         </Link>
@@ -21,7 +21,7 @@ export const AuthFooter = ({ isSignup }: AuthFooterProps) => {
       {/* Back to Landing */}
       <Link
         to="/"
-        className="text-sm text-secondary-text hover:text-primary-text transition-colors"
+        className="text-sm text-slate-500 hover:text-slate-400 transition-colors"
       >
         ← Back to home
       </Link>

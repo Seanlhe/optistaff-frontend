@@ -58,6 +58,12 @@ export const useAuth = () => {
       }
     }
     
+    // Debug logging
+    console.log('🔍 Auth Debug - User metadata:', user.user_metadata);
+    console.log('🔍 Auth Debug - Extracted userType:', userType);
+    console.log('🔍 Auth Debug - Mapped role:', role);
+    console.log('🔍 Auth Debug - Should navigate:', shouldNavigate);
+    
     // Only set auth state if role was determined
     if (!role) {
       console.log('🔍 Auth Debug - ERROR: No role could be determined for user');
@@ -85,67 +91,39 @@ export const useAuth = () => {
       console.log('🔍 Auth Debug - Navigating to:', targetRoute);
       navigate(targetRoute);
     }
-  }, []); // Remove navigate dependency to prevent re-renders
+  }, [navigate]);
 
   // Helper function to clear user state
   const clearUserState = useCallback((errorMessage?: string) => {
-    setAuthState(prev => {
-      // Only update if state actually changed
-      if (prev.user === null && prev.loading === false && prev.error === (errorMessage || null)) {
-        return prev;
-      }
-      return {
-        user: null,
-        loading: false,
-        error: errorMessage || null,
-      };
+    setAuthState({
+      user: null,
+      loading: false,
+      error: errorMessage || null,
     });
   }, []);
 
   useEffect(() => {
-    let isMounted = true; // Prevent state updates if component unmounts
-    
-    // Get initial session
-    const getInitialSession = async () => {
+    // IIFE to handle async operations directly
+    (async () => {
       try {
         const response = await supabase.auth.getSession();
-        const session = response.data.session;
+        const data = response.data;
+        const session = data.session;
 
-        // Only update state if component is still mounted
-        if (!isMounted) return;
-
-        if (session?.user) {
+        //if session exists and has a user, set the auth state
+        if (session?.user){
           await updateUserState(session.user);
-        } else {
+        }
+        // if no session or user, set user to null and loading to false
+        else {
           clearUserState();
         }
       } catch (error: unknown) {
-        if (!isMounted) return;
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
         clearUserState(errorMessage);
       }
-    };
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return;
-
-      if (event === 'SIGNED_IN' && session?.user) {
-        await updateUserState(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        clearUserState();
-      }
-    });
-
-    // Get initial session
-    getInitialSession();
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []); // Empty dependency array - run only once on mount
+    })();
+  }, [updateUserState, clearUserState]);
 
   const login = async (email: string, password: string) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
