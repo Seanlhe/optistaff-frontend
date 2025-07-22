@@ -1,113 +1,140 @@
-# React + TypeScript + Vite
+# OptiStaff - Workforce Management Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+OptiStaff is a comprehensive React-based workforce management platform that connects employers with job seekers for efficient shift-based work scheduling. Built with modern web technologies and powered by Supabase for real-time data management.
 
-Currently, two official plugins are available:
+## 🚀 Technology Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React 18.3.1 + TypeScript + Vite
+- **Backend**: Supabase (PostgreSQL + Authentication + Real-time)
+- **Styling**: Tailwind CSS 4.x with custom theming
+- **State Management**: TanStack React Query for server state
+- **UI Components**: Radix UI primitives + shadcn/ui components
+- **Maps**: Leaflet for location-based features
+- **Build Tool**: Vite with optimized development workflow
 
-## Expanding the ESLint configuration
+## 🏗️ Architecture Overview
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend Architecture
+- **Component-Based**: Modular React components with TypeScript
+- **Custom Hooks**: Domain-specific logic (useAuth, useShifts, useAvailability)
+- **Role-Based Routing**: Separate layouts for employers and job seekers
+- **Real-time Updates**: Live data synchronization via Supabase subscriptions
 
-```js
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+### Backend Architecture (Supabase)
+- **Dual User System**: Separate profiles for job seekers and clients
+- **Automated Business Logic**: Database triggers for ratings, capacity management
+- **Row Level Security**: Secure data access with RLS policies
+- **Real-time Subscriptions**: Live updates for shifts and assignments
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 🔧 Development Setup
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account and project
+
+### Installation
+```bash
+# Clone the repository
+git clone <repository-url>
+cd optistaff
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Add your Supabase URL and anon key to .env
+
+# Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Available Scripts
+- `npm run dev` - Start development server
+- `npm run build` - Production build
+- `npm run build:dev` - Development build
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+## 📊 Database Schema
 
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### Core Tables
+- **`job_seekers`** - Employee profiles and ratings
+- **`clients`** - Employer company information
+- **`shifts`** - Job postings with scheduling details
+- **`assignments`** - Links job seekers to specific shifts
+- **`availability`** - Job seeker availability schedules
+- **`preferences`** - Job seeker work preferences
+- **`feedback`** - Bidirectional rating system
+- **`payouts`** - Earnings tracking and payment records
+
+### Status System
+The platform uses an integer-based status system with a lookup table:
+- **Shift Status**: 1 = OPEN, 2 = FILLED
+- **Assignment Status**: 5 = CONFIRMED, 7 = CANCELLED_BY_USER, 8 = NO_SHOW, 9 = COMPLETED
+
+## 🎯 Key Features
+
+### For Job Seekers
+- **Availability Management**: Calendar-based scheduling with templates
+- **Job Preferences**: Set pay rates, travel distance, preferred roles
+- **Shift Browsing**: View and apply for available shifts
+- **Earnings Tracking**: Automated payout calculations
+- **Rating System**: Build reputation through client feedback
+
+### For Employers
+- **Shift Management**: Create and manage job postings
+- **Staff Matching**: Automated matching algorithm for job seekers
+- **Roster Management**: Track staff assignments and capacity
+- **Real-time Updates**: Live status updates for shift filling
+- **Feedback System**: Rate job seeker performance
+
+### Advanced Features
+- **Smart Matching**: Algorithm considers pay rate, location, preferences, and ratings
+- **Template System**: Reusable availability patterns
+- **Automated Triggers**: Rating updates, capacity management, status changes
+- **Location Integration**: Distance-based job matching
+- **Real-time Notifications**: Live updates for assignments and status changes
+
+## 📁 Project Structure
+
 ```
-
-## File Tree Structure
-
-```
-optistaff-frontend/
-├── eslint.config.js
-├── index.html
-├── README.md
-├── public/
-│   ├── fonts/
-│   ├── icons/
-│   └── images/
-└── src/
-    ├── App.css
-    ├── App.tsx
-    ├── index.css
-    ├── main.tsx
-    ├── styles.css
-    ├── components/
-    │   ├── CircleButton.tsx
-    │   ├── IconButton.tsx
-    │   ├── NavItem.tsx
-    │   └── ShiftCard.tsx
-    ├── pages/
-    │   ├── ClientLayout.tsx
-    │   ├── JSLayout.tsx
-    │   ├── LandingPage.tsx
-    │   ├── Login.tsx
-    │   ├── ProtectedRoute.tsx
-    │   ├── Signup.tsx
-    │   ├── employee/
-    │   │   ├── JSDashboard.tsx
-    │   │   ├── JSNav.tsx
-    │   │   └── JSPref.tsx
-    │   └── employer/
-    │       ├── ClientDashboard.tsx
-    │       ├── ClientNav.tsx
-    │       └── ClientRoster.tsx
-    └── types/
-        ├── components.ts
-        └── navigation.ts
+optistaff-main/
+├── docs/                          # Project documentation
+│   └── project-architecture/      # Architecture documentation
+├── public/                        # Static assets
+│   ├── fonts/                     # Montserrat font variants
+│   ├── icons/                     # SVG/PNG icons
+│   └── images/                    # Brand assets and graphics
+├── src/                          # Source code
+│   ├── components/               # Reusable UI components
+│   │   ├── auth/                 # Authentication components
+│   │   ├── ui/                   # Base UI components (shadcn/ui style)
+│   │   ├── Calendar.tsx          # Calendar scheduling component
+│   │   ├── Map.tsx              # Leaflet map integration
+│   │   └── ProtectedRoute.tsx   # Route protection
+│   ├── hooks/                    # Custom React hooks
+│   │   ├── useAuth.tsx          # Authentication management
+│   │   ├── useAvailability.tsx  # Availability scheduling
+│   │   ├── useShifts.tsx        # Shift management
+│   │   ├── useUserProfile.tsx   # User profile data
+│   │   └── usePreferences.tsx   # Job seeker preferences
+│   ├── integrations/            # External service integrations
+│   │   └── supabase/           # Supabase client configuration
+│   ├── pages/                   # Application pages
+│   │   ├── auth/               # Authentication pages
+│   │   ├── employee/           # Job seeker pages
+│   │   ├── employer/           # Client/employer pages
+│   │   └── LandingPage.tsx     # Homepage
+│   ├── types/                  # TypeScript definitions
+│   ├── utils/                  # Utility functions
+│   └── lib/                    # Library utilities
+├── supabase/                   # Supabase configuration
+├── package.json               # Dependencies and scripts
+├── vite.config.ts            # Vite configuration
+├── tailwind.config.ts        # Tailwind CSS configuration
+└── tsconfig.json             # TypeScript configuration
 ```
 
 ## Git Workflow Guide for Team
