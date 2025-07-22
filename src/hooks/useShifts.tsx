@@ -3,10 +3,10 @@
  * @description Custom hook for shift data management
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from './useAuth';
-import { supabase } from '../integrations/supabase/client';
-import { Shift } from '../types/hooks';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "./useAuth";
+import { supabase } from "../integrations/supabase/client";
+import { Shift } from "../types/hooks";
 
 export const useShifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -17,7 +17,7 @@ export const useShifts = () => {
   const fetchShifts = useCallback(async () => {
     if (!user) {
       setLoading(false);
-      setError('User not authenticated');
+      setError("User not authenticated");
       return;
     }
     setLoading(true);
@@ -25,9 +25,9 @@ export const useShifts = () => {
     try {
       // Fetch shifts from the database
       const { data, error } = await supabase
-        .rpc('get_shifts_by_client', {
-          p_client_id: user.id
-        });
+        .from("shifts")
+        .select("*")
+        .eq("client_id", user.id);
 
       if (error) {
         setError(error.message);
@@ -46,21 +46,22 @@ export const useShifts = () => {
     fetchShifts();
   }, [fetchShifts]);
 
-  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => {
+  const createShift = async (
+    shift_data: Omit<
+      Shift,
+      "shift_id" | "created_at" | "status" | "staff_assigned"
+    >
+  ) => {
     // Create shift implementation will go here
     setLoading(true);
     setError(null);
     if (!user) {
-      setError('User not authenticated');
+      setError("User not authenticated");
       return;
     }
 
-    const new_shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned"> = {
+    const { error } = await supabase.rpc("create_shift", {
       ...shift_data,
-      client_id: user.id
-    }
-    const { error } = await supabase.rpc('create_shift', {
-      ...new_shift_data
     });
 
     if (error) {
@@ -71,6 +72,7 @@ export const useShifts = () => {
 
     // Optionally, you can refetch shifts after creating a new one
     await fetchShifts();
+
     setLoading(false);
   };
 
@@ -78,16 +80,15 @@ export const useShifts = () => {
     setLoading(true);
     setError(null);
     if (!user) {
-      setError('User not authenticated');
+      setError("User not authenticated");
       setLoading(false);
       return;
     }
 
     const { error } = await supabase
-      .from('shifts')
+      .from("shifts")
       .update(shift_data)
-      .eq('shift_id', shift_id);
-
+      .eq("shift_id", shift_id);
 
     if (error) {
       setError(error.message);
@@ -103,16 +104,15 @@ export const useShifts = () => {
     setLoading(true);
     setError(null);
     if (!user) {
-      setError('User not authenticated');
+      setError("User not authenticated");
       setLoading(false);
       return;
     }
 
     const { error } = await supabase
-      .from('shifts')
+      .from("shifts")
       .delete()
-      .eq('shift_id', shift_id);
-
+      .eq("shift_id", shift_id);
 
     if (error) {
       setError(error.message);

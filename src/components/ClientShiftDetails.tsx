@@ -1,27 +1,15 @@
 import { Shift } from "../types/hooks";
 import { format } from "date-fns";
 import { useState } from "react";
-interface ClientShiftDetailsProps extends Shift {
+interface ClientShiftDetailsProps {
+  shiftData: Shift;
   onClose?: () => void;
   onDelete?: (shift_id: string) => Promise<void>;
   onEdit?: (shift: Shift) => void;
 }
 
 export default function ClientShiftDetails({
-  shift_id,
-  client_id,
-  title,
-  description,
-  start_time,
-  end_time,
-  pay_rate,
-  job_location,
-  staff_needed,
-  staff_assigned,
-  submission_cycle,
-  created_at,
-  break_duration,
-  status,
+  shiftData,
   onClose,
   onDelete,
   onEdit,
@@ -33,7 +21,7 @@ export default function ClientShiftDetails({
 
     try {
       setIsDeleting(true);
-      await onDelete(shift_id);
+      await onDelete(shiftData.shift_id);
 
       if (onClose) {
         onClose();
@@ -46,15 +34,15 @@ export default function ClientShiftDetails({
   };
 
   // Format times for display
-  const startTimeFormatted = format(start_time, "h:mm a");
-  const endTimeFormatted = format(end_time, "h:mm a");
+  const startTimeFormatted = format(shiftData.start_time, "h:mm a");
+  const endTimeFormatted = format(shiftData.end_time, "h:mm a");
   return (
     <div className="bg-white p-4 rounded-lg w-150">
       {/* Header with Close Button */}
       <div className="flex justify-between items-start mb-4">
         <div>
           <p className="text-secondary-text text-sm mb-1">Title</p>
-          <h2 className="text-xl font-semibold">{title}</h2>
+          <h2 className="text-xl font-semibold">{shiftData.job_title}</h2>
         </div>
         <button
           onClick={onClose}
@@ -77,20 +65,20 @@ export default function ClientShiftDetails({
       {/* Location */}
       <div className="mb-4">
         <p className="text-secondary-text text-sm mb-1">Location</p>
-        <p className="text-lg font-medium">{job_location}</p>
+        <p className="text-lg font-medium">{shiftData.job_location}</p>
       </div>
 
       {/* Pay Rate */}
       <div className="mb-4">
         <p className="text-secondary-text text-sm mb-1">Pay Rate</p>
-        <p className="text-lg font-medium">${pay_rate.toFixed(2)}</p>
+        <p className="text-lg font-medium">${shiftData.pay_rate.toFixed(2)}</p>
       </div>
 
       {/* Description */}
-      {description && (
+      {shiftData.job_description && (
         <div className="mb-4">
           <p className="text-secondary-text text-sm mb-1">Description</p>
-          <p className="text-lg font-medium">{description}</p>
+          <p className="text-lg font-medium">{shiftData.job_description}</p>
         </div>
       )}
 
@@ -98,17 +86,20 @@ export default function ClientShiftDetails({
       <div>
         <p className="text-secondary-text text-sm mb-1">Filled / Required</p>
         <p className="text-lg font-medium">
-          {staff_assigned} / {staff_needed}
+          {shiftData.staff_assigned} / {shiftData.staff_needed}
         </p>
       </div>
 
       {/* Edit and Delete Buttons */}
       <div className="mt-6 flex justify-end gap-4">
-        <button className="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors">
+        <button
+          className="bg-primary-blue text-white px-4 py-2 rounded-lg hover:opacity-80 transition-colors"
+          onClick={() => onEdit && onEdit(shiftData)}
+        >
           Edit
         </button>
-        {/* Delete Button - Only show if status is NOT "Completed" */}
-        {status !== "Completed" && (
+        {/* Delete Button - Only show if status is NOT "completed" */}
+        {shiftData.status !== "completed" && (
           <button
             className={`bg-red-dark text-white px-4 py-2 rounded-lg hover:bg-red transition-colors ${
               isDeleting ? "opacity-50 cursor-not-allowed" : ""

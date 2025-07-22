@@ -1,6 +1,7 @@
 import ClientShiftDetails from "../../components/ClientShiftDetails";
 import ClientCalendarHeader from "../../components/ClientCalendarHeader";
 import ClientCalendarDay from "../../components/ClientCalendarDay";
+import ClientEdit from "./ClientEdit";
 import { Shift } from "../../types/hooks";
 import { useShifts } from "../../hooks/useShifts";
 import { useMemo, useState } from "react";
@@ -9,10 +10,15 @@ import { format, startOfWeek, addDays } from "date-fns";
 export default function ClientRoster() {
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
 
-  // Dynamic calendar state
-  const [currentWeek, setCurrentWeek] = useState(new Date());
+  // Dynamic calendar state - start from current week
+  const [currentWeek, setCurrentWeek] = useState(() => {
+    const today = new Date();
+    return startOfWeek(today, { weekStartsOn: 1 }); // Start on Monday
+  });
 
-  const { shifts, loading, error, deleteShift, updateShift } = useShifts();
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const { shifts, loading, error, deleteShift } = useShifts();
 
   const availableLocations = useMemo(() => {
     if (!shifts || shifts.length === 0) return [];
@@ -39,7 +45,16 @@ export default function ClientRoster() {
 
   // Navigation functions
   const navigateWeek = (direction: "prev" | "next") => {
-    setCurrentWeek(addDays(currentWeek, direction === "next" ? 7 : -7));
+    const newWeek = addDays(currentWeek, direction === "next" ? 7 : -7);
+    const today = new Date();
+    const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
+
+    // Prevent going to weeks before the current week
+    if (direction === "prev" && newWeek < startOfCurrentWeek) {
+      return; // Don't allow navigation to past weeks
+    }
+
+    setCurrentWeek(newWeek);
   };
 
   const goToToday = () => {
@@ -48,15 +63,22 @@ export default function ClientRoster() {
 
   const handleShiftClick = (shift: Shift) => {
     setSelectedShift(shift);
+    setIsEditMode(false); // Reset to details view when opening a shift
   };
 
   const handleCloseDetails = () => {
     setSelectedShift(null);
+    setIsEditMode(false);
+  };
+
+  const handleEditShift = (shift: Shift) => {
+    setSelectedShift(shift);
+    setIsEditMode(true); // Switch to edit mode
   };
 
   if (loading) {
     return (
-      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+      <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
         <div className="flex items-center justify-center h-64">
           <p className="text-secondary-text text-lg">Loading shifts...</p>
         </div>
@@ -66,7 +88,7 @@ export default function ClientRoster() {
 
   if (error) {
     return (
-      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+      <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
         <div className="flex items-center justify-center h-64">
           <p className="text-lg text-red">Error: {error}</p>
         </div>
@@ -76,7 +98,7 @@ export default function ClientRoster() {
 
   if (!shifts || shifts.length === 0) {
     return (
-      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+      <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
         <h1 className="text-3xl text-secondary-text font-montserrat-b">
           Weekly Roster
         </h1>
@@ -90,7 +112,7 @@ export default function ClientRoster() {
   // Don't render until we have locations
   if (availableLocations.length === 0) {
     return (
-      <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+      <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
         <div className="flex items-center justify-center h-64">
           <p className="text-lg">Processing shifts...</p>
         </div>
@@ -98,8 +120,12 @@ export default function ClientRoster() {
     );
   }
 
+  if (selectedShift && isEditMode) {
+    return <ClientEdit shift={selectedShift} />;
+  }
+
   return (
-    <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-8">
+    <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
       <p className="text-3xl text-primary-text font-montserrat-b">
         Weekly Roster
       </p>
@@ -145,9 +171,10 @@ export default function ClientRoster() {
             onClick={(e) => e.stopPropagation()}
           >
             <ClientShiftDetails
-              {...selectedShift}
+              shiftData={selectedShift}
               onClose={handleCloseDetails}
               onDelete={deleteShift}
+              onEdit={handleEditShift}
             />
           </div>
         </div>
