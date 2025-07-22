@@ -37,7 +37,7 @@ export const PasswordField: FC<PasswordFieldProps> = ({
     <div className="space-y-2">
       <Label htmlFor={id}>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-error ml-1">*</span>}
       </Label>
       
       <div className="relative">
@@ -49,14 +49,14 @@ export const PasswordField: FC<PasswordFieldProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           minLength={minLength}
-          className={`pr-12 ${error ? 'border-red-500' : ''}`}
+          className={`pr-12 ${error ? 'border-error' : ''}`}
           required={required}
         />
         
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-secondary-text hover:text-primary-text"
           disabled={disabled}
           tabIndex={-1}
         >
@@ -69,11 +69,11 @@ export const PasswordField: FC<PasswordFieldProps> = ({
       </div>
       
       {error && (
-        <p className="text-sm text-red-600 mt-1">{error}</p>
+        <p className="text-sm text-error-dark mt-1">{error}</p>
       )}
       
       {minLength && (
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-secondary-text mt-1">
           Minimum {minLength} characters
         </p>
       )}

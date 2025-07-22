@@ -9,12 +9,22 @@ export default {
       colors: {
         'primary-text': 'var(--color-primary-text)',
         'secondary-text': 'var(--color-secondary-text)',
-        'primary-blue': 'var(--color-primary-blue)',
-        'card-color': 'var(--color-card-color)',
+        'desc-text': 'var(--color-desc-text)',
+        'blue-text': 'var(--color-blue-text)',
         'bg': 'var(--color-bg)',
-        'secondary-bg': 'var(--color-secondary-bg)',
-        'gradient-end': 'var(--color-gradient-end)',
-        'border': 'var(--color-border)',
+        'card': 'var(--color-card)',
+        'button': 'var(--color-button)',
+        'hover-btnlight': 'var(--color-hover-btnlight)',
+        'hover-btndark': 'var(--color-hover-btndark)',
+        'red': 'var(--color-red)',
+        'green': 'var(--color-green)',
+        'outline': 'var(--color-outline)',
+      },
+      fontFamily: {
+        'sans': ['var(--font-montserrat)', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Added by Jovita
+        'montserrat': 'var(--font-montserrat)',
+        'montserrat-smb': 'var(--font-montserrat-smb)',
+        'montserrat-b': 'var(--font-montserrat-b)',
       }
     },
   },

@@ -44,9 +44,14 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
 
   // Update postal code and validation state when lookup result changes
   useEffect(() => {
-    if (lookupResult && !isManualEdit && !loading) {
-      onPostalCodeChange(lookupResult);
-      setValidationState('valid');
+    if (!isManualEdit && !loading) {
+      if (lookupResult) {
+        onPostalCodeChange(lookupResult);
+        setValidationState('valid');
+      } else {
+        // Clear postal code when hook clears it (e.g., on validation start or error)
+        onPostalCodeChange('');
+      }
     }
   }, [lookupResult, isManualEdit, onPostalCodeChange, loading]);
 
@@ -93,19 +98,19 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
       case 'validating':
         return (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
-            <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+            <Loader2 className="h-4 w-4 animate-spin text-primary-blue" />
           </div>
         );
       case 'valid':
         return (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
-            <Check className="h-4 w-4 text-green-500" />
+            <Check className="h-4 w-4 text-success" />
           </div>
         );
       case 'invalid':
         return (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
-            <X className="h-4 w-4 text-red-500" />
+            <X className="h-4 w-4 text-error" />
           </div>
         );
       default:
@@ -119,7 +124,7 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
       <div className="space-y-2">
         <Label htmlFor="address">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-error ml-1">*</span>}
         </Label>
         
         <div className="flex gap-2">
@@ -131,9 +136,9 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
               onChange={(e) => handleAddressChange(e.target.value)}
               placeholder={placeholder}
               disabled={disabled || loading}
-              className={`${error && !error.includes('postal code') ? 'border-red-500' : ''} ${
-                validationState === 'valid' ? 'border-green-500' : ''
-              } ${validationState === 'invalid' ? 'border-red-500' : ''}`}
+              className={`${error && !error.includes('postal code') ? 'border-error' : ''} ${
+                validationState === 'valid' ? 'border-success' : ''
+              } ${validationState === 'invalid' ? 'border-error' : ''}`}
             />
             
             {renderValidationIndicator()}
@@ -151,21 +156,21 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
         </div>
         
         {error && !error.includes('postal code') && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-error-dark">{error}</p>
         )}
         
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-secondary-text">
           {validationState === 'idle' && (
             <p>Click "Validate" to auto-fill postal code</p>
           )}
           {validationState === 'validating' && (
-            <p className="text-blue-600">Validating address... (this may take up to 10 seconds)</p>
+            <p className="text-primary-blue">Validating address... (this may take up to 10 seconds)</p>
           )}
           {validationState === 'valid' && (
-            <p className="text-green-600">✓ Valid address - postal code auto-filled</p>
+            <p className="text-success-dark">✓ Valid address - postal code auto-filled</p>
           )}
           {validationState === 'invalid' && (
-            <p className="text-red-600">✗ Please check address or enter postal code manually</p>
+            <p className="text-error-dark">✗ Please check address or enter postal code manually</p>
           )}
         </div>
       </div>
@@ -174,7 +179,7 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
       <div className="space-y-2">
         <Label htmlFor="postalCode">
           Postal Code
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-error ml-1">*</span>}
         </Label>
         
         <Input
@@ -185,21 +190,21 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
           placeholder="123456"
           maxLength={6}
           disabled={disabled}
-          className={`${error && error.includes('postal code') ? 'border-red-500' : ''}`}
+          className={`${error && error.includes('postal code') ? 'border-error' : ''}`}
         />
         
         {error && error.includes('postal code') && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-error-dark">{error}</p>
         )}
         
         {isManualEdit && postalCode && (
-          <p className="text-xs text-blue-600">
+          <p className="text-xs text-primary-blue">
             ✓ Postal code edited manually
           </p>
         )}
         
         {!isManualEdit && postalCode && address.trim().length >= 5 && (
-          <p className="text-xs text-green-600">
+          <p className="text-xs text-success-dark">
             ✓ Postal code auto-populated from address
           </p>
         )}

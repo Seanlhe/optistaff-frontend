@@ -1,59 +1,115 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useJobTypes } from '../hooks/useJobTypes';
+import { PreferenceJobTypeProps } from '../types/components';
 
-// job types.
-const jobData = {
-  "F&B and Hospitality": [
-    "Kitchen Helper", "Waiter/Waitress", "Dishwasher", "Bartender/Barista",
-    "Banquet Server", "Food Stall Assistant", "Cleaner",
-  ],
-  "Retail and Events": [
-    "Sales Associate", "Cashier", "Promoter", "Usher",
-    "Event Crew", "Customer Service", "Leaflet Distributor",
-  ],
-  "Logistics and Warehouse": [
-    "Packer", "Warehouse Assistant", "Inventory Checker", "Delivery", "Sorter",
-  ],
-};
-
-export const PreferenceJobType: React.FC = () => {
+export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({ 
+  formData, 
+  setFormData 
+}) => {
+  // Use hooks for data management
+  const { jobTypesByCategory, loading: jobTypesLoading, error: jobTypesError } = useJobTypes();
+  
   // state to hold the selected jobs
   const [selectedJobs, setSelectedJobs] = useState<{ [key: string]: boolean }>({});
+
+  // Load existing preferences when component mounts
+  useEffect(() => {
+    if (formData.selectedJobNames) {
+      // Convert job names array to selection object
+      const selectedJobNames: { [key: string]: boolean } = {};
+      
+      formData.selectedJobNames.forEach(jobName => {
+        selectedJobNames[jobName] = true;
+      });
+      
+      setSelectedJobs(selectedJobNames);
+    }
+  }, [formData.selectedJobNames]);
 
   // handle changes when a checkbox is clicked.
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
+    
+    // Update local state
     setSelectedJobs(prev => ({
       ...prev, // Copies the previous state to not lose other selections
       [name]: checked, // Updates the state for the clicked item
     }));
+
+    // Update parent form data
+    const updatedSelectedJobs = { ...selectedJobs, [name]: checked };
+    const selectedJobNames = Object.keys(updatedSelectedJobs).filter(
+      jobName => updatedSelectedJobs[jobName]
+    );
+    
+    setFormData({
+      ...formData,
+      selectedJobNames
+    });
   };
+
+  // Show loading state
+  if (jobTypesLoading) {
+    return (
+      <div className="p-4 rounded-lg bg-card-color">
+        <div className="animate-pulse">
+          <div className="h-6 bg-border rounded mb-4"></div>
+          <div className="h-4 bg-border rounded mb-6 w-3/4"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i}>
+                <div className="h-5 bg-border rounded mb-2"></div>
+                <div className="grid grid-cols-2 gap-2">
+                  {[1, 2, 3, 4].map(j => (
+                    <div key={j} className="h-12 bg-border rounded"></div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (jobTypesError) {
+    return (
+      <div className="p-4 rounded-lg bg-card-color">
+        <div className="text-red-500">
+          <h3 className="font-bold mb-2">Error Loading Job Types</h3>
+          <p>{jobTypesError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 rounded-lg bg-card-color">
-      <h3 className="text-xl font-bold text-primary-text mb-1">
+      <h3 className="text-lg font-bold text-primary-text mb-1">
         Preferred Job Type
       </h3>
 
-      <p className="text-secondary-text mb-6 font-base">
+      <p className="text-secondary-text mb-6 text-sm">
         Select all job types you're interested in
       </p>
 
-      {/* map over each category in the job data */}
-      {Object.entries(jobData).map(([category, jobs]) => (
-        <div key={category} className="mb-6 last:mb-0">
+      {/* map over each category from database */}
+      {Object.entries(jobTypesByCategory).map(([categoryName, jobTypes]) => (
+        <div key={categoryName} className="mb-6 last:mb-0">
           <h4 className="font-smb text-lg mt-4 mb-3 text-primary-text border-b border-border pb-2">
-            {category}
+            {categoryName}
           </h4>
 
           {/* container for the job checkboxes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {jobs.map((job) => (
+            {jobTypes.map((jobType) => (
               <label
-                key={job}
-                htmlFor={job}
+                key={jobType.job_type_id}
+                htmlFor={jobType.job_type_id}
                 className={`
                   flex items-center p-3 rounded-radius cursor-pointer transition-colors
-                  ${selectedJobs[job]
+                  ${selectedJobs[jobType.type_name]
                     ? 'bg-primary-blue/5 text-gradient-end' 
                     : 'bg-card-color text-secondary-text hover:bg-border/30' 
                   }
@@ -61,13 +117,13 @@ export const PreferenceJobType: React.FC = () => {
               >
                 <input
                   type="checkbox"
-                  id={job}
-                  name={job}
-                  checked={selectedJobs[job] || false}
+                  id={jobType.job_type_id}
+                  name={jobType.type_name}
+                  checked={selectedJobs[jobType.type_name] || false}
                   onChange={handleCheckboxChange}
                   className="h-4 w-4 rounded-sm border-border text-primary-blue focus:ring-primary-blue"
                 />
-                <span className="ml-3 font-base">{job}</span>
+                <span className="ml-3 font-base">{jobType.type_name}</span>
               </label>
             ))}
           </div>
