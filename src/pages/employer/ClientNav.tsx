@@ -5,7 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 export default function ClientNav(){
     const { logout, user } = useAuth();
-    const adminNavItems: NavItemProps[] = [{name:"Dashboard", src:"/icons/dashboardicon.svg", to:"dashboard"}, {name: "Roster", src: "/icons/calendaricon.svg", to: "roster"}, {name: "Upload Jobs", src: "/icons/uploadicon.svg", to: "uploadjobs"}];
+    const adminNavItems: NavItemProps[] = [{name:"Dashboard", src:"/icons/dashboardicon.svg", to:"dashboard"}, {name: "Roster", src: "/icons/calendaricon.svg", to: "roster"}, {name: "Upload Jobs", src: "/icons/uploadicon.svg", to: "uploadjobs"}, {name: "History", src: "/icons/history.svg", to: "history"}];
     const prefNavItems: NavItemProps[] = [{name: "Profile", src: "/icons/person.svg", to: "profile"}, {name: "Settings", src: "/icons/gearicon.svg", to: "settings"}];
     const [selected, setSelected] = useState<string>("Dashboard");
     
