@@ -176,7 +176,7 @@ const Dashboard = () => {
 									<JobseekerAssignmentCard
 										key={assignment.id}
 										assignment={assignment}
-										onClick={() => handleViewDetails(assignment)}
+										// onClick={() => handleViewDetails(assignment)}
 										onViewDetails={handleViewDetails}
 									/>
 								))}

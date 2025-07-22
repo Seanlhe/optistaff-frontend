@@ -33,17 +33,17 @@ interface JobseekerAssignmentDetailModals {
   onClose?: () => void;
 }
 
-export const JobseekerAssignmentCard = ({ assignment, onViewDetails, onClick }: JobseekerAssignmentDetailModals & { onClick?: () => void }) => {
+export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: JobseekerAssignmentDetailModals) => {
   const { cancelAssignment } = useAssignments();
 
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-success text-white border-success';
+        return 'bg-green-dark text-white border-green-dark';
       case 'cancelled':
-        return 'bg-error text-white border-error';
+        return 'bg-red-dark text-white border-red-dark';
       case 'upcoming':
-        return 'bg-primary-blue text-white border-primary-blue';
+        return 'bg-yellow-500 text-white border-yellow-500';
       default:
         return 'bg-secondary-text text-white border-secondary-text';
     }
@@ -83,15 +83,15 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails, onClick }: 
               e.stopPropagation();
               onViewDetails(assignment);
             }}
-            className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 text-sm"
-            variant="default"
+            className="flex-1 bg-white text-primary-text border border-border hover:bg-gray-50 text-sm"
+            variant="outline"
           >
             View Details
           </Button>
           <Button 
             onClick={handleCancelAssignment}
-            className="px-4 bg-red-dark text-white hover:bg-red-dark/80 text-sm"
-            variant="destructive"
+            className="px-4 bg-primary-blue text-white hover:bg-primary-blue/80 text-sm"
+            variant="default"
           >
             Cancel
           </Button>
@@ -106,8 +106,8 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails, onClick }: 
           e.stopPropagation();
           onViewDetails(assignment);
         }}
-        className="w-full bg-primary-blue text-white hover:bg-primary-blue/80 text-sm"
-        variant="default"
+        className="w-full bg-white text-primary-text border border-border hover:bg-gray-50 text-sm"
+        variant="outline"
       >
         View Details
       </Button>
@@ -115,8 +115,8 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails, onClick }: 
   };
 
   return (
-    <Card className="p-6 transition-all duration-200 border border-border-color bg-card-color shadow-none hover:shadow-md cursor-pointer" onClick={onClick}>
-      <div className="flex justify-between items-start mb-4">
+    <Card className="p-4 transition-all duration-200 border border-border bg-card-color shadow-none hover:shadow-sm">
+      <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="text-base font-bold text-primary-text mb-1">
             {assignment.title}
@@ -128,31 +128,25 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails, onClick }: 
         </span>
       </div>
 
-      <div className="space-y-2 mb-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-3">
         <div className="flex items-center text-secondary-text">
           <Clock className="w-4 h-4 mr-2" />
           <span className="text-sm">{assignment.date}, {assignment.time}</span>
         </div>
+        {assignment.hourlyRate > 0 && (
+          <div className="flex items-center text-secondary-text">
+            <DollarSign className="w-4 h-4 mr-2" />
+            <span className="text-sm">{assignment.hourlyRate}/hr</span>
+          </div>
+        )}
         <div className="flex items-center text-secondary-text">
           <MapPin className="w-4 h-4 mr-2" />
           <span className="text-sm">{assignment.location}</span>
         </div>
-        {assignment.hourlyRate > 0 && (
-          <div className="flex items-center text-secondary-text">
-            <DollarSign className="w-4 h-4 mr-2" />
-            <span className="text-sm font-bold">${assignment.hourlyRate}/hr</span>
-          </div>
-        )}
         {assignment.jobType && (
           <div className="flex items-center text-secondary-text">
             <Briefcase className="w-4 h-4 mr-2" />
             <span className="text-sm">{assignment.jobType}</span>
-          </div>
-        )}
-        {assignment.breakHours && assignment.breakHours > 0 && (
-          <div className="flex items-center text-secondary-text">
-            <Coffee className="w-4 h-4 mr-2" />
-            <span className="text-sm">{assignment.breakHours}h break</span>
           </div>
         )}
         {assignment.contactNumber && (

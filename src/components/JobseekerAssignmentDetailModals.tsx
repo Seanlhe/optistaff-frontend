@@ -118,52 +118,50 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
 
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 gap-3">
-            <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
-              <Clock className="w-5 h-5 text-primary-blue mt-0.5" />
+            <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
+              <Clock className="w-6 h-6 text-primary-blue" />
               <div>
-                <p className="text-base font-semibold text-primary-text">Schedule</p>
+                <p className="text-lg font-bold text-primary-text mb-1">Schedule</p>
                 <p className="text-sm text-secondary-text">{assignment.date}</p>
                 <p className="text-sm text-secondary-text">{assignment.time}</p>
               </div>
             </div>
 
-            <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
-              <MapPin className="w-5 h-5 text-primary-blue mt-0.5" />
+            <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
+              <MapPin className="w-6 h-6 text-primary-blue" />
               <div>
-                <p className="text-base font-semibold text-primary-text">Location</p>
+                <p className="text-lg font-bold text-primary-text mb-1">Location</p>
                 <p className="text-sm text-secondary-text">{assignment.location}</p>
               </div>
             </div>
 
             {assignment.hourlyRate > 0 && (
-              <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
-                <DollarSign className="w-5 h-5 text-primary-blue mt-0.5" />
+              <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
+                <DollarSign className="w-6 h-6 text-primary-blue" />
                 <div>
-                  <p className="text-base font-semibold text-primary-text">Compensation</p>
+                  <p className="text-lg font-bold text-primary-text mb-1">Compensation</p>
                   <p className="text-sm text-secondary-text">{assignment.hourlyRate} per hour</p>
                 </div>
               </div>
             )}
 
             {assignment.jobType && (
-              <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
-                <User className="w-5 h-5 text-primary-blue mt-0.5" />
+              <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
+                <User className="w-6 h-6 text-primary-blue" />
                 <div>
-                  <p className="text-base font-semibold text-primary-text">Job Type</p>
+                  <p className="text-lg font-bold text-primary-text mb-1">Job Type</p>
                   <p className="text-sm text-secondary-text">{assignment.jobType}</p>
                 </div>
               </div>
             )}
 
-            {assignment.breakHours && assignment.breakHours > 0 && (
-              <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
-                <Coffee className="w-5 h-5 text-primary-blue mt-0.5" />
-                <div>
-                  <p className="text-base font-semibold text-primary-text">Break Time</p>
-                  <p className="text-sm text-secondary-text">{assignment.breakHours} hour(s) break included</p>
-                </div>
+            <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
+              <Coffee className="w-6 h-6 text-primary-blue" />
+              <div>
+                <p className="text-lg font-bold text-primary-text mb-1">Break Time</p>
+                <p className="text-sm text-secondary-text">{assignment.breakHours ?? 0} hour(s) break included</p>
               </div>
-            )}
+            </div>
           </div>
 
           {assignment.description && (
