@@ -16,10 +16,8 @@ import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import UploadCSV from './pages/employer/UploadCSV'
 import JSSchedule from './pages/employee/JSSchedule'
-import Review from './pages/employer/Review'
 import EmployeeHistory from './pages/employee/EmployeeHistory';
-import ClientHistory from './pages/employer/ClientHistory'
-import EditListing from './pages/employer/ClientEdit'
+
 // Create a client for React Query
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,23 +50,6 @@ function App() {
           <Route path="profile" element={<ClientDashboard />} />
           <Route path="uploadjobs" element={<UploadJobs />} />
           <Route path="uploadcsv" element={<UploadCSV />} />
-          <Route path="edit" element={<EditListing shift={{
-            shift_id: "shift_001",
-            client_id: "client_123",
-            title: "Event Support Staff",
-            description: "Assist with event logistics and crowd control.",
-            start_time: new Date("2025-08-01T09:00:00"),
-            end_time: new Date("2025-08-01T17:00:00"),
-            pay_rate: 15.5,
-            job_location: "Marina Bay Sands Singapore 424239",
-            staff_needed: 10,
-            staff_assigned: 5,
-            submission_cycle: "PRIMARY",
-            created_at: new Date("2025-07-20T12:00:00"),
-            break_duration: 60,
-            status: 1
-          }} />}/>
-          <Route path="history" element={<ClientHistory/>}/>
         </Route>
         <Route path="/employee" element={
           <ProtectedRoute allowedRoles={['jobseeker']}>
@@ -81,9 +62,8 @@ function App() {
           <Route path="history" element={<EmployeeHistory />} />
           <Route path="schedule" element={<JSSchedule />} />
           <Route path="settings" element={<JSSettings />} />
-          
+
         </Route>
-        
       </Routes>
     </QueryClientProvider>
   );

@@ -51,22 +51,22 @@ const JSSettings = () => {
     <div className="min-h-screen bg-bg p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-primary-text">Profile Settings</h1>
-          <p className="text-secondary-text text-sm">Manage your personal information and account settings</p>
+          <h1 className="text-3xl font-bold text-primary-text">Profile Settings</h1>
+          <p className="text-secondary-text">Manage your personal information and account settings</p>
         </div>
-        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Profile Stats Card */}
-          <Card className="bg-white">
+          <Card>
             <CardContent className="p-6">
               
               <div className="text-center space-y-4">
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-base font-bold text-primary-text">Profile</h3>
+                  <h3 className="text-lg font-semibold text-primary-text">Profile</h3>
                 </div>
                 {/* Avatar Section */}
                 <div className="flex flex-col items-center space-y-4">
-                  <div className="w-35 h-35 flex items-center justify-center bg-bg rounded-full">
+                  <div className="w-35 h-35 flex items-center justify-center bg-gray-200 rounded-full">
                     {profileImage ? (
                       <img src={profileImage} alt="Profile" className="w-full h-full object-cover rounded-full" />
                     ) : (
@@ -80,14 +80,15 @@ const JSSettings = () => {
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <Button onClick={handleAddProfileImage} variant="outline" size="sm" className="hover:bg-bg text-sm">
+                  <Button onClick={handleAddProfileImage} variant="outline" size="sm">
                     Add Profile Image
                   </Button>
                   <div>
-                    <h3 className="text-base font-bold text-primary-text">Alex Johnson</h3>
+                    <h3 className="text-xl font-semibold text-primary-text">Alex Johnson</h3>
                   </div>
                 </div>
                 
+                <div className="space-y-3 pt-4">
                   <div className="flex justify-between">
                     <span className="text-sm text-secondary-text">Rating</span>
                     <div className="flex items-center gap-1">
@@ -104,24 +105,24 @@ const JSSettings = () => {
                     <span className="font-medium">Jan 2023</span>
                   </div>
                 </div>
-
+              </div>
             </CardContent>
           </Card>
 
           {/* Personal Information Card */}
-          <Card className="bg-white">
+          <Card>
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-primary-text">Personal Information</h3>
+                  <h3 className="text-lg font-semibold text-primary-text">Personal Information</h3>
                   {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm" className="text-sm">
-                      <Edit className="h-4 w-4 mr-2 hover:bg-bg"  />
+                    <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-2" />
                       Edit Profile
                     </Button>
                   ) : (
-                    <Button onClick={handleSave} size="sm" className="bg-primary-blue text-white hover:bg-primary-blue/80 text-sm">
-                      <Save className="h-4 w-4 mr-2 button-btn" />
+                    <Button onClick={handleSave} size="sm">
+                      <Save className="h-4 w-4 mr-2" />
                       Save Details
                     </Button>
                   )}
@@ -129,7 +130,7 @@ const JSSettings = () => {
 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="flex items-center gap-2 text-base font-semibold text-secondary-text">
+                    <Label htmlFor="email" className="flex items-center gap-2 text-secondary-text">
                       <Mail className="h-4 w-4" />
                       Email Address
                     </Label>
@@ -140,12 +141,12 @@ const JSSettings = () => {
                       value={formData.email}
                       onChange={(e) => handleInputChange("email", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-bg text-primary-text border border-border"
+                      className="bg-input/50 text-primary-text"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="flex items-center gap-2 text-base font-semibold text-secondary-text">
+                    <Label htmlFor="phone" className="flex items-center gap-2 text-secondary-text">
                       <Phone className="h-4 w-4" />
                       Phone Number
                     </Label>
@@ -156,12 +157,12 @@ const JSSettings = () => {
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-bg text-primary-text border border-border"
+                      className="bg-input/50 text-primary-text"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="address" className="flex items-center gap-2 text-base font-semibold text-secondary-text">
+                    <Label htmlFor="address" className="flex items-center gap-2 text-secondary-text">
                       <MapPin className="h-4 w-4" />
                       Address
                     </Label>
@@ -171,12 +172,12 @@ const JSSettings = () => {
                       value={formData.address}
                       onChange={(e) => handleInputChange("address", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-bg text-primary-text border border-border"
+                      className="bg-input/50 text-primary-text"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="zipcode" className="flex items-center gap-2 text-base font-semibold text-secondary-text">
+                    <Label htmlFor="zipcode" className="flex items-center gap-2 text-secondary-text">
                       <MapPin className="h-4 w-4" />
                       Zip Code
                     </Label>
@@ -186,7 +187,7 @@ const JSSettings = () => {
                       value={formData.zipcode}
                       onChange={(e) => handleInputChange("zipcode", e.target.value)}
                       disabled={!isEditing}
-                      className="bg-bg text-primary-text border border-border"
+                      className="bg-input/50 text-primary-text"
                     />
                   </div>
 
@@ -196,16 +197,16 @@ const JSSettings = () => {
                 
 
                 {/* Password Section */}
-                <div className="border-border"> 
+                <div className="border-t pt-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Lock className="h-5 w-5 text-secondary-text" />
                       <div>
-                        <h4 className="text-base font-semibold text-primary-text">Password</h4>
+                        <h4 className="font-medium text-primary-text">Password</h4>
                         <p className="text-sm text-secondary-text">Last changed 3 months ago</p>
                       </div>
                     </div>
-                    <Button className="hover:bg-bg text-sm" variant="outline" onClick={() => setIsPasswordModalOpen(true)}>
+                    <Button variant="outline" onClick={() => setIsPasswordModalOpen(true)}>
                       Change Password
                     </Button>
                   </div>
@@ -214,6 +215,7 @@ const JSSettings = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
 
       {/* Password Change Modal */}
       <PasswordChangeModal
