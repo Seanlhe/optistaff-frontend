@@ -25,54 +25,70 @@ export const useAuth = () => {
     
     let role: 'jobseeker' | 'employer' | undefined = undefined;
     
+    // Add timeout protection for database queries
+    const withTimeout = <T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> => {
+      return Promise.race([
+        promise,
+        new Promise<T>((_, reject) => 
+          setTimeout(() => reject(new Error('Database query timeout')), timeoutMs)
+        )
+      ]);
+    };
+    
     if (userType === 'job-seeker' || userType === 'jobseeker') {
       role = 'jobseeker';
     } else if (userType === 'client' || userType === 'employer') {
       role = 'employer';
     } else if (!userType) {
-      // Fallback: Check database tables to determine role
-      try {
-        const { data: jobSeekerData } = await supabase
-          .from('job_seekers')
-          .select('user_id')
-          .eq('user_id', user.id)
-          .single();
-          
-        if (jobSeekerData) {
-          role = 'jobseeker';
-        } else {
-          // Check if user exists in clients table
-          const { data: clientData } = await supabase
-            .from('clients')
-            .select('client_id')
-            .eq('client_id', user.id)
-            .single();
-            
-          if (clientData) {
+      // Check if we have cached role in localStorage first
+      const cachedRole = localStorage.getItem(`user_role_${user.id}`);
+      if (cachedRole === 'jobseeker' || cachedRole === 'employer') {
+        role = cachedRole as 'jobseeker' | 'employer';
+        console.log('🔍 Auth Debug - Using cached role:', role);
+      } else {
+        // Fallback: Check database tables to determine role (only if no cache)
+        try {
+          console.log('🔍 Auth Debug - No cached role found, checking database...');
+          // Use Promise.allSettled with timeout to check both tables simultaneously
+          const [jobSeekerResult, clientResult] = await Promise.allSettled([
+            withTimeout(supabase
+              .from('job_seekers')
+              .select('user_id')
+              .eq('user_id', user.id)
+              .single()),
+            withTimeout(supabase
+              .from('clients')
+              .select('client_id')
+              .eq('client_id', user.id)
+              .single())
+          ]);
+
+          if (jobSeekerResult.status === 'fulfilled' && jobSeekerResult.value.data) {
+            role = 'jobseeker';
+          } else if (clientResult.status === 'fulfilled' && clientResult.value.data) {
             role = 'employer';
+          } else {
+            // If both queries fail or return no data, we need to handle this gracefully
+            console.log('🔍 Auth Debug - No role found in database, user may need to complete registration');
+            role = 'jobseeker'; // Default fallback
           }
-          // If neither, default to jobseeker
+          
+          // Cache the role for future use
+          if (role) {
+            localStorage.setItem(`user_role_${user.id}`, role);
+            console.log('🔍 Auth Debug - Cached role for future use:', role);
+          }
+        } catch (error) {
+          console.log('🔍 Auth Debug - Database role check failed, using default fallback');
+          role = 'jobseeker'; // Ensure we always have a role
         }
-      } catch (error) {
-        console.log('🔍 Auth Debug - Database role check failed, using default');
       }
     }
     
-    // Debug logging
-    console.log('🔍 Auth Debug - User metadata:', user.user_metadata);
-    console.log('🔍 Auth Debug - Extracted userType:', userType);
-    console.log('🔍 Auth Debug - Mapped role:', role);
-    console.log('🔍 Auth Debug - Should navigate:', shouldNavigate);
-    
-    // Only set auth state if role was determined
+    // Ensure we always have a role - this prevents infinite loading
     if (!role) {
-      console.log('🔍 Auth Debug - ERROR: No role could be determined for user');
-      setAuthState({
-        user: null,
-        loading: false,
-        error: 'Unable to determine user role',
-      });
-      return;
+      console.log('🔍 Auth Debug - WARNING: No role determined, using jobseeker as fallback');
+      role = 'jobseeker'; // Fallback to prevent infinite loading
     }
     
     setAuthState({
@@ -85,7 +101,7 @@ export const useAuth = () => {
       error: null,
     });
 
-    // Navigate to appropriate dashboard if needed
+    // Navigate to appropriate dashboard if needed (only for login, not page refresh)
     if (shouldNavigate) {
       const targetRoute = role === 'jobseeker' ? '/employee/preferences' : '/employer/dashboard';
       console.log('🔍 Auth Debug - Navigating to:', targetRoute);
@@ -95,34 +111,69 @@ export const useAuth = () => {
 
   // Helper function to clear user state
   const clearUserState = useCallback((errorMessage?: string) => {
-    setAuthState({
-      user: null,
-      loading: false,
-      error: errorMessage || null,
+    setAuthState(prev => {
+      // Only update if state actually changed
+      if (prev.user === null && prev.loading === false && prev.error === (errorMessage || null)) {
+        return prev;
+      }
+      return {
+        user: null,
+        loading: false,
+        error: errorMessage || null,
+      };
     });
   }, []);
 
   useEffect(() => {
-    // IIFE to handle async operations directly
-    (async () => {
+    let isMounted = true; // Prevent state updates if component unmounts
+    
+    // Get initial session
+    const getInitialSession = async () => {
       try {
         const response = await supabase.auth.getSession();
-        const data = response.data;
-        const session = data.session;
+        const session = response.data.session;
 
-        //if session exists and has a user, set the auth state
-        if (session?.user){
-          await updateUserState(session.user);
-        }
-        // if no session or user, set user to null and loading to false
-        else {
+        // Only update state if component is still mounted
+        if (!isMounted) return;
+
+        if (session?.user) {
+          // Don't navigate on page refresh - only update auth state
+          await updateUserState(session.user, false);
+        } else {
           clearUserState();
         }
       } catch (error: unknown) {
+        if (!isMounted) return;
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
         clearUserState(errorMessage);
       }
-    })();
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+
+      if (event === 'SIGNED_IN' && session?.user) {
+        // Only navigate on actual sign in, not on page refresh
+        const shouldNavigate = event === 'SIGNED_IN';
+        await updateUserState(session.user, shouldNavigate);
+      } else if (event === 'SIGNED_OUT') {
+        // Clear cached role on logout
+        if (session?.user?.id) {
+          localStorage.removeItem(`user_role_${session.user.id}`);
+        }
+        clearUserState();
+      }
+    });
+
+    // Get initial session
+    getInitialSession();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [updateUserState, clearUserState]);
 
   const login = async (email: string, password: string) => {
@@ -151,6 +202,11 @@ export const useAuth = () => {
   const logout = async () => {
     setAuthState(prev => ({ ...prev, loading: true }));
     try {
+      // Clear cached role before logout
+      if (authState.user?.id) {
+        localStorage.removeItem(`user_role_${authState.user.id}`);
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
