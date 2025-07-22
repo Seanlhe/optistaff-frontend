@@ -107,7 +107,7 @@ SELECT
 - ✅ **Job Seeker Registration**: Creates records in `job_seekers` and `preferences` tables
 - ✅ **Employer Registration**: Creates records in `clients` table
 - ✅ **Complete Field Support**: 
-  - Job Seekers: `date_of_birth`, `address_coordinates`, `postal_code`
+  - Job Seekers: `date_of_birth`, `home_location`, `postal_code`
   - Employers: `address`, `postal_code`, `office_number`
 - ✅ **Data Type Conversion**: Proper DATE conversion for `date_of_birth`
 - ✅ **Fallback Logic**: Graceful handling of missing metadata
@@ -125,7 +125,7 @@ postal_code_value := NEW.raw_user_meta_data->>'postal_code';
 IF user_type_value = 'job-seeker' THEN
   INSERT INTO public.job_seekers (
     user_id, first_name, last_name, phone_number, 
-    date_of_birth, address_coordinates, postal_code, status
+    date_of_birth, home_location, postal_code, status
   ) VALUES (
     NEW.id, 
     COALESCE(first_name_value, split_part(NEW.email, '@', 1)),
@@ -403,134 +403,6 @@ END IF;
 
 ---
 
-## 🔍 Advanced Business Functions
-
-### `find_matching_job_seekers(p_shift_id uuid)`
-**Schema:** `public`  
-**Return Type:** `TABLE(user_id uuid, first_name varchar, last_name varchar, rating numeric, match_score numeric, preferred_categories text[], distance_km numeric)`
-**Security:** `DEFINER`
-
-**Description:** Advanced matching algorithm that finds suitable job seekers for a specific shift based on multiple criteria.
-
-**Parameters:**
-- `p_shift_id` (uuid): Shift ID to find matches for
-
-**Matching Logic:**
-- **Pay Rate Match**: 30 points if job seeker's minimum rate ≤ shift pay rate
-- **Category Preference**: 40 points if shift category matches desired roles
-- **Rating Contribution**: Up to 30 points based on job seeker rating (rating × 6.0)
-- **Minimum Threshold**: 30+ points required for consideration
-- **Availability Check**: Excludes already assigned users
-
-**Returns:** Top 20 matches ordered by match score and rating
-
----
-
-### `get_job_categories_with_types()`
-**Schema:** `public`  
-**Return Type:** `TABLE(category_id uuid, category_name varchar, job_types jsonb)`
-**Security:** `DEFINER`
-
-**Description:** Returns hierarchical job classification data with categories and their associated job types.
-
-**Returns:** Table with columns:
-- `category_id` (uuid): Category identifier
-- `category_name` (varchar): Category name
-- `job_types` (jsonb): Array of job type objects with id, name, and description
-
-**Usage:** Populates job selection dropdowns and preference forms
-
----
-
-### `update_assignment_status(p_assignment_id uuid, p_status_name text)`
-**Schema:** `public`  
-**Return Type:** `TABLE(rows_affected integer)`
-**Security:** `DEFINER`
-
-**Description:** Safely updates assignment status with validation and error handling.
-
-**Parameters:**
-- `p_assignment_id` (uuid): Assignment ID to update
-- `p_status_name` (text): Status name (e.g., 'CONFIRMED', 'CANCELLED_BY_USER')
-
-**Features:**
-- Validates status names against status lookup table
-- Converts status names to integer IDs
-- Returns number of affected rows
-- Raises exceptions for invalid status names
-
----
-
-## 📊 Query & Reporting Functions
-
-### `get_shifts_by_client(p_client_id uuid)`
-**Schema:** `public`  
-**Return Type:** `TABLE(shift_id uuid, client_name varchar, title varchar, job_location varchar, description text, start_time timestamptz, end_time timestamptz, pay_rate numeric, staff_needed integer, staff_assigned integer, status varchar, submission_cycle varchar, break_duration integer, created_at timestamptz, job_name varchar)`
-**Security:** `DEFINER`
-
-**Description:** Returns comprehensive shift information for a specific client with joined data.
-
-**Parameters:**
-- `p_client_id` (uuid): Client ID to get shifts for
-
-**Returns:** Complete shift details including:
-- Client name and contact information
-- Job type and category information
-- Status names (not just IDs)
-- Staff capacity and assignment counts
-
----
-
-### `get_assignment_by_jobseeker(p_user_id uuid)`
-**Schema:** `public`  
-**Return Type:** `TABLE(assignment_id uuid, name varchar, job_title varchar, status varchar, check_in_time timestamptz, check_out_time timestamptz, break_hours integer, created_at timestamptz)`
-**Security:** `DEFINER`
-
-**Description:** Returns assignment history and status for a specific job seeker.
-
-**Parameters:**
-- `p_user_id` (uuid): Job seeker user ID
-
-**Returns:** Assignment details with:
-- Job seeker name
-- Shift title and job information
-- Status names (converted from IDs)
-- Time tracking information
-
----
-
-### `get_assignment_status_summary(p_shift_id uuid)`
-**Schema:** `public`  
-**Return Type:** `TABLE(status_name varchar, count integer)`
-**Security:** `DEFINER`
-
-**Description:** Provides assignment status breakdown for a specific shift.
-
-**Parameters:**
-- `p_shift_id` (uuid): Shift ID to analyze
-
-**Returns:** Status counts for capacity planning and reporting
-
----
-
-## 🔧 Additional Utility Functions
-
-### `validate_job_names(job_names text[])`
-**Schema:** `public`  
-**Return Type:** `boolean`
-**Security:** `DEFINER`
-
-**Description:** Validates that all provided job type names exist and are active.
-
-**Parameters:**
-- `job_names` (text[]): Array of job type names to validate
-
-**Returns:** Boolean indicating if all names are valid and active
-
-**Usage:** Preference validation and job selection forms
-
----
-
 ## 🔧 Database Triggers
 
 ### Summary of Active Triggers
@@ -599,7 +471,7 @@ SELECT is_user_assigned_to_shift(
 
 ### July 15, 2025 - Enhanced User Registration
 - ✅ **Updated `handle_new_user()` function** with complete field support
-- ✅ **Added enhanced fields**: `date_of_birth`, `address_coordinates`, `postal_code` for job seekers
+- ✅ **Added enhanced fields**: `date_of_birth`, `home_location`, `postal_code` for job seekers
 - ✅ **Added enhanced fields**: `address`, `postal_code`, `office_number` for employers
 - ✅ **Improved data type handling**: Proper DATE conversion for birth dates
 - ✅ **Enhanced error handling**: Graceful fallbacks for missing metadata
@@ -630,45 +502,6 @@ Monitor these functions for performance:
 
 ---
 
-## 🔢 Status System Reference
-
-### Critical: Integer-Based Status Management
-The OptiStaff platform uses an **integer-based status system** with a lookup table, not string values. This is crucial for frontend development.
-
-#### Status Lookup Table (`public.status`)
-```sql
-SELECT status_id, name FROM public.status ORDER BY status_id;
-```
-
-#### Shift Status Codes
-- **1**: `OPEN` - Shift is available for assignment
-- **2**: `FILLED` - Shift has reached capacity
-
-#### Assignment Status Codes  
-- **5**: `CONFIRMED` - Job seeker is confirmed for the shift
-- **7**: `CANCELLED_BY_USER` - Job seeker cancelled their assignment
-- **8**: `NO_SHOW` - Job seeker failed to show up
-- **9**: `COMPLETED` - Assignment completed successfully
-
-#### Frontend Usage
-```typescript
-// ❌ WRONG - Don't use strings
-assignment.status = 'CONFIRMED';
-
-// ✅ CORRECT - Use integer status IDs
-assignment.status = 5; // CONFIRMED
-
-// ✅ CORRECT - Use status lookup for display
-const statusName = statusLookup[assignment.status]; // "CONFIRMED"
-```
-
-#### Database Function Integration
-- `update_staff_assigned()`: Checks for status = 5 (CONFIRMED)
-- `update_job_seeker_rating()`: Penalizes status 7 (CANCELLED) and 8 (NO_SHOW)
-- `auto_update_shift_status()`: Toggles between status 1 (OPEN) and 2 (FILLED)
-
----
-
-**Documentation Generated:** July 20, 2025  
-**Last Updated:** Added missing functions and corrected status system documentation  
-**Version:** OptiStaff v1.0 - Complete Database Schema (`devnew`)
+**Documentation Generated:** July 15, 2025  
+**Last Updated:** Enhanced user registration trigger function  
+**Version:** OptiStaff v1.0 - Authentication Enhanced Branch (`devnew-hooks-auth`)

@@ -15,11 +15,7 @@ export const useAssignments = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  /**
-   * Fetch assignments for the authenticated user
-   * @set assignments - Sets the assignments state with fetched data
-   * @return {Promise<Assignment[]>} - Returns a promise that resolves to the assignments data
-   */
+  // TODO: Implement assignment management functions
   const fetchAssignments = useCallback(async () => {
     if (!user) {
       setLoading(false);
@@ -29,14 +25,13 @@ export const useAssignments = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase.rpc('get_assignments_by_jobseeker', { p_user_id: user.id });
+      const { data, error } = await supabase.rpc('get_assignment_by_jobseeker', { p_user_id: user.id });
       if (error) {
         setError(error.message);
         setLoading(false);
         return;
       }
       setAssignments(data as Assignment[]);
-      return data as Assignment[];
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -57,33 +52,6 @@ export const useAssignments = () => {
   };
 
 
-  /** * Fetch assignments by shift ID
-   * @param shiftId - The ID of the shift to fetch assignments for
-   * @return {Promise<Assignment[]>} - Returns a promise that resolves to the assignments data for the specified shift
-   */
-  const fetchAssignmentsByShift = async (shiftId: string) => {
-    if (!user) {
-      setLoading(false);
-      setError('User not authenticated');
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error } = await supabase.rpc('get_assignments_by_shift', { p_shift_id: shiftId });
-      if (error) {
-        setError(error.message);
-        setLoading(false);
-        return;
-      }
-      return data as Assignment[];
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   /**
    * Update the status of an assignment
    *
@@ -91,7 +59,7 @@ export const useAssignments = () => {
    * @param status_name - use cancel_by_empoyer or cancel_by_employee or confirmed
    * @returns affected rows count
    */
-  const updateAssignmentStatus = async (assignmentId: string, status_name: Status ) => {
+  const cancelAssignment = async (assignmentId: string, status_name: Status ) => {
     if (!user) {
       setLoading(false);
       setError('User not authenticated');
@@ -101,7 +69,9 @@ export const useAssignments = () => {
     setError(null);
     try {
       const { data, error } = await supabase.rpc('update_assignment_status', { p_assignment_id: assignmentId, p_status_name: status_name });
+      console.log('Assignment status updated:', data);
       if (error) {
+        console.error('Error updating assignment status:', error);
         setError(error.message);
         setLoading(false);
         return;
@@ -123,9 +93,10 @@ export const useAssignments = () => {
     assignments,
     loading,
     error,
-    cancelAssignment: updateAssignmentStatus,
-    fetchAssignmentsByShift,
+    cancelAssignment,
+    createAssignment,
     updateAssignment,
+    deleteAssignment,
     fetchAssignments,
   };
 };

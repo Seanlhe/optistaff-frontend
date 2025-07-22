@@ -186,7 +186,7 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           first_name: string
-          address_coordinates: string | null
+          home_location: string | null
           last_name: string
           phone_number: string | null
           postal_code: string | null
@@ -200,7 +200,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           first_name: string
-          address_coordinates?: string | null
+          home_location?: string | null
           last_name: string
           phone_number?: string | null
           postal_code?: string | null
@@ -214,7 +214,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           first_name?: string
-          address_coordinates?: string | null
+          home_location?: string | null
           last_name?: string
           phone_number?: string | null
           postal_code?: string | null

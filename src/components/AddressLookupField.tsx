@@ -44,14 +44,9 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
 
   // Update postal code and validation state when lookup result changes
   useEffect(() => {
-    if (!isManualEdit && !loading) {
-      if (lookupResult) {
-        onPostalCodeChange(lookupResult);
-        setValidationState('valid');
-      } else {
-        // Clear postal code when hook clears it (e.g., on validation start or error)
-        onPostalCodeChange('');
-      }
+    if (lookupResult && !isManualEdit && !loading) {
+      onPostalCodeChange(lookupResult);
+      setValidationState('valid');
     }
   }, [lookupResult, isManualEdit, onPostalCodeChange, loading]);
 
