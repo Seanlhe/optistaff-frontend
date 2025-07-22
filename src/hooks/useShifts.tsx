@@ -33,6 +33,7 @@ export const useShifts = () => {
         return;
       }
       setShifts(data as Shift[]);
+      return data as Shift[];
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -44,7 +45,7 @@ export const useShifts = () => {
     fetchShifts();
   }, [fetchShifts]);
 
-  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"| "employer_name"| "submission_cycle">) => {
+  const createShift = async (shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">) => {
     // Create shift implementation will go here
     setLoading(true);
     setError(null);
@@ -53,12 +54,16 @@ export const useShifts = () => {
       return;
     }
 
-    const new_shift_data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned"> = {
-      ...shift_data,
-      client_id: user.id
-    }
-    const { error } = await supabase.rpc('create_shift', {
-      ...new_shift_data
+    const { start_time, end_time, ...otherShiftData } = shift_data;
+    const new_shift = {
+      p_employer_id: user.id,
+      ...otherShiftData,
+      p_start_time: start_time.toISOString(),
+      p_end_time: end_time.toISOString(),
+    };
+
+    const { data, error } = await supabase.rpc('create_shift', {
+      ...new_shift
     });
 
     if (error) {
@@ -69,7 +74,9 @@ export const useShifts = () => {
 
     // Optionally, you can refetch shifts after creating a new one
     await fetchShifts();
+
     setLoading(false);
+    return data;
   };
 
   const updateShift = async (shift_id: string, shift_data: Partial<Shift>) => {

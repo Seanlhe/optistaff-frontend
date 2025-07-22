@@ -6,13 +6,13 @@ export type LocationString = string; // Formatted address string
 
 // Location data from job_seekers table
 export interface UserLocationData {
-  home_location?: string; // Stored as "latitude,longitude" string in database
+  address_coordinates?: string; // Stored as "latitude,longitude" string in database
   postal_code?: string; // Singapore postal code
   address?: string; // Full address string
 }
 
 // useAuth interfaces
-export interface User {
+interface User {
     id: string;
     email: string;
     role: 'jobseeker' | 'employer';
@@ -41,22 +41,24 @@ export interface SignupData {
 
 // useShifts interfaces
 export interface Shift {
-  shift_id: string;
-  employer_name: string;
-  job_title: string;
-  job_location: string;
-  description: string | null;
-  job_requirements: string | null;
-  job_type: string;
-  pay_rate: number;
-  start_time: Date;
-  end_time: Date;
-  break_duration: number | null; // in minutes
-  staff_needed: number;
-  staff_assigned: number;
-  submission_cycle: 'PRIMARY' | 'SECONDARY';
-  status: Status;
-  created_at: Date;
+    shift_id: string;
+    employer_name: string;
+    company_name: string;
+    job_title: string;
+    job_location: string;
+    postal_code: number;
+    job_description: string | null;
+    job_requirements: string | null;
+    job_type: string;
+    pay_rate: number;
+    start_time: Date;
+    end_time: Date;
+    break_duration: number | null; // in hours 0.5 for 30 minutes 1.45 for 1 hour 45 minutes, in 15 minute increments
+    staff_needed: number;
+    staff_assigned: number;
+    submission_cycle: 'PRIMARY' | 'SECONDARY';
+    status: string;
+    created_at: Date;
 }
 
 // useAvailability interfaces
@@ -69,7 +71,55 @@ export interface TimeBlock {
 }
 
 // useUserProfile interfaces
-export type UserProfile = Record<string, unknown>;
+
+// For displaying profile information (read-only)
+export interface ProfileDisplayData {
+  // Personal Info (from job_seekers/clients table)
+  firstName: string;
+  lastName: string;
+  fullName: string;        // computed: firstName + lastName
+  
+  // Job Seeker specific (only for job seekers)
+  rating?: number;         // from job_seekers.rating
+  accountStatus?: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE'; // from job_seekers.status
+  
+  // Client specific (only for clients)
+  companyName?: string;    // from clients.company_name
+  
+  // Account Info (from auth.users)
+  email: string;           // from auth.users.email
+  accountCreated: string;  // from auth.users.created_at
+}
+
+// For editing personal information
+export interface PersonalInfoFormData {
+  phoneNumber: string;     // job_seekers.phone_number OR clients.phone
+  homeAddress: string;     // job_seekers.address_coordinates OR clients.address  
+  postalCode: string;      // job_seekers.postal_code OR clients.postal_code
+}
+
+// For changing account details
+export interface AccountSettingsFormData {
+  email: string;           // auth.users.email
+  currentPassword: string; // for verification
+  newPassword?: string;    // optional - only if changing password
+  confirmPassword?: string; // optional - only if changing password
+}
+
+// Complete profile data structure
+export interface UserProfileData {
+  // Display data (read-only)
+  display: ProfileDisplayData;
+  
+  // Editable data
+  personalInfo: PersonalInfoFormData;
+  
+  // User role for conditional rendering
+  userRole: 'jobseeker' | 'employer';
+}
+
+// Legacy type for backward compatibility
+export type UserProfile = UserProfileData;
 
 // usePreferences interfaces
 export interface UserPreferences {
@@ -130,40 +180,43 @@ export type Payout = Record<string, unknown>;
 
 // useAssignments interfaces
 export interface Assignment {
-  assignment_id: string;
-  employee_name: string;
-  employer_name: string;
-  job_title: string;
-  job_location: string;
-  job_description: string | null;
-  job_requirements: string | null;
-  job_type: string;
-  pay_rate: number;
-  start_time: Date;
-  end_time: Date;
-  break_hours: number;
-  contact_number: string;
-  contact_email: string;
-  check_in_time: string | null;
-  check_out_time: string | null;
-  status: string;
-  created_at: string;
+    assignment_id: string;
+    employee_name: string;
+    employer_name: string;
+    employee_id: string;
+    job_title: string;
+    job_location: string;
+    postal_code: string;
+    job_description: string | null;
+    job_requirements: string | null;
+    job_type: string;
+    pay_rate: number;
+    start_time: Date;
+    end_time: Date;
+    break_hours: number;
+    contact_number: string;
+    contact_email: string;
+    check_in_time: string | null;
+    check_out_time: string | null;
+    status: string;
+    created_at: string;
 }
 
 // useFeedback interfaces
-export interface Feedback {
-  feedback_id: string;
-  assignment_id: string;
-  reviewer_id: string;
-  reviewee_id: string;
-  rating_score: number;
-  comment: string;
-  review_type: string;
-  created_at?: string;
-}
+export type Feedback = Record<string, unknown>;
 
 // General status type for assignment cancellation
-export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending';
+
+export enum StatusEnum {
+  CancelByEmployer = 'cancel_by_employer',
+  CancelByEmployee = 'cancel_by_employee',
+  Confirmed = 'confirmed',
+  Upcoming = 'upcoming',
+  Active = 'active', // New status for active assignments
+  Completed = 'completed', // New status for completed assignments
+  NoShow = 'no_show', // New status for no-show assignments 
+  Pending = 'pending', // New status for pending assignments
+}
 
 // Enhanced usePreferences hook return type with location support
 export interface UsePreferencesReturn {
@@ -188,4 +241,6 @@ export interface UsePreferencesReturn {
   loadLocationData: () => Promise<void>; // Load home location from job_seekers table
   geocodeHomeLocation: () => Promise<[number, number] | null>; // Convert address to coordinates
 }
+
+
 
