@@ -305,7 +305,7 @@ export const usePreferences = () => {
     try {
       const { data, error } = await supabase
         .from("job_seekers")
-        .select("home_location, postal_code")
+        .select("address_coordinates, postal_code")
         .eq("user_id", user.id)
         .single();
 
@@ -333,17 +333,17 @@ export const usePreferences = () => {
       }
 
       const locationData: UserLocationData = {
-        home_location: data.home_location,
+        address_coordinates: data.address_coordinates,
         postal_code: data.postal_code,
-        address: undefined, // No address column in job_seekers table
+        address: undefined, // Address column exists but not used by preferences (used by profile management)
       };
 
       setLocationData(locationData);
 
-      // Parse coordinates from home_location string if available with validation
-      if (data.home_location) {
+      // Parse coordinates from address_coordinates string if available with validation
+      if (data.address_coordinates) {
         try {
-          const [lat, lng] = data.home_location.split(",").map(Number);
+          const [lat, lng] = data.address_coordinates.split(",").map(Number);
           
           // Validate coordinates are valid numbers and within Singapore bounds
           if (!isNaN(lat) && !isNaN(lng)) {
@@ -355,11 +355,11 @@ export const usePreferences = () => {
               setError("Home location appears to be outside Singapore. Please update your profile.");
             }
           } else {
-            console.warn("Invalid home location coordinates:", data.home_location);
+            console.warn("Invalid address coordinates:", data.address_coordinates);
             setError("Invalid location data format. Please update your profile.");
           }
         } catch (parseError) {
-          console.warn("Failed to parse home_location coordinates:", parseError);
+          console.warn("Failed to parse address_coordinates:", parseError);
           setError("Unable to parse location data. Please update your profile.");
         }
       }
