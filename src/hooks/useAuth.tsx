@@ -195,9 +195,9 @@ export const useAuth = () => {
       if (!isMounted) return;
 
       if (event === "SIGNED_IN" && session?.user) {
-        // Only navigate on actual sign in, not on page refresh
-        const shouldNavigate = event === "SIGNED_IN";
-        await updateUserState(session.user, shouldNavigate);
+        // Never navigate on auth state change - only update auth state
+        // Navigation should only happen through explicit login/signup functions
+        await updateUserState(session.user, false);
       } else if (event === "SIGNED_OUT") {
         // Clear cached role on logout
         if (session?.user?.id) {
