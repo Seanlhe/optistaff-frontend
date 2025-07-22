@@ -61,6 +61,8 @@ export const useFeedback = () => {
     // Ensure the feedbackData includes the reviewer_id (current user)
     const feedbackToInsert = {
       ...feedbackData,
+      review_type: "CLIENT_TO_EMPLOYEE",
+      created_at: new Date().toISOString(),
       reviewer_id: user.id,
     };
 

@@ -1,7 +1,8 @@
 import { useShifts } from "../../hooks/useShifts"
-import { Shift } from "../../types/hooks"
+import { Shift, Feedback } from "../../types/hooks"
 import {format} from "date-fns"
 import { useState } from "react";
+import { useFeedback } from "../../hooks/useFeedback";
 export default function ClientHistory(){
     const {shifts} = useShifts();
     const today = new Date();
@@ -44,7 +45,7 @@ export default function ClientHistory(){
         </div>
         {modalVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 backdrop-blur-sm">
-            <RatingModal handleClick={handleModalClick} />
+            <RatingModal handleClose={handleModalClick} />
         </div>
         )}
     </div>
@@ -90,7 +91,19 @@ function PastShiftCard({shift, selectedShift, handleSelectShift}: { shift: Shift
     </div>
 }
 
-function RatingModal({handleClick}: {handleClick: Function}) {
+function RatingModal({handleClose}: {handleClose: Function}) {
+    const {submitFeedback} = useFeedback();
+    const [feedbackData, setFeedbackData] = useState<Partial<Feedback>>({
+        // assignment_id: assignmentId,
+        // reviewee_id: revieweeId,
+        comment: "",
+        rating_score: 0,
+    });
+    async function handleSubmit(){
+        console.log(feedbackData);
+        await submitFeedback(feedbackData);
+    }
+
     return <div className="relative w-120 flex flex-col bg-white rounded-xl gap-8 p-8 shadow">
         <div className="flex flex-row gap-6 items-center">
             <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
@@ -98,19 +111,38 @@ function RatingModal({handleClick}: {handleClick: Function}) {
         </div>
         <div className="flex flex-col gap-6">
             <p className="font-montserrat-smb text-secondary-text">Help us improve your working experience by rating this employee.</p>
-            <div className="self-center flex flex-row gap-3">
-                <img src="/icons/ratingstaricon.svg"/>
-                <img src="/icons/ratingstaricon.svg"/>
-                <img src="/icons/ratingstaricon.svg"/>
-                <img src="/icons/ratingstaricon.svg"/>
-                <img src="/icons/ratingstaricon.svg"/>
-            </div>
+            <div className="hover:cursor-pointer self-center flex flex-row gap-3">
+                {feedbackData && feedbackData.rating_score !== undefined && [...Array(5)].map((_, index) => (
+                    <img 
+                    key={index}
+                    src={(feedbackData.rating_score - 1) >= index ? "/icons/activestaricon.svg" : "/icons/ratingstaricon.svg"}
+                    alt={`Star ${index + 1}`} 
+                    onClick={() => {
+                        setFeedbackData((prevData) => ({
+                        ...prevData,
+                        rating_score: index + 1
+                        }));
+                    }}
+                    />
+                ))}
+        </div>
         </div>
         <div className="flex flex-col gap-6">
             <p className="font-montserrat-smb text-secondary-text">Write up to 50 characters</p>
-            <textarea placeholder="Be as descriptive as possible" className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-50 p-5"></textarea>
-        </div>
-        <button className="hover:cursor-pointer absolute top-4 right-4"onClick={()=>handleClick()}><img src="/icons/crossicon.svg"/></button>
-        <button className="hover:cursor-pointer hover:opacity-80 bg-primary-blue rounded-lg py-2  text-white font-montserrat">Rate</button>
+            <textarea
+                onChange={(e) => {
+                    setFeedbackData((prevData) => ({
+                    ...prevData,
+                    comment: e.target.value,
+                    }));
+                }}
+                name="comment"
+                placeholder="Be as descriptive as possible"
+                id="feedback_comment"
+                className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-50 p-5"
+            />
+        </div> 
+        <button className="hover:cursor-pointer absolute top-4 right-4"onClick={()=>handleClose()}><img src="/icons/crossicon.svg"/></button>
+        <button onClick={()=>handleSubmit()}className="hover:cursor-pointer hover:opacity-80 bg-primary-blue rounded-lg py-2  text-white font-montserrat">Rate</button>
     </div>
 }
