@@ -2,11 +2,11 @@
  * Assignments Hook
  * @description Custom hook for assignment data management
  */
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './useAuth';
+import { supabase } from '../integrations/supabase/client';
+import { Assignment, StatusEnum } from '../types/hooks';
 
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "./useAuth";
-import { supabase } from "../integrations/supabase/client";
-import { Assignment, Status } from "../types/hooks"; // Assuming you have defined Assignment type in hooks.ts
 
 export const useAssignments = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -17,7 +17,6 @@ export const useAssignments = () => {
   /**
    * Fetch assignments for the authenticated user
    * @set assignments - Sets the assignments state with fetched data
-   * @return {Promise<Assignment[]>} - Returns a promise that resolves to the assignments data
    */
   const fetchAssignments = useCallback(async () => {
     if (!user) {
@@ -38,7 +37,6 @@ export const useAssignments = () => {
         return;
       }
       setAssignments(data as Assignment[]);
-      return data as Assignment[];
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -50,22 +48,9 @@ export const useAssignments = () => {
     fetchAssignments();
   }, [fetchAssignments]);
 
-  const createAssignment = async (assignmentData: Partial<Assignment>) => {
-    // TODO: Implementation to be added
-    console.log("createAssignment called with:", assignmentData);
-    throw new Error("createAssignment not yet implemented");
-  };
 
-  const updateAssignment = async (
-    assignmentId: string,
-    assignmentData: Partial<Assignment>
-  ) => {
-    // TODO: Implementation to be added
-    console.log("updateAssignment called with:", assignmentId, assignmentData);
-    throw new Error("updateAssignment not yet implemented");
-  };
-
-  /** * Fetch assignments by shift ID
+  /**
+   * Fetch assignments by shift ID
    * @param shiftId - The ID of the shift to fetch assignments for
    * @return {Promise<Assignment[]>} - Returns a promise that resolves to the assignments data for the specified shift
    */
@@ -98,13 +83,10 @@ export const useAssignments = () => {
    * Update the status of an assignment
    *
    * @param assignmentId - The id of the assignment to update
-   * @param status_name - use cancel_by_empoyer or cancel_by_employee or confirmed
-   * @returns affected rows count
+   * @param status_name - Can be 'NoShow', 'CancelByEmployer', 'CancelByJobseeker', 'Completed', 'Upcoming' from StatusEnum
+   * @returns {Promise<{updated_count: number, payout_created: boolean}>} - Returns the number of rows affected by the update and boolean indicating if a payout was created
    */
-  const updateAssignmentStatus = async (
-    assignmentId: string,
-    status_name: Status
-  ) => {
+  const updateAssignmentStatus = async (assignmentId: string, status_name: Omit<StatusEnum, 'Active' | 'Pending' | 'Confirmed'>) => {
     if (!user) {
       setLoading(false);
       setError("User not authenticated");
@@ -122,6 +104,7 @@ export const useAssignments = () => {
         setLoading(false);
         return;
       }
+      console.log('Assignment status updated:', data);
       return data;
     } catch (err) {
       setError((err as Error).message);
@@ -131,24 +114,11 @@ export const useAssignments = () => {
     }
   };
 
-  /**
-   * Delete an assignment (typically by updating its status to cancelled)
-   * @param assignmentId - The ID of the assignment to delete
-   * @param statusName - The status to set (e.g., 'cancel_by_employer' or 'cancel_by_employee')
-   * @returns The result of the status update
-   */
-  const deleteAssignment = async (assignmentId: string, statusName: Status) => {
-    return await updateAssignmentStatus(assignmentId, statusName);
-  };
-
   return {
     assignments,
     loading,
     error,
-    cancelAssignment: updateAssignmentStatus,
+    updateAssignmentStatus,
     fetchAssignmentsByShift,
-    updateAssignment,
-    fetchAssignments,
-    deleteAssignment,
   };
 };
