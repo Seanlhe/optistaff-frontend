@@ -23,7 +23,7 @@ export const TemplateSelectDialog = ({
           { id: "1", name: "Morning Schedule", created_at: "2024-01-15" },
           { id: "2", name: "Weekend Template", created_at: "2024-01-10" },
           { id: "3", name: "Work Week", created_at: "2024-01-05" },
-        ]);
+        ]); 
         setIsLoading(false);
       }, 500);
     }

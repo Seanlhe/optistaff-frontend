@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 // Import custom hook to fetch and manage availability data from Supabase
 import { useAvailability } from "../hooks/useAvailability";
+import { useAvailabilityTemplate } from "../hooks/useAvailabilityTemplate";
 
 // Date and Time Library
 import { format, startOfWeek, addDays, isSameDay, set } from "date-fns";
@@ -13,14 +14,10 @@ import { ChevronLeft, ChevronRight, Save, File, RefreshCw } from "lucide-react";
 import { CalendarEvent } from "./CalendarEvent";
 import { TemplateNameDialog } from "./TemplateNameDialog";
 import { TemplateSelectDialog } from "./TemplateSelectDialog";
+import { UI_Event } from "../types/hooks"; // Import the Event type
 
-//export interface Event says any object we call an Event must have
-// an id, title, startTime, and endTime.
-export interface Event {
-  id: string;
-  startTime: Date;
-  endTime: Date;
-}
+
+
 
 // Define the cycle for which we are managing availability
 const CYCLE: "PRIMARY" | "SECONDARY" = "PRIMARY";
@@ -29,7 +26,7 @@ const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   // State to hold the events (availability slots)
-  const [events, setEvents] = useState<Event[]>([]); 
+  const [events, setEvents] = useState<UI_Event[]>([]); 
 
   // Track if we've loaded initial data to prevent refetching
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
@@ -42,6 +39,7 @@ const Calendar = () => {
 
   // Use the custom hook to manage availability data
   const { getAvailability, setAvailability, fetchLoading, saveLoading, loading, error } = useAvailability();
+  const { createTemplate } = useAvailabilityTemplate();
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
 
@@ -62,6 +60,7 @@ const Calendar = () => {
             id: tb.id || `event_${tb.start_time}`,
             startTime: new Date(tb.start_time),
             endTime: new Date(tb.end_time),
+            day_of_week: tb.day_of_week || new Date(tb.start_time).getDay() + 1, // Convert JS day (0-6) to 1-7
           }))
         );
         setHasLoadedInitialData(true); // Mark as loaded to prevent refetching
@@ -77,17 +76,18 @@ const Calendar = () => {
   }, [loading, hasLoadedInitialData, getAvailability, CYCLE]); // Include all dependencies
 
   const handleDoubleClick = (day: Date, hour: number) => {
-    const newSlot: Event = {
+    const newSlot: UI_Event = {
       id: `event_${Date.now()}`, //Create a simple unique ID
       startTime: set(day, { hours: hour, minutes: 0 }),
       endTime: set(day, { hours: hour + 1, minutes: 0 }),
+      day_of_week: day.getDay() + 1, // Convert JS day (0-6) to 1-7
     };
     // Add the new slot to our events array
     setEvents((prevEvents) => [...prevEvents, newSlot]);
   };
 
   // update a slot when dragged
-  const handleUpdateEvent = (updatedEvent: Event) => {
+  const handleUpdateEvent = (updatedEvent: UI_Event) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
         event.id === updatedEvent.id ? updatedEvent : event,
@@ -111,7 +111,7 @@ const Calendar = () => {
         submission_cycle: CYCLE,
       }));
       
-      const success = await setAvailability(timeBlocks);
+      const success = await setAvailability(timeBlocks, "PRIMARY");
       
       if (success) {
         // Optionally refresh data from database after successful save
@@ -132,6 +132,7 @@ const Calendar = () => {
           id: tb.id || `event_${tb.start_time}`,
           startTime: new Date(tb.start_time),
           endTime: new Date(tb.end_time),
+          day_of_week: tb.day_of_week || new Date(tb.start_time).getDay() + 1, // Convert JS day (0-6) to 1-7
         }))
       );
     } catch (err) {
@@ -142,15 +143,25 @@ const Calendar = () => {
   // Template functions
   const handleSaveTemplate = async (templateName: string) => {
     setTemplateSaveLoading(true);
-    try {
-      // Mock API call - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Saving template:', templateName, 'with events:', events);
+  try {
+    const newTemplate = {
+      template_name: templateName,
+      is_default: false, // Or true, if applicable
+      timeblocks: events, // Pass your current events (UI_Event[])
+    };
+
+    const result = await createTemplate(newTemplate);
+
+    if (result) {
+      console.log("Template saved successfully:", result);
       setShowTemplateNameDialog(false);
-    } catch (err) {
-      console.error('Error saving template:', err);
-    } finally {
-      setTemplateSaveLoading(false);
+    } else {
+      console.error("Failed to save template",result);
+    }
+  } catch (err) {
+    console.error("Error saving template:", err);
+  } finally {
+    setTemplateSaveLoading(false);
     }
   };
 
@@ -162,20 +173,20 @@ const Calendar = () => {
       console.log('Loading template:', templateId);
       
       // Mock template data - replace with actual template loading
-      const mockTemplateEvents: Event[] = [
-        {
-          id: `template_event_1`,
-          startTime: set(weekDays[0], { hours: 9, minutes: 0 }),
-          endTime: set(weekDays[0], { hours: 10, minutes: 0 }),
-        },
-        {
-          id: `template_event_2`,
-          startTime: set(weekDays[1], { hours: 14, minutes: 0 }),
-          endTime: set(weekDays[1], { hours: 15, minutes: 40 }),
-        },
-      ];
+      // const mockTemplateEvents: Event[] = [
+      //   {
+      //     id: `template_event_1`,
+      //     startTime: set(weekDays[0], { hours: 9, minutes: 0 }),
+      //     endTime: set(weekDays[0], { hours: 10, minutes: 0 }),
+      //   },
+      //   {
+      //     id: `template_event_2`,
+      //     startTime: set(weekDays[1], { hours: 14, minutes: 0 }),
+      //     endTime: set(weekDays[1], { hours: 15, minutes: 40 }),
+      //   },
+      // ];
       
-      setEvents(mockTemplateEvents);
+      // setEvents(mockTemplateEvents);
       setShowTemplateSelectDialog(false);
     } catch (err) {
       console.error('Error loading template:', err);
@@ -316,6 +327,7 @@ const Calendar = () => {
         onClose={() => setShowTemplateSelectDialog(false)}
         onSelect={handleUseTemplate}
         onSaveTemplate={() => setShowTemplateNameDialog(true)}
+        timeblocks={events}
         loading={templateLoadLoading}
       />
 
