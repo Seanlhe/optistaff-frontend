@@ -111,29 +111,28 @@ export const useAuth = () => {
 
   // Helper function to clear user state
   const clearUserState = useCallback((errorMessage?: string) => {
-    setAuthState({
-      user: null,
-      loading: false,
-      error: errorMessage || null,
+    setAuthState(prev => {
+      // Only update if state actually changed
+      if (prev.user === null && prev.loading === false && prev.error === (errorMessage || null)) {
+        return prev;
+      }
+      return {
+        user: null,
+        loading: false,
+        error: errorMessage || null,
+      };
     });
   }, []);
 
   useEffect(() => {
-    // IIFE to handle async operations directly
-    (async () => {
+    let isMounted = true; // Prevent state updates if component unmounts
+    
+    // Get initial session
+    const getInitialSession = async () => {
       try {
         const response = await supabase.auth.getSession();
-        const data = response.data;
-        const session = data.session;
+        const session = response.data.session;
 
-<<<<<<< HEAD
-        //if session exists and has a user, set the auth state
-        if (session?.user){
-          await updateUserState(session.user);
-        }
-        // if no session or user, set user to null and loading to false
-        else {
-=======
         // Only update state if component is still mounted
         if (!isMounted) return;
 
@@ -141,16 +140,13 @@ export const useAuth = () => {
           // Don't navigate on page refresh - only update auth state
           await updateUserState(session.user, false);
         } else {
->>>>>>> devnew
           clearUserState();
         }
       } catch (error: unknown) {
+        if (!isMounted) return;
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
         clearUserState(errorMessage);
       }
-<<<<<<< HEAD
-    })();
-=======
     };
 
     // Set up auth state listener
@@ -178,7 +174,6 @@ export const useAuth = () => {
       isMounted = false;
       subscription.unsubscribe();
     };
->>>>>>> devnew
   }, [updateUserState, clearUserState]);
 
   const login = async (email: string, password: string) => {
