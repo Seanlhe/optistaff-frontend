@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
       retry: false,
     },
   },
-});
+})
 
 function App() {
   return (
@@ -46,7 +46,6 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<ClientDashboard />} />
           <Route path="roster" element={<ClientRoster />} />
           <Route path="settings" element={<ClientDashboard />} />
@@ -71,17 +70,14 @@ function App() {
           }} />}/>
           <Route path="history" element={<ClientHistory/>}/>
         </Route>
-        <Route
-          path="/employee"
-          element={
-            <ProtectedRoute allowedRoles={["jobseeker"]}>
-              <JSLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="/employee" element={
+          <ProtectedRoute allowedRoles={['jobseeker']}>
+            <JSLayout />
+          </ProtectedRoute>
+        }>
           <Route path="dashboard" element={<JSDashboard />} />
           <Route path="preferences" element={<JSPref />} />
+          <Route path="dashboard" element={<JSDashboard />} />
           <Route path="history" element={<EmployeeHistory />} />
           <Route path="schedule" element={<JSSchedule />} />
           <Route path="settings" element={<JSSettings />} />
@@ -93,4 +89,4 @@ function App() {
   );
 }
 
-export default App;
+export default App

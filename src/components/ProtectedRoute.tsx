@@ -15,9 +15,6 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }: ProtectedRoutePr
         <div className="text-center">
           <div className="text-lg font-semibold text-slate-600 mb-2">Loading...</div>
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <div className="text-sm text-slate-500 mt-4">
-            If this takes too long, try refreshing the page
-          </div>
         </div>
       </div>
     );
@@ -28,8 +25,8 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }: ProtectedRoutePr
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    // Redirect to appropriate dashboard based on role, but preserve the specific page if possible
-    const redirectPath = user.role === 'jobseeker' ? '/employee/dashboard' : '/employer/dashboard';
+    // Redirect to appropriate dashboard based on role
+    const redirectPath = user.role === 'jobseeker' ? '/employee' : '/employer';
     return <Navigate to={redirectPath} replace />;
   }
 
