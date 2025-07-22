@@ -496,11 +496,11 @@ export const LocationAwareMap: React.FC<LocationAwareMapProps> = ({
               <Circle
                 center={homeLocation || SINGAPORE_CENTER}
                 radius={radiusInMeters}
-                fillColor={homeLocation ? "#3b82f6" : "#6b7280"}
+                fillColor={homeLocation ? "#3b82f6" : "#234cffff"}
                 fillOpacity={isAdjusting ? 0.2 : 0.1}
-                color={homeLocation ? "#2563eb" : "#4b5563"}
+                color={homeLocation ? "#2563eb" : "#234cffff"}
                 weight={isAdjusting ? 3 : 2}
-                opacity={isAdjusting ? 0.8 : 0.6}
+                opacity={isAdjusting ? 0.8 : 0.7}
                 className={isAdjusting ? "circle-adjusting" : ""}
               />
             </MapContainer>

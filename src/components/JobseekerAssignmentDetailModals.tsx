@@ -1,24 +1,24 @@
-import { Clock, MapPin, DollarSign, Briefcase, FileText, Star } from "lucide-react";
+import { Clock, MapPin, DollarSign, Briefcase, FileText, Star, Phone, Mail, Coffee, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { JobseekerAssignmentCard } from "./JobseekerAssignmentCard";
 import { useAssignments } from "../hooks/useAssignments";
 
-interface ShiftDetailsModalProps {
-  shift: JobseekerAssignmentCard | null;
+interface AssignmentDetailsModalProps {
+  assignment: JobseekerAssignmentCard | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalProps) => {
+export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: AssignmentDetailsModalProps) => {
   const { cancelAssignment } = useAssignments();
   
-  if (!shift) return null;
+  if (!assignment) return null;
 
   // Handler function for cancelling assignment
   const handleCancelAssignment = async () => {
     try {
-      await cancelAssignment(shift.id, 'cancel_by_employee');
+      await cancelAssignment(assignment.id, 'cancel_by_employee');
       // Close modal after successful cancellation
       onClose();
     } catch (error) {
@@ -36,21 +36,56 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-sm text-secondary-text">Status</label>
-            <p className="font-medium capitalize">{shift.status}</p>
+            <p className="font-medium capitalize">{assignment.status}</p>
           </div>
           
           <div>
             <label className="text-sm text-secondary-text">Assignment ID</label>
-            <p className="font-mono text-sm">{shift.id}</p>
+            <p className="font-mono text-sm">{assignment.id}</p>
           </div>
         </div>
       </div>
     </div>
   );
 
+  // Render contact details section
+  const renderContactDetails = () => {
+    if (!assignment.contactNumber && !assignment.contactEmail) return null;
+    
+    return (
+      <div className="space-y-4">
+        <div className="border-t pt-4">
+          <h4 className="font-semibold text-primary-text mb-3">Contact Information</h4>
+          
+          <div className="space-y-3">
+            {assignment.contactNumber && (
+              <div className="flex items-center space-x-3">
+                <Phone className="w-4 h-4 text-primary-blue" />
+                <div>
+                  <label className="text-sm text-secondary-text">Phone</label>
+                  <p className="font-medium">{assignment.contactNumber}</p>
+                </div>
+              </div>
+            )}
+            
+            {assignment.contactEmail && (
+              <div className="flex items-center space-x-3">
+                <Mail className="w-4 h-4 text-primary-blue" />
+                <div>
+                  <label className="text-sm text-secondary-text">Email</label>
+                  <p className="font-medium">{assignment.contactEmail}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render cancel button for upcoming assignments
   const renderCancelButton = () => {
-    if (shift.status === 'upcoming') {
+    if (assignment.status === 'upcoming') {
       return (
         <div className="pt-4 border-t">
           <Button 
@@ -71,12 +106,12 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
       <DialogContent className="bg-white max-w-lg mx-auto border border-none max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold text-primary-text">
-            {shift.title}
+            {assignment.title}
           </DialogTitle>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-sm text-secondary-text">{shift.company}</span>
-            {shift.hourlyRate > 0 && (
-              <span className="text-base font-bold text-primary-text">${shift.hourlyRate}/hr</span>
+            <span className="text-sm text-secondary-text">{assignment.company}</span>
+            {assignment.hourlyRate > 0 && (
+              <span className="text-base font-bold text-primary-text">${assignment.hourlyRate}/hr</span>
             )}
           </div>
         </DialogHeader>
@@ -87,8 +122,8 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
               <Clock className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
                 <p className="text-base font-semibold text-primary-text">Schedule</p>
-                <p className="text-sm text-secondary-text">{shift.date}</p>
-                <p className="text-sm text-secondary-text">{shift.time}</p>
+                <p className="text-sm text-secondary-text">{assignment.date}</p>
+                <p className="text-sm text-secondary-text">{assignment.time}</p>
               </div>
             </div>
 
@@ -96,56 +131,79 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
               <MapPin className="w-5 h-5 text-primary-blue mt-0.5" />
               <div>
                 <p className="text-base font-semibold text-primary-text">Location</p>
-                <p className="text-sm text-secondary-text">{shift.location}</p>
+                <p className="text-sm text-secondary-text">{assignment.location}</p>
               </div>
             </div>
 
-            {shift.hourlyRate > 0 && (
+            {assignment.hourlyRate > 0 && (
               <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
                 <DollarSign className="w-5 h-5 text-primary-blue mt-0.5" />
                 <div>
                   <p className="text-base font-semibold text-primary-text">Compensation</p>
-                  <p className="text-sm text-secondary-text">${shift.hourlyRate} per hour</p>
+                  <p className="text-sm text-secondary-text">{assignment.hourlyRate} per hour</p>
+                </div>
+              </div>
+            )}
+
+            {assignment.jobType && (
+              <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
+                <User className="w-5 h-5 text-primary-blue mt-0.5" />
+                <div>
+                  <p className="text-base font-semibold text-primary-text">Job Type</p>
+                  <p className="text-sm text-secondary-text">{assignment.jobType}</p>
+                </div>
+              </div>
+            )}
+
+            {assignment.breakHours && assignment.breakHours > 0 && (
+              <div className="flex items-start space-x-3 p-3 bg-card-color border border-border-color rounded-lg">
+                <Coffee className="w-5 h-5 text-primary-blue mt-0.5" />
+                <div>
+                  <p className="text-base font-semibold text-primary-text">Break Time</p>
+                  <p className="text-sm text-secondary-text">{assignment.breakHours} hour(s) break included</p>
                 </div>
               </div>
             )}
           </div>
 
-          {shift.description && (
+          {assignment.description && (
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Briefcase className="w-4 h-4 text-primary-blue" />
                 <h4 className="text-base font-semibold text-primary-text">Job Description</h4>
               </div>
               <p className="text-sm text-secondary-text leading-relaxed">
-                {shift.description}
+                {assignment.description}
               </p>
             </div>
           )}
 
-          {shift.requirements && (
+          {assignment.requirements && (
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-primary-blue" />
                 <h4 className="text-base font-semibold text-primary-text">Requirements</h4>
               </div>
               <p className="text-sm text-secondary-text leading-relaxed">
-                {shift.requirements}
+                {assignment.requirements}
               </p>
             </div>
           )}
+
+          {/* Contact Details Section */}
+          {renderContactDetails()}
 
           {/* Assignment Details Section */}
           {renderAssignmentDetails()}
           {renderCancelButton()}
 
-          {shift.status === "completed" && shift.employerFeedback && (
+          {assignment.status === "completed" && assignment.employerFeedback && (
             <div className="space-y-3 border-t pt-4">
               <div className="flex items-center space-x-2">
                 <Star className="w-4 h-4 text-primary-blue" />
                 <h4 className="text-base font-semibold text-primary-text">Employer Feedback</h4>
               </div>
-              {shift.rating && (
+              {assignment.rating && (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-medium">Rating:</span>
                   <div className="flex">
@@ -153,16 +211,16 @@ export const ShiftDetailsModal = ({ shift, isOpen, onClose }: ShiftDetailsModalP
                       <Star
                         key={i}
                         className={`w-4 h-4 ${
-                          i < shift.rating! ? "fill-yellow-400 text-yellow-400" : "text-secondary-text"
+                          i < assignment.rating! ? "fill-yellow-400 text-yellow-400" : "text-secondary-text"
                         }`}
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-secondary-text">({shift.rating}/5)</span>
+                  <span className="text-sm text-secondary-text">({assignment.rating}/5)</span>
                 </div>
               )}
               <p className="text-sm text-secondary-text leading-relaxed">
-                {shift.employerFeedback}
+                {assignment.employerFeedback}
               </p>
             </div>
           )}

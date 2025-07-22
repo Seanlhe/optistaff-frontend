@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import StatsCard from "../../components/StatsCard";
 import PayoutSummaryCard from "../../components/PayoutSummaryCard";
-import { ShiftDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
+import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
 import { JobseekerAssignmentCard } from "../../components/JobseekerAssignmentCard";
 import { Star, Clock } from "lucide-react";
 import MonthlyCalendar from "../../components/MonthlyCalendar";
@@ -15,12 +15,12 @@ const Dashboard = () => {
 
 	// Fetch data using custom hooks
 	const { assignments, loading } = useAssignments();
-	const { profile } = useUserProfile();
+	const { profileData } = useUserProfile();
 
 	// Transform assignment data to JobseekerAssignmentCard format
 	const transformAssignmentToCard = (assignment: Assignment): JobseekerAssignmentCard => {
-		// Use created_at as fallback for timing information since start_time/end_time may not be available
-		const assignmentDate = new Date(assignment.created_at);
+		// Use real start_time for date, fallback to created_at
+		const assignmentDate = assignment.start_time ? new Date(assignment.start_time) : new Date(assignment.created_at);
 		
 		const formatDate = (date: Date) => {
 			return date.toLocaleDateString('en-US', { 
@@ -30,13 +30,8 @@ const Dashboard = () => {
 			});
 		};
 		
-		// Generate default time based on assignment creation
-		const formatDefaultTime = () => {
-			const startTime = new Date(assignmentDate);
-			startTime.setHours(9, 0, 0, 0); // Default to 9:00 AM
-			const endTime = new Date(startTime);
-			endTime.setHours(17, 0, 0, 0); // Default to 5:00 PM
-			
+		// Use real start_time and end_time from assignment
+		const formatRealTime = (startTime: Date, endTime: Date) => {
 			const formatTime = (date: Date) => date.toLocaleTimeString('en-US', { 
 				hour: 'numeric', 
 				minute: '2-digit',
@@ -49,14 +44,21 @@ const Dashboard = () => {
 		return {
 			id: assignment.assignment_id,
 			title: assignment.job_title || "Assignment",
-			company: assignment.name || "Company",
+			company: assignment.employer_name || "Company", // Use employer_name instead of name
 			date: formatDate(assignmentDate),
-			time: formatDefaultTime(),
-			location: "Location TBD", // Will be available when shift data is joined
-			hourlyRate: 0, // Will be available when shift data is joined
-			description: "Assignment details will be available soon",
-			requirements: "Requirements will be specified",
+			time: formatRealTime(new Date(assignment.start_time), new Date(assignment.end_time)), // Use real times
+			location: assignment.job_location || "Location TBD", // Use real job location
+			hourlyRate: assignment.pay_rate || 0, // Use real pay rate
+			description: assignment.job_description || "No description provided", // Use real description
+			requirements: assignment.job_requirements || "No specific requirements", // Use real requirements
 			status: mapAssignmentStatusToCardStatus(assignment.status),
+			// Additional fields for enhanced components
+			contactNumber: assignment.contact_number,
+			contactEmail: assignment.contact_email,
+			jobType: assignment.job_type,
+			breakHours: assignment.break_hours,
+			startTime: assignment.start_time,
+			endTime: assignment.end_time,
 		};
 	};
 
@@ -65,11 +67,13 @@ const Dashboard = () => {
 		switch (status?.toLowerCase()) {
 			case 'confirmed':
 			case 'pending':
+			case 'active':
 				return 'upcoming';
 			case 'completed':
 				return 'completed';
 			case 'cancel_by_employer':
 			case 'cancel_by_employee':
+			case 'no_show':
 				return 'cancelled';
 			default:
 				return 'upcoming';
@@ -93,9 +97,9 @@ const Dashboard = () => {
 	};
 
 	const getUserName = () => {
-		if (!profile || typeof profile !== 'object') return "Job Seeker";
-		const firstName = (profile as any).first_name || '';
-		const lastName = (profile as any).last_name || '';
+		if (!profileData || typeof profileData !== 'object') return "Job Seeker";
+		const firstName = (profileData as any).first_name || '';
+		const lastName = (profileData as any).last_name || '';
 		return firstName && lastName ? `${firstName} ${lastName}` : "Job Seeker";
 	};
 
@@ -171,7 +175,7 @@ const Dashboard = () => {
 								{displayAssignments.map((assignment) => (
 									<JobseekerAssignmentCard
 										key={assignment.id}
-										shift={assignment}
+										assignment={assignment}
 										onClick={() => handleViewDetails(assignment)}
 										onViewDetails={handleViewDetails}
 									/>
@@ -191,8 +195,8 @@ const Dashboard = () => {
 							<PayoutSummaryCard timeframe="week" />
 							<StatsCard
 								title="Rating"
-								value={typeof profile === 'object' && profile && 'rating' in profile 
-									? Number(profile.rating).toFixed(1) 
+								value={typeof profileData === 'object' && profileData && 'rating' in profileData 
+									? Number(profileData.rating).toFixed(1) 
 									: "0.0"
 								}
 								icon={<Star />}
@@ -205,8 +209,8 @@ const Dashboard = () => {
 
 			{/* Details Modal */}
 			{selectedAssignment && (
-				<ShiftDetailsModal
-					shift={selectedAssignment}
+				<AssignmentDetailsModal
+					assignment={selectedAssignment}
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
 				/>
