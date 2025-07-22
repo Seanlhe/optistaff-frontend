@@ -12,7 +12,7 @@ export interface UserLocationData {
 }
 
 // useAuth interfaces
-interface User {
+export interface User {
     id: string;
     email: string;
     role: 'jobseeker' | 'employer';

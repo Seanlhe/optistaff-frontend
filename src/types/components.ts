@@ -1,4 +1,4 @@
-import { Shift } from "./hooks"
+import { Shift, PreferencesFormData } from "./hooks"
 export interface IconButtonProps{
     text: string,
     src: string
@@ -23,11 +23,24 @@ export interface InputFieldProps {
   title: string;
   placeholder?: string;
   className?: string;
+  value?: string| Number
   type?: string;
   valid?: boolean;
   error?: string | null;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+export interface InputAreaProps {
+  name: string;
+  title: string;
+  placeholder?: string;
+  value?: string| Number
+  className?: string;
+  valid?: boolean;
+  error?: string | null;
+  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}
+
 
 export interface LoginFormProps {
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;

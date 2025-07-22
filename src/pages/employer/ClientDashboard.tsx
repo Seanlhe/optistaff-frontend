@@ -52,7 +52,7 @@ function DashboardUpcoming({ shifts }: { shifts: Shift[] }){
     return <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
         <div className="flex flex-row gap-4 items-center">
             <img className="h-5 w-5"src="/icons/calendar.svg"/>
-            <h1 className="text-xl text-secondary-text font-montserrat-b">Upcoming Shifts</h1>
+            <h1 className="text-xl text-secondary-text font-montserrat-b">This Week</h1>
         </div>
         {shifts && <div className="overflow-hidden">
                 <ul className="z-50 flex flex-col gap-8 animate-slidedown">

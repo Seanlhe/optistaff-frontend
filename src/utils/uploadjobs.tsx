@@ -50,6 +50,7 @@ export const checkTimeValid = (startTime: string, endTime: string) => {
 }
 
 export const getDate = (date: string, time: string): Date => {
+    // 2025-08-29
     const dateArr = date.split(/[-/]/);
     const day = parseInt(dateArr[0]);
     const month = parseInt(dateArr[1]) - 1;

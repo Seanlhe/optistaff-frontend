@@ -11,11 +11,17 @@ export default function ClientHistory(){
     return shiftDate < today;});
 
     const [selectedShift, setSelectedShift] = useState<Shift|null>(null);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
     const handleSelectShift = (shift: Shift) => {
         setSelectedShift(shift);
         console.log("shift selected");
     }
-    
+    const handleModalClick = () => {
+        setModalVisible(!modalVisible);
+    }
+    const handleSort = () => {
+        console.log("sorting");
+    }
 
     return <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8 ">
         <div className="flex flex-col gap-2">
@@ -26,24 +32,29 @@ export default function ClientHistory(){
             <div id="previous-jobs" className="grow flex flex-col gap-6 py-5">
                 <div className="flex flex-row justify-between">
                     <p className="font-montserrat-b text-xl text-primary-text">Previous Jobs</p>
-                    <button className="flex flex-col items-center justify-center bg-[#D9D9D9] rounded-full h-9 w-9"><img className="w-3 h-3"src="/icons/sorticon.svg"/></button>
+                    <button onClick={() => handleSort()} className="hover:cursor-pointer hover:opacity-80 flex flex-col items-center justify-center bg-[#D9D9D9] rounded-full h-9 w-9"><img className="w-3 h-3"src="/icons/sorticon.svg"/></button>
                 </div>
                 {pastShifts.length != 0? pastShifts.map((shift) => (<PastShiftCard key={shift.shift_id} selectedShift={selectedShift} shift={shift} handleSelectShift={()=>handleSelectShift(shift)}/>)): <p className="font-montserrat text-secondary-text text-base">No past shifts found. Click upload jobs to create new listings</p>}
             </div>
             <div className="w-116 min-h-screen flex flex-col gap-6 p-5 rounded-xl bg-secondary-bg ">
                 <p className="font-montserrat-b text-xl text-primary-text">Assigned Staff</p>
-                {selectedShift != null? <HistoryRateCard/>: <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
+                {selectedShift != null? <HistoryRateCard handleClick={handleModalClick}/>: <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
                 {selectedShift == null? null: null}
             </div>
         </div>
+        {modalVisible && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 backdrop-blur-sm">
+            <RatingModal handleClick={handleModalClick} />
+        </div>
+        )}
     </div>
 }
 
-function HistoryRateCard(){
+function HistoryRateCard({handleClick}: {handleClick:Function}){
     return <div className="w-full flex flex-row justify-between items-center bg-white p-5 rounded-lg">
         <div className="flex flex-row items-center gap-5">
             <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
-            <div>
+            <div className="flex flex-col gap-2">
                 <p className="font-montserrat text-base text-primary-text">Marcus Tan</p>
                 <div className="flex flex-row gap-2">
                     <img src="/icons/star.svg"/>
@@ -51,7 +62,7 @@ function HistoryRateCard(){
                 </div>
             </div>
         </div>
-        <button className="border-1 h-fit border-primary-text text-primary-text font-montserrat px-2 py-1 rounded-md">Rate</button>
+        <button onClick={()=>handleClick()}className="hover:bg-gray-300 hover:cursor-pointer border-1 h-fit border-primary-text text-primary-text font-montserrat px-2 py-1 rounded-md">Review</button>
     </div>
 }
 
@@ -76,5 +87,30 @@ function PastShiftCard({shift, selectedShift, handleSelectShift}: { shift: Shift
                 <p className="text-base font-montserrat text-secondary-text">{shift.staff_needed}</p>
             </div>
         </div>
+    </div>
+}
+
+function RatingModal({handleClick}: {handleClick: Function}) {
+    return <div className="relative w-120 flex flex-col bg-white rounded-xl gap-8 p-8 shadow">
+        <div className="flex flex-row gap-6 items-center">
+            <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
+            <p className="font-montserrat-b text-xl">Tony Chan</p>
+        </div>
+        <div className="flex flex-col gap-6">
+            <p className="font-montserrat-smb text-secondary-text">Help us improve your working experience by rating this employee.</p>
+            <div className="self-center flex flex-row gap-3">
+                <img src="/icons/ratingstaricon.svg"/>
+                <img src="/icons/ratingstaricon.svg"/>
+                <img src="/icons/ratingstaricon.svg"/>
+                <img src="/icons/ratingstaricon.svg"/>
+                <img src="/icons/ratingstaricon.svg"/>
+            </div>
+        </div>
+        <div className="flex flex-col gap-6">
+            <p className="font-montserrat-smb text-secondary-text">Write up to 50 characters</p>
+            <textarea placeholder="Be as descriptive as possible" className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-50 p-5"></textarea>
+        </div>
+        <button className="hover:cursor-pointer absolute top-4 right-4"onClick={()=>handleClick()}><img src="/icons/crossicon.svg"/></button>
+        <button className="hover:cursor-pointer hover:opacity-80 bg-primary-blue rounded-lg py-2  text-white font-montserrat">Rate</button>
     </div>
 }
