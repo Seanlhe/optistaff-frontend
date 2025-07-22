@@ -121,7 +121,7 @@ export default function ClientRoster() {
   }
 
   if (selectedShift && isEditMode) {
-    return <ClientEdit shift={selectedShift} />;
+    return <ClientEdit shift={selectedShift} onClose={handleCloseDetails} />;
   }
 
   return (

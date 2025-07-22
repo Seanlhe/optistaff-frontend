@@ -19,6 +19,14 @@ export default function ClientShiftDetails({
   const handleDelete = async () => {
     if (!onDelete) return;
 
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${shiftData.job_title}"?\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) {
+      return; // User cancelled, don't proceed with deletion
+    }
+
     try {
       setIsDeleting(true);
       await onDelete(shiftData.shift_id);
@@ -98,6 +106,7 @@ export default function ClientShiftDetails({
         >
           Edit
         </button>
+
         {/* Delete Button - Only show if status is NOT "completed" */}
         {shiftData.status !== "completed" && (
           <button

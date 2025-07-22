@@ -4,7 +4,15 @@ import { Shift, User } from "../../types/hooks";
 import { useState } from "react";
 import { getDateForm, checkTimeValid } from "../../utils/uploadjobs";
 import { format } from "date-fns";
-export default function ClientEdit({ shift }: { shift: Shift }) {
+import { useShifts } from "../../hooks/useShifts";
+
+export default function ClientEdit({
+  shift,
+  onClose,
+}: {
+  shift: Shift;
+  onClose?: () => void;
+}) {
   return (
     <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-10">
       <div className="flex flex-col gap-2">
@@ -14,14 +22,23 @@ export default function ClientEdit({ shift }: { shift: Shift }) {
         </p>
       </div>
       <div className="flex flex-row gap-10">
-        <UpdateForm shift={shift} />
+        <UpdateForm shift={shift} onClose={onClose} />
         <AssignmentsContainer shift={shift} />
       </div>
     </div>
   );
 }
 
-function UpdateForm({ shift }: { shift: Shift }) {
+function UpdateForm({
+  shift,
+  onClose,
+}: {
+  shift: Shift;
+  onClose?: () => void;
+}) {
+  const [formData, setFormData] = useState<Shift>(shift);
+  const { updateShift } = useShifts();
+
   const handleDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
     let value = e.target.value;
@@ -73,13 +90,37 @@ function UpdateForm({ shift }: { shift: Shift }) {
         setFormData((prevData: Shift) => ({ ...prevData, [name]: value }));
     }
   };
-  const [formData, setFormData] = useState<Shift>(shift);
-  const handleSubmit = () => {
-    console.log(formData);
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    try {
+      console.log("🚀 Attempting to update shift:", {
+        shift_id: shift.shift_id,
+        originalData: shift,
+        updatedData: formData,
+      });
+
+      await updateShift(shift.shift_id, formData);
+
+      if (onClose) onClose();
+    } catch (error) {
+      console.error("Failed to update shift:", error);
+      alert("Failed to update shift. Please try again.");
+    }
   };
+
   const handleCancel = () => {
-    console.log("cancelled");
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(shift);
+    if (hasChanges) {
+      const confirmCancel = window.confirm(
+        "You have unsaved changes. Are you sure you want to cancel?"
+      );
+      if (!confirmCancel) return;
+    }
+    if (onClose) onClose();
   };
+
   return (
     <div id="upload-jobs-form" className="grow">
       <form className="grid grid-cols-6 gap-x-4 gap-y-8 items-center">
@@ -183,11 +224,9 @@ function UpdateForm({ shift }: { shift: Shift }) {
           <button
             type="button"
             className="hover:cursor-pointer hover:opacity-80 w-full p-3 bg-primary-blue font-montserrat-smb text-white text-base rounded-lg"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-              handleSubmit(e)
-            }
+            onClick={handleSubmit}
           >
-            Post Job
+            Update Shift
           </button>
           <button
             type="button"
