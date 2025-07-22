@@ -1,22 +1,22 @@
-import './App.css'
-import { Route, Routes } from "react-router-dom"
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import LandingPage from './pages/LandingPage'
-import Login from './pages/Login'
-import SignUp from './pages/Signup'
-import Auth from './pages/Auth'
-import ClientLayout from './pages/ClientLayout'
-import ClientDashboard from './pages/employer/ClientDashboard'
-import UploadJobs from './pages/employer/UploadJobs'
-import JSLayout from './pages/JSLayout'
-import JSSettings from './pages/employee/JSSettings'
-import JSPref from './pages/employee/JSPref'
-import JSDashboard from './pages/employee/JSDashboard'
-import ClientRoster from './pages/employer/ClientRoster'
-import { ProtectedRoute } from './components/ProtectedRoute'
-import UploadCSV from './pages/employer/UploadCSV'
-import JSSchedule from './pages/employee/JSSchedule'
-import EmployeeHistory from './pages/employee/EmployeeHistory';
+import "./App.css";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import SignUp from "./pages/Signup";
+import Auth from "./pages/Auth";
+import ClientLayout from "./pages/ClientLayout";
+import ClientDashboard from "./pages/employer/ClientDashboard";
+import UploadJobs from "./pages/employer/UploadJobs";
+import JSLayout from "./pages/JSLayout";
+import JSSettings from "./pages/employee/JSSettings";
+import JSPref from "./pages/employee/JSPref";
+import JSDashboard from "./pages/employee/JSDashboard";
+import ClientRoster from "./pages/employer/ClientRoster";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import UploadCSV from "./pages/employer/UploadCSV";
+import JSSchedule from "./pages/employee/JSSchedule";
+import EmployeeHistory from "./pages/employee/EmployeeHistory";
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
       retry: false,
     },
   },
-})
+});
 
 function App() {
   return (
@@ -44,6 +44,7 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<ClientDashboard />} />
           <Route path="roster" element={<ClientRoster />} />
           <Route path="settings" element={<ClientDashboard />} />
@@ -51,22 +52,24 @@ function App() {
           <Route path="uploadjobs" element={<UploadJobs />} />
           <Route path="uploadcsv" element={<UploadCSV />} />
         </Route>
-        <Route path="/employee" element={
-          <ProtectedRoute allowedRoles={['jobseeker']}>
-            <JSLayout />
-          </ProtectedRoute>
-        }>
+        <Route
+          path="/employee"
+          element={
+            <ProtectedRoute allowedRoles={["jobseeker"]}>
+              <JSLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<JSDashboard />} />
           <Route path="preferences" element={<JSPref />} />
-          <Route path="dashboard" element={<JSDashboard />} />
           <Route path="history" element={<EmployeeHistory />} />
           <Route path="schedule" element={<JSSchedule />} />
           <Route path="settings" element={<JSSettings />} />
-
         </Route>
       </Routes>
     </QueryClientProvider>
   );
 }
 
-export default App
+export default App;
