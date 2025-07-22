@@ -8,7 +8,7 @@ export default function ShiftCard(shift: Shift){
     }
     return <div className="bg-white flex flex-row  items-center justify-between rounded-2xl">
         <div className="w-full bg-white flex flex-col gap-4 rounded-2xl p-5"> 
-            <p className="text-base font-montserrat-b text-primary-text mb-2">{shift.title}</p>
+            <p className="text-base font-montserrat-b text-primary-text mb-2">{shift.job_title}</p>
             <div className="flex flex-row gap-4 items-center">
                 <img className="w-5 h-5" src = "/public/icons/map.svg"/>
                 <p className="text-base font-montserrat text-secondary-text">{shift.job_location}</p>

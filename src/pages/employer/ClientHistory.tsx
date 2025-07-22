@@ -1,8 +1,9 @@
 import { useShifts } from "../../hooks/useShifts"
-import { Shift, Feedback } from "../../types/hooks"
+import { Shift, Feedback, Assignment } from "../../types/hooks"
 import {format} from "date-fns"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFeedback } from "../../hooks/useFeedback";
+import { useAssignments } from "../../hooks/useAssignments";
 export default function ClientHistory(){
     const {shifts} = useShifts();
     const today = new Date();
@@ -10,12 +11,32 @@ export default function ClientHistory(){
     const pastShifts = shifts.filter((shift) => {
     const shiftDate = new Date(shift.start_time);
     return shiftDate < today;});
-
+    console.log(pastShifts);
+    const [assignments, setAssignments] = useState<Assignment[]>([]);
+    const {fetchAssignmentsByShift} = useAssignments();
     const [selectedShift, setSelectedShift] = useState<Shift|null>(null);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
+    useEffect(() => {
+        console.log("fetching data");
+        console.log(selectedShift?.shift_id);
+        const fetchData = async () => {
+          if (selectedShift) {
+            const result = await fetchAssignmentsByShift(selectedShift.shift_id);
+            if (result) {
+                console.log(assignments);
+                setAssignments(result);
+            }
+          } else {
+            setAssignments([]); // Clear if no shift selected
+          }
+    };
+        fetchData();
+      }, [selectedShift]);
+
     const handleSelectShift = (shift: Shift) => {
         setSelectedShift(shift);
         console.log("shift selected");
+        console.log(assignments)
     }
     const handleModalClick = () => {
         setModalVisible(!modalVisible);
@@ -39,7 +60,7 @@ export default function ClientHistory(){
             </div>
             <div className="w-116 min-h-screen flex flex-col gap-6 p-5 rounded-xl bg-secondary-bg ">
                 <p className="font-montserrat-b text-xl text-primary-text">Assigned Staff</p>
-                {selectedShift != null? <HistoryRateCard handleClick={handleModalClick}/>: <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
+                {selectedShift != null && assignments.length > 0? assignments.map((a)=> <HistoryRateCard assignment={a} handleClick={handleModalClick}/>): <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
                 {selectedShift == null? null: null}
             </div>
         </div>
@@ -51,16 +72,13 @@ export default function ClientHistory(){
     </div>
 }
 
-function HistoryRateCard({handleClick}: {handleClick:Function}){
+function HistoryRateCard({handleClick, assignment}: {handleClick:Function, assignment:Assignment}){
+
     return <div className="w-full flex flex-row justify-between items-center bg-white p-5 rounded-lg">
         <div className="flex flex-row items-center gap-5">
             <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
             <div className="flex flex-col gap-2">
-                <p className="font-montserrat text-base text-primary-text">Marcus Tan</p>
-                <div className="flex flex-row gap-2">
-                    <img src="/icons/star.svg"/>
-                    <p className="font-montserrat text-base text-secondary-text">4.8</p>
-                </div>
+                <p className="font-montserrat text-base text-primary-text">{assignment.employee_name}</p>
             </div>
         </div>
         <button onClick={()=>handleClick()}className="hover:bg-gray-300 hover:cursor-pointer border-1 h-fit border-primary-text text-primary-text font-montserrat px-2 py-1 rounded-md">Review</button>
@@ -70,7 +88,7 @@ function HistoryRateCard({handleClick}: {handleClick:Function}){
 function PastShiftCard({shift, selectedShift, handleSelectShift}: { shift: Shift, selectedShift: Shift|null, handleSelectShift: Function }){
     return <div onClick={()=>handleSelectShift()} className={`${selectedShift==shift?"border-primary-blue border-2":"border-[#B3B3B3]"} hover:cursor-pointer border flex flex-row  items-center justify-between rounded-2xl`}>
         <div className="w-full flex flex-col gap-4 rounded-2xl p-5"> 
-            <p className="text-base font-montserrat-b text-primary-text mb-2">{shift.title}</p>
+            <p className="text-base font-montserrat-b text-primary-text mb-2">{shift.job_title}</p>
             <div className="flex flex-row gap-4 items-center">
                 <img className="w-5 h-5" src = "/icons/map.svg"/>
                 <p className="text-base font-montserrat text-secondary-text">{shift.job_location}</p>
