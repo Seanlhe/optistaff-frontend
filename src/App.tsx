@@ -16,6 +16,7 @@ import ClientRoster from './pages/employer/ClientRoster'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import UploadCSV from './pages/employer/UploadCSV'
 import JSSchedule from './pages/employee/JSSchedule'
+import Review from './pages/employer/Review'
 import EmployeeHistory from './pages/employee/EmployeeHistory';
 import ClientHistory from './pages/employer/ClientHistory'
 import EditListing from './pages/employer/ClientEdit'
