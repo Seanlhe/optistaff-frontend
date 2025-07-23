@@ -2,6 +2,7 @@ import { Clock, MapPin, DollarSign, Phone, Mail, Briefcase, Coffee } from "lucid
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { useAssignments } from "../hooks/useAssignments";
+import { StatusEnum } from "../types/hooks";
 
 // import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
@@ -34,7 +35,7 @@ interface JobseekerAssignmentDetailModals {
 }
 
 export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: JobseekerAssignmentDetailModals) => {
-  const { cancelAssignment } = useAssignments();
+  const { updateAssignmentStatus } = useAssignments();
 
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -68,7 +69,7 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
   const handleCancelAssignment = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click
     try {
-      await cancelAssignment(assignment.id, 'cancel_by_employee');
+      await updateAssignmentStatus(assignment.id, StatusEnum.CancelByEmployee);
       // Assignment list will be automatically updated through the hook
     } catch (error) {
       console.error('Failed to cancel assignment:', error);

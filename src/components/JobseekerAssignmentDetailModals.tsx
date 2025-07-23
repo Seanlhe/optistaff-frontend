@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { JobseekerAssignmentCard } from "./JobseekerAssignmentCard";
 import { useAssignments } from "../hooks/useAssignments";
+import { StatusEnum } from "../types/hooks";
 
 interface AssignmentDetailsModalProps {
   assignment: JobseekerAssignmentCard | null;
@@ -11,14 +12,14 @@ interface AssignmentDetailsModalProps {
 }
 
 export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: AssignmentDetailsModalProps) => {
-  const { cancelAssignment } = useAssignments();
+  const { updateAssignmentStatus } = useAssignments();
   
   if (!assignment) return null;
 
   // Handler function for cancelling assignment
   const handleCancelAssignment = async () => {
     try {
-      await cancelAssignment(assignment.id, 'cancel_by_employee');
+      await updateAssignmentStatus(assignment.id, StatusEnum.CancelByEmployee);
       // Close modal after successful cancellation
       onClose();
     } catch (error) {
