@@ -42,20 +42,22 @@ export interface SignupData {
 // useShifts interfaces
 export interface Shift {
     shift_id: string;
-    employee_name: string;
+    employer_name: string;
+    company_name: string;
     job_title: string;
     job_location: string;
+    postal_code: number;
     job_description: string | null;
     job_requirements: string | null;
     job_type: string;
     pay_rate: number;
     start_time: Date;
     end_time: Date;
-    break_duration: number | null; // in minutes
+    break_duration: number | null; // in hours 0.5 for 30 minutes 1.45 for 1 hour 45 minutes, in 15 minute increments
     staff_needed: number;
     staff_assigned: number;
     submission_cycle: 'PRIMARY' | 'SECONDARY';
-    status: Status;
+    status: string;
     created_at: Date;
 }
 
@@ -190,8 +192,10 @@ export interface Assignment {
     assignment_id: string;
     employee_name: string;
     employer_name: string;
+    employee_id: string;
     job_title: string;
     job_location: string;
+    postal_code: string;
     job_description: string | null;
     job_requirements: string | null;
     job_type: string;
@@ -211,7 +215,17 @@ export interface Assignment {
 export type Feedback = Record<string, unknown>;
 
 // General status type for assignment cancellation
-export type Status = 'cancel_by_employer' | 'cancel_by_employee' | 'confirmed' | 'pending' | 'active' | 'completed' | 'no_show';
+
+export enum StatusEnum {
+  CancelByEmployer = 'cancel_by_employer',
+  CancelByEmployee = 'cancel_by_employee',
+  Confirmed = 'confirmed',
+  Upcoming = 'upcoming',
+  Active = 'active', // New status for active assignments
+  Completed = 'completed', // New status for completed assignments
+  NoShow = 'no_show', // New status for no-show assignments 
+  Pending = 'pending', // New status for pending assignments
+}
 
 // Enhanced usePreferences hook return type with location support
 export interface UsePreferencesReturn {
