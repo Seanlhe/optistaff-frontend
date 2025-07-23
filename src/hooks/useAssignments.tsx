@@ -120,5 +120,6 @@ export const useAssignments = () => {
     error,
     updateAssignmentStatus,
     fetchAssignmentsByShift,
+    fetchAssignments, // Expose refresh function
   };
 };

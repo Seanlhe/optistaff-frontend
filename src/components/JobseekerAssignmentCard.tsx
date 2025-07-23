@@ -1,10 +1,6 @@
-import { Clock, MapPin, DollarSign, Phone, Mail, Briefcase, Coffee } from "lucide-react";
+import { Clock, MapPin, DollarSign, Phone, Mail, Briefcase } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { useAssignments } from "../hooks/useAssignments";
-import { StatusEnum } from "../types/hooks";
-
-// import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 export interface JobseekerAssignmentCard {
   id: string;
@@ -27,76 +23,49 @@ export interface JobseekerAssignmentCard {
   endTime?: Date;
 }
 
-interface JobseekerAssignmentDetailModals {
+interface JobseekerAssignmentCardProps {
   assignment: JobseekerAssignmentCard;
   onViewDetails: (assignment: JobseekerAssignmentCard) => void;
-  isOpen?: boolean;
-  onClose?: () => void;
 }
 
-export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: JobseekerAssignmentDetailModals) => {
-  const { updateAssignmentStatus } = useAssignments();
+export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: JobseekerAssignmentCardProps) => {
+  // Status color mapping
+  const statusColors = {
+    completed: 'bg-green-dark text-white border-green-dark',
+    cancel_by_employer: 'bg-red-dark text-white border-red-dark',
+    cancel_by_employee: 'bg-red-dark text-white border-red-dark',
+    upcoming: 'bg-yellow-500 text-white border-yellow-500',
+  };
+
+  // Status display names
+  const statusNames = {
+    upcoming: 'Upcoming',
+    completed: 'Completed',
+    cancel_by_employer: 'Cancelled by Employer',
+    cancel_by_employee: 'Cancelled by Employee',
+  };
 
   const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-dark text-white border-green-dark';
-      case 'cancel_by_employer':
-      case 'cancel_by_employee':
-        return 'bg-red-dark text-white border-red-dark';
-      case 'upcoming':
-        return 'bg-yellow-500 text-white border-yellow-500';
-      default:
-        return 'bg-secondary-text text-white border-secondary-text';
-    }
+    return statusColors[status as keyof typeof statusColors] || 'bg-secondary-text text-white border-secondary-text';
   };
 
   const getStatusDisplayName = (status?: string) => {
-    switch (status) {
-      case 'upcoming':
-        return 'Upcoming';
-      case 'completed':
-        return 'Completed';
-      case 'cancel_by_employer':
-        return 'Cancelled by Employer';
-      case 'cancel_by_employee':
-        return 'Cancelled by Employee';
-      default:
-        return status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown';
-    }
+    return statusNames[status as keyof typeof statusNames] || 
+           (status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown');
   };
 
-  const handleCancelAssignment = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
-    try {
-      await updateAssignmentStatus(assignment.id, StatusEnum.CancelByEmployee);
-      // Assignment list will be automatically updated through the hook
-    } catch (error) {
-      console.error('Failed to cancel assignment:', error);
-      // You could show a toast notification here
-    }
+  const renderGridItem = (icon: React.ReactNode, text: string, condition: boolean = true) => {
+    if (!condition) return null;
+    return (
+      <div className="flex items-center text-secondary-text">
+        {icon}
+        <span className="text-sm">{text}</span>
+      </div>
+    );
   };
 
   const renderActionButtons = () => {
-    console.log('Assignment status:', assignment.status); // Debug log
-    if (assignment.status === 'upcoming') {
-      return (
-        <div className="flex gap-2">
-          <Button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onViewDetails(assignment);
-            }}
-            className="flex-1 bg-white text-primary-text border border-border hover:bg-gray-50 text-sm"
-            variant="outline"
-          >
-            View Details
-          </Button>
-        </div>
-      );
-    }
-    
-    // For all other statuses, just show view details
+    // Both upcoming and other statuses show the same "View Details" button
     return (
       <Button 
         onClick={(e) => {
@@ -126,38 +95,12 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-3">
-        <div className="flex items-center text-secondary-text">
-          <Clock className="w-4 h-4 mr-2" />
-          <span className="text-sm">{assignment.date}, {assignment.time}</span>
-        </div>
-        {assignment.hourlyRate > 0 && (
-          <div className="flex items-center text-secondary-text">
-            <DollarSign className="w-4 h-4 mr-2" />
-            <span className="text-sm">{assignment.hourlyRate}/hr</span>
-          </div>
-        )}
-        <div className="flex items-center text-secondary-text">
-          <MapPin className="w-4 h-4 mr-2" />
-          <span className="text-sm">{assignment.location}</span>
-        </div>
-        {assignment.jobType && (
-          <div className="flex items-center text-secondary-text">
-            <Briefcase className="w-4 h-4 mr-2" />
-            <span className="text-sm">{assignment.jobType}</span>
-          </div>
-        )}
-        {assignment.contactNumber && (
-          <div className="flex items-center text-secondary-text">
-            <Phone className="w-4 h-4 mr-2" />
-            <span className="text-sm">{assignment.contactNumber}</span>
-          </div>
-        )}
-        {assignment.contactEmail && (
-          <div className="flex items-center text-secondary-text">
-            <Mail className="w-4 h-4 mr-2" />
-            <span className="text-sm">{assignment.contactEmail}</span>
-          </div>
-        )}
+        {renderGridItem(<Clock className="w-4 h-4 mr-2" />, `${assignment.date}, ${assignment.time}`)}
+        {renderGridItem(<DollarSign className="w-4 h-4 mr-2" />, `${assignment.hourlyRate}/hr`, assignment.hourlyRate > 0)}
+        {renderGridItem(<MapPin className="w-4 h-4 mr-2" />, assignment.location)}
+        {renderGridItem(<Briefcase className="w-4 h-4 mr-2" />, assignment.jobType!, !!assignment.jobType)}
+        {renderGridItem(<Phone className="w-4 h-4 mr-2" />, assignment.contactNumber!, !!assignment.contactNumber)}
+        {renderGridItem(<Mail className="w-4 h-4 mr-2" />, assignment.contactEmail!, !!assignment.contactEmail)}
       </div>
 
       {renderActionButtons()}

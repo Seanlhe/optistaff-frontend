@@ -9,9 +9,10 @@ interface AssignmentDetailsModalProps {
   assignment: JobseekerAssignmentCard | null;
   isOpen: boolean;
   onClose: () => void;
+  onStatusChange?: () => void; // Add callback for status changes
 }
 
-export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: AssignmentDetailsModalProps) => {
+export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusChange }: AssignmentDetailsModalProps) => {
   const { updateAssignmentStatus } = useAssignments();
   
   if (!assignment) return null;
@@ -20,8 +21,8 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
   const handleCancelAssignment = async () => {
     try {
       await updateAssignmentStatus(assignment.id, StatusEnum.CancelByEmployee);
-      // Close modal after successful cancellation
-      onClose();
+      onStatusChange?.(); // Trigger refresh
+      onClose(); // Close modal after successful cancellation
     } catch (error) {
       console.error('Failed to cancel assignment:', error);
       // You could show a toast notification here
@@ -102,6 +103,39 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
     return null;
   };
 
+  // Render employer feedback section
+  const renderEmployerFeedback = () => {
+    if (assignment.status !== "completed" || !assignment.employerFeedback) return null;
+    
+    return (
+      <div className="space-y-3 border-t border-t-border pt-4">
+        <div className="flex items-center space-x-2">
+          <Star className="w-4 h-4 text-primary-blue" />
+          <h4 className="text-base font-semibold text-primary-text">Employer Feedback</h4>
+        </div>
+        {assignment.rating && (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium">Rating:</span>
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-4 h-4 ${
+                    i < assignment.rating! ? "fill-yellow-400 text-yellow-400" : "text-secondary-text"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-secondary-text">({assignment.rating}/5)</span>
+          </div>
+        )}
+        <p className="text-sm text-secondary-text leading-relaxed">
+          {assignment.employerFeedback}
+        </p>
+      </div>
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white max-w-lg mx-auto border border-none max-h-[90vh] overflow-y-auto">
@@ -141,7 +175,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
                 <DollarSign className="w-6 h-6 text-primary-blue" />
                 <div>
                   <p className="text-lg font-bold text-primary-text mb-1">Compensation</p>
-                  <p className="text-sm text-secondary-text">{assignment.hourlyRate} per hour</p>
+                  <p className="text-sm text-secondary-text">{assignment.hourlyRate}/h</p>
                 </div>
               </div>
             )}
@@ -196,33 +230,8 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose }: Assignme
           {renderAssignmentDetails()}
           {renderCancelButton()}
 
-          {assignment.status === "completed" && assignment.employerFeedback && (
-            <div className="space-y-3 border-t border-t-border pt-4">
-              <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4 text-primary-blue" />
-                <h4 className="text-base font-semibold text-primary-text">Employer Feedback</h4>
-              </div>
-              {assignment.rating && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium">Rating:</span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < assignment.rating! ? "fill-yellow-400 text-yellow-400" : "text-secondary-text"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-secondary-text">({assignment.rating}/5)</span>
-                </div>
-              )}
-              <p className="text-sm text-secondary-text leading-relaxed">
-                {assignment.employerFeedback}
-              </p>
-            </div>
-          )}
+          {/* Employer Feedback Section */}
+          {renderEmployerFeedback()}
         </div>
       </DialogContent>
     </Dialog>

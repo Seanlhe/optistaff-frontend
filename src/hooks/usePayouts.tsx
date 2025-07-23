@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { Payout } from '../types/hooks';
 import { supabase } from '../integrations/supabase/client';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 export const usePayouts = () => {
   // State management
@@ -16,20 +17,13 @@ export const usePayouts = () => {
   // Get user context
   const { user } = useAuth();
 
-  // Retrieve all payout records for the current user from the database
+  // Retrieve all payout records for the current user using RPC
   const fetchPayouts = useCallback(async () => {
     if (!user?.id) return;
-    
     setLoading(true);
     setError(null);
-    
     try {
-      const { data, error } = await supabase
-        .from('payouts')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await supabase.rpc('fetch_user_payouts', { target_user_id: user.id });
       if (error) throw error;
       setPayouts(data || []);
     } catch (err) {
@@ -46,53 +40,28 @@ export const usePayouts = () => {
     }
   }, [user?.id, fetchPayouts]);
 
-  // Create a new payout request for a specific period
+  // Create a new payout request for a specific period using RPC
   const requestPayout = async (payoutData: Partial<Payout>) => {
     if (!user?.id) {
       setError('User not authenticated');
       return;
     }
-    
     if (!payoutData.start_period || !payoutData.end_period) {
       setError('Start and end periods are required');
       return;
     }
-
     setLoading(true);
     setError(null);
-
     try {
-      // Calculate earnings for the period using database function
-      const { data: calculatedAmount, error: calcError } = await supabase
-        .rpc('calculate_user_payout', {
-          target_user_id: user.id,
-          period_start: payoutData.start_period,
-          period_end: payoutData.end_period
-        });
-
-      if (calcError) throw calcError;
-      
-      if (!calculatedAmount || calculatedAmount <= 0) {
-        setError('No earnings found for the specified period');
-        return;
-      }
-
-      // Create payout record
-      const { data, error } = await supabase
-        .from('payouts')
-        .insert({
-          user_id: user.id,
-          amount: calculatedAmount,
-          start_period: payoutData.start_period,
-          end_period: payoutData.end_period
-        })
-        .select()
-        .single();
-
+      // Use RPC to calculate and create payouts for the period
+      const { data, error } = await supabase.rpc('request_user_payout_for_period', {
+        target_user_id: user.id,
+        period_start: payoutData.start_period,
+        period_end: payoutData.end_period
+      });
       if (error) throw error;
-      
-      // Update local state with new payout
-      setPayouts(prev => [data, ...prev]);
+      // Refresh payouts after request
+      await fetchPayouts();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to request payout');
     } finally {
@@ -144,6 +113,37 @@ export const usePayouts = () => {
     return payouts.reduce((total, payout) => total + payout.amount, 0);
   }, [payouts]);
 
+  // Calculate estimated weekly pay using Supabase function
+  const getEstimatedWeeklyPay = useCallback(async () => {
+    if (!user?.id) {
+      return 0;
+    }
+
+    try {
+      // Get current week boundaries (Monday to Sunday)
+      const now = new Date();
+      const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+      const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+
+      // Call Supabase function to calculate earnings for this week
+      const { data, error } = await supabase.rpc('calculate_user_payout', {
+        target_user_id: user.id,
+        period_start: format(weekStart, 'yyyy-MM-dd'),
+        period_end: format(weekEnd, 'yyyy-MM-dd')
+      });
+
+      if (error) {
+        console.error('Error calculating weekly pay:', error);
+        return 0;
+      }
+
+      return data || 0;
+    } catch (err) {
+      console.error('Error in getEstimatedWeeklyPay:', err);
+      return 0;
+    }
+  }, [user?.id]);
+
     // Return interface
   return {
     payouts,
@@ -154,5 +154,6 @@ export const usePayouts = () => {
     processPayout,
     getPayoutHistory,
     getTotalEarnings,
+    getEstimatedWeeklyPay,
   };
 };

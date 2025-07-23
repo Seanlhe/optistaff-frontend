@@ -3,19 +3,34 @@ import StatsCard from "../../components/StatsCard";
 import PayoutSummaryCard from "../../components/PayoutSummaryCard";
 import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
 import { JobseekerAssignmentCard } from "../../components/JobseekerAssignmentCard";
-import { Star, Clock } from "lucide-react";
+import { Star } from "lucide-react";
 import MonthlyCalendar from "../../components/MonthlyCalendar";
 import { useAssignments } from "../../hooks/useAssignments";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { Assignment } from "../../types/hooks";
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 
 const Dashboard = () => {
 	const [selectedAssignment, setSelectedAssignment] = useState<JobseekerAssignmentCard | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	// Fetch data using custom hooks
-	const { assignments, loading } = useAssignments();
+	const { assignments, loading, fetchAssignments } = useAssignments();
 	const { profileData } = useUserProfile();
+
+	// Status mapping using object mapping for cleaner code
+	const statusMap: Record<string, 'upcoming' | 'completed' | 'cancel_by_employer' | 'cancel_by_employee'> = {
+		confirmed: 'upcoming',
+		pending: 'upcoming', 
+		active: 'upcoming',
+		completed: 'completed',
+		cancel_by_employer: 'cancel_by_employer',
+		cancel_by_employee: 'cancel_by_employee'
+	};
+
+	const mapAssignmentStatusToCardStatus = (status: string) => {
+		return statusMap[status?.toLowerCase()] || 'upcoming';
+	};
 
 	// Transform assignment data to JobseekerAssignmentCard format
 	const transformAssignmentToCard = (assignment: Assignment): JobseekerAssignmentCard => {
@@ -44,7 +59,7 @@ const Dashboard = () => {
 		return {
 			id: assignment.assignment_id,
 			title: assignment.job_title || "Assignment",
-			company: assignment.employer_name || "Company", // Use employer_name instead of name
+			company: assignment.employer_name|| "Company", // Use employer_name instead of name
 			date: formatDate(assignmentDate),
 			time: formatRealTime(new Date(assignment.start_time), new Date(assignment.end_time)), // Use real times
 			location: assignment.job_location || "Location TBD", // Use real job location
@@ -62,29 +77,16 @@ const Dashboard = () => {
 		};
 	};
 
-	// Status mapping based on actual database status values
-	const mapAssignmentStatusToCardStatus = (status: string): 'upcoming' | 'completed' | 'cancel_by_employer' | 'cancel_by_employee' => {
-		switch (status?.toLowerCase()) {
-			case 'confirmed':
-			case 'pending':
-			case 'active':
-				return 'upcoming';
-			case 'completed':
-				return 'completed';
-			case 'cancel_by_employer':
-				return 'cancel_by_employer';
-			case 'cancel_by_employee':
-				return 'cancel_by_employee';
-			default:
-				return 'upcoming';
-		}
-	};
-
 	// Use real assignment data
 	const displayAssignments = useMemo(() => {
 		if (loading || assignments.length === 0) return [];
 		return assignments.map(transformAssignmentToCard);
 	}, [assignments, loading]);
+
+	// Callback function to refresh assignments when status changes
+	const handleAssignmentChange = () => {
+		fetchAssignments();
+	};
 
 	const handleViewDetails = (assignment: JobseekerAssignmentCard) => {
 		setSelectedAssignment(assignment);
@@ -104,30 +106,14 @@ const Dashboard = () => {
 	};
 
 	const getDateRange = () => {
-		if (displayAssignments.length === 0) return "No upcoming assignments";
+		const now = new Date();
+		const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday = 1
+		const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 		
-		const upcomingAssignments = displayAssignments.filter(a => a.status === 'upcoming');
-		if (upcomingAssignments.length === 0) return "No upcoming assignments";
+		const startFormatted = format(weekStart, 'MMM d');
+		const endFormatted = format(weekEnd, 'MMM d');
 		
-		// For now, use a simple date range calculation based on assignment creation
-		const dates = assignments.map(a => new Date(a.created_at));
-		if (dates.length === 0) return "No upcoming assignments";
-		
-		const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
-		const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
-		
-		const formatDateForRange = (date: Date) => {
-			return date.toLocaleDateString('en-US', { 
-				day: 'numeric', 
-				month: 'short' 
-			});
-		};
-		
-		if (minDate.toDateString() === maxDate.toDateString()) {
-			return formatDateForRange(minDate);
-		}
-		
-		return `${formatDateForRange(minDate)} – ${formatDateForRange(maxDate)}`;
+		return `${startFormatted} – ${endFormatted}`;
 	};
 
 	return (
@@ -178,7 +164,7 @@ const Dashboard = () => {
 					{/* Stats and Calendar */}
 					<div className="bg-card-color rounded-xl p-6 w-full md:order-2 text-primary-blue">
 						<div className="space-y-4">
-							<PayoutSummaryCard timeframe="week" />
+							<PayoutSummaryCard />
 							<StatsCard
 								title="Rating"
 								value={typeof profileData === 'object' && profileData && 'rating' in profileData 
@@ -199,6 +185,7 @@ const Dashboard = () => {
 					assignment={selectedAssignment}
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
+					onStatusChange={handleAssignmentChange}
 				/>
 			)}
 		</div>
