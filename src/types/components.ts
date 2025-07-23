@@ -197,6 +197,7 @@ export interface TemplateSelectDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (templateId: string) => void;
+  onDelete: (templateId: string) => void;
   onSaveTemplate?: () => void;
   timeblocks: UI_Event[];
   loading?: boolean;

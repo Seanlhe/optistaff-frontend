@@ -39,7 +39,8 @@ const Calendar = () => {
 
   // Use the custom hook to manage availability data
   const { getAvailability, setAvailability, fetchLoading, saveLoading, loading, error } = useAvailability();
-  const { createTemplate } = useAvailabilityTemplate();
+
+  const { createTemplate, fetchTemplate, deleteTemplate,fetchAllTemplates} = useAvailabilityTemplate();
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
 
@@ -162,38 +163,63 @@ const Calendar = () => {
     console.error("Error saving template:", err);
   } finally {
     setTemplateSaveLoading(false);
+    
+      await fetchAllTemplates();
+       setShowTemplateNameDialog(false);
     }
   };
 
-  const handleUseTemplate = async (templateId: string) => {
-    setTemplateLoadLoading(true);
+const handleUseTemplate = async (templateId: string) => {
+  setTemplateLoadLoading(true);
+  try {
+    console.log("Loading template:", templateId);
+
+    const template = await fetchTemplate(templateId);
+    if (!template) throw new Error("Failed to load template");
+
+    const templateEvents: UI_Event[] = template.timeblocks.map((block) => {
+      const targetDay = weekDays[block.day_of_week - 1]; // Monday=1, Sunday=7
+
+      const blockStart = new Date(block.startTime);
+      const blockEnd = new Date(block.endTime);
+
+      return {
+        id: block.id,
+        day_of_week: block.day_of_week,
+        startTime: set(targetDay, {
+          hours: blockStart.getHours(),
+          minutes: blockStart.getMinutes(),
+        }),
+        endTime: set(targetDay, {
+          hours: blockEnd.getHours(),
+          minutes: blockEnd.getMinutes(),
+        }),
+      };
+    });
+
+    setEvents(templateEvents);
+    setShowTemplateSelectDialog(false);
+  } catch (err) {
+    console.error("Error loading template:", err);
+  } finally {
+    setTemplateLoadLoading(false);
+  }
+};
+
+  const handleDeleteTemplate = async (templateId: string) => {
     try {
-      // Mock API call - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Loading template:', templateId);
-      
-      // Mock template data - replace with actual template loading
-      // const mockTemplateEvents: Event[] = [
-      //   {
-      //     id: `template_event_1`,
-      //     startTime: set(weekDays[0], { hours: 9, minutes: 0 }),
-      //     endTime: set(weekDays[0], { hours: 10, minutes: 0 }),
-      //   },
-      //   {
-      //     id: `template_event_2`,
-      //     startTime: set(weekDays[1], { hours: 14, minutes: 0 }),
-      //     endTime: set(weekDays[1], { hours: 15, minutes: 40 }),
-      //   },
-      // ];
-      
-      // setEvents(mockTemplateEvents);
-      setShowTemplateSelectDialog(false);
+      await deleteTemplate(templateId); // Your Supabase delete call
+      // Optionally: refresh template list
+      await fetchAllTemplates();
     } catch (err) {
-      console.error('Error loading template:', err);
-    } finally {
-      setTemplateLoadLoading(false);
+      console.error("Failed to delete template", err);
     }
+
+
+    
   };
+
+
 
   // direction argument must be either the string "prev" or the string "next"
   const navigateWeek = (direction: "prev" | "next") => {
@@ -326,6 +352,7 @@ const Calendar = () => {
         isOpen={showTemplateSelectDialog}
         onClose={() => setShowTemplateSelectDialog(false)}
         onSelect={handleUseTemplate}
+        onDelete={handleDeleteTemplate}
         onSaveTemplate={() => setShowTemplateNameDialog(true)}
         timeblocks={events}
         loading={templateLoadLoading}

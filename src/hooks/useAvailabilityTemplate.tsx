@@ -57,6 +57,56 @@ export function useAvailabilityTemplate() {
     //     fetchTemplates();
     //   }, [fetchTemplates]);
 
+
+
+const fetchAllTemplates = useCallback(async () => {
+  if (authLoading || !user) return;
+
+  setLoading(true);
+  setError(null);
+
+  const { data, error } = await supabase
+    .from("availability_templates")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching all templates:", error.message);
+    setError(error.message);
+    setTemplates([]);
+  } else {
+    setTemplates(data as AvailabilityTemplate[]);
+  }
+
+  setLoading(false);
+}, [user, authLoading]);
+
+
+const fetchTemplate = useCallback(async (template_id: String) => {
+  if (authLoading || !user) return;
+
+  setLoading(true);
+  setError(null);
+
+  const { data, error } = await supabase
+    .from("availability_templates")
+    .select("*") 
+    .eq("user_id", user.id)
+    .eq("template_id", template_id)
+    .single(); // expect only one
+
+  if (error) {
+    console.error("Error fetching template:", error.message);
+    setError(error.message);
+    return null
+  } else {
+    return data as AvailabilityTemplate;
+  }
+
+  setLoading(false);
+}, [user, authLoading]);
+
   // Create a new availability template
  const createTemplate = useCallback(
   async (
@@ -96,10 +146,36 @@ export function useAvailabilityTemplate() {
       return null;
     }
 
+    await fetchAllTemplates();
+
     return data as AvailabilityTemplate;
   },
-  [user, authLoading, fetchTemplates]
+  [user, authLoading, fetchAllTemplates]
 );
+  
+const deleteTemplate = useCallback(async (template_id: String) => {
+  if (authLoading || !user) return;
+
+  setLoading(true);
+  setError(null);
+
+  const { data, error } = await supabase
+    .from("availability_templates")
+    .delete() 
+    .eq("template_id", template_id)
+
+  if (error) {
+    console.error("Error deleteing template:", error.message);
+    setError(error.message);
+    return null
+  } else {
+    return true;
+  }
+
+  setLoading(false);
+}, [user, authLoading]);
+
+
 
 
   return {
@@ -109,5 +185,8 @@ export function useAvailabilityTemplate() {
     error,
     createTemplate,
     refetchTemplates: fetchTemplates,
+    fetchTemplate,
+    deleteTemplate,
+    fetchAllTemplates
   };
 }
