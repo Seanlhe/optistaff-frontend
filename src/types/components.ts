@@ -23,7 +23,7 @@ export interface InputFieldProps {
   title: string;
   placeholder?: string;
   className?: string;
-  value?: string| Number
+  value?: string| number
   type?: string;
   valid?: boolean;
   error?: string | null;
@@ -47,7 +47,7 @@ export interface InputAreaProps {
   name: string;
   title: string;
   placeholder?: string;
-  value?: string| Number
+  value?: string| number
   className?: string;
   valid?: boolean;
   error?: string | null;

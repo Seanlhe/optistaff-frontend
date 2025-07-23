@@ -5,7 +5,7 @@ import UploadModal from "../../components/UploadModal";
 import { useShifts } from "../../hooks/useShifts";
 import {format} from "date-fns"
 import { Shift } from "../../types/hooks";
-import {getError, getDate} from "../../utils/uploadjobs";
+import {getDate} from "../../utils/uploadjobs";
 export default function UploadCSV(){
     const onDrop = useCallback((acceptedFiles: File[]) =>{
         handleRemove();

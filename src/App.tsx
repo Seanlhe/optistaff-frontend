@@ -53,21 +53,23 @@ function App() {
           <Route path="uploadjobs" element={<UploadJobs />} />
           <Route path="uploadcsv" element={<UploadCSV />} />
           <Route path="edit" element={<EditListing shift={{
-            shift_id: "shift_001",
+            shift_id: "7ded864c-2f9e-48f2-801f-371cebfad7c6",
             employer_name: "client_123",
+            company_name: "wang bo",
             job_title: "Event Support Staff",
             job_requirements: "Bring a black shirt" , 
-            job_type: "waiter",
-            description: "Assist with event logistics and crowd control.",
+            job_type: "Waiter/Waitress",
+            job_description: "Assist with event logistics and crowd control.",
             start_time: new Date("2025-08-01T09:00:00"),
             end_time: new Date("2025-08-01T17:00:00"),
             pay_rate: 15.5,
-            job_location: "Marina Bay Sands Singapore 424239",
+            job_location: "Marina Bay Sands",
+            postal_code: 424239,
             staff_needed: 10,
             staff_assigned: 5,
             submission_cycle: "PRIMARY",
             created_at: new Date("2025-07-20T12:00:00"),
-            break_duration: 60,
+            break_duration: 3,
             status: "pending"
           }} />}/>
           <Route path="history" element={<ClientHistory/>}/>

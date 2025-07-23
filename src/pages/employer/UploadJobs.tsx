@@ -3,26 +3,28 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useShifts } from "../../hooks/useShifts";
 import { Shift } from "../../types/hooks";
-import {checkTimeValid, getTimeError, getDateForm} from "../../utils/uploadjobs";
+import {getDateForm, ShiftError, validateShift, createEmptyShiftError} from "../../utils/uploadjobs";
 import {format} from "date-fns";
 import CustomSelect from "../../components/CustomSelect";
 import CustomTextArea from "../../components/CustomTextArea";
 export default function UploadJobs(){
     const navigate = useNavigate();
-    const {createShift, error, loading} = useShifts();
-    const [formData, setFormData] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"| "employer_name"| "submission_cycle">>({
+    const {createShift} = useShifts();
+    const [formData, setFormData] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">>({
         job_title: "",
-        job_location: "",
-        description: "",
+        job_description: "",
         job_requirements: "",
-        job_type: "Full-Time",
+        job_type: "",
         pay_rate: 0,
+        job_location: "",
+        postal_code: 0,
         start_time: new Date(),
         end_time: new Date(),
         break_duration: 0,
-        staff_needed: 1,  
+        staff_needed: 0,  
     })
-
+    const [valid, setValid] = useState<boolean>(true);
+    const [shiftError, setShiftError] = useState<ShiftError>(createEmptyShiftError());
     const jobRoleOptions = [
         { label: "Kitchen Helper", value: "Kitchen Helper" },
         { label: "Waiter/Waitress", value: "Waiter/Waitress" },
@@ -45,7 +47,7 @@ export default function UploadJobs(){
         { label: "Sorter", value: "Sorter" }
     ];
 
-    const handleDataChange = (e:  React.ChangeEvent<HTMLInputElement>) => {
+    const handleDataChange = (e:  React.ChangeEvent<HTMLInputElement>| React.ChangeEvent<HTMLTextAreaElement>|  React.ChangeEvent<HTMLSelectElement>) => {
         const name = e.target.name;
         let value = e.target.value;
         switch (name){
@@ -68,37 +70,9 @@ export default function UploadJobs(){
                 setFormData(prev => ({ ...prev, start_time: new_sd, end_time: new_ed }));
                 break;
             }
-            case "address": {
-                const parts = formData.job_location.trim().split(" ");
-                const zip = parts.at(-1) ?? "";
-                const new_address = `${value} Singapore ${zip}`;
-                setFormData(prev => ({
-                    ...prev,
-                    job_location: new_address
-                }));
-                break;
-            }
-            case "zipCode": {
-                const parts = formData.job_location.trim().split(" ");
-                const address = parts.slice(0, -1).join(" ");
-                const new_location = `${address} ${value}`;
-                setFormData(prev => ({
-                    ...prev,
-                    job_location: new_location
-                }));
-                break;
-            }
             default:
                 setFormData((prevData)=> ({...prevData, [name]:value}));
         }
-    }
-
-    const handleSelect = (e:  React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setFormData(prev => ({
-            ...prev,
-            job_type: value
-        }));
     }
 
     function handleCancel(){
@@ -107,31 +81,43 @@ export default function UploadJobs(){
 
     async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        // await createShift(formData);
-        console.log("Submitted shift:", formData);
-    }
+        setValid(true);
+        const newErrors = validateShift(formData);
+        setShiftError(newErrors);
+        console.log(newErrors)
+        const isValid = Object.values(newErrors).every((value) => value === null);
+        if (isValid) {
+            await createShift(formData);
+            setValid(true);
+            console.log("✅ Submitted shift:", formData);
+        }else{
+            setValid(false);
+        }
+      }
 
     return <div id="upload-jobs-content" className="min-h-full flex flex-col px-16 py-6 gap-10 bg-tertiary-bg">
         <div id="upload-jobs-header" className= "flex flex-col gap-3">
             <h1 className="text-black font-montserrat-b text-2xl">Create Listing</h1>
             <h2 className="text-secondary-text font-montserrat-smb text-base">Fill out the required information and click "Post Job" to submit.</h2>
         </div>
-        <div id="upload-jobs-form" className="w-3/5">
-            <form className="grid grid-cols-6 gap-x-4 gap-y-8 items-center">
-                <p className="pt-3 col-span-6 font-montserrat-b text-lg text-black">Title and Description</p>
-                <CustomInputField className="col-span-3" name="jobTitle" title="Job Title" placeholder="Eg. Banquet Server" type="text" onChange={handleDataChange}/>
-                <CustomSelect options={jobRoleOptions} className="col-span-3" name="job_type" title="Job Category" placeholder="Eg. Banquet Server" type="text" onInput={handleSelect}/>
-                <CustomTextArea className="col-span-6 h-[8rem]" name="description" title="Description" type="text" placeholder="Format into sections to improve readability. Give clear responsibilities and roles"onChange={handleDataChange}/>
-                <p className="pt-3 col-span-6 font-montserrat-b text-lg text-black">Time and Venue</p>
-                <CustomInputField className="col-span-2"  name="date" title="Date" type="date" onChange={handleDataChange}/>
-                <CustomInputField className="col-span-2" name="start_time" title="Start Time" type="time" valid = {checkTimeValid(format(formData.start_time, "HH:mm"), format(formData.end_time, "HH:mm"))} error={getTimeError(format(formData.start_time, "HH:mm"), format(formData.end_time, "HH:mm"))} onChange={handleDataChange}/>
-                <CustomInputField className="col-span-2" name="end_time" title="End Time" type="time" valid = {checkTimeValid(format(formData.start_time, "HH:mm"), format(formData.end_time, "HH:mm"))} error={getTimeError(format(formData.start_time, "HH:mm"), format(formData.end_time, "HH:mm"))} onChange={handleDataChange}/>
-                <CustomInputField className="col-span-3" name="address" title="Address" type="text" onChange={handleDataChange}/>
-                <CustomInputField className="col-span-3" name="zipCode" title="Postal Code" type="text" onChange={handleDataChange}/>
-                <p className="pt-3 col-span-6 font-montserrat-b text-lg text-black">Staffing Requirements</p>
-                <CustomInputField className="col-span-3"  placeholder="Eg. 7000" name="payRate" title="Pay Rate (/hr)" type="number" onChange={handleDataChange}/>
-                <CustomInputField className="col-span-3" placeholder="Eg. 10"name="noPax" title="No. Pax" type="number" onChange={handleDataChange}/>
-                <div id="upload-btns" className="col-span-6 flex flex-row gap-4 justify-end">
+        <div id="upload-jobs-form" className="w-4/5">
+            <form className="grid grid-cols-12 gap-x-4 gap-y-12 items-center">
+                <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">Title and Description</p>
+                <CustomInputField className="col-span-6" name="job_title" title="Job Title" valid = {valid} error={shiftError.job_title} placeholder="Eg. Banquet Server" type="text" onChange={handleDataChange}/>
+                <CustomSelect options={jobRoleOptions} className="col-span-6" name="job_type" title="Job Category" valid = {valid} error={shiftError.job_type} placeholder="Eg. Banquet Server" type="text" onInput={handleDataChange}/>
+                <CustomTextArea className="col-span-12 h-[8rem]" name="job_description" title="Description"  valid = {valid} error={shiftError.job_description} placeholder="Format into sections to improve readability. Give clear responsibilities and roles" onChange={handleDataChange}/>
+                <CustomTextArea className="col-span-12 h-[8rem]" name="job_requirements" title="Requirements"  valid = {valid} error={shiftError.job_requirements} placeholder="Clearly state any preparation required by staff. For example, attire or tools required."onChange={handleDataChange}/>
+                <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">Time and Venue</p>
+                <CustomInputField className="col-span-3"  name="date" title="Date" type="date" valid={valid} error={formData.start_time <= new Date()? "Please choose a date after today.": null} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-3" name="start_time" title="Start Time" type="time" valid = {valid} error={shiftError.start_time} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-3" name="end_time" title="End Time" type="time" valid = {valid} error={shiftError.end_time} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-3" name="break_duration" title="Break Duration (hrs)" type="number" valid = {valid}  error = {shiftError.break_duration} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-6" name="job_location" title="Address" type="text" valid = {valid} error = {shiftError.job_location} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-6" name="postal_code" title="Postal Code" type="text" valid = {valid} error = {shiftError.postal_code} onChange={handleDataChange}/>
+                <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">Staffing Requirements</p>
+                <CustomInputField className="col-span-6"  placeholder="Eg. 7000" name="pay_rate" title="Pay Rate (/hr)" type="number" valid={valid} error = {shiftError.pay_rate} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-6" placeholder="Eg. 10"name="staff_needed" title="No. Pax" type="number" valid={valid} error = {shiftError.staff_needed} onChange={handleDataChange}/>
+                <div id="upload-btns" className="col-span-12 flex flex-row gap-4 justify-end">
                     <button type="button" className="hover:cursor-pointer hover:opacity-80 w-full p-3 bg-primary-blue font-montserrat-smb text-white text-base rounded-lg" onClick={(e: React.MouseEvent<HTMLButtonElement>)=>handleSubmit(e)}>Post Job</button> 
                     <button type="button" className="hover:cursor-pointer hover:bg-gray-100 w-full p-3 border-2 bg-white border-secondary-text font-montserrat-smb text-secondary-text text-base rounded-lg" onClick={handleCancel}>Cancel</button>
                 </div>
