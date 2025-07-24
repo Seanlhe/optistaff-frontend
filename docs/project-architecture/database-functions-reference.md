@@ -1,8 +1,48 @@
 # OptiStaff Database Functions Reference
 
-**Generated:** July 15, 2025  
+**Generated:** July 23, 2025  
 **Database Schema:** Supabase PostgreSQL  
-**Project:** OptiStaff Workforce Management System
+**Project:** OptiStaff Workforce Management System  
+**Status:** Updated with current usage analysis
+
+---
+
+## 📊 Function Usage Status
+
+### ✅ **ACTIVELY USED FUNCTIONS** (Called from Frontend)
+- `get_assignments_by_jobseeker` - Used in useAssignments hook
+- `get_assignments_by_shift` - Used in useAssignments hook  
+- `update_assignment_status` - Used in useAssignments hook
+- `create_shift` - Used in useShifts hook
+
+### 🔧 **TRIGGER FUNCTIONS** (Auto-executed by Database)
+- `handle_new_user` - Triggered on auth.users INSERT
+- `update_staff_assigned` - Triggered on assignments INSERT/UPDATE/DELETE
+- `update_job_seeker_rating` - Triggered on assignments UPDATE and feedback INSERT/UPDATE
+- `auto_update_shift_status` - Triggered on shifts UPDATE
+
+### ⚠️ **DEFINED BUT UNUSED FUNCTIONS** (Available but not called)
+- `calculate_user_payout` - Defined in types but not used in frontend
+- `get_earnings_breakdown` - Defined in types but not used in frontend
+- `is_user_assigned_to_shift` - Defined in types but not used in frontend
+- `check_email_exists` - Defined in types but not used in frontend
+- `check_email_exists_comprehensive` - Defined in types but not used in frontend
+- `create_default_preferences` - Database function exists but not used (preferences hook uses direct table operations)
+- `find_matching_job_seekers` - Advanced matching algorithm not yet implemented in frontend
+- `get_assignment_status_summary` - Reporting function not yet used
+- `get_job_categories_with_types` - Job categories function not yet implemented
+- `get_shifts_by_employer` - Employer dashboard not yet implemented
+- `get_user_details_from_assignment` - User details function not yet used
+- `get_user_preferences_with_location` - Location preferences not yet implemented
+- `get_user_profile_data` - Profile function not yet used (useUserProfile uses direct table operations)
+- `update_user_profile` - Profile update function not yet used
+- `upsert_user_preferences` - Preferences upsert not yet used (usePreferences uses direct table operations)
+- `validate_job_names` - Job validation not yet implemented
+
+### 🚫 **DEPRECATED FUNCTIONS** (Should not be used)
+- `auth.uid()` - Use `auth.jwt() -> 'sub'` instead
+- `auth.email()` - Use `auth.jwt() -> 'email'` instead  
+- `auth.role()` - Use `auth.jwt() -> 'role'` instead
 
 ---
 
@@ -21,11 +61,15 @@
 
 ## 🔐 Authentication Functions
 
+**Note:** These `auth` schema functions exist in the database but may not be visible in the Supabase web UI since they're system functions in the `auth` schema rather than user-defined functions in the `public` schema.
+
 ### `auth.uid()` (Deprecated)
 **Schema:** `auth`  
 **Return Type:** `uuid`  
 **Security:** `INVOKER`  
-**Status:** ⚠️ **Deprecated** - Use `auth.jwt() -> 'sub'` instead
+**Status:** 🚫 **DEPRECATED** - Use `auth.jwt() -> 'sub'` instead  
+**Usage:** Not used in current codebase  
+**Note:** Exists in database but may not appear in Supabase web UI
 
 **Description:** Returns the current user's UUID from JWT claims.
 
@@ -44,7 +88,9 @@ SELECT
 **Schema:** `auth`  
 **Return Type:** `text`  
 **Security:** `INVOKER`  
-**Status:** ⚠️ **Deprecated** - Use `auth.jwt() -> 'email'` instead
+**Status:** 🚫 **DEPRECATED** - Use `auth.jwt() -> 'email'` instead  
+**Usage:** Not used in current codebase  
+**Note:** Exists in database but may not appear in Supabase web UI
 
 **Description:** Returns the current user's email from JWT claims.
 
@@ -63,7 +109,9 @@ SELECT
 **Schema:** `auth`  
 **Return Type:** `text`  
 **Security:** `INVOKER`  
-**Status:** ⚠️ **Deprecated** - Use `auth.jwt() -> 'role'` instead
+**Status:** 🚫 **DEPRECATED** - Use `auth.jwt() -> 'role'` instead  
+**Usage:** Not used in current codebase  
+**Note:** Exists in database but may not appear in Supabase web UI
 
 **Description:** Returns the current user's role from JWT claims.
 
@@ -73,7 +121,9 @@ SELECT
 **Schema:** `auth`  
 **Return Type:** `jsonb`  
 **Security:** `INVOKER`  
-**Status:** ✅ **Current**
+**Status:** ✅ **Current**  
+**Usage:** Available but not directly called from frontend (used internally by Supabase)  
+**Note:** Exists in database but may not appear in Supabase web UI
 
 **Description:** Returns the complete JWT claims as a JSON object.
 
@@ -94,7 +144,8 @@ SELECT
 **Schema:** `public`  
 **Return Type:** `trigger`  
 **Security:** `DEFINER`  
-**Status:** ✅ **Enhanced with Complete Fields**
+**Status:** ✅ **ACTIVELY USED** - Trigger function  
+**Usage:** Auto-executed on user registration via `on_auth_user_created` trigger
 
 **Description:** Automatically creates database records when new users are registered through Supabase Auth. Handles both job seekers and employers with all enhanced fields.
 
@@ -150,7 +201,9 @@ END IF;
 ### `check_email_exists(email_to_check text)`
 **Schema:** `public`  
 **Return Type:** `boolean`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - Available but not called from frontend  
+**Usage:** Defined in TypeScript types but not used in current codebase
 
 **Description:** Checks if an email exists in the public.users table.
 
@@ -162,7 +215,9 @@ END IF;
 ### `check_email_exists_comprehensive(email_to_check text)`
 **Schema:** `public`  
 **Return Type:** `boolean`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - Available but not called from frontend  
+**Usage:** Defined in TypeScript types but not used in current codebase
 
 **Description:** Comprehensive email check across both auth.users and public.users tables.
 
@@ -185,8 +240,10 @@ RETURN EXISTS (
 
 ### `create_shift(...)`
 **Schema:** `public`  
-**Return Type:** `uuid`  
-**Security:** `INVOKER`
+**Return Type:** `TABLE(created_shift_id uuid)`  
+**Security:** `INVOKER`  
+**Status:** ✅ **ACTIVELY USED** - Called from useShifts hook  
+**Usage:** `src/hooks/useShifts.tsx` - Line 58
 
 **Description:** Creates a new shift with all required parameters and returns the shift ID.
 
@@ -226,7 +283,9 @@ RETURN new_shift_id;
 ### `auto_update_shift_status()`
 **Schema:** `public`  
 **Return Type:** `trigger`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ✅ **ACTIVELY USED** - Trigger function  
+**Usage:** Auto-executed on shifts UPDATE via `trigger_auto_update_shift_status` trigger
 
 **Description:** Automatically updates shift status based on staff assignment levels.
 
@@ -246,7 +305,9 @@ RETURN new_shift_id;
 ### `is_user_assigned_to_shift(p_shift_id uuid, p_user_id uuid)`
 **Schema:** `public`  
 **Return Type:** `boolean`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - Available but not called from frontend  
+**Usage:** Defined in TypeScript types but not used in current codebase
 
 **Description:** Checks if a specific user is assigned to a specific shift.
 
@@ -261,7 +322,9 @@ RETURN new_shift_id;
 ### `update_staff_assigned()`
 **Schema:** `public`  
 **Return Type:** `trigger`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ✅ **ACTIVELY USED** - Trigger function  
+**Usage:** Auto-executed on assignments INSERT/UPDATE/DELETE via `trigger_update_staff_assigned` trigger
 
 **Description:** Maintains accurate staff assignment counts on shifts table.
 
@@ -284,7 +347,9 @@ RETURN new_shift_id;
 ### `update_job_seeker_rating()`
 **Schema:** `public`  
 **Return Type:** `trigger`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ✅ **ACTIVELY USED** - Trigger function  
+**Usage:** Auto-executed on assignments UPDATE and feedback INSERT/UPDATE via triggers
 
 **Description:** Automatically updates job seeker ratings based on client feedback and reliability metrics.
 
@@ -334,7 +399,9 @@ final_rating := GREATEST(0.0, LEAST(5.0, final_rating));
 ### `calculate_user_payout(target_user_id uuid, period_start date, period_end date)`
 **Schema:** `public`  
 **Return Type:** `numeric`  
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - Available but not called from frontend  
+**Usage:** Defined in TypeScript types but usePayouts hook is not implemented yet
 
 **Description:** Calculates total earnings for a user over a specified period and creates a payout record.
 
@@ -384,7 +451,9 @@ END IF;
 ### `get_earnings_breakdown(target_user_id uuid, period_start date, period_end date)`
 **Schema:** `public`  
 **Return Type:** `TABLE(shift_id uuid, title varchar, work_date date, hours_worked numeric, pay_rate numeric, total_earned numeric)`
-**Security:** `DEFINER`
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - Available but not called from frontend  
+**Usage:** Defined in TypeScript types but usePayouts hook is not implemented yet
 
 **Description:** Returns detailed earnings breakdown for a user over a specified period.
 
@@ -403,12 +472,65 @@ END IF;
 
 ---
 
+## 📋 Assignment Query Functions
+
+### `get_assignments_by_jobseeker(p_user_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `INVOKER`  
+**Status:** ✅ **ACTIVELY USED** - Called from useAssignments hook  
+**Usage:** `src/hooks/useAssignments.tsx` - Line 31
+
+**Description:** Returns assignment history and details for a specific job seeker.
+
+**Parameters:**
+- `p_user_id` (uuid): Job seeker user ID
+
+**Returns:** Assignment details with job information, status, and timing data
+
+---
+
+### `get_assignments_by_shift(p_shift_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `INVOKER`  
+**Status:** ✅ **ACTIVELY USED** - Called from useAssignments hook  
+**Usage:** `src/hooks/useAssignments.tsx` - Line 81
+
+**Description:** Returns all assignments for a specific shift.
+
+**Parameters:**
+- `p_shift_id` (uuid): Shift ID to get assignments for
+
+**Returns:** Assignment details for all users assigned to the shift
+
+---
+
+### `update_assignment_status(p_status_name text, p_assignment_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(updated_count integer, payout_created boolean)`  
+**Security:** `DEFINER`  
+**Status:** ✅ **ACTIVELY USED** - Called from useAssignments hook  
+**Usage:** `src/hooks/useAssignments.tsx` - Line 116
+
+**Description:** Updates assignment status with validation and automatic payout creation.
+
+**Parameters:**
+- `p_status_name` (text): Status name (e.g., 'CONFIRMED', 'CANCELLED_BY_USER')
+- `p_assignment_id` (uuid): Assignment ID to update
+
+**Returns:** Number of updated rows and whether a payout was created
+
+---
+
 ## 🔍 Advanced Business Functions
 
 ### `find_matching_job_seekers(p_shift_id uuid)`
 **Schema:** `public`  
 **Return Type:** `TABLE(user_id uuid, first_name varchar, last_name varchar, rating numeric, match_score numeric, preferred_categories text[], distance_km numeric)`
-**Security:** `DEFINER`
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - Advanced feature not yet implemented in frontend  
+**Usage:** Available for future job matching features
 
 **Description:** Advanced matching algorithm that finds suitable job seekers for a specific shift based on multiple criteria.
 
@@ -429,7 +551,9 @@ END IF;
 ### `get_job_categories_with_types()`
 **Schema:** `public`  
 **Return Type:** `TABLE(category_id uuid, category_name varchar, job_types jsonb)`
-**Security:** `DEFINER`
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - Job categories feature not yet implemented in frontend  
+**Usage:** Available for future job categorization features
 
 **Description:** Returns hierarchical job classification data with categories and their associated job types.
 
@@ -442,12 +566,106 @@ END IF;
 
 ---
 
-### `update_assignment_status(p_assignment_id uuid, p_status_name text)`
+### `create_default_preferences(p_user_id uuid)`
 **Schema:** `public`  
-**Return Type:** `TABLE(rows_affected integer)`
-**Security:** `DEFINER`
+**Return Type:** `TABLE(...)`  
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - usePreferences hook uses direct table operations instead  
+**Usage:** Available but not used in current implementation
 
-**Description:** Safely updates assignment status with validation and error handling.
+**Description:** Creates default preferences for a new user.
+
+**Parameters:**
+- `p_user_id` (uuid): User ID to create preferences for
+
+---
+
+### `get_shifts_by_employer(p_employer_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - Employer dashboard not yet implemented  
+**Usage:** Available for future employer features
+
+**Description:** Returns all shifts created by a specific employer.
+
+**Parameters:**
+- `p_employer_id` (uuid): Employer ID to get shifts for
+
+---
+
+### `get_user_details_from_assignment(p_assignment_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - User details feature not yet implemented  
+**Usage:** Available for future assignment management features
+
+**Description:** Gets user details from an assignment ID.
+
+**Parameters:**
+- `p_assignment_id` (uuid): Assignment ID to get user details for
+
+---
+
+### `get_user_preferences_with_location(p_user_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - Location preferences not yet fully implemented  
+**Usage:** Available but usePreferences hook uses separate location loading
+
+**Description:** Gets user preferences combined with location data.
+
+**Parameters:**
+- `p_user_id` (uuid): User ID to get preferences for
+
+---
+
+### `get_user_profile_data(p_user_id uuid)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - useUserProfile hook uses direct table operations instead  
+**Usage:** Available but not used in current implementation
+
+**Description:** Gets comprehensive user profile data.
+
+**Parameters:**
+- `p_user_id` (uuid): User ID to get profile data for
+
+---
+
+### `update_user_profile(...)`
+**Schema:** `public`  
+**Return Type:** `boolean`  
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - useUserProfile hook uses direct table operations instead  
+**Usage:** Available but not used in current implementation
+
+**Description:** Updates user profile information.
+
+---
+
+### `upsert_user_preferences(...)`
+**Schema:** `public`  
+**Return Type:** `TABLE(...)`  
+**Security:** `DEFINER`  
+**Status:** ⚠️ **UNUSED** - usePreferences hook uses direct table operations instead  
+**Usage:** Available but not used in current implementation
+
+**Description:** Upserts user preferences with validation.
+
+---
+
+### `validate_job_names(job_names text[])`
+**Schema:** `public`  
+**Return Type:** `boolean`
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - Job validation not yet implemented in frontend  
+**Usage:** Available for future job validation features
+
+**Description:** Validates that all provided job type names exist and are active.
 
 **Parameters:**
 - `p_assignment_id` (uuid): Assignment ID to update
@@ -463,12 +681,14 @@ END IF;
 
 ## 📊 Query & Reporting Functions
 
-### `get_shifts_by_client(p_client_id uuid)`
+### `get_assignment_status_summary(p_shift_id uuid)`
 **Schema:** `public`  
-**Return Type:** `TABLE(shift_id uuid, client_name varchar, title varchar, job_location varchar, description text, start_time timestamptz, end_time timestamptz, pay_rate numeric, staff_needed integer, staff_assigned integer, status varchar, submission_cycle varchar, break_duration integer, created_at timestamptz, job_name varchar)`
-**Security:** `DEFINER`
+**Return Type:** `TABLE(status_name varchar, count integer)`  
+**Security:** `INVOKER`  
+**Status:** ⚠️ **UNUSED** - Reporting feature not yet implemented  
+**Usage:** Available for future shift management reporting
 
-**Description:** Returns comprehensive shift information for a specific client with joined data.
+**Description:** Provides assignment status breakdown for a specific shift.
 
 **Parameters:**
 - `p_client_id` (uuid): Client ID to get shifts for
@@ -481,12 +701,7 @@ END IF;
 
 ---
 
-### `get_assignment_by_jobseeker(p_user_id uuid)`
-**Schema:** `public`  
-**Return Type:** `TABLE(assignment_id uuid, name varchar, job_title varchar, status varchar, check_in_time timestamptz, check_out_time timestamptz, break_hours integer, created_at timestamptz)`
-**Security:** `DEFINER`
-
-**Description:** Returns assignment history and status for a specific job seeker.
+**Note:** This function appears to be replaced by `get_assignments_by_jobseeker` which is actively used.
 
 **Parameters:**
 - `p_user_id` (uuid): Job seeker user ID
@@ -499,12 +714,10 @@ END IF;
 
 ---
 
-### `get_assignment_status_summary(p_shift_id uuid)`
-**Schema:** `public`  
-**Return Type:** `TABLE(status_name varchar, count integer)`
-**Security:** `DEFINER`
+**Parameters:**
+- `p_shift_id` (uuid): Shift ID to analyze
 
-**Description:** Provides assignment status breakdown for a specific shift.
+**Returns:** Status counts for capacity planning and reporting
 
 **Parameters:**
 - `p_shift_id` (uuid): Shift ID to analyze
@@ -669,6 +882,31 @@ const statusName = statusLookup[assignment.status]; // "CONFIRMED"
 
 ---
 
-**Documentation Generated:** July 20, 2025  
-**Last Updated:** Added missing functions and corrected status system documentation  
-**Version:** OptiStaff v1.0 - Complete Database Schema (`devnew`)
+**Documentation Generated:** July 23, 2025  
+**Last Updated:** Updated with current usage analysis and function status  
+**Version:** OptiStaff v1.0 - Complete Database Schema with Usage Analysis  
+**Analysis Method:** Supabase MCP + Codebase Analysis
+
+---
+
+## 📈 **IMPLEMENTATION RECOMMENDATIONS**
+
+### **High Priority - Functions to Implement**
+1. **`calculate_user_payout`** - Critical for payroll functionality
+2. **`get_earnings_breakdown`** - Essential for user earnings display
+3. **`find_matching_job_seekers`** - Core business logic for job matching
+4. **`get_job_categories_with_types`** - Needed for job selection UI
+
+### **Medium Priority - Functions to Consider**
+1. **`get_shifts_by_employer`** - For employer dashboard
+2. **`validate_job_names`** - For form validation
+3. **`get_assignment_status_summary`** - For reporting features
+
+### **Low Priority - Functions Available**
+1. **`check_email_exists`** functions - May be useful for registration
+2. **`get_user_profile_data`** - Alternative to current direct table approach
+3. **`upsert_user_preferences`** - Alternative to current direct table approach
+
+### **Functions to Remove/Deprecate**
+1. **`auth.uid()`**, **`auth.email()`**, **`auth.role()`** - Already deprecated
+2. Consider consolidating similar functions that aren't being used
