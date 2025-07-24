@@ -4,7 +4,7 @@ import LocationErrorBoundary from "./LocationErrorBoundary";
 import PreferencesJobType from "./PreferencesJobType";
 import PreferencesMaximum from "./PreferencesMaximum";
 import PreferencesPay from "./PreferencesPay";
-import { usePreferences } from "../hooks/usePreferences";
+import { usePreferencesForm } from "../hooks/usePreferencesForm";
 import { PreferencesFormData } from "../types/hooks";
 
 const PreferencesForm = () => {
@@ -15,13 +15,10 @@ const PreferencesForm = () => {
     error,
     getFormData,
     homeLocation,
-    homeAddress,
-    geocodeHomeLocation,
-    loadLocationData,
-  } = usePreferences();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  } = usePreferencesForm();
+
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [locationError, setLocationError] = useState<MapError | null>(null);
+  const [mapError, setMapError] = useState<MapError | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
 
   // Form state - this will be populated by child components
@@ -42,12 +39,7 @@ const PreferencesForm = () => {
     }
   }, [getFormData]);
 
-  // Attempt to geocode home location if coordinates are missing
-  useEffect(() => {
-    if (homeAddress && !homeLocation) {
-      geocodeHomeLocation();
-    }
-  }, [homeAddress, homeLocation, geocodeHomeLocation]);
+  // Location geocoding is now handled by the form hook
 
   // Handle radius changes from the map component
   const handleRadiusChange = (newRadius: number) => {
@@ -59,26 +51,17 @@ const PreferencesForm = () => {
 
   // Handle location errors from the map component
   const handleLocationError = useCallback((error: MapError) => {
-    setLocationError(error);
+    setMapError(error);
   }, []);
 
   // Handle retry attempts for location loading
   const handleLocationRetry = useCallback(async () => {
     setRetryAttempts((prev) => prev + 1);
-    setLocationError(null);
-
-    try {
-      await loadLocationData();
-      if (homeAddress && !homeLocation) {
-        await geocodeHomeLocation();
-      }
-    } catch (err) {
-      console.error("Retry failed:", err);
-    }
-  }, [loadLocationData, homeAddress, homeLocation, geocodeHomeLocation]);
+    setMapError(null);
+    // Location retry is now handled by the form hook
+  }, []);
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
     setSubmitSuccess(false);
 
     const success = await savePreferences(formData);
@@ -87,8 +70,6 @@ const PreferencesForm = () => {
       setSubmitSuccess(true);
       setTimeout(() => setSubmitSuccess(false), 3000); // Hide success message after 3s
     }
-
-    setIsSubmitting(false);
   };
 
   return (
@@ -119,7 +100,7 @@ const PreferencesForm = () => {
       )}
 
       {/* Location-specific error display */}
-      {locationError && (
+      {mapError && (
         <div className="mb-4 p-4 bg-orange-50 border border-orange-200 text-orange-700 rounded-lg">
           <div className="flex items-start">
             <svg
@@ -139,10 +120,8 @@ const PreferencesForm = () => {
               <h3 className="text-sm font-medium text-orange-800">
                 Location Service Issue
               </h3>
-              <p className="text-sm text-orange-700 mt-1">
-                {locationError.message}
-              </p>
-              {locationError.canRetry && retryAttempts < 3 && (
+              <p className="text-sm text-orange-700 mt-1">{mapError.message}</p>
+              {mapError.canRetry && retryAttempts < 3 && (
                 <button
                   onClick={handleLocationRetry}
                   className="mt-2 text-sm bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1 rounded-md transition-colors"
@@ -182,7 +161,7 @@ const PreferencesForm = () => {
       <LocationErrorBoundary
         onError={(error, errorInfo) => {
           console.error("Location component error:", error, errorInfo);
-          setLocationError({
+          setMapError({
             type: "UNKNOWN_ERROR",
             message: "Location component crashed unexpectedly",
             canRetry: true,
@@ -205,10 +184,10 @@ const PreferencesForm = () => {
       <div className="flex justify-end mt-6">
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting || loading || validating}
+          disabled={loading || validating}
           className="px-4 py-2 bg-primary-blue text-white rounded-md hover:bg-primary-blue-hover disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {validating ? "Validating..." : isSubmitting ? "Saving..." : "Submit"}
+          {validating ? "Validating..." : loading ? "Saving..." : "Submit"}
         </button>
       </div>
     </div>
