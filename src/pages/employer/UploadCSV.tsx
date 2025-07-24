@@ -1,11 +1,27 @@
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useCallback, useState } from "react";
 import {useDropzone} from 'react-dropzone'
 import UploadModal from "../../components/UploadModal";
 import { useShifts } from "../../hooks/useShifts";
 import {format} from "date-fns"
 import { Shift } from "../../types/hooks";
 import {getDate, validateShift, ShiftError} from "../../utils/uploadjobs";
+
+type FileData = {
+    fileName: string|null;
+    fileSize: number|null;
+}
+
+type UploadFileCardProps = {
+    fileName: string|null;
+    fileSize: number|null;
+    handleRemove: Function;
+}
+
+type UploadShiftCardProps = {
+    shiftObject:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">,
+    handleManageClick: Function,
+}
+
 export default function UploadCSV(){
     const onDrop = useCallback((acceptedFiles: File[]) =>{
         handleRemove();
@@ -28,7 +44,7 @@ export default function UploadCSV(){
                         job_requirements: entry[3],
                         start_time: getDate(entry[4], entry[5]),
                         end_time: getDate(entry[4], entry[6]),
-                        break_duration: parseInt(entry[7]),
+                        break_duration: parseFloat(entry[7]),
                         job_location: entry[8],
                         postal_code: parseInt(entry[9]),
                         pay_rate: parseFloat(entry[10]),
@@ -36,7 +52,7 @@ export default function UploadCSV(){
                     }
                     console.log(newShift);
                     const newError = validateShift(newShift);
-                    const isValid = Object.values(newError).every((value) => value === null)
+                    const isValid = Object.values(newError).every((value) => value === null);
                     if (!isValid){ 
                         setError((prev: ShiftError[])=> [...prev, newError]);
                     }else{ //No error
@@ -71,14 +87,14 @@ export default function UploadCSV(){
         setShiftData([])
     }
 
-    const handleSave = (updatedShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => {
+    const handleSave = (updatedShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">) => {
         setShiftData(prev => {
             if (!prev || !selectedShift) return prev; // return null if prev is null
             return prev.map(shift =>
                 shift === selectedShift ? updatedShift : shift
             );
         });
-        setModalVisible(false);
+        setSelectedShift(null);
     }
 
     const handleSubmit = async () => {
@@ -94,6 +110,7 @@ export default function UploadCSV(){
         handleRemove();
     };
 
+
     return <div className = {"relative min-h-screen bg-tertiary-bg flex flex-col gap-8 px-15 py-8"}>
         <h1 className={`font-montserrat-b text-black text-3xl ${modalVisible?"opacity-50": null}`}>Upload Files</h1>
         <div id="upload-dnd-box" {...getRootProps({className : `py-15 flex flex-col gap-2.5 items-center border-1 border-dashed border-black rounded-lg ${modalVisible?"opacity-50": null}`})}>
@@ -106,12 +123,12 @@ export default function UploadCSV(){
         </div>
         <div id="uploadcsv-uploaded" className={`py-6 flex flex-col gap-4 ${modalVisible?"opacity-50": null}`}>
             <h2 className="font-montserrat-b text-black text-2xl">Files</h2>
-            {fileData && <UploadFileCard fileName={fileData.fileName} fileSize={fileData.fileSize} handleRemove={handleRemove}/>}
-            {fileData==null && <div className="flex flex-row"><p className="font-montserrat-b text-gray-600 whitespace-pre">Haven’t created a file? Download our custom template </p><button className="hover:cursor-pointer hover:opacity-80 underline text-primary-blue text-base font-montserrat-b">here</button></div>}
+            {fileData && <FileCard fileName={fileData.fileName} fileSize={fileData.fileSize} handleRemove={handleRemove}/>}
+            {fileData==null && <div className="flex flex-row"><p className="text-base font-montserrat-b text-gray-600 whitespace-pre">Haven’t created a file? Download our custom template </p><button className="hover:cursor-pointer hover:opacity-80 underline text-primary-blue text-base font-montserrat-b"> here</button></div>}
         </div>
         <div id="uploadcsv-uploaded" className={`py-6 flex flex-col gap-4 ${modalVisible?"opacity-50": null}`}>
             <h2 className="font-montserrat-b text-black text-2xl">Preview</h2>
-            {shiftData && shiftData.map((data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">) => <UploadShiftCard shiftObject={data} setModalVisible={setModalVisible} setSelectedShift={setSelectedShift}/>)}
+            {shiftData && shiftData.map((data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">) => <UploadShiftCard shiftObject={data} handleManageClick={()=>setSelectedShift(data)}/>)}
             {!error && shiftData == null && <p className="font-montserrat-b text-gray-600 text-base">No shift data entered</p>}
             {error.map((e, index) =>
                 Object.entries(e)
@@ -123,30 +140,13 @@ export default function UploadCSV(){
                 ))
             )}
         </div>
-        {modalVisible && <UploadModal onSave={handleSave} onClose={()=>setModalVisible(false)} shift={selectedShift}/>}
-        {shiftData && <button onClick={handleSubmit} className={`over:cursor-pointer hover:opacity-80 rounded-lg self-center p-2.5 rounded-8 w-fit  bg-primary-blue text-white font-montserrat-smb text-base ${modalVisible?"opacity-50": null}`}>Submit</button>}
+        {selectedShift && <UploadModal onSave={handleSave} onClose={()=>setSelectedShift(null)} shift={selectedShift}/>}
+        {shiftData.length>0 && <button onClick={handleSubmit} className={`over:cursor-pointer hover:opacity-80 rounded-lg self-center p-2.5 rounded-8 w-fit  bg-primary-blue text-white font-montserrat-smb text-base ${modalVisible?"opacity-50": null}`}>Submit</button>}
     </div>
 }
 
-type FileData = {
-    fileName: string|null;
-    fileSize: number|null;
-};
 
-type UploadFileCardProps = {
-    fileName: string|null;
-    fileSize: number|null;
-    handleRemove: Function;
-};
-
-type UploadShiftCardProps = {
-    shiftObject:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">,
-    handleManageClick: Function;
-    handleModalClose: Function;
-}
-
-
-function UploadFileCard({fileName, fileSize, handleRemove}: UploadFileCardProps){
+function FileCard({fileName, fileSize, handleRemove}: UploadFileCardProps){
     return <div className="w-fit px-5 py-3 bg-white flex flex-row gap-40 items-center rounded-lg">
         <div className="flex flex-row gap-3 items-center">
             <img className="h-8 w-8" src="/icons/filecorner.svg"/>
@@ -159,11 +159,7 @@ function UploadFileCard({fileName, fileSize, handleRemove}: UploadFileCardProps)
     </div>
 }
 
-function UploadShiftCard({shiftObject,  handleManageClick, handleModalClose}: UploadShiftCardProps){
-    function handleManage(){
-        setModalVisible(true);
-        setSelectedShift(shiftObject);
-    }
+function UploadShiftCard({shiftObject,  handleManageClick}: UploadShiftCardProps){
     return <div className="bg-white flex flex-row p-5 items-center justify-between rounded-2xl">
         <div className="flex flex-col gap-4"> 
             <p className="text-XL font-montserrat-b text-primary-text">{shiftObject.job_title}</p>
@@ -179,6 +175,6 @@ function UploadShiftCard({shiftObject,  handleManageClick, handleModalClose}: Up
         </div>
         <button 
         className="hover:cursor-pointer hover:bg-gray-100 hover:text-secondary-text hover:opacity-80 bg-white rounded-md text-secondary-text py-2.5 px-4 border border-secondary-text font-montserrat-smb text-base"
-        onClick={()=>handleManage()}>Manage</button>
+        onClick={()=>handleManageClick()}>Manage</button>
     </div>
 }

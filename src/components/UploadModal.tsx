@@ -1,68 +1,59 @@
 import { useEffect, useState } from "react";
 import { Shift } from "../types/hooks";
-import {getDate } from "../utils/uploadjobs";
+import {getDate, getDateForm, jobRoleOptions, ShiftError, validateShift, createEmptyShiftError } from "../utils/uploadjobs";
 import {format} from "date-fns";
 
 
 type ModalProps = {
-    shift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"> | null,
+    shift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">
     onClose: () => void,
-    onSave: (updatedShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => void
+    onSave: (updatedShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">) => void
 };
 
-type ShiftInputData = {
-    title: string,
-    category: string,
-    description: string,
-    date: string,
-    start_time: string,
-    end_time: string,
-    address: string,
-    zip_code: string,
-    staff_needed: number,
-    pay_rate: number
-}
 
 export default function UploadModal({shift, onClose, onSave }: ModalProps) {
-    const [shiftObj, setShiftObj] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned"| "client_id" > | null>(shift);
-    const [shiftData, setShiftData] = useState<ShiftInputData | null>(shiftObj &&{
-        title: shiftObj.title,
-        category: shiftObj.title,
-        description: shiftObj.description,
-        date: format(shiftObj.start_time, "dd/MM/yyyy"),
-        start_time: format(shiftObj.start_time, "HH:mm"),
-        end_time: format(shiftObj.end_time, "HH:mm"),
-        address: shiftObj.job_location.split(" ").slice(0,-1).join(" "),
-        zip_code: shiftObj.job_location.split(" ").at(-1)||"",
-        staff_needed: shiftObj.staff_needed,
-        pay_rate: shiftObj.pay_rate
-    });
+    const [shiftObj, setShiftObj] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">>(shift);
+    const [error, setError] = useState<ShiftError>(createEmptyShiftError());
 
-    useEffect(() => {
-        setShiftObj(shift);
-        console.log(shiftData);
-    }, [shift]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setShiftData(prev => prev ? { ...prev, [name]: value } : null);
-    };
+    const handleChange = (e:  React.ChangeEvent<HTMLInputElement>| React.ChangeEvent<HTMLTextAreaElement>|  React.ChangeEvent<HTMLSelectElement>) => {
+        const name = e.target.name;
+        let value = e.target.value;
+        switch (name){
+            case "start_time": {
+                const baseDate = format(shiftObj.start_time, "yyyy-MM-dd");
+                const new_start = getDateForm(baseDate, value);
+                setShiftObj(prev => ({ ...prev, start_time: new_start }));
+                break;
+            }
+            case "end_time": {
+                const baseDate = format(shiftObj.start_time, "yyyy-MM-dd");
+                const new_end = getDateForm(baseDate, value);
+                setShiftObj(prev => ({ ...prev, end_time: new_end }));
+                break;
+            }
+            case "date": {
+                console.log(value);
+                const new_sd = getDateForm(value, format(shiftObj.start_time, "HH:mm"));
+                const new_ed = getDateForm(value, format(shiftObj.end_time, "HH:mm"));
+                setShiftObj(prev => ({ ...prev, start_time: new_sd, end_time: new_ed }));
+                break;
+            }
+            default:
+                setShiftObj((prevData)=> ({...prevData, [name]:value}));
+        }
+    }
 
     const handleSave = () => {
-        if (!shiftObj || !shiftData) return;
-        const updatedShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"> = {
-            ...shiftObj,
-            title: shiftData.title,
-            // category: shiftData.category,
-            description: shiftData.description,
-            start_time: getDate(shiftData.date, shiftData.start_time),
-            end_time: getDate(shiftData.date, shiftData.end_time),
-            job_location: `${shiftData.address} ${shiftData.zip_code}`,
-            staff_needed: parseInt(String(shiftData.staff_needed)),
-            pay_rate: parseFloat(String(shiftData.pay_rate)),
-          };
-      
-          onSave(updatedShift);
+        if (!shiftObj) return;
+        setError(createEmptyShiftError());
+        const newError = validateShift(shiftObj);
+        const isValid = Object.values(newError).every((value) => value === null);
+        if (isValid){
+            onSave(shiftObj);
+        }else{
+            setError(newError);
+        }
+
     }
 
     return (
@@ -72,110 +63,145 @@ export default function UploadModal({shift, onClose, onSave }: ModalProps) {
                 <button className="hover:cursor-pointer col-span-1" onClick={() => onClose()}>close</button>
             </div>
 
-            {shiftData && (
-                <div className="grid grid-cols-6 gap-y-4 gap-x-2 rounded-xl">
-                    <div className="col-span-3 flex flex-col">
+            {shiftObj && (
+                <div className="grid grid-cols-12 gap-y-4 gap-x-2 rounded-xl">
+                    <div className="col-span-6 flex flex-col">
                         <label className="font-montserrat-smb">Job Title</label>
                         <input
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
-                            name="title"
-                            value={shiftData.title}
+                            name="job_title"
+                            value={shiftObj.job_title}
                             onChange={handleChange}
                         />
+                        {error.job_title && <p>{error.job_title}</p>}
+                    </div>
+
+                    <div className="col-span-6 flex flex-col">
+                        <label className="font-montserrat-smb">Job Category</label>
+                        <select
+                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
+                            name="job_type"
+                            defaultValue={shiftObj.job_type}
+                            onChange={handleChange}
+                        >
+                            {jobRoleOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                        </select>
+                        {error.job_type && <p>{error.job_type}</p>}
                     </div>
 
                     <div className="col-span-3 flex flex-col">
-                        <label className="font-montserrat-smb">Job Category</label>
-                        <input
-                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
-                            name="category"
-                            value={shiftData.title}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className="col-span-2 flex flex-col">
                         <label className="font-montserrat-smb">Date</label>
                         <input
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
                             name="date"
-                            value={shiftData.date}
+                            value={format(shiftObj.start_time, "yyyy-MM-dd")}
                             onChange={handleChange}
                         />
+                        {error.start_time && <p>{error.start_time}</p>}
                     </div>
 
-                    <div className="col-span-2 flex flex-col">
+                    <div className="col-span-3 flex flex-col">
                         <label className="font-montserrat-smb">Start Time</label>
                         <input
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
                             name="start_time"
                             type="time"
-                            value={shiftData.start_time}
+                            value={format(shiftObj.start_time, "HH:mm")}
                             onChange={handleChange}
                         />
+                        {error.start_time && <p>{error.start_time}</p>}
                     </div>
 
-                    <div className="col-span-2 flex flex-col">
+                    <div className="col-span-3 flex flex-col">
                         <label className="font-montserrat-smb">End Time</label>
                         <input
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
                             name="end_time"
                             type="time"
-                            value={shiftData.end_time}
+                            value={format(shiftObj.end_time, "HH:mm")}
                             onChange={handleChange}
                         />
-                    </div>
-
-                    <div className="col-span-4 flex flex-col">
-                        <label className="font-montserrat-smb">Address</label>
-                        <input
-                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
-                            name="address"
-                            value={shiftData.address}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className="col-span-2 flex flex-col">
-                        <label className="font-montserrat-smb">Zip Code</label>
-                        <input
-                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
-                            name="zip_code"
-                            value={shiftData.zip_code}
-                            onChange={handleChange}
-                        />
+                        {error.end_time && <p>{error.end_time}</p>}
                     </div>
 
                     <div className="col-span-3 flex flex-col">
+                        <label className="font-montserrat-smb">Break Duration</label>
+                        <input
+                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
+                            name="break_duration"
+                            type="number"
+                            value={shiftObj.break_duration != null? shiftObj.break_duration: 0}
+                            onChange={handleChange}
+                        />
+                        {error.break_duration && <p>{error.break_duration}</p>}
+                    </div>
+
+                    <div className="col-span-8 flex flex-col">
+                        <label className="font-montserrat-smb">Address</label>
+                        <input
+                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
+                            name="job_location"
+                            value={shiftObj.job_location}
+                            onChange={handleChange}
+                        />
+                        {error.job_location && <p>{error.job_location}</p>}
+                    </div>
+
+                    <div className="col-span-4 flex flex-col">
+                        <label className="font-montserrat-smb">Postal Code</label>
+                        <input
+                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
+                            name="postal_code"
+                            value={shiftObj.postal_code}
+                            onChange={handleChange}
+                        />
+                        {error.postal_code && <p>{error.postal_code}</p>}
+                    </div>
+
+                    <div className="col-span-6 flex flex-col">
                         <label className="font-montserrat-smb">Staff No.</label>
                         <input
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
                             name="staff_needed"
                             type="number"
-                            value={shiftData.staff_needed}
+                            value={shiftObj.staff_needed}
                             onChange={handleChange}
                         />
+                        {error.staff_needed && <p>{error.staff_needed}</p>}
                     </div>
 
-                    <div className="col-span-3 flex flex-col">
+                    <div className="col-span-6 flex flex-col">
                         <label className="font-montserrat-smb">Pay Rate (/hr)</label>
                         <input
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
                             name="pay_rate"
                             type="number"
-                            value={shiftData.pay_rate}
+                            value={shiftObj.pay_rate}
                             onChange={handleChange}
                         />
+                        {error.pay_rate && <p>{error.pay_rate}</p>}
                     </div>
 
-                    <div className="col-span-6 flex flex-col">
+                    <div className="col-span-12 flex flex-col">
                         <label className="font-montserrat-smb">Job Description</label>
                         <textarea
                             className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
-                            name="description"
-                            value={shiftData.description}
+                            name="job_description"
+                            value={shiftObj.job_description != null?  shiftObj.job_description: ""}
                             onChange={handleChange}
                         />
+                        {error.job_description && <p>{error.job_description}</p>}
+                    </div>
+
+                    <div className="col-span-12 flex flex-col">
+                        <label className="font-montserrat-smb">Job Requirements</label>
+                        <textarea
+                            className="font-montserrat border-1 border-gray-600 p-2 rounded-md"
+                            name="job_requirements"
+                            value={shiftObj.job_requirements != null?  shiftObj.job_requirements: ""}
+                            onChange={handleChange}
+                        />
+                        {error.job_requirements && <p>{error.job_requirements}</p>}
                     </div>
                 </div>
             )}

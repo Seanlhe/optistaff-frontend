@@ -132,6 +132,28 @@ export const getDateForm = (date: string, time: string): Date => {
     return new Date(year, month, day, hours, min);
 }
 
+export const jobRoleOptions = [
+  { label: "Kitchen Helper", value: "Kitchen Helper" },
+  { label: "Waiter/Waitress", value: "Waiter/Waitress" },
+  { label: "Dishwasher", value: "Dishwasher" },
+  { label: "Bartender/Barista", value: "Bartender/Barista" },
+  { label: "Banquet Server", value: "Banquet Server" },
+  { label: "Food Stall Assistant", value: "Food Stall Assistant" },
+  { label: "Cleaner", value: "Cleaner" },
+  { label: "Sales Associate", value: "Sales Associate" },
+  { label: "Cashier", value: "Cashier" },
+  { label: "Promoter", value: "Promoter" },
+  { label: "Usher", value: "Usher" },
+  { label: "Event Crew", value: "Event Crew" },
+  { label: "Customer Service", value: "Customer Service" },
+  { label: "Leaflet Distributor", value: "Leaflet Distributor" },
+  { label: "Packer", value: "Packer" },
+  { label: "Warehouse Assistant", value: "Warehouse Assistant" },
+  { label: "Inventory Checker", value: "Inventory Checker" },
+  { label: "Delivery", value: "Delivery" },
+  { label: "Sorter", value: "Sorter" }
+];
+
 
 export type ShiftError = {
     [K in keyof Omit<
