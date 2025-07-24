@@ -144,7 +144,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             {assignment.title}
           </DialogTitle>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-sm text-secondary-text">{assignment.company}</span>
+            <span className="text-sm text-secondary-text">{assignment.company_name}</span>
             {assignment.hourlyRate > 0 && (
               <span className="text-base font-bold text-primary-text">${assignment.hourlyRate}/hr</span>
             )}

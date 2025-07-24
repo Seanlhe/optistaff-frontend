@@ -5,7 +5,7 @@ import { Card } from "./ui/card";
 export interface JobseekerAssignmentCard {
   id: string;
   title: string;
-  company: string;
+  company_name: string;
   date: string;
   time: string;
   location: string;
@@ -87,7 +87,7 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
           <h3 className="text-base font-bold text-primary-text mb-1">
             {assignment.title}
           </h3>
-          <p className="text-secondary-text text-sm">{assignment.company}</p>
+          <p className="text-secondary-text text-sm">{assignment.company_name}</p>
         </div>
         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(assignment.status)}`}>
           {getStatusDisplayName(assignment.status)}
