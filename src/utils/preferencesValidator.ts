@@ -49,6 +49,11 @@ export const validatePreferences = (preferences: UserPreferences): {
     errors.push('Maximum travel distance seems unreasonably high for Singapore');
   }
 
+  // Validate that at least one job type is selected
+  if (!preferences.desired_roles || preferences.desired_roles.length === 0) {
+    errors.push('Please select at least one preferred job type');
+  }
+
   return {
     isValid: errors.length === 0,
     errors
