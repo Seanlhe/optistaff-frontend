@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import NavItem from "../../components/NavItem";
 import { NavItemProps } from "../../types/navigation";
 import { useAuth } from "../../hooks/useAuth";
+import { useState } from "react";
 
 export default function JSNav() {
   const { logout, user } = useAuth();
@@ -20,8 +21,8 @@ export default function JSNav() {
     // Map URL paths to navigation item names
     const pathToNameMap: { [key: string]: string } = {
       'dashboard': 'Dashboard',
-      'myjobs': 'My Jobs',
-      'account': 'Account',
+      'schedule': 'My Jobs',
+      'settings': 'Account',
       'preferences': 'Preferences',
       'employee': 'Dashboard' // Handle base employee path
     };
@@ -31,14 +32,17 @@ export default function JSNav() {
   
   const adminNavItems: NavItemProps[] = [
     { name: "Dashboard", src: "/icons/calendaricon.svg", to: "dashboard" },
-    { name: "My Jobs", src: "/icons/uploadicon.svg", to: "myjobs" },
+    { name: "My Jobs", src: "/icons/uploadicon.svg", to: "schedule" },
   ];
   const prefNavItems: NavItemProps[] = [
-    { name: "Account", src: "/icons/gearicon.svg", to: "account" },
+    { name: "Account", src: "/icons/gearicon.svg", to: "settings" },
     { name: "Preferences", src: "/icons/gearicon.svg", to: "preferences" },
   ];
   
-  const selected = getCurrentSelected();
+  const [selected, setSelected] = useState<string>(getCurrentSelected());
+  useEffect(()=>{
+    setSelected(getCurrentSelected)
+  },[getCurrentSelected()])
 
   function handleClick(name: string) {
     if (name === "Logout") {

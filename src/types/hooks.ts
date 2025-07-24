@@ -195,27 +195,26 @@ export interface Payout {
 
 // useAssignments interfaces
 export interface Assignment {
-    assignment_id: string;
-    employee_name: string;
-    employer_name: string;
-    employee_id: string;
-    company_name: string;
-    job_title: string;
-    job_location: string;
-    postal_code: string;
-    job_description: string | null;
-    job_requirements: string | null;
-    job_type: string;
-    pay_rate: number;
-    start_time: Date;
-    end_time: Date;
-    break_hours: number;
-    contact_number: string;
-    contact_email: string;
-    check_in_time: string | null;
-    check_out_time: string | null;
-    status: string;
-    created_at: string;
+  assignment_id: string;
+  employee_name: string;
+  employer_name: string;
+  employee_id: string;
+  job_title: string;
+  job_location: string;
+  postal_code: string;
+  job_description: string | null;
+  job_requirements: string | null;
+  job_type: string;
+  pay_rate: number;
+  start_time: Date;
+  end_time: Date;
+  break_hours: number;
+  contact_number: string;
+  contact_email: string;
+  check_in_time: string | null;
+  check_out_time: string | null;
+  status: string;
+  created_at: string;
 }
 
 // useFeedback interfaces
