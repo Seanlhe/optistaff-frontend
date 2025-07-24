@@ -27,6 +27,10 @@ export default function ClientCalendarDay({
 
       // Check if same day and location
       const sameDay = isSameDay(dayDate, shiftDate);
+      if (selectedLocation === "All Locations") {
+        return sameDay;
+      }
+
       const sameLocation = shift.job_location === selectedLocation;
 
       return sameDay && sameLocation;

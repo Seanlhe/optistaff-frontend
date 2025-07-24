@@ -20,17 +20,47 @@ export default function ClientRoster() {
 
   const { shifts, loading, error, deleteShift } = useShifts();
 
-  const availableLocations = useMemo(() => {
+  const [selectedLocation, setSelectedLocation] =
+    useState<string>("All Locations");
+
+  const filteredShifts = useMemo(() => {
     if (!shifts || shifts.length === 0) return [];
 
-    // Get unique locations from shifts
-    const locations = [...new Set(shifts.map((shift) => shift.job_location))];
-    return locations;
+    const today = new Date();
+    const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+
+    return shifts.filter((shift) => {
+      const shiftDate = new Date(shift.start_time);
+      const shiftWeekStart = startOfWeek(shiftDate, { weekStartsOn: 1 });
+
+      // Only include shifts from current week onwards
+      return shiftWeekStart >= currentWeekStart;
+    });
   }, [shifts]);
 
-  const [selectedLocation, setSelectedLocation] = useState<string | undefined>(
-    undefined
-  );
+  const locationFilteredShifts = useMemo(() => {
+    if (!filteredShifts || filteredShifts.length === 0) return [];
+
+    // If "All Locations" is selected, return all shifts
+    if (selectedLocation === "All Locations") {
+      console.log("🔍 Showing all locations:", filteredShifts.length, "shifts");
+      return filteredShifts;
+    }
+
+    // Filter by selected location
+    return filteredShifts.filter(
+      (shift) => shift.job_location === selectedLocation
+    );
+  }, [filteredShifts, selectedLocation]);
+
+  const availableLocations = useMemo(() => {
+    if (!filteredShifts || filteredShifts.length === 0) return [];
+
+    const locations = [
+      ...new Set(filteredShifts.map((shift) => shift.job_location)),
+    ];
+    return ["All Locations", ...locations];
+  }, [filteredShifts]);
 
   useEffect(() => {
     if (availableLocations.length > 0 && !selectedLocation) {
@@ -102,7 +132,7 @@ export default function ClientRoster() {
     );
   }
 
-  if (!shifts || shifts.length === 0) {
+  if (!filteredShifts || filteredShifts.length === 0) {
     return (
       <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
         <h1 className="text-3xl text-secondary-text font-montserrat-b">
@@ -157,7 +187,7 @@ export default function ClientRoster() {
             <ClientCalendarDay
               key={day.date}
               day={day}
-              shiftData={shifts}
+              shiftData={locationFilteredShifts}
               selectedLocation={selectedLocation ?? ""}
               selectedShift={selectedShift}
               onShiftClick={handleShiftClick}
