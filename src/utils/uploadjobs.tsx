@@ -1,92 +1,154 @@
+import { Shift } from "../types/hooks";
 
-import { format } from "path";
-import { startTransition } from "react"
-export type ShiftObject = {
-    title: string,
-    category: string,
-    description: string,
-    address: string,
-    zipCode: string,
-    date: string,
-    startTime: string,
-    endTime: string,
-    payRate: number,
-    staffNo: number,
-    unfilledStaff: number|null
+export const getDate = (date: string, time: string): Date => {
+    // 2025-08-29
+    const dateArr = date.split(/[-/]/);
+    const day = parseInt(dateArr[0]);
+    const month = parseInt(dateArr[1]) - 1;
+    const year = parseInt(dateArr[2]);
+    const timeArr = time.split(":");
+    const hours = parseInt(timeArr[0]);
+    const min = parseInt(timeArr[1]);
+    return new Date(year, month, day, hours, min);
 }
 
-
-export const checkTimeValid = (startTime: string, endTime: string) => {
-    const hour1Str: string = startTime.slice(0, 2);
-    const hour2Str: string = endTime.slice(0, 2);
-    const min1Str: string = startTime.slice(3, 5);
-    const min2Str: string = endTime.slice(3, 5);
-    const hour1: number = parseInt(hour1Str);
-    const hour2: number = parseInt(hour2Str);
-    const min1: number = parseInt(min1Str);
-    const min2: number = parseInt(min2Str);
-    return hour1 * 60 + min1 <= hour2 * 60 + min2;
+export const getDateForm = (date: string, time: string): Date => {
+    const dateArr = date.split(/[-/]/);
+    const day = parseInt(dateArr[2]);
+    const month = parseInt(dateArr[1]) - 1;
+    const year = parseInt(dateArr[0]);
+    const timeArr = time.split(":");
+    const hours = parseInt(timeArr[0]);
+    const min = parseInt(timeArr[1]);
+    return new Date(year, month, day, hours, min);
 }
 
-export const formatTime = (rawTime: string) => {
-    const time_arr = rawTime.split(" ");
-    const hours = time_arr[0].slice(0,2);
-    const minutes = time_arr[0].slice(3, 5);
-    let hoursInt: number = parseInt(hours);
-    if (time_arr[1] == "PM"){
-        if (hoursInt < 12){
-            hoursInt += 12;
-        }
-    }
-    return `${hoursInt}:${minutes}`;
-}
+export const jobRoleOptions = [
+  { label: "Kitchen Helper", value: "Kitchen Helper" },
+  { label: "Waiter/Waitress", value: "Waiter/Waitress" },
+  { label: "Dishwasher", value: "Dishwasher" },
+  { label: "Bartender/Barista", value: "Bartender/Barista" },
+  { label: "Banquet Server", value: "Banquet Server" },
+  { label: "Food Stall Assistant", value: "Food Stall Assistant" },
+  { label: "Cleaner", value: "Cleaner" },
+  { label: "Sales Associate", value: "Sales Associate" },
+  { label: "Cashier", value: "Cashier" },
+  { label: "Promoter", value: "Promoter" },
+  { label: "Usher", value: "Usher" },
+  { label: "Event Crew", value: "Event Crew" },
+  { label: "Customer Service", value: "Customer Service" },
+  { label: "Leaflet Distributor", value: "Leaflet Distributor" },
+  { label: "Packer", value: "Packer" },
+  { label: "Warehouse Assistant", value: "Warehouse Assistant" },
+  { label: "Inventory Checker", value: "Inventory Checker" },
+  { label: "Delivery", value: "Delivery" },
+  { label: "Sorter", value: "Sorter" }
+];
 
-export const getError = (shiftObject: ShiftObject)=>{
-    if (getEmptyError(shiftObject)){
-        return getEmptyError(shiftObject);
+
+export type ShiftError = {
+    [K in keyof Omit<
+      Shift,
+      | "shift_id"
+      | "created_at"
+      | "status"
+      | "staff_assigned"
+      | "employer_name"
+      | "submission_cycle"
+      | "company_name"
+    >]: string | null;
+};
+
+export function createEmptyShiftError(): ShiftError {
+    return {
+      job_title: null,
+      job_location: null,
+      postal_code: null,
+      job_description: null,
+      job_requirements: null,
+      job_type: null,
+      pay_rate: null,
+      start_time: null,
+      end_time: null,
+      break_duration: null,
+      staff_needed: null,
     };
-    if (shiftObject.payRate <= 0){
-        return "pay rate must be more than zero.";
-    }
-    if (shiftObject.staffNo <= 0){
-        return "staff required must be more than zero.";
-    }if (!checkTimeValid(formatTime(shiftObject.startTime), formatTime(shiftObject.endTime))){
-        return "end time cannot be before start time.";
-    }
-    return null;    
 }
 
-const getEmptyError = (shiftObject: ShiftObject) =>{
-    if (shiftObject.title.length == 0){
-        return getEmptyMessage("title")
-    }else if (shiftObject.description.length == 0){
-        return getEmptyMessage("description")
-    }else if (shiftObject.category.length == 0){
-        return getEmptyMessage("category")
-    }else if (shiftObject.address.length == 0){
-        return getEmptyMessage("address")
-    }else if (shiftObject.zipCode.length == 0){
-        return getEmptyMessage("zip code")
-    }else if (shiftObject.startTime.length == 0){
-        return getEmptyMessage("start time")
-    }else if (shiftObject.endTime.length == 0){
-        return getEmptyMessage("end time")
-    }else if (shiftObject.date.length == 0){
-        return getEmptyMessage("date")
-    }else if (isNaN(shiftObject.staffNo)){
-        return getEmptyMessage("staff no.")
-    }else if (isNaN(shiftObject.payRate)){
-        return getEmptyMessage("pay rate")
+export function validateShift(
+    shift: Omit<
+      Shift,
+      | "shift_id"
+      | "created_at"
+      | "status"
+      | "staff_assigned"
+      | "employer_name"
+      | "submission_cycle"
+      | "company_name"
+    >
+  ): ShiftError {
+    const errors = createEmptyShiftError();
+  
+    if (!shift.job_title || shift.job_title.trim().length === 0) {
+      errors.job_title = "Job title is required.";
     }
-}
-
-export const getEmptyMessage = ( fieldName: string)=>{
-    return `Required field ${fieldName} is empty.`
-}
-
-
-export const getTimeError = (startTime: string, endTime: string)=>{
-    if (!checkTimeValid(startTime, endTime)){
-        return "End time cannot be before start time."
+  
+    if (!shift.job_location || shift.job_location.trim().length === 0) {
+      errors.job_location = "Job location is required.";
     }
-}
+  
+    if (shift.job_description == null || shift.job_description.trim().length === 0) {
+      errors.job_description = "Job description is required.";
+    }
+  
+    if (!shift.job_requirements || shift.job_requirements.trim().length === 0 ) {
+      errors.job_requirements = "Job requirements are required.";
+    } 
+  
+    if (!shift.postal_code || shift.postal_code.toString().length !== 6) {
+      errors.postal_code = "Postal code must be a 6-digit number.";
+    }
+  
+    if (!shift.job_type || shift.job_type.trim().length === 0) {
+      errors.job_type = "Job type is required.";
+    }
+  
+    if (shift.pay_rate === undefined || shift.pay_rate <= 0) {
+      errors.pay_rate = "Pay rate must be a positive number.";
+    }
+  
+    if (shift.staff_needed === undefined || shift.staff_needed <= 0) {
+      errors.staff_needed = "Staff No. must be a positive number.";
+    }
+  
+    const isValidDate = (d: any) => d instanceof Date && !isNaN(d.getTime());
+  
+    const startValid = isValidDate(shift.start_time);
+    const endValid = isValidDate(shift.end_time);
+  
+    if (!startValid) {
+      errors.start_time = "Start time must be a valid date.";
+    }
+  
+    if (!endValid) {
+      errors.end_time = "End time must be a valid date.";
+    }
+  
+    if (startValid && endValid) {
+      const durationMs = shift.end_time.getTime() - shift.start_time.getTime();
+      const durationHours = durationMs / (1000 * 60 * 60); // convert ms to hours
+  
+      if (durationHours < 1) {
+        errors.end_time = "Job duration must be at least 1 hour.";
+      }
+  
+      if (
+        shift.break_duration !== null &&
+        (shift.break_duration < 0 || shift.break_duration > durationHours)
+      ) {
+        errors.break_duration = "Break duration must be shorter than job duration.";
+      }
+    }
+  
+    return errors;
+  }
