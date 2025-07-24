@@ -19,6 +19,7 @@ import { useLocationGeocoding } from "./useLocationGeocoding";
 export const usePreferences = () => {
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [homeLocation, setHomeLocation] = useState<[number, number] | null>(
     null
@@ -34,6 +35,26 @@ export const usePreferences = () => {
     loading: geocodingLoading,
     error: geocodingError,
   } = useLocationGeocoding();
+
+  // Helper function for reverting optimistic updates
+  const revertOptimisticUpdate = useCallback(async () => {
+    try {
+      // Re-fetch preferences from database to revert optimistic update
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("preferences")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!error && data) {
+        setPreferences(data);
+      }
+    } catch (revertError) {
+      console.warn("Failed to revert optimistic update:", revertError);
+    }
+  }, [user]);
 
   // Fetch user preferences - desired_roles now stores job names directly
   // Fetch user preferences - desired_roles now stores job names directly
@@ -72,6 +93,111 @@ export const usePreferences = () => {
     }
   }, [user]);
 
+  // Helper function for batch job name validation using database function
+  const validateJobNames = useCallback(
+    async (
+      jobNames: string[]
+    ): Promise<{ isValid: boolean; error?: string }> => {
+      if (!jobNames || jobNames.length === 0) {
+        return { isValid: true };
+      }
+
+      setValidating(true);
+      try {
+        const { data: isValid, error } = await supabase.rpc(
+          "validate_job_names",
+          { job_names: jobNames }
+        );
+
+        if (error) {
+          return { isValid: false, error: error.message };
+        }
+
+        return { isValid: isValid || false };
+      } catch (err) {
+        return { isValid: false, error: (err as Error).message };
+      } finally {
+        setValidating(false);
+      }
+    },
+    []
+  );
+
+  // Helper function for saving preferences with database function and fallback
+  const savePreferencesWithFallback = useCallback(
+    async (formData: PreferencesFormData): Promise<UserPreferences | null> => {
+      const USE_DATABASE_FUNCTION = true; // Feature flag
+
+      // Try database function first
+      if (USE_DATABASE_FUNCTION) {
+        try {
+          console.log("🔧 Using enhanced database function");
+          const { data, error } = await supabase.rpc(
+            "upsert_user_preferences",
+            {
+              p_target_user_id: user.id,
+              p_min_pay_rate: formData.payRate,
+              p_max_travel_km: formData.maxTravelKm,
+              p_desired_roles: formData.selectedJobNames,
+              p_max_hours_per_week: formData.maxHoursPerWeek,
+              p_max_hours_per_shift: formData.maxHoursPerShift,
+              p_consider_lower_rate: formData.considerLowerRate,
+            }
+          );
+
+          if (error) throw new Error(error.message);
+
+          if (data?.[0]) {
+            const result = data[0];
+            if (result.validation_errors?.length > 0) {
+              await revertOptimisticUpdate();
+              setError(result.validation_errors.join(", "));
+              return null;
+            }
+            console.log("✅ Database function succeeded");
+            return result;
+          }
+        } catch (functionError) {
+          console.warn(
+            "Database function failed, using fallback:",
+            functionError
+          );
+        }
+      }
+
+      // Fallback to direct upsert
+      console.log("📝 Using direct table upsert");
+      const preferencesData: Omit<
+        UserPreferences,
+        "preference_id" | "created_at" | "updated_at"
+      > = {
+        user_id: user.id,
+        min_pay_rate: formData.payRate,
+        max_travel_km: formData.maxTravelKm,
+        desired_roles: formData.selectedJobNames,
+        max_hours_per_week: formData.maxHoursPerWeek,
+        max_hours_per_shift: formData.maxHoursPerShift,
+        consider_lower_rate: formData.considerLowerRate,
+      };
+
+      const { data, error } = await supabase
+        .from("preferences")
+        .upsert(preferencesData, { onConflict: "user_id" })
+        .select()
+        .single();
+
+      if (error) {
+        await revertOptimisticUpdate();
+        setError(error.message);
+        return null;
+      }
+
+      console.log("✅ Direct upsert succeeded");
+      return data;
+    },
+    [user, revertOptimisticUpdate]
+  );
+
   // Create default preferences for new users
   const createDefaultPreferences = useCallback(async () => {
     if (!user) return;
@@ -107,7 +233,7 @@ export const usePreferences = () => {
     }
   }, [user]);
 
-  // Save preferences (upsert operation)
+  // Save preferences (optimized with database functions and optimistic updates)
   const savePreferences = useCallback(
     async (formData: PreferencesFormData) => {
       if (!user) {
@@ -135,69 +261,61 @@ export const usePreferences = () => {
       setLoading(true);
       setError(null);
 
+      // Optimization 3: Optimistic Updates - Update UI immediately
+      const optimisticPreferences = {
+        ...tempPreferences,
+        preference_id: preferences?.preference_id || crypto.randomUUID(),
+        created_at: preferences?.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      console.log("🚀 Applying optimistic update:", optimisticPreferences);
+      setPreferences(optimisticPreferences);
+
       try {
-        // Validate that selected job names exist in the database
-        if (formData.selectedJobNames.length > 0) {
-          const { data: existingJobTypes, error: validationError } =
-            await supabase
-              .from("job_types")
-              .select("type_name")
-              .in("type_name", formData.selectedJobNames)
-              .eq("is_active", true);
-
-          if (validationError) {
-            setError(validationError.message);
-            return false;
-          }
-
-          const validJobNames = existingJobTypes.map((jt) => jt.type_name);
-          const invalidJobNames = formData.selectedJobNames.filter(
-            (name) => !validJobNames.includes(name)
+        // Optimization 1: Batch Validation using database function
+        console.log("🔍 Validating job names:", formData.selectedJobNames);
+        const validationResult = await validateJobNames(
+          formData.selectedJobNames
+        );
+        if (!validationResult.isValid) {
+          console.log("❌ Validation failed, reverting optimistic update");
+          // Revert optimistic update
+          await revertOptimisticUpdate();
+          setError(
+            validationResult.error ||
+              "One or more selected job types are invalid or inactive"
           );
-
-          if (invalidJobNames.length > 0) {
-            setError(
-              `Invalid job types selected: ${invalidJobNames.join(", ")}`
-            );
-            return false;
-          }
-        }
-
-        // Save preferences with job names directly in desired_roles JSONB field
-        const preferencesData: Omit<
-          UserPreferences,
-          "preference_id" | "created_at" | "updated_at"
-        > = {
-          user_id: user.id,
-          min_pay_rate: formData.payRate,
-          max_travel_km: formData.maxTravelKm,
-          desired_roles: formData.selectedJobNames, // Store job names directly
-          max_hours_per_week: formData.maxHoursPerWeek,
-          max_hours_per_shift: formData.maxHoursPerShift,
-          consider_lower_rate: formData.considerLowerRate,
-        };
-
-        const { data, error } = await supabase
-          .from("preferences")
-          .upsert(preferencesData, { onConflict: "user_id" })
-          .select()
-          .single();
-
-        if (error) {
-          setError(error.message);
           return false;
         }
+        console.log("✅ Job names validation passed");
 
-        setPreferences(data);
+        // Optimization 2: Enhanced upsert with reliable fallback
+        console.log("💾 Saving preferences");
+
+        const result = await savePreferencesWithFallback(formData);
+        if (!result) return false;
+
+        // Update with actual database result
+        console.log("✅ Preferences saved successfully:", result);
+        setPreferences(result);
+
         return true;
       } catch (err) {
+        // Revert optimistic update on any error
+        await revertOptimisticUpdate();
         setError((err as Error).message);
         return false;
       } finally {
         setLoading(false);
       }
     },
-    [user]
+    [
+      user,
+      preferences,
+      revertOptimisticUpdate,
+      validateJobNames,
+      savePreferencesWithFallback,
+    ]
   );
 
   // Update specific preference fields
@@ -317,7 +435,7 @@ export const usePreferences = () => {
           setHomeAddress(null);
           return;
         }
-        
+
         // Enhanced error handling for different database errors
         let errorMessage = "Failed to load location data";
         if (error.code === "PGRST301") {
@@ -327,7 +445,7 @@ export const usePreferences = () => {
         } else {
           errorMessage = `Location data error: ${error.message}`;
         }
-        
+
         setError(errorMessage);
         return;
       }
@@ -344,23 +462,40 @@ export const usePreferences = () => {
       if (data.address_coordinates) {
         try {
           const [lat, lng] = data.address_coordinates.split(",").map(Number);
-          
+
           // Validate coordinates are valid numbers and within Singapore bounds
           if (!isNaN(lat) && !isNaN(lng)) {
             // Singapore bounds validation
-            if (lat >= 1.2290 && lat <= 1.4784 && lng >= 103.6000 && lng <= 104.0120) {
+            if (
+              lat >= 1.229 &&
+              lat <= 1.4784 &&
+              lng >= 103.6 &&
+              lng <= 104.012
+            ) {
               setHomeLocation([lat, lng]);
             } else {
-              console.warn("Home location coordinates are outside Singapore bounds:", [lat, lng]);
-              setError("Home location appears to be outside Singapore. Please update your profile.");
+              console.warn(
+                "Home location coordinates are outside Singapore bounds:",
+                [lat, lng]
+              );
+              setError(
+                "Home location appears to be outside Singapore. Please update your profile."
+              );
             }
           } else {
-            console.warn("Invalid address coordinates:", data.address_coordinates);
-            setError("Invalid location data format. Please update your profile.");
+            console.warn(
+              "Invalid address coordinates:",
+              data.address_coordinates
+            );
+            setError(
+              "Invalid location data format. Please update your profile."
+            );
           }
         } catch (parseError) {
           console.warn("Failed to parse address_coordinates:", parseError);
-          setError("Unable to parse location data. Please update your profile.");
+          setError(
+            "Unable to parse location data. Please update your profile."
+          );
         }
       }
 
@@ -368,9 +503,10 @@ export const usePreferences = () => {
       setHomeAddress(data.postal_code || null);
     } catch (err) {
       // Network or unexpected errors
-      const errorMessage = err instanceof Error 
-        ? `Network error loading location: ${err.message}`
-        : "Unexpected error loading location data";
+      const errorMessage =
+        err instanceof Error
+          ? `Network error loading location: ${err.message}`
+          : "Unexpected error loading location data";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -394,7 +530,9 @@ export const usePreferences = () => {
     // Try to geocode from postal code (no address column exists in job_seekers table)
     const addressToGeocode = locationData.postal_code;
     if (!addressToGeocode) {
-      setError("No postal code available for geocoding. Please update your profile with a valid Singapore postal code.");
+      setError(
+        "No postal code available for geocoding. Please update your profile with a valid Singapore postal code."
+      );
       return null;
     }
 
@@ -403,7 +541,7 @@ export const usePreferences = () => {
 
     try {
       const coordinates = await geocodeAddress(addressToGeocode);
-      
+
       if (coordinates) {
         setHomeLocation(coordinates);
 
@@ -422,22 +560,31 @@ export const usePreferences = () => {
         if (geocodingError) {
           setError(`Location lookup failed: ${geocodingError.message}`);
         } else {
-          setError("Unable to find location for the provided postal code. Please verify your postal code in your profile.");
+          setError(
+            "Unable to find location for the provided postal code. Please verify your postal code in your profile."
+          );
         }
       }
-      
+
       return coordinates;
     } catch (err) {
       // Handle unexpected errors
-      const errorMessage = err instanceof Error 
-        ? `Geocoding error: ${err.message}`
-        : "Unexpected error during location lookup";
+      const errorMessage =
+        err instanceof Error
+          ? `Geocoding error: ${err.message}`
+          : "Unexpected error during location lookup";
       setError(errorMessage);
       return null;
     } finally {
       setLoading(false);
     }
-  }, [locationData, homeLocation, geocodeAddress, reverseGeocode, geocodingError]);
+  }, [
+    locationData,
+    homeLocation,
+    geocodeAddress,
+    reverseGeocode,
+    geocodingError,
+  ]);
 
   // Load preferences and location data on mount or user change
   useEffect(() => {
@@ -452,11 +599,11 @@ export const usePreferences = () => {
 
   return {
     // Data
-    // Data
     preferences,
 
     // State
     loading: loading || geocodingLoading,
+    validating,
     error: error || (geocodingError ? geocodingError.message : null),
 
     // Actions
@@ -470,6 +617,7 @@ export const usePreferences = () => {
     getFormData,
     hasJobPreference,
     getPreferredJobTypes,
+    validateJobNames, // New batch validation helper
 
     // Location-related properties and methods
     homeLocation,
