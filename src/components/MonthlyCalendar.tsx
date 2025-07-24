@@ -7,8 +7,8 @@ const MonthlyCalendar = () => {
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const calendarStart = startOfWeek(monthStart);
-  const calendarEnd = endOfWeek(monthEnd);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
   
   const days = eachDayOfInterval({
     start: calendarStart,
@@ -46,7 +46,7 @@ const MonthlyCalendar = () => {
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
+        {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa','Su'].map(day => (
           <div key={day} className="text-xs text-center text-secondary-text">
             {day}
           </div>

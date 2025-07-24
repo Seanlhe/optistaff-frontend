@@ -199,6 +199,7 @@ export interface Assignment {
     employee_name: string;
     employer_name: string;
     employee_id: string;
+    company_name: string;
     job_title: string;
     job_location: string;
     postal_code: string;
