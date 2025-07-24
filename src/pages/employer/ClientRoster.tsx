@@ -4,7 +4,7 @@ import ClientCalendarDay from "../../components/ClientCalendarDay";
 import ClientEdit from "./ClientEdit";
 import { Shift } from "../../types/hooks";
 import { useShifts } from "../../hooks/useShifts";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format, startOfWeek, addDays } from "date-fns";
 
 export default function ClientRoster() {
@@ -28,9 +28,15 @@ export default function ClientRoster() {
     return locations;
   }, [shifts]);
 
-  const [selectedLocation, setSelectedLocation] = useState(
-    availableLocations[0]
+  const [selectedLocation, setSelectedLocation] = useState<string | undefined>(
+    undefined
   );
+
+  useEffect(() => {
+    if (availableLocations.length > 0 && !selectedLocation) {
+      setSelectedLocation(availableLocations[0]);
+    }
+  }, [availableLocations, selectedLocation]);
 
   // Calculate dynamic week days
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Start on Monday
@@ -137,7 +143,7 @@ export default function ClientRoster() {
       >
         {/* Calendar Header */}
         <ClientCalendarHeader
-          selectedLocation={selectedLocation}
+          selectedLocation={selectedLocation ?? ""}
           onLocationChange={setSelectedLocation}
           availableLocations={availableLocations}
           days={days}
@@ -152,7 +158,7 @@ export default function ClientRoster() {
               key={day.date}
               day={day}
               shiftData={shifts}
-              selectedLocation={selectedLocation}
+              selectedLocation={selectedLocation ?? ""}
               selectedShift={selectedShift}
               onShiftClick={handleShiftClick}
             />

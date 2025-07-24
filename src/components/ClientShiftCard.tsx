@@ -9,9 +9,9 @@ interface ClientShiftCardProps extends Shift {
 
 export default function ClientShiftCard({
   shift_id,
-  client_name,
-  title,
-  description,
+  employer_name,
+  job_title,
+  job_description,
   start_time,
   end_time,
   pay_rate,
@@ -37,9 +37,9 @@ export default function ClientShiftCard({
     if (onShiftClick) {
       onShiftClick({
         shift_id,
-        client_name,
-        title,
-        description,
+        employer_name,
+        job_title,
+        job_description,
         start_time,
         end_time,
         pay_rate,
@@ -50,7 +50,10 @@ export default function ClientShiftCard({
         created_at,
         break_duration,
         status,
-        job_name: "",
+        company_name: "",
+        postal_code: 0,
+        job_requirements: null,
+        job_type: "",
       });
     }
   };
@@ -62,6 +65,10 @@ export default function ClientShiftCard({
         isSelected ? "ring-2 ring-gray-300 ring-opacity-50" : "hover:shadow-sm"
       }`}
     >
+      <p className="font-montserrat-smb mb-1.5 line-clamp-2 leading-tight">
+        {job_title}
+      </p>
+
       <div className="flex items-start mb-1.5">
         <span className="text-sm font-medium">
           {startTimeFormatted} to
@@ -70,9 +77,6 @@ export default function ClientShiftCard({
         </span>
       </div>
 
-      <p className="text-xs font-medium mb-1.5 line-clamp-2 leading-tight">
-        {title}
-      </p>
       <div className="flex items-center text-xs">
         <img
           src="/icons/person.svg"
