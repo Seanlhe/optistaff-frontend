@@ -19,62 +19,62 @@ export interface UserLocationData {
 
 // useAuth interfaces
 interface User {
-    id: string;
-    email: string;
-    role: 'jobseeker' | 'employer';
+  id: string;
+  email: string;
+  role: 'jobseeker' | 'employer';
 }
 
 export interface AuthState {
-    user: User | null;
-    loading: boolean;
-    error: string | null;
+  user: User | null;
+  loading: boolean;
+  error: string | null;
 }
 
 export interface SignupData {
-    email: string;
-    password: string;
-    confirmPassword: string;
-    userType: 'jobseeker' | 'employer';
-    firstName: string;
-    lastName: string;
-    phoneNumber?: string;
-    dateOfBirth?: string;        // New field for job seekers
-    address?: string;            // New field for both user types
-    postalCode?: string;         // New field for both user types
-    companyName?: string;
-    officeNumber?: string;       // New field for employers
+  email: string;
+  password: string;
+  confirmPassword: string;
+  userType: 'jobseeker' | 'employer';
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;        // New field for job seekers
+  address?: string;            // New field for both user types
+  postalCode?: string;         // New field for both user types
+  companyName?: string;
+  officeNumber?: string;       // New field for employers
 }
 
 // useShifts interfaces
 export interface Shift {
-    shift_id: string;
-    employer_name: string;
-    company_name: string;
-    job_title: string;
-    job_location: string;
-    postal_code: number;
-    job_description: string | null;
-    job_requirements: string | null;
-    job_type: string;
-    pay_rate: number;
-    start_time: Date;
-    end_time: Date;
-    break_duration: number | null; // in hours 0.5 for 30 minutes 1.45 for 1 hour 45 minutes, in 15 minute increments
-    staff_needed: number;
-    staff_assigned: number;
-    submission_cycle: 'PRIMARY' | 'SECONDARY';
-    status: string;
-    created_at: Date;
+  shift_id: string;
+  employer_name: string;
+  company_name: string;
+  job_title: string;
+  job_location: string;
+  postal_code: number;
+  job_description: string | null;
+  job_requirements: string | null;
+  job_type: string;
+  pay_rate: number;
+  start_time: Date;
+  end_time: Date;
+  break_duration: number | null; // in hours 0.5 for 30 minutes 1.45 for 1 hour 45 minutes, in 15 minute increments
+  staff_needed: number;
+  staff_assigned: number;
+  submission_cycle: 'PRIMARY' | 'SECONDARY';
+  status: string;
+  created_at: Date;
 }
 
 // useAvailability interfaces
 export interface TimeBlock {
-    id?: string;
-    user_id: string;
-    start_time: string; // ISO string
-    end_time: string;   // ISO string
-    submission_cycle: 'PRIMARY' | 'SECONDARY'; // Scheduling cycle
-    day_of_week: number; // 1 = Monday,  7  = Sunday
+  id?: string;
+  user_id: string;
+  start_time: string; // ISO string
+  end_time: string;   // ISO string
+  submission_cycle: 'PRIMARY' | 'SECONDARY'; // Scheduling cycle
+  day_of_week: number; // 1 = Monday,  7  = Sunday
 }
 
 // useUserProfile interfaces
@@ -85,14 +85,14 @@ export interface ProfileDisplayData {
   firstName: string;
   lastName: string;
   fullName: string;        // computed: firstName + lastName
-  
+
   // Job Seeker specific (only for job seekers)
   rating?: number;         // from job_seekers.rating
   accountStatus?: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE'; // from job_seekers.status
-  
+
   // Client specific (only for clients)
   companyName?: string;    // from clients.company_name
-  
+
   // Account Info (from auth.users)
   email: string;           // from auth.users.email
   accountCreated: string;  // from auth.users.created_at
@@ -117,10 +117,10 @@ export interface AccountSettingsFormData {
 export interface UserProfileData {
   // Display data (read-only)
   display: ProfileDisplayData;
-  
+
   // Editable data
   personalInfo: PersonalInfoFormData;
-  
+
   // User role for conditional rendering
   userRole: 'jobseeker' | 'employer';
 }
@@ -150,7 +150,7 @@ export interface PreferencesFormData {
   maxHoursPerShift: number;
   maxTravelKm: number;
   selectedJobNames: string[]; // Job names - now matches database storage
-  
+
   // Location fields (read-only from job_seekers table)
   homeLocation?: [number, number]; // [latitude, longitude] coordinates for map display
   homeAddress?: string; // Formatted address string for display purposes
@@ -207,88 +207,26 @@ export interface Payout {
 
 // useAssignments interfaces
 export interface Assignment {
-    assignment_id: string;
-    employee_name: string;
-    employer_name: string;
-    employee_id: string;
-    job_title: string;
-    job_location: string;
-    postal_code: string;
-    job_description: string | null;
-    job_requirements: string | null;
-    job_type: string;
-    pay_rate: number;
-    start_time: Date;
-    end_time: Date;
-    break_hours: number;
-    contact_number: string;
-    contact_email: string;
-    check_in_time: string | null;
-    check_out_time: string | null;
-    status: string;
-    created_at: string;
-}
-
-// General status type for assignment cancellation
-
-export enum StatusEnum {
-  CancelByEmployer = 'cancel_by_employer',
-  CancelByEmployee = 'cancel_by_employee',
-  Confirmed = 'confirmed',
-  Upcoming = 'upcoming',
-  Active = 'active', // New status for active assignments
-  Completed = 'completed', // New status for completed assignments
-  NoShow = 'no_show', // New status for no-show assignments 
-  Pending = 'pending', // New status for pending assignments
-}
-
-// Complete profile data structure
-export interface UserProfileData {
-  // Display data (read-only)
-  display: ProfileDisplayData;
-  
-  // Editable data
-  personalInfo: PersonalInfoFormData;
-  
-  // User role for conditional rendering
-  userRole: 'jobseeker' | 'employer';
-}
-
-// Legacy type for backward compatibility
-export type UserProfile = UserProfileData;
-
-// For displaying profile information (read-only)
-export interface ProfileDisplayData {
-  // Personal Info (from job_seekers/clients table)
-  firstName: string;
-  lastName: string;
-  fullName: string;        // computed: firstName + lastName
-  
-  // Job Seeker specific (only for job seekers)
-  rating?: number;         // from job_seekers.rating
-  accountStatus?: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE'; // from job_seekers.status
-  
-  // Client specific (only for clients)
-  companyName?: string;    // from clients.company_name
-  
-  // Account Info (from auth.users)
-  email: string;           // from auth.users.email
-  accountCreated: string;  // from auth.users.created_at
-}
-
-// For editing personal information
-export interface PersonalInfoFormData {
-  phoneNumber: string;     // job_seekers.phone_number OR clients.phone
-  homeAddress: string;     // job_seekers.address_coordinates OR clients.address  
-  postalCode: string;      // job_seekers.postal_code OR clients.postal_code
-}
-
-// For changing account details
-export interface AccountSettingsFormData {
-  email: string;           // auth.users.email
-  currentPassword: string; // for verification
-  newPassword?: string;    // optional - only if changing password
-  confirmPassword?: string; // optional - only if changing password
+  assignment_id: string;
+  employee_name: string;
+  employer_name: string;
+  employee_id: string;
+  job_title: string;
+  job_location: string;
+  postal_code: string;
+  job_description: string | null;
+  job_requirements: string | null;
+  job_type: string;
+  pay_rate: number;
+  start_time: Date;
+  end_time: Date;
+  break_hours: number;
+  contact_number: string;
+  contact_email: string;
+  check_in_time: string | null;
+  check_out_time: string | null;
+  status: string;
+  created_at: string;
 }
 
 // useFeedback interfaces
@@ -322,7 +260,7 @@ export interface UsePreferencesReturn {
   preferences: UserPreferences | null;
   loading: boolean;
   error: string | null;
-  
+
   // Existing methods
   fetchPreferences: () => Promise<void>;
   savePreferences: (formData: PreferencesFormData) => Promise<boolean>;
@@ -332,7 +270,7 @@ export interface UsePreferencesReturn {
   getFormData: () => PreferencesFormData | null;
   hasJobPreference: (jobTypeName: string) => boolean;
   getPreferredJobTypes: () => string[];
-  
+
   // New location-related properties and methods
   homeLocation: [number, number] | null; // User's home coordinates from job_seekers table
   homeAddress: string | null; // User's formatted home address
