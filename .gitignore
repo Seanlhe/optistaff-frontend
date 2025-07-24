@@ -7,10 +7,3 @@ dist
 
 .kiro
 .kiro/
-
-# Project documentation files
-CLAUDE.md
-
-# Test coverage files
-coverage/
-*.lcov
