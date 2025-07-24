@@ -53,6 +53,38 @@ export default function ClientRoster() {
     );
   }, [filteredShifts, selectedLocation]);
 
+  useEffect(() => {
+    if (locationFilteredShifts.length > 0) {
+      // Find the earliest shift in the filtered results
+      const earliestShift = locationFilteredShifts.reduce(
+        (earliest, current) => {
+          return new Date(current.start_time) < new Date(earliest.start_time)
+            ? current
+            : earliest;
+        }
+      );
+
+      // Get the week start of the earliest shift
+      const earliestShiftDate = new Date(earliestShift.start_time);
+      const earliestShiftWeek = startOfWeek(earliestShiftDate, {
+        weekStartsOn: 1,
+      });
+
+      // Only navigate if we're not already viewing that week
+      const currentWeekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
+      if (
+        format(earliestShiftWeek, "yyyy-MM-dd") !==
+        format(currentWeekStart, "yyyy-MM-dd")
+      ) {
+        console.log(
+          "🗓️ Navigating to first shift week:",
+          format(earliestShiftWeek, "yyyy-MM-dd")
+        );
+        setCurrentWeek(earliestShiftWeek);
+      }
+    }
+  }, [locationFilteredShifts]);
+
   const availableLocations = useMemo(() => {
     if (!filteredShifts || filteredShifts.length === 0) return [];
 
