@@ -20,7 +20,7 @@ export default function ClientShiftDetails({
     if (!onDelete) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${shiftData.job_title}"?\n\nThis action cannot be undone.`
+      `Are you sure you want to delete this shift?\n\nThis action cannot be undone.`
     );
 
     if (!confirmed) {
