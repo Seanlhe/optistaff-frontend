@@ -1,8 +1,9 @@
-import { Shift, PreferencesFormData } from "./hooks"
-export interface IconButtonProps{
-    text: string,
-    src: string
-    onClick: React.MouseEventHandler<HTMLButtonElement> | undefined
+import {PreferencesFormData, UI_Event } from "./hooks";
+
+export interface IconButtonProps {
+  text: string,
+  src: string
+  onClick: React.MouseEventHandler<HTMLButtonElement> | undefined
 }
 
 export interface CircleButtonProps {
@@ -24,21 +25,21 @@ export interface InputFieldProps {
   disabled?: boolean
   placeholder?: string;
   className?: string;
-  value?: string| number
+  value?: string | number
   type?: string;
   valid?: boolean;
   error?: string | null;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export interface SelectProps{
+export interface SelectProps {
   name: string;
   title: string;
-  options: {label: string, value: string}[];
+  options: { label: string, value: string }[];
   disabled?: boolean
   placeholder?: string;
   className?: string;
-  value?: string| number
+  value?: string | number
   type?: string;
   valid?: boolean;
   error?: string | null;
@@ -50,7 +51,7 @@ export interface InputAreaProps {
   title: string;
   placeholder?: string;
   disabled?: boolean
-  value?: string| number
+  value?: string | number
   className?: string;
   valid?: boolean;
   error?: string | null;
@@ -196,7 +197,9 @@ export interface TemplateSelectDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (templateId: string) => void;
+  onDelete: (templateId: string) => void;
   onSaveTemplate?: () => void;
+  timeblocks: UI_Event[];
   loading?: boolean;
 }
 

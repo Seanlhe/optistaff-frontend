@@ -74,6 +74,7 @@ export interface TimeBlock {
     start_time: string; // ISO string
     end_time: string;   // ISO string
     submission_cycle: 'PRIMARY' | 'SECONDARY'; // Scheduling cycle
+    day_of_week: number; // 1 = Monday,  7  = Sunday
 }
 
 // useUserProfile interfaces
@@ -215,6 +216,26 @@ export interface Assignment {
   check_out_time: string | null;
   status: string;
   created_at: string;
+}
+
+// useAvailabilityTemplate interfaces
+export interface AvailabilityTemplate {
+    template_id: string;
+    user_id: string;
+    template_name: string;
+    is_default: boolean;
+    created_at: Date;
+    updated_at: Date;
+    timeblocks: UI_Event[];
+}
+
+//export interface Event says any object we call an Event must have
+// an id, title, startTime, and endTime.
+export interface UI_Event {
+  id: string;
+  day_of_week: number; // 1 = Monday,  7  = Sunday
+  startTime: Date;
+  endTime: Date;
 }
 
 // useFeedback interfaces

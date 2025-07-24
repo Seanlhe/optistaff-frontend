@@ -71,58 +71,75 @@ export const useAvailability = () => {
   ); // Dependencies: user and authLoading
 
   // Save new set of availability windows
-  const setAvailability = useCallback(
-    async (timeBlocks: Omit<TimeBlock, "user_id">[]) => {
-      setSaveLoading(true);
-      setError(null);
+const setAvailability = useCallback(
+  async (
+    timeBlocks: {
+      start_time: string;
+      end_time: string;
+      submission_cycle: 'PRIMARY' | 'SECONDARY';
+    }[],
+    cycle: 'PRIMARY' | 'SECONDARY'
+  ) => {
+    setSaveLoading(true);
+    setError(null);
 
-      // Wait for auth to complete first - FIX FOR RACE CONDITION
-      if (authLoading) {
-        setSaveLoading(false);
-        return false;
-      }
-
-      // Check if user is authenticated
-      if (!user) {
-        setSaveLoading(false);
-        setError("User not authenticated");
-        return false;
-      }
-
-      // Determine which cycles are present in the new timeBlocks
-      const cycles = [...new Set(timeBlocks.map((tb) => tb.submission_cycle))];
-
-      // Remove previous records for this user & cycle
-      for (const cycle of cycles) {
-        await supabase
-          .from("availability")
-          .delete()
-          .eq("user_id", user.id)
-          .eq("submission_cycle", cycle);
-      }
-
-      // Insert new records
-      const blocksWithUser = timeBlocks.map((tb) => ({
-        ...tb,
-        user_id: user.id,
-      }));
-
-      // Insert the new time blocks
-      const { error: supaError } = await supabase
-        .from("availability")
-        .insert(blocksWithUser);
-
+    if (authLoading) {
       setSaveLoading(false);
+      return false;
+    }
 
-      // Handle errors from Supabase insert
-      if (supaError) {
-        setError(supaError.message);
+    if (!user) {
+      setSaveLoading(false);
+      setError('User not authenticated');
+      return false;
+    }
+
+    // ✅ Always delete existing availability for this user + cycle
+    const { error: deleteError } = await supabase
+      .from('availability')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('submission_cycle', cycle);
+
+    if (deleteError) {
+      setSaveLoading(false);
+      setError(`Error deleting availability: ${deleteError.message}`);
+      return false;
+    }
+
+    // Map timeBlocks to include user_id and computed day_of_week
+      const blocksWithUserAndDay = timeBlocks.map(tb => {
+        const startDate = new Date(tb.start_time);
+        const jsDay = startDate.getUTCDay(); // Sunday = 0, Monday = 1, ...
+        const isoDay = jsDay === 0 ? 7 : jsDay; // Convert to ISO (1 = Monday, 7 = Sunday)
+
+        return {
+          ...tb,
+          user_id: user.id,
+          day_of_week: isoDay,
+        };
+      });
+
+    // ✅ Only insert new time blocks if not empty
+    if (timeBlocks.length > 0) {
+
+      const { error: insertError } = await supabase
+        .from('availability')
+        .insert(blocksWithUserAndDay);
+
+      if (insertError) {
+        setSaveLoading(false);
+        setError(`Error inserting availability: ${insertError.message}`);
         return false;
       }
-      return true;
-    },
-    [user, authLoading]
-  ); // Dependencies: user and authLoading
+    }
+
+    setSaveLoading(false);
+    return true;
+  },
+  [supabase, user, authLoading, setSaveLoading, setError]
+);
+
 
   // Return the functions and state to the component using this hook
   return {
