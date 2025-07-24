@@ -1,3 +1,9 @@
+// Error type for location-aware components
+export type MapError = {
+  type: 'PERMISSION_DENIED' | 'POSITION_UNAVAILABLE' | 'TIMEOUT' | string;
+  message: string;
+  canRetry?: boolean;
+};
 // Centralized hook interfaces
 
 // Location-related type definitions
@@ -176,7 +182,16 @@ export interface JobTypesByCategory {
 }
 
 // usePayouts interfaces
-export type Payout = Record<string, unknown>;
+export interface Payout {
+  payout_id: string;
+  user_id: string;
+  amount: number;
+  start_period: string;
+  end_period: string;
+  created_at: string;
+  status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
+}
+
 
 // useAssignments interfaces
 export interface Assignment {
@@ -184,6 +199,7 @@ export interface Assignment {
     employee_name: string;
     employer_name: string;
     employee_id: string;
+    company_name: string;
     job_title: string;
     job_location: string;
     postal_code: string;

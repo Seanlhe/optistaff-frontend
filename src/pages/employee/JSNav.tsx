@@ -1,31 +1,50 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import NavItem from "../../components/NavItem";
 import { NavItemProps } from "../../types/navigation";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function JSNav() {
   const { logout, user } = useAuth();
+  const location = useLocation();
+  
   useEffect(() => {
     console.log("JSNav mounted");
   }, []);
+  
+  // Function to get the current selected item based on the URL pathname
+  const getCurrentSelected = (): string => {
+    const pathname = location.pathname;
+    const path = pathname.split('/').pop(); // Get the last part of the path
+    
+    // Map URL paths to navigation item names
+    const pathToNameMap: { [key: string]: string } = {
+      'dashboard': 'Dashboard',
+      'myjobs': 'My Jobs',
+      'account': 'Account',
+      'preferences': 'Preferences',
+      'employee': 'Dashboard' // Handle base employee path
+    };
+    
+    return pathToNameMap[path || 'dashboard'] || 'Dashboard';
+  };
+  
   const adminNavItems: NavItemProps[] = [
     { name: "Dashboard", src: "/icons/calendaricon.svg", to: "dashboard" },
-    { name: "Schedule", src: "/icons/calendaricon.svg", to: "schedule" },
-    { name: "Earnings", src: "/icons/uploadicon.svg", to: "earnings" },
+    { name: "My Jobs", src: "/icons/uploadicon.svg", to: "myjobs" },
   ];
   const prefNavItems: NavItemProps[] = [
-    { name: "Profile", src: "/icons/person.svg", to: "profile" },
-    { name: "Settings", src: "/icons/gearicon.svg", to: "settings" },
+    { name: "Account", src: "/icons/gearicon.svg", to: "account" },
     { name: "Preferences", src: "/icons/gearicon.svg", to: "preferences" },
   ];
-  const [selected, setSelected] = useState<string>("Dashboard");
+  
+  const selected = getCurrentSelected();
 
   function handleClick(name: string) {
     if (name === "Logout") {
       logout();
-    } else {
-      setSelected(name);
     }
+    // Remove the setSelected call since we're now using URL-based selection
   }
 
   return (
@@ -54,7 +73,6 @@ export default function JSNav() {
               key={navItemProps.name}
               {...navItemProps}
               selected={selected}
-              onClick={() => handleClick(navItemProps.name)}
             />
           ))}
         </ul>
@@ -69,7 +87,6 @@ export default function JSNav() {
               key={navItemProps.name}
               {...navItemProps}
               selected={selected}
-              onClick={() => handleClick(navItemProps.name)}
             />
           ))}
           <li>
