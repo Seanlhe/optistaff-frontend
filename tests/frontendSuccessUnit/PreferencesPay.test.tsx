@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { PreferencesPay } from './PreferencesPay';
-import { PreferencesFormData } from '../types/hooks';
+import { PreferencesPay } from '../../src/components/PreferencesPay';
+import { PreferencesFormData } from '../../src/types/hooks';
 
 describe('PreferencesPay', () => {
   const mockSetFormData = vi.fn();

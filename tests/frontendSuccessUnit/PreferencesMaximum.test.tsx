@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import PreferencesMaximum from './PreferencesMaximum';
-import { PreferencesFormData } from '../types/hooks';
+import PreferencesMaximum from '../../src/components/PreferencesMaximum';
+import { PreferencesFormData } from '../../src/types/hooks';
 
 describe('PreferencesMaximum', () => {
   const mockSetFormData = vi.fn();

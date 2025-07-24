@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import CalendarEvent from './CalendarEvent';
-import type { Event } from './Calendar';
+import CalendarEvent from '../../src/components/CalendarEvent';
+import type { Event } from '../../src/components/Calendar';
 
 // --- Test Setup ---
 

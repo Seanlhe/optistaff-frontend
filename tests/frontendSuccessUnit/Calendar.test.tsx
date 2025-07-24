@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import { Calendar, Event } from './Calendar';
+import { Calendar, Event } from '../../src/components/Calendar';
 import { format, startOfWeek, addDays, set } from 'date-fns';
 
 // Mock the useAvailability hook
@@ -17,12 +17,12 @@ const mockAvailabilityHook = {
   error: null as string | null,
 };
 
-vi.mock('../hooks/useAvailability', () => ({
+vi.mock('../../src/hooks/useAvailability', () => ({
   useAvailability: () => mockAvailabilityHook,
 }));
 
 // Mock the child components
-vi.mock('./CalendarEvent', () => ({
+vi.mock('../../src/components/CalendarEvent', () => ({
   CalendarEvent: ({ event, onUpdate, onDelete }: { 
     event: Event; 
     onUpdate: (event: Event) => void; 
@@ -48,7 +48,7 @@ vi.mock('./CalendarEvent', () => ({
   ),
 }));
 
-vi.mock('./TemplateNameDialog', () => ({
+vi.mock('../../src/components/TemplateNameDialog', () => ({
   TemplateNameDialog: ({ isOpen, onClose, onSave, loading }: {
     isOpen: boolean;
     onClose: () => void;
@@ -59,7 +59,10 @@ vi.mock('./TemplateNameDialog', () => ({
       <input data-testid="template-name-input" placeholder="Template name" />
       <button 
         data-testid="save-template-button"
-        onClick={() => onSave('Test Template')}
+        onClick={() => {
+          onSave('Test Template');
+          onClose();
+        }}
         disabled={loading}
       >
         {loading ? 'Saving...' : 'Save Template'}
@@ -69,7 +72,7 @@ vi.mock('./TemplateNameDialog', () => ({
   ) : null,
 }));
 
-vi.mock('./TemplateSelectDialog', () => ({
+vi.mock('../../src/components/TemplateSelectDialog', () => ({
   TemplateSelectDialog: ({ isOpen, onClose, onSelect, onSaveTemplate, loading }: {
     isOpen: boolean;
     onClose: () => void;
@@ -80,7 +83,10 @@ vi.mock('./TemplateSelectDialog', () => ({
     <div data-testid="template-select-dialog">
       <button 
         data-testid="select-template-button"
-        onClick={() => onSelect('template-1')}
+        onClick={() => {
+          onSelect('template-1');
+          onClose();
+        }}
         disabled={loading}
       >
         {loading ? 'Loading...' : 'Use Template'}
@@ -253,7 +259,8 @@ describe('Calendar', () => {
             end_time: expect.any(String),
             submission_cycle: 'PRIMARY',
           }),
-        ])
+        ]),
+        'PRIMARY'
       );
     });
   });

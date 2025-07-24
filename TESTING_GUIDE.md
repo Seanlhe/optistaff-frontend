@@ -1,774 +1,577 @@
-# OptiStaff Frontend Testing Guide
+# Testing Guide
+
+This guide explains what real functionality each test file covers in the OptiStaff job seeker preferences system.
 
 ## Overview
-This guide explains how to run the Vitest tests for all Preferences components and what was implemented. The test suite covers form interactions, state management, user input validation, and error handling across multiple React components.
 
-## Running the Tests
+The test files in `tests/frontendSuccessUnit/` cover a comprehensive **job seeker preferences system** that allows users to specify their work availability, location constraints, preferred job types, and compensation expectations.
 
-### Command to Run Tests
-```bash
-npm test
-```
+## Test File → Source File → Functionality Mapping
 
-This will run all tests in the project using Vitest.
+### 1. **Calendar.test.tsx** → `src/components/Calendar.tsx`
+**Tests the weekly availability calendar for job seekers to set working hours**
 
-### Test File Locations
-The test files are located at:
-```
-src/components/PreferencesForm.test.tsx        # Parent form component
-src/components/PreferencesJobType.test.tsx     # Job type selection
-src/components/PreferencesPay.test.tsx         # Pay rate slider and checkbox
-src/components/PreferencesMaximum.test.tsx     # Hours input validation
-src/components/Calendar.test.tsx               # Calendar availability management
-src/components/LocationAwareMap.test.tsx       # Interactive map component
-```
+**Source File Functions:**
+- Weekly calendar display with navigation (prev/next week, today button)
+- 24-hour × 7-day grid layout for time slot selection
+- Integration with Supabase database for availability storage
+- Template system for saving/loading availability patterns
 
-## What Was Implemented
+**What the Tests Verify:**
+- ✅ Calendar renders with current week and navigation controls
+- ✅ Loads existing availability events from database on mount
+- ✅ Creates new availability slots via double-click on time slots
+- ✅ Saves availability data to backend when Save button clicked
+- ✅ Refreshes data when refresh button clicked
+- ✅ Opens template dialogs for saving/loading availability patterns
+- ✅ Handles template selection and applies template to calendar
+- ✅ Updates and deletes existing availability events
+- ✅ Shows error messages for API failures
+- ✅ Displays loading states during save operations
+- ✅ Renders all 24 hours and 7 days correctly
 
-### 1. Vitest Configuration (`vitest.config.ts`)
-- **Environment**: Changed from browser mode to `jsdom` for better stability
-- **Path Aliases**: Added `@` alias pointing to `./src` for imports
-- **Globals**: Enabled global test functions (describe, it, expect, vi)
-- **TypeScript Support**: Added vitest types reference
+### 2. **CalendarEvent.test.tsx** → `src/components/CalendarEvent.tsx`
+**Tests individual draggable/resizable time blocks within the calendar**
 
-```typescript
-/// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
-import { resolve } from 'path'
+**Source File Functions:**
+- Visual representation of availability time slots
+- Drag-and-drop functionality for moving events
+- Resize handles for adjusting event duration
+- Mouse and keyboard interaction handling
 
-export default defineConfig({
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-    },
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-  },
-})
-```
+**What the Tests Verify:**
+- ✅ Event positioning based on start/end times (48px per hour calculation)
+- ✅ Visual state changes (selected/unselected, dragging states)
+- ✅ Mouse interactions (click to select, double-click to delete)
+- ✅ Keyboard deletion (Delete/Backspace keys)
+- ✅ Drag-and-drop with time and day boundary constraints
+- ✅ Resize functionality using bottom resize handle
+- ✅ Time display formatting (HH:MM - HH:MM)
+- ✅ Z-index management during dragging operations
+- ✅ Event boundary validation (staying within day limits)
 
-### TypeScript Configuration Fix
-Updated `tsconfig.app.json` to include vitest globals:
-```json
-{
-  "compilerOptions": {
-    "types": ["vitest/globals"],
-    // ... other options
-  }
-}
-```
+### 3. **JSPref.test.tsx** → `src/pages/employee/JSPref.tsx`
+**Tests the main preferences page with tab navigation**
 
-## Component Test Coverage
+**Source File Functions:**
+- Tab switching between "Preferences" and "Availability" views
+- Layout management for preference components
+- State management for active tab
 
-### 1. PreferencesForm Component Tests (11 scenarios)
-**File**: `src/components/PreferencesForm.tsx`
+**What the Tests Verify:**
+- ✅ Renders with "Preferences" tab selected by default
+- ✅ Applies correct CSS classes to active/inactive tabs
+- ✅ Switches to Availability tab when clicked
+- ✅ Switches back to Preferences tab when clicked
+- ✅ Updates CSS classes when switching tabs
+- ✅ Maintains correct container structure and styling
+- ✅ Only renders one component at a time
+- ✅ Maintains tab state across multiple clicks
 
-**Key Functions Tested**:
-- `handleSubmit()` - Form submission with loading states
-- `handleRadiusChange()` - Map radius updates  
-- `handleLocationError()` - Location error handling
-- `handleLocationRetry()` - Error recovery mechanism
+### 4. **LocationAwareMap.test.tsx** → `src/components/LocationAwareMap.tsx`
+**Tests interactive map for travel distance preferences**
 
-**Form State Management**:
-```typescript
-// Original code being tested (lines 27-34)
-const [formData, setFormData] = useState<PreferencesFormData>({
-  payRate: 20,
-  considerLowerRate: false,
-  maxHoursPerWeek: 40,
-  maxHoursPerShift: 8,
-  maxTravelKm: 15,
-  selectedJobNames: []
-});
-```
+**Source File Functions:**
+- Leaflet map integration with Singapore boundaries
+- Home location marker display and management
+- Travel radius circle visualization
+- Distance slider controls (5-30km range)
 
-**Submit Handler Function**:
-```typescript
-// Original code being tested (lines 81-93)
-const handleSubmit = async () => {
-  setIsSubmitting(true);
-  setSubmitSuccess(false);
-  
-  const success = await savePreferences(formData);
-  
-  if (success) {
-    setSubmitSuccess(true);
-    setTimeout(() => setSubmitSuccess(false), 3000);
-  }
-  
-  setIsSubmitting(false);
-};
-```
+**What the Tests Verify:**
+- ✅ Map renders with Singapore center coordinates
+- ✅ Displays home location marker when location available
+- ✅ Shows travel radius circle with correct size (km to meters conversion)
+- ✅ Slider controls adjust maximum travel distance
+- ✅ Loading overlay displays during map operations
+- ✅ Error handling for location service failures
+- ✅ Fallback behavior when no home location set
+- ✅ Retry functionality for failed location operations
+- ✅ Distance labels update with slider changes
+- ✅ Map zoom and pan controls work correctly
 
-#### Test 1: Component Rendering
-- Verifies all child components render correctly
-- Checks for presence of submit button
-- Uses `data-testid` attributes for reliable element selection
+### 5. **PreferencesForm.test.tsx** → `src/components/PreferencesForm.tsx`
+**Tests the main form container that orchestrates all preference components**
 
-#### Test 2: Successful Form Submission
-- Mocks successful `savePreferences` call
-- Tests loading state (button shows "Saving..." and is disabled)
-- Verifies success message appears
-- Confirms the hook is called with correct form data
+**Source File Functions:**
+- Form submission workflow and validation
+- Integration with `usePreferencesForm` hook
+- Child component coordination (PreferencesMaximum, PreferencesPay, etc.)
+- Error handling and success messaging
 
-#### Test 3: Failed Form Submission
-- Mocks failed `savePreferences` call
-- Ensures no success message appears on failure
-- Verifies button re-enables after failed submission
+**What the Tests Verify:**
+- ✅ Renders all child components (maximum, pay, job type, map)
+- ✅ Handles successful form submission with success message
+- ✅ Handles failed form submission gracefully
+- ✅ Displays general error messages from the hook
+- ✅ Displays and handles location-specific errors
+- ✅ Form data flows correctly between components
+- ✅ Submit button shows correct states (Submit/Saving/Validating)
 
-#### Test 4: General Error Display
-- Tests error message display from the `usePreferences` hook
-- Shows "Error Loading Preferences" with error details
+### 6. **PreferencesJobType.test.tsx** → `src/components/PreferencesJobType.tsx`
+**Tests job type selection with categorized checkboxes**
 
-#### Test 5: Location Error Handling
-- Tests location-specific error display
-- Verifies retry functionality with attempt counter
-- Tests error message clearing after retry
-
-#### Test 6: Success Message Timer Behavior
-- Uses fake timers to control time-based behavior
-- Verifies success message appears after successful save
-- Tests that message disappears after exactly 3 seconds
-- Ensures proper cleanup of timers
-
-#### Test 7: Dynamic Form Data Updates
-- Simulates child component changes (map radius change)
-- Verifies form submission includes updated data
-- Tests data flow between parent and child components
-
-#### Test 8: Loading State Button Disable
-- Tests button behavior when hook is in loading state
-- Verifies submit button is disabled during initial load
-- Ensures user cannot submit while data is loading
-
-#### Test 9: Geocoding Effect Trigger
-- Tests useEffect logic for geocoding home location
-- Verifies geocoding is called when address exists but coordinates don't
-- Ensures proper conditional logic execution
-
-#### Test 10: Exception Handling
-- Tests behavior when savePreferences throws an exception
-- Verifies error message displays for network/server errors
-- Ensures graceful handling of unexpected failures
-
-#### Test 11: Multiple Submission Prevention
-- Tests rapid clicking prevention during save operation
-- Uses delayed mock to simulate slow network requests
-- Verifies only one save operation is triggered
-
-### 2. PreferencesJobType Component Tests (10 scenarios)
-**File**: `src/components/PreferencesJobType.tsx`
-
-**Key Functions Tested**:
-- `handleCheckboxChange()` - Job type selection/deselection
-- `useJobTypes()` hook integration - Data fetching and error handling
-- State synchronization between local and parent form data
-
-**Checkbox Change Handler**:
-```typescript
-// Original code being tested (lines 30-49)
-const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, checked } = event.target;
-  
-  // Update local state
-  setSelectedJobs(prev => ({
-    ...prev,
-    [name]: checked,
-  }));
-
-  // Update parent form data
-  const updatedSelectedJobs = { ...selectedJobs, [name]: checked };
-  const selectedJobNames = Object.keys(updatedSelectedJobs).filter(
-    jobName => updatedSelectedJobs[jobName]
-  );
-  
-  setFormData({
-    ...formData,
-    selectedJobNames
-  });
-};
-```
-
-**Loading State UI**:
-```typescript
-// Original code being tested (lines 52-73)
-if (jobTypesLoading) {
-  return (
-    <div className="p-4 rounded-lg bg-card-color">
-      <div className="animate-pulse">
-        {/* Skeleton loading elements */}
-      </div>
-    </div>
-  );
-}
-```
-
-**Test Scenarios**:
-- Component rendering with job categories
-- Loading state with skeleton UI
-- Error state handling
-- Checkbox selection/deselection logic
-- Multiple selections handling
-- Visual styling for selected/unselected states
+**Source File Functions:**
+- Integration with `useJobTypes` hook for data fetching
+- Job types grouped by categories (Food Service, Retail, etc.)
+- Multi-selection checkbox interface
 - Form data synchronization
 
-### 3. PreferencesPay Component Tests (13 scenarios)
-**File**: `src/components/PreferencesPay.tsx`
+**What the Tests Verify:**
+- ✅ Renders job types grouped by category
+- ✅ Shows loading state with skeleton placeholders
+- ✅ Shows error state when job types fail to load
+- ✅ Loads existing selected job names from form data
+- ✅ Handles checkbox selection correctly
+- ✅ Handles checkbox deselection correctly
+- ✅ Handles multiple selections correctly
+- ✅ Applies correct styling for selected/unselected job types
+- ✅ Renders checkboxes with correct attributes
 
-**Key Functions Tested**:
-- `handlePayRateChange()` - Slider value updates
-- `handleConsiderLowerChange()` - Checkbox toggle
-- Range input validation and constraints
+### 7. **PreferencesMaximum.test.tsx** → `src/components/PreferencesMaximum.tsx`
+**Tests input fields for maximum working hours constraints**
 
-**Pay Rate Handler**:
+**Source File Functions:**
+- Number inputs for max hours per week (1-44) and per shift (1-12)
+- Input validation and sanitization
+- Form data synchronization
+
+**What the Tests Verify:**
+- ✅ Renders both input fields with correct labels
+- ✅ Displays correct input attributes (min/max values, types)
+- ✅ Handles maximum hours per week changes correctly
+- ✅ Handles maximum hours per shift changes correctly
+- ✅ Handles empty input values by setting to 0
+- ✅ Handles non-numeric input by setting to 0
+- ✅ Displays empty string when form data values are 0/undefined
+- ✅ Handles decimal input by converting to integers
+- ✅ Renders with correct layout and label styling
+
+### 8. **PreferencesPay.test.tsx** → `src/components/PreferencesPay.tsx`
+**Tests pay rate slider and lower rate acceptance checkbox**
+
+**Source File Functions:**
+- Range slider for pay rate selection (5-30 dollars)
+- Real-time pay rate display updates
+- Checkbox for accepting lower pay rates
+- Form data synchronization
+
+**What the Tests Verify:**
+- ✅ Renders with all elements (slider, display, checkbox, labels)
+- ✅ Displays correct pay rate value from form data
+- ✅ Slider has correct attributes and styling
+- ✅ Handles pay rate changes correctly
+- ✅ Handles minimum/maximum pay rate constraints
+- ✅ Checkbox displays correct state (checked/unchecked)
+- ✅ Handles checkbox changes correctly (checking/unchecking)
+- ✅ Labels have correct attributes for accessibility
+- ✅ Container has correct styling and layout
+
+## Quick Reference
+
+**To run specific functionality tests:**
+```bash
+# Test availability calendar functionality
+npm run test:frontendsuccess -- -t "Calendar"
+
+# Test job type selection functionality  
+npm run test:frontendsuccess -- -t "PreferencesJobType"
+
+# Test location/travel distance functionality
+npm run test:frontendsuccess -- -t "LocationAwareMap"
+
+# Test pay rate functionality
+npm run test:frontendsuccess -- -t "PreferencesPay"
+```
+
+**All tests verify the complete job seeker preferences workflow:**
+1. Setting weekly availability through drag-and-drop calendar
+2. Specifying travel distance preferences with interactive map
+3. Selecting preferred job types from categorized options
+4. Setting maximum working hours constraints
+5. Defining pay rate preferences and flexibility
+
+## Test Scripts
+
+### Frontend Tests (Component/UI Tests)
+
+#### All Frontend Tests
+- `npm run test:frontend` - Run all frontend tests (success + fail) in watch mode
+- `npm run test:frontend:run` - Run all frontend tests once
+- `npm run test:frontend:ui` - Run all frontend tests with Vitest UI
+- `npm run test:frontend:coverage` - Run all frontend tests with coverage report
+- `npm run test:frontend:watch` - Explicit watch mode for all frontend tests
+
+#### Success Tests (Passing Tests)
+- `npm run test:frontendsuccess` - Run only passing frontend tests in watch mode
+- `npm run test:frontendsuccess:run` - Run only passing frontend tests once
+- `npm run test:frontendsuccess:ui` - Run only passing tests with Vitest UI
+- `npm run test:frontendsuccess:coverage` - Run only passing tests with coverage
+- `npm run test:frontendsuccess:watch` - Explicit watch mode for passing tests
+
+#### Fail Tests (Failing/WIP Tests)
+- `npm run test:frontendfail` - Run only failing frontend tests in watch mode
+- `npm run test:frontendfail:run` - Run only failing frontend tests once
+- `npm run test:frontendfail:ui` - Run only failing tests with Vitest UI
+- `npm run test:frontendfail:coverage` - Run only failing tests with coverage
+- `npm run test:frontendfail:watch` - Explicit watch mode for failing tests
+
+### Backend Tests (Integration/Database Tests)
+- `npm run test:backend` - Run backend tests in watch mode (starts Supabase)
+- `npm run test:backend:run` - Run backend tests once
+- `npm run test:backend:ui` - Run backend tests with Vitest UI
+- `npm run test:backend:coverage` - Run backend tests with coverage
+- `npm run test:backend:watch` - Explicit watch mode for backend tests
+
+### Combined Tests
+- `npm run test` - Run both frontend and backend tests once
+- `npm run test:watch` - Run both in watch mode
+
+## Test Types
+
+### Frontend Tests (`tests/frontendSuccessUnit/` & `tests/frontendFailUnit/`)
+
+**Purpose**: Test React component behavior, UI rendering, and user interactions without real backend dependencies.
+
+**Configuration**: `vitest.frontend.config.ts`
+**Setup File**: `src/test-setup-frontend.ts`
+**Environment**: jsdom
+
+**Features**:
+- Mocked Supabase client
+- Mocked React Router hooks
+- Mocked React Query hooks
+- Mocked UI icons and external dependencies
+- Fast execution (no database calls)
+- Isolated component testing
+
+**Example Test Structure**:
 ```typescript
-// Original code being tested (lines 4-10)
-const handlePayRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = Number(e.target.value);
-  setFormData({
-    ...formData,
-    payRate: value
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import MyComponent from '../../src/components/MyComponent';
+
+// Mock dependencies
+vi.mock('../../src/hooks/useMyHook', () => ({
+  useMyHook: vi.fn(() => ({ data: null, loading: false }))
+}));
+
+describe('MyComponent', () => {
+  it('renders correctly', () => {
+    render(<MyComponent />);
+    expect(screen.getByText('Hello')).toBeTruthy();
   });
-};
+});
 ```
 
-**Consider Lower Rate Handler**:
+### Backend Tests (`tests/unit/` & `tests/integration/`)
+
+**Purpose**: Test database operations, API logic, and hook integrations with real backend services.
+
+**Configuration**: `vitest.backend.config.ts`
+**Setup File**: `src/test-setup.ts`
+**Environment**: jsdom
+**Prerequisites**: Local Supabase instance (`supabase start`)
+
+**Features**:
+- Real Supabase connection
+- Automatic database cleanup between tests
+- Test data factories
+- Admin operations support
+- Integration with actual database schema
+
+**Example Test Structure**:
 ```typescript
-// Original code being tested (lines 12-17)
-const handleConsiderLowerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setFormData({
-    ...formData,
-    considerLowerRate: e.target.checked
-  });
-};
-```
+import { testSupabase, createTestJobSeeker } from '../src/test-setup';
 
-**Range Slider Configuration**:
-```typescript
-// Original code being tested (lines 32-42)
-<input
-  type="range"
-  min="5"    // Minimum selectable pay rate
-  max="30"   // Maximum selectable pay rate
-  value={formData.payRate}
-  onChange={handlePayRateChange}
-  className="w-1/3 h-2 bg-secondary-bg rounded-full appearance-none cursor-pointer accent-primary-blue"
-/>
-```
-
-**Test Scenarios**:
-- Component rendering with correct labels
-- Pay rate display formatting ($20, $25, $30)
-- Slider attributes and constraints (min=5, max=30)
-- Checkbox state management
-- Form data updates for both inputs
-- Input styling and accessibility
-- Edge case handling (min/max values)
-
-### 4. PreferencesMaximum Component Tests (11 scenarios)
-**File**: `src/components/PreferencesMaximum.tsx`
-
-**Key Functions Tested**:
-- `handleMaxHoursPerWeekChange()` - Week hours input validation
-- `handleMaxHoursPerShiftChange()` - Shift hours input validation
-- Number parsing with fallback to 0
-
-**Week Hours Handler**:
-```typescript
-// Original code being tested (lines 4-10)
-const handleMaxHoursPerWeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = parseInt(e.target.value) || 0;
-  setFormData({
-    ...formData,
-    maxHoursPerWeek: value
-  });
-};
-```
-
-**Shift Hours Handler**:
-```typescript
-// Original code being tested (lines 12-18)
-const handleMaxHoursPerShiftChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = parseInt(e.target.value) || 0;
-  setFormData({
-    ...formData,
-    maxHoursPerShift: value
-  });
-};
-```
-
-**Input Configuration**:
-```typescript
-// Original code being tested (lines 24-32, 36-44)
-<input
-  type="number"
-  min="1"
-  max="44"  // Weekly hours constraint
-  placeholder="20"
-  value={formData.maxHoursPerWeek || ''}
-  onChange={handleMaxHoursPerWeekChange}
-/>
-
-<input
-  type="number"
-  min="1" 
-  max="12"  // Shift hours constraint
-  placeholder="8"
-  value={formData.maxHoursPerShift || ''}
-  onChange={handleMaxHoursPerShiftChange}
-/>
-```
-
-**Test Scenarios**:
-- Component rendering with both input fields
-- Input attributes validation (type, min, max, placeholder)
-- Number input parsing and fallback behavior
-- Empty input handling (displays empty string for 0/undefined)
-- Non-numeric input handling (converts to 0)
-- Decimal input handling (converts to integer)
-- Form data updates for both fields
-- Layout and styling verification
-
-### 5. Calendar Component Tests (19 scenarios)
-**File**: `src/components/Calendar.tsx`
-
-**Key Functions Tested**:
-- `navigateWeek()` - Week navigation functionality
-- `handleDoubleClick()` - Event creation on time slot double-click
-- `handleSaveAvailability()` - Saving availability data to backend
-- `handleRefreshAvailability()` - Refreshing data from backend
-- `handleSaveTemplate()` - Template saving functionality
-- `handleUseTemplate()` - Template loading functionality
-- `handleUpdateEvent()` - Event modification
-- `handleDeleteEvent()` - Event removal
-
-**Event Creation Handler**:
-```typescript
-// Original code being tested (lines 79-87)
-const handleDoubleClick = (day: Date, hour: number) => {
-  const newSlot: Event = {
-    id: `event_${Date.now()}`,
-    startTime: set(day, { hours: hour, minutes: 0 }),
-    endTime: set(day, { hours: hour + 1, minutes: 0 }),
-  };
-  setEvents((prevEvents) => [...prevEvents, newSlot]);
-};
-```
-
-**Save Availability Handler**:
-```typescript
-// Original code being tested (lines 106-124)
-const handleSaveAvailability = async () => {
-  try {
-    const timeBlocks = events.map((event) => ({
-      start_time: event.startTime.toISOString(),
-      end_time: event.endTime.toISOString(),
-      submission_cycle: CYCLE,
-    }));
+describe('Database Operations', () => {
+  it('creates user preferences', async () => {
+    const jobSeeker = await createTestJobSeeker();
     
-    const success = await setAvailability(timeBlocks);
-    // Handle success/error states
-  } catch (err) {
-    console.error('Error saving availability:', err);
-  }
-};
-```
-
-**Template Management**:
-```typescript
-// Original code being tested (lines 143-185)
-const handleSaveTemplate = async (templateName: string) => {
-  setTemplateSaveLoading(true);
-  try {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Saving template:', templateName, 'with events:', events);
-    setShowTemplateNameDialog(false);
-  } finally {
-    setTemplateSaveLoading(false);
-  }
-};
-```
-
-**Test Scenarios**:
-- **Calendar Structure**: Renders header, navigation buttons, time grid (24 hours), day grid (7 days)
-- **Navigation**: Previous/next week navigation, "Today" button functionality
-- **Data Loading**: Loads availability events from useAvailability hook on mount
-- **Event Management**: Create events via double-click, update events, delete events
-- **Save/Refresh**: Save availability to backend, refresh data from backend
-- **Template System**: Open template dialogs, select templates, save new templates
-- **Error Handling**: API errors, network failures, graceful degradation
-- **Loading States**: Loading indicators for save/fetch operations
-- **Async Operations**: Proper handling of promises and timeouts
-
-### 6. LocationAwareMap Component Tests (13 scenarios)
-**File**: `src/components/LocationAwareMap.tsx`
-
-**Key Functions Tested**:
-- `handleRadiusChange()` - Travel radius slider updates
-- `handleMapReady()` - Map initialization success
-- `handleRetry()` - Error recovery functionality
-- `createMapError()` - Error object creation with metadata
-- `checkMapAvailability()` - Map service availability detection
-
-**Radius Change Handler**:
-```typescript
-// Original code being tested (lines 224-227)
-const handleRadiusChange = useCallback((newRadius: number) => {
-  setLocalRadius(newRadius);
-  onRadiusChange(newRadius);
-}, [onRadiusChange]);
-```
-
-**Error Handling System**:
-```typescript
-// Original code being tested (lines 145-155)
-const createMapError = useCallback((type: MapErrorType, message: string): MapError => {
-  const canRetry = ['MAP_LOAD_FAILED', 'NETWORK_ERROR', 'GEOCODING_FAILED'].includes(type);
-  const fallbackAvailable = ['MAP_LOAD_FAILED', 'API_UNAVAILABLE'].includes(type);
-  
-  return {
-    type,
-    message,
-    canRetry,
-    fallbackAvailable
-  };
-}, []);
-```
-
-**Map Service Availability Check**:
-```typescript
-// Original code being tested (lines 166-194)
-const checkMapAvailability = useCallback(() => {
-  try {
-    if (typeof L === 'undefined') {
-      throw new Error('Leaflet library not available');
-    }
+    const { data, error } = await testSupabase
+      .from('preferences')
+      .insert({ user_id: jobSeeker.user_id, pay_rate: 25 });
     
-    // Test map creation
-    const testDiv = document.createElement('div');
-    const testMap = L.map(testDiv, { center: [0, 0], zoom: 1 });
-    testMap.remove();
-    return true;
-  } catch (err) {
-    const error = createMapError('API_UNAVAILABLE', 'Map services are currently unavailable');
-    setMapError(error);
-    setShowFallback(true);
-    return false;
-  }
-}, [createMapError, onLocationError]);
-```
-
-**Test Scenarios**:
-- **Component Rendering**: Title, description text, map container, slider controls
-- **Location States**: With/without home location, Singapore fallback coordinates
-- **Map Elements**: Home location marker, travel radius circle, map bounds
-- **Slider Functionality**: Radius changes, visual feedback, callback execution
-- **Loading States**: Map loading, location data loading, loading overlays
-- **Error Handling**: Map unavailable, network errors, location errors, retry functionality
-- **Fallback UI**: Manual input form when map services fail
-- **Interactive Features**: Slider adjustment feedback, responsive text updates
-- **Error Recovery**: Retry buttons, error state clearing, attempt counting
-
-## Testing Methodology and Best Practices
-
-### 1. Vitest Native Assertions (No jest-dom dependency)
-We use native Vitest assertions to avoid external dependencies:
-
-**Element Existence**:
-```typescript
-expect(screen.getByText('Submit')).toBeTruthy();  // Element exists
-expect(screen.queryByText('Error')).toBeNull();   // Element doesn't exist
-```
-
-**Class Name Testing**:
-```typescript
-// Instead of toHaveClass, we use:
-expect(element.className).toContain('bg-primary-blue');
-expect(element.className).toContain('text-center');
-```
-
-**Attribute Testing**:
-```typescript
-// Instead of toHaveAttribute, we use:
-expect(input.getAttribute('type')).toBe('checkbox');
-expect(input.min).toBe('1');
-expect(input.max).toBe('44');
-```
-
-### 2. Form Data Flow Testing
-We test the complete data flow from UI interaction to parent state updates:
-
-```typescript
-// Test pattern: UI Action → Function Call → State Update
-fireEvent.change(slider, { target: { value: '25' } });
-expect(mockSetFormData).toHaveBeenCalledWith({
-  ...formData,
-  payRate: 25
+    expect(error).toBeNull();
+    expect(data).toBeTruthy();
+  });
 });
 ```
 
-### 3. Mock Strategy
-All external dependencies are mocked to isolate the component:
+## Running Specific Tests
+
+### Command Line Filtering
+
+```bash
+# Run specific test file
+npm run test:frontendsuccess -- tests/frontendSuccessUnit/Calendar.test.tsx
+
+# Run multiple specific files
+npm run test:frontendsuccess -- tests/frontendSuccessUnit/Calendar.test.tsx tests/frontendSuccessUnit/PreferencesForm.test.tsx
+
+# Run tests matching a pattern in test name
+npm run test:frontendsuccess -- -t "renders correctly"
+npm run test:frontendsuccess -- -t "handles.*submission"
+
+# Run backend tests with specific files
+npm run test:backend -- tests/unit/preferences-validation.test.ts
+```
+
+### Interactive Filtering (Recommended for Development)
+
+```bash
+# Start tests in watch mode
+npm run test:frontendsuccess
+
+# Then use interactive commands:
+# Press 'p' - Filter by filename pattern
+# Press 't' - Filter by test name pattern  
+# Press 'a' - Run all tests
+# Press 'f' - Run only failed tests
+# Press 'q' - Quit
+```
+
+### Using Vitest CLI Directly
+
+```bash
+# Frontend tests
+npx vitest --config vitest.frontend.config.ts tests/frontendSuccessUnit/Calendar.test.tsx
+npx vitest --config vitest.frontend.config.ts -t "Calendar"
+
+# Backend tests  
+npx vitest --config vitest.backend.config.ts tests/unit/preferences-validation.test.ts
+```
+
+## Test Organization Strategy
+
+### Success vs Fail Folders
+
+**`frontendSuccessUnit/`**: Contains all passing frontend tests
+- Well-written, maintainable tests
+- Proper mocking and setup
+- Reliable and fast execution
+- Used for CI/CD validation
+
+**`frontendFailUnit/`**: Contains failing or work-in-progress frontend tests
+- Tests under development
+- Tests with known issues
+- Experimental test approaches
+- Helps separate stable from unstable tests
+
+### Moving Tests Between Folders
+
+When a test in `frontendFailUnit/` is fixed:
+1. Move the file to `frontendSuccessUnit/`
+2. Ensure all tests in the file pass
+3. Update any related documentation
+
+When a test starts failing:
+1. Investigate the root cause
+2. If it's a temporary issue, fix it
+3. If it requires significant work, consider moving to `frontendFailUnit/`
+
+## Writing Tests
+
+### Frontend Component Tests
 
 ```typescript
-// Mock custom hooks
-vi.mock('../hooks/usePreferences');
-vi.mock('../hooks/useAvailability');
+// tests/frontendSuccessUnit/MyComponent.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import MyComponent from '../../src/components/MyComponent';
 
-// Mock child components with test-friendly implementations
-vi.mock('./LocationAwareMap', () => ({
-  LocationAwareMap: vi.fn(({ onLocationError, onRadiusChange }) => (
-    <div data-testid="mock-map">
-      <button onClick={() => onRadiusChange(25)}>Change Radius</button>
-      <button onClick={() => onLocationError({...})}>Trigger Location Error</button>
-    </div>
-  )),
+// Mock external dependencies
+vi.mock('../../src/hooks/useMyHook', () => ({
+  useMyHook: vi.fn(() => ({ data: 'mock data', loading: false }))
 }));
 
-// Mock Calendar child components
-vi.mock('./CalendarEvent', () => ({
-  CalendarEvent: ({ event, onUpdate, onDelete }) => (
-    <div data-testid={`calendar-event-${event.id}`}>
-      <button onClick={() => onUpdate(event)}>Update</button>
-      <button onClick={() => onDelete(event.id)}>Delete</button>
-    </div>
-  ),
-}));
+describe('MyComponent', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-// Mock external libraries
-vi.mock('react-leaflet', () => ({
-  MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
-  TileLayer: () => <div data-testid="tile-layer"></div>,
-  Marker: ({ position }) => <div data-testid="marker" data-position={position.join(',')}></div>,
-  Circle: ({ center, radius }) => <div data-testid="circle" data-center={center.join(',')} data-radius={radius}></div>,
-}));
+  it('renders with default state', () => {
+    render(<MyComponent />);
+    expect(screen.getByText('Default Content')).toBeTruthy();
+  });
 
-vi.mock('leaflet', () => ({
-  divIcon: vi.fn(() => ({ options: {}, createIcon: vi.fn() })),
-  map: vi.fn(() => ({ setMaxBounds: vi.fn(), setView: vi.fn(), remove: vi.fn() })),
-}));
+  it('handles user interaction', async () => {
+    render(<MyComponent />);
+    
+    const button = screen.getByRole('button', { name: /click me/i });
+    fireEvent.click(button);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Button Clicked')).toBeTruthy();
+    });
+  });
+
+  it('handles loading state', () => {
+    // Override global mock for specific test
+    vi.mocked(useMyHook).mockReturnValue({ 
+      data: null, 
+      loading: true 
+    });
+    
+    render(<MyComponent />);
+    expect(screen.getByText('Loading...')).toBeTruthy();
+  });
+});
 ```
 
-### 4. Loading and Error State Testing
-We test all component states including loading, error, and success states:
+### Backend Integration Tests
 
 ```typescript
-// Preferences - Loading state testing
-mockUseJobTypes.mockReturnValue({
-  jobTypesByCategory: {},
-  loading: true,
-  error: null,
-  fetchJobTypes: vi.fn()
+// tests/integration/myFeature.test.tsx
+import { 
+  testSupabase, 
+  createTestJobSeeker, 
+  createTestClient,
+  cleanupTestData 
+} from '../src/test-setup';
+
+describe('My Feature Integration', () => {
+  beforeEach(async () => {
+    await cleanupTestData(); // Optional - done automatically
+  });
+
+  it('integrates with database correctly', async () => {
+    // Create test data
+    const jobSeeker = await createTestJobSeeker({
+      first_name: 'John',
+      last_name: 'Doe'
+    });
+    
+    // Test database operations
+    const { data, error } = await testSupabase
+      .from('my_table')
+      .insert({
+        user_id: jobSeeker.user_id,
+        some_field: 'test value'
+      })
+      .select()
+      .single();
+    
+    expect(error).toBeNull();
+    expect(data.some_field).toBe('test value');
+  });
 });
-
-// Preferences - Error state testing  
-mockUseJobTypes.mockReturnValue({
-  jobTypesByCategory: {},
-  loading: false,
-  error: 'Failed to load job types',
-  fetchJobTypes: vi.fn()
-});
-
-// Calendar - Loading state testing
-mockAvailabilityHook.saveLoading = true;
-render(<Calendar />);
-expect(screen.getByText('Saving...')).toBeTruthy();
-
-// Calendar - Error state testing
-mockAvailabilityHook.error = 'Failed to load availability data';
-render(<Calendar />);
-expect(screen.getByText('Failed to load availability data')).toBeTruthy();
-
-// LocationAwareMap - Loading state testing
-render(<LocationAwareMap loading={true} />);
-expect(screen.getByText('Loading location data...')).toBeTruthy();
-
-// LocationAwareMap - Error state testing
-render(<LocationAwareMap error="Network connection failed" />);
-expect(screen.getByText('Unexpected Error')).toBeTruthy();
 ```
 
-### 5. Timer Testing
-Fake timers are used to test time-based behavior:
+## Best Practices
 
-```typescript
-beforeEach(() => {
-  vi.useFakeTimers(); // Control time-based behavior
-});
+### Frontend Tests
+1. **Mock External Dependencies**: Always mock hooks, API calls, and external libraries
+2. **Use Semantic Queries**: Prefer `getByRole`, `getByLabelText` over `getByTestId`
+3. **Test User Behavior**: Focus on what users do, not implementation details
+4. **Isolate Components**: Each test should focus on one component
+5. **Use waitFor for Async**: Always wait for async operations to complete
 
-afterEach(() => {
-  vi.runOnlyPendingTimers(); // Clear any remaining timers
-  vi.useRealTimers(); // Restore real timers
-});
+### Backend Tests
+1. **Use Test Factories**: Leverage provided factory functions for consistent test data
+2. **Clean State**: Rely on automatic cleanup, but be aware of test isolation
+3. **Test Real Operations**: Use actual database calls, not mocks
+4. **Handle Async Properly**: Always await database operations
+5. **Test Edge Cases**: Include error conditions and boundary cases
 
-// In tests:
-vi.advanceTimersByTime(3000); // Advance time by 3 seconds
-```
+### General Guidelines
+1. **Descriptive Test Names**: Use clear, behavior-focused test descriptions
+2. **AAA Pattern**: Arrange, Act, Assert - structure tests clearly
+3. **One Assertion Per Test**: Keep tests focused and easy to debug
+4. **DRY Principle**: Extract common setup into beforeEach blocks
+5. **Fast Feedback**: Keep tests fast and reliable
 
-## Test Results Summary
-**Total Test Coverage**: 77 test scenarios across 6 components
+## Troubleshooting
 
-### PreferencesForm: 11/11 tests passing ✅
-- ✓ Component rendering and child component display
-- ✓ Successful form submission with loading states
-- ✓ Failed form submission error handling
-- ✓ General error message display from hooks
-- ✓ Location-specific error handling and retry
-- ✓ Success message timer behavior (3-second auto-hide)
-- ✓ Dynamic form data updates from child components
-- ✓ Submit button disable during loading states
-- ✓ Geocoding trigger on mount with missing coordinates
-- ✓ Exception handling for network/server errors
-- ✓ Multiple submission prevention
+### Frontend Tests
 
-### PreferencesJobType: 10/10 tests passing ✅
-- ✓ Component rendering with job categories and descriptions
-- ✓ Loading state with skeleton UI animation
-- ✓ Error state handling and display
-- ✓ Existing job preferences loading from form data
-- ✓ Checkbox selection and deselection logic
-- ✓ Multiple job type selection handling
-- ✓ Visual styling for selected vs unselected states
-- ✓ Checkbox attributes and accessibility
-- ✓ Form data synchronization with parent component
+**Module not found errors**:
+- Check import paths use `../../src/` prefix
+- Verify path aliases in `vitest.frontend.config.ts`
 
-### PreferencesPay: 13/13 tests passing ✅
-- ✓ Component rendering with labels and inputs
-- ✓ Pay rate display formatting ($20, $25, etc.)
-- ✓ Slider attributes and constraints (min=5, max=30)
-- ✓ Pay rate change handling via slider
-- ✓ Minimum and maximum pay rate boundary testing
-- ✓ Checkbox default unchecked state
-- ✓ Checkbox checked state when considerLowerRate is true
-- ✓ Checkbox change handling (check/uncheck events)
-- ✓ Input styling and CSS class validation
-- ✓ Container and header styling verification
-- ✓ String input parsing for slider values
-- ✓ Pay rate display updates on form data changes
+**Component not rendering**:
+- Ensure all dependencies are mocked
+- Check for missing global mocks in test setup
 
-### PreferencesMaximum: 11/11 tests passing ✅
-- ✓ Component rendering with both input fields and labels
-- ✓ Input attributes validation (type, min, max, placeholder)
-- ✓ Maximum hours per week change handling
-- ✓ Maximum hours per shift change handling
-- ✓ Empty input handling (displays empty string for 0/undefined)
-- ✓ Non-numeric input handling (converts invalid input to 0)
-- ✓ Decimal input handling (parseInt converts to integer)
-- ✓ Form data synchronization for both fields
-- ✓ Layout styling and CSS class verification
-- ✓ Label styling and accessibility attributes
+**Mock not working**:
+- Individual test mocks override global mocks
+- Use `vi.clearAllMocks()` in beforeEach
+- Verify mock syntax: `vi.mocked(hook).mockReturnValue(...)`
 
-### Calendar: 19/19 tests passing ✅
-- ✓ Calendar rendering with current week display
-- ✓ Week navigation (previous/next buttons)
-- ✓ "Today" button navigation to current week
-- ✓ Availability events loading and display
-- ✓ Event creation via double-click on time slots
-- ✓ Event saving to Supabase backend
-- ✓ Data refresh functionality
-- ✓ Template system (open dialog, select, save templates)
-- ✓ Event updates and modifications
-- ✓ Event deletion functionality
-- ✓ Error message display and handling
-- ✓ Loading state management (save/fetch operations)
-- ✓ Time column rendering (24 hours)
-- ✓ Calendar grid rendering (7 days)
-- ✓ API error handling and graceful degradation
-- ✓ Async operation handling with proper timeouts
-- ✓ Dialog state management (template dialogs)
-- ✓ Hook integration (useAvailability)
-- ✓ Mock component rendering (CalendarEvent, dialogs)
+**Tests hanging**:
+- Usually due to unmocked async operations
+- Check for missing mocks of external dependencies
 
-### LocationAwareMap: 13/13 tests passing ✅
-- ✓ Component rendering with title and initial state
-- ✓ No home location warning message display
-- ✓ Home location marker and travel circle rendering
-- ✓ Travel radius slider functionality and callbacks
-- ✓ Loading overlay display during data fetch
-- ✓ Error message display for various error types
-- ✓ Fallback UI when map services unavailable
-- ✓ Retry functionality for recoverable errors
-- ✓ Singapore coordinates fallback behavior
-- ✓ Circle radius updates with slider changes
-- ✓ Location error callback handling
-- ✓ Slider visual feedback during adjustment
-- ✓ Different text scenarios based on location availability
+### Backend Tests  
 
-## Why We Test These Functions
+**Supabase not running**:
+- Run `supabase start` before backend tests
+- Verify local Supabase is running on port 54321
 
-### Form State Management
-Testing form state ensures data integrity throughout the user journey:
-- **User Input Validation**: Prevents invalid data from breaking the application
-- **State Synchronization**: Ensures child components properly update parent form data
-- **Edge Case Handling**: Tests boundary conditions (min/max values, empty inputs)
+**Database connection failed**:
+- Check Supabase status with `supabase status`
+- Ensure environment variables are set correctly
 
-### Error Handling
-Comprehensive error testing improves user experience:
-- **Network Failures**: Tests behavior when API calls fail
-- **Loading States**: Ensures users get feedback during async operations  
-- **Graceful Degradation**: Fallback UI when services are unavailable
+**Test data conflicts**:
+- Cleanup should be automatic via `test-setup.ts`
+- Check `cleanupTestData()` function if issues persist
 
-### User Interactions
-Testing all user interactions prevents regression bugs:
-- **Click Events**: Button clicks, checkbox toggles, form submissions
-- **Input Changes**: Slider movements, text input, selection changes
-- **Keyboard Navigation**: Accessibility and keyboard-only usage
+**Permission denied**:
+- Some operations need admin client (`testSupabaseAdmin`)
+- Verify test user has correct permissions
 
-### Data Flow
-Testing component communication ensures architectural integrity:
-- **Props Passing**: Parent-to-child data flow works correctly
-- **Callback Execution**: Child-to-parent updates trigger properly
-- **Hook Integration**: Custom hooks provide expected data and functions
+## Continuous Integration
 
-## Key Benefits of Our Testing Approach
+### Running Tests in CI/CD
 
-1. **Zero External Dependencies** - Pure Vitest assertions without jest-dom
-2. **Stable Test Environment** - jsdom provides consistent DOM simulation
-3. **Comprehensive Coverage** - 77 test scenarios across all user workflows
-4. **Isolated Component Testing** - Mocks prevent external service dependencies
-5. **Fast Execution** - Complete test suite runs in under 5 seconds
-6. **Timer Control** - Fake timers enable testing time-based behaviors
-7. **Error Scenario Coverage** - Tests both expected and unexpected failures
-8. **Cross-Component Integration** - Verifies parent-child communication
-9. **Loading State Verification** - Tests all async operation states
-10. **Edge Case Prevention** - Handles boundary conditions and user mistakes
-11. **Map Integration Testing** - Comprehensive testing of Leaflet map components with fallback scenarios
-12. **Calendar Event Management** - Full coverage of CRUD operations for availability scheduling
-13. **Template System Testing** - Tests complex dialog flows and async template operations
-14. **External Library Mocking** - Proper isolation of third-party dependencies (Leaflet, date-fns)
-
-## Running Tests
-
-### All Tests
 ```bash
-npm test
+# Run all tests (recommended for CI)
+npm run test
+
+# Run only passing tests (for quick feedback)
+npm run test:frontendsuccess:run
+
+# Run with coverage (for quality metrics)
+npm run test:frontendsuccess:coverage
+npm run test:backend:coverage
 ```
 
-### Specific Component Tests
+### Test Organization in CI
+
+1. **Pull Request Validation**: Run `npm run test:frontendsuccess:run` for fast feedback
+2. **Main Branch Testing**: Run full test suite including backend tests
+3. **Coverage Reports**: Generate coverage for quality tracking
+4. **Fail Tests Monitoring**: Periodically run fail tests to track progress
+
+## Development Workflow
+
+### Daily Development
 ```bash
-npm test PreferencesForm     # Parent form component
-npm test PreferencesJobType  # Job type selection
-npm test PreferencesPay      # Pay rate slider  
-npm test PreferencesMaximum  # Hours input validation
-npm test Calendar            # Calendar availability management
-npm test LocationAwareMap    # Interactive map component
+# Start relevant tests in watch mode
+npm run test:frontendsuccess     # For component work
+npm run test:backend             # For API/database work
+
+# Run specific tests while developing
+npm run test:frontendsuccess -- tests/frontendSuccessUnit/MyComponent.test.tsx
 ```
 
-### Watch Mode (Re-runs on file changes)
+### Before Committing
 ```bash
-npm test -- --watch
+# Run all passing tests
+npm run test:frontendsuccess:run
+
+# Run linting
+npm run lint
+
+# If working on backend features
+npm run test:backend:run
 ```
 
-### Coverage Report
-```bash
-npm test -- --coverage
-```
+### Code Review
+- Ensure new tests are in appropriate folders
+- Verify test coverage for new features
+- Check that tests follow established patterns
+- Confirm tests pass consistently
 
-## Test Maintenance Notes
+---
 
-- **Mock Updates**: When adding new props or hooks, update corresponding mocks
-- **Component Changes**: Add tests for new functions or UI elements
-- **Error Boundaries**: Test new error conditions as they're implemented
-- **Performance**: Keep test execution under 5 seconds for developer productivity
+This testing guide provides a comprehensive framework for maintaining high-quality, reliable tests in the OptiStaff frontend application. The separation of success and fail tests allows for better development workflow while maintaining a stable test suite for continuous integration.
