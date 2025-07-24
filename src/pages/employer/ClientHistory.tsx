@@ -1,6 +1,7 @@
 import { useShifts } from "../../hooks/useShifts"
-import { Shift, Feedback, Assignment } from "../../types/hooks"
+import { Shift, Assignment, Feedback } from "../../types/hooks"
 import {format} from "date-fns"
+import { reviewError, validateReview } from "../../utils/review";
 import { useState, useEffect } from "react";
 import { useFeedback } from "../../hooks/useFeedback";
 import { useAssignments } from "../../hooks/useAssignments";
@@ -11,9 +12,9 @@ export default function ClientHistory(){
     const pastShifts = shifts.filter((shift) => {
     const shiftDate = new Date(shift.start_time);
     return shiftDate < today;});
-    console.log(pastShifts);
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const {fetchAssignmentsByShift} = useAssignments();
+    const [selAssignment, setSelAssignment] = useState<Assignment>();
     const [selectedShift, setSelectedShift] = useState<Shift|null>(null);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     useEffect(() => {
@@ -38,9 +39,11 @@ export default function ClientHistory(){
         console.log("shift selected");
         console.log(assignments)
     }
-    const handleModalClick = () => {
+    const handleModalClick = (a: Assignment) => {
+        setSelAssignment(a);
         setModalVisible(!modalVisible);
     }
+
     const handleSort = () => {
         console.log("sorting");
     }
@@ -60,20 +63,19 @@ export default function ClientHistory(){
             </div>
             <div className="w-116 min-h-screen flex flex-col gap-6 p-5 rounded-xl bg-secondary-bg ">
                 <p className="font-montserrat-b text-xl text-primary-text">Assigned Staff</p>
-                {selectedShift != null && assignments.length > 0? assignments.map((a)=> <HistoryRateCard assignment={a} handleClick={handleModalClick}/>): <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
+                {selectedShift != null && assignments.length > 0? assignments.map((a)=> <HistoryRateCard assignment={a} handleClick={()=>handleModalClick(a)}/>): <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
                 {selectedShift == null? null: null}
             </div>
         </div>
-        {modalVisible && (
+        {modalVisible && selAssignment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 backdrop-blur-sm">
-            <RatingModal handleClose={handleModalClick} />
+            <RatingModal assignment={selAssignment} handleClose={handleModalClick} />
         </div>
         )}
     </div>
 }
 
 function HistoryRateCard({handleClick, assignment}: {handleClick:Function, assignment:Assignment}){
-
     return <div className="w-full flex flex-row justify-between items-center bg-white p-5 rounded-lg">
         <div className="flex flex-row items-center gap-5">
             <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
@@ -109,23 +111,42 @@ function PastShiftCard({shift, selectedShift, handleSelectShift}: { shift: Shift
     </div>
 }
 
-function RatingModal({handleClose}: {handleClose: Function}) {
+
+function RatingModal({handleClose, assignment}: {handleClose: Function, assignment: Assignment}) {
     const {submitFeedback} = useFeedback();
+    const [error, setError] = useState<reviewError>({
+        rating_score: null,
+        comment: null
+    });
+    const [displayError, setDisplayError] = useState<boolean>(false);
+
     const [feedbackData, setFeedbackData] = useState<Partial<Feedback>>({
-        // assignment_id: assignmentId,
-        // reviewee_id: revieweeId,
+        assignment_id: assignment.assignment_id,
+        reviewee_id: assignment.employee_id,
         comment: "",
         rating_score: 0,
     });
     async function handleSubmit(){
-        console.log(feedbackData);
-        await submitFeedback(feedbackData);
+        setDisplayError(true);
+        setError({
+            rating_score: null,
+            comment: null
+        });
+        const newError = validateReview(feedbackData);
+        setError(newError);
+        console.log(newError);
+        const isValid = Object.values(newError).every((value) => value === null);
+        console.log(feedbackData, displayError);
+        if (isValid){
+            await submitFeedback(feedbackData);
+            setDisplayError(false);
+        }
     }
 
     return <div className="relative w-120 flex flex-col bg-white rounded-xl gap-8 p-8 shadow">
         <div className="flex flex-row gap-6 items-center">
             <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
-            <p className="font-montserrat-b text-xl">Tony Chan</p>
+            <p className="font-montserrat-b text-xl">{assignment.employee_name}</p>
         </div>
         <div className="flex flex-col gap-6">
             <p className="font-montserrat-smb text-secondary-text">Help us improve your working experience by rating this employee.</p>
@@ -133,7 +154,7 @@ function RatingModal({handleClose}: {handleClose: Function}) {
                 {feedbackData && feedbackData.rating_score !== undefined && [...Array(5)].map((_, index) => (
                     <img 
                     key={index}
-                    src={(feedbackData.rating_score - 1) >= index ? "/icons/activestaricon.svg" : "/icons/ratingstaricon.svg"}
+                    src={feedbackData.rating_score && (feedbackData.rating_score - 1) >= index ? "/icons/activestaricon.svg" : "/icons/ratingstaricon.svg"}
                     alt={`Star ${index + 1}`} 
                     onClick={() => {
                         setFeedbackData((prevData) => ({
@@ -143,7 +164,8 @@ function RatingModal({handleClose}: {handleClose: Function}) {
                     }}
                     />
                 ))}
-        </div>
+            </div>
+            {displayError && error.rating_score? <p className="self-center font-montserrat text-pink-500">{error.rating_score}</p>: null}
         </div>
         <div className="flex flex-col gap-6">
             <p className="font-montserrat-smb text-secondary-text">Write up to 50 characters</p>
@@ -159,6 +181,7 @@ function RatingModal({handleClose}: {handleClose: Function}) {
                 id="feedback_comment"
                 className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-50 p-5"
             />
+            {displayError && error.comment? <p className="self-center font-montserrat text-pink-500">{error.comment}</p>: null}
         </div> 
         <button className="hover:cursor-pointer absolute top-4 right-4"onClick={()=>handleClose()}><img src="/icons/crossicon.svg"/></button>
         <button onClick={()=>handleSubmit()}className="hover:cursor-pointer hover:opacity-80 bg-primary-blue rounded-lg py-2  text-white font-montserrat">Rate</button>

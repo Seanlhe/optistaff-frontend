@@ -5,7 +5,7 @@ import UploadModal from "../../components/UploadModal";
 import { useShifts } from "../../hooks/useShifts";
 import {format} from "date-fns"
 import { Shift } from "../../types/hooks";
-import {getDate} from "../../utils/uploadjobs";
+import {getDate, validateShift, ShiftError} from "../../utils/uploadjobs";
 export default function UploadCSV(){
     const onDrop = useCallback((acceptedFiles: File[]) =>{
         handleRemove();
@@ -19,38 +19,40 @@ export default function UploadCSV(){
             const text: string = reader.result as string;
             const lines = text.split(/\r?\n/);
             if (lines.length > 0){
-                lines.slice(1).map((line: string, index:number) => {
+                lines.slice(1).map((line: string) => {
                     const entry: string[] = line.split(",")
-                    const newShift:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id"> = {
-                        title: entry[0],
-                        description: entry[2],
-                        start_time: getDate(entry[3], entry[4]),
-                        end_time: getDate(entry[3], entry[5]),
-                        job_location: entry[6] + " " + entry[7],
-                        pay_rate: parseFloat(entry[8]),
-                        staff_needed: parseInt(entry[9]),
-                        submission_cycle: "PRIMARY",
-                        break_duration: 20,
+                    const newShift:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name"> = {
+                        job_title: entry[0],
+                        job_type: entry[1],
+                        job_description: entry[2],
+                        job_requirements: entry[3],
+                        start_time: getDate(entry[4], entry[5]),
+                        end_time: getDate(entry[4], entry[6]),
+                        break_duration: parseInt(entry[7]),
+                        job_location: entry[8],
+                        postal_code: parseInt(entry[9]),
+                        pay_rate: parseFloat(entry[10]),
+                        staff_needed: parseInt(entry[11]),
                     }
                     console.log(newShift);
-                    if (getError(newShift) != null){ 
-                        setError((prev: string[]|null)=> prev? [...prev, `Error on line ${index + 1}: ${getError(newShift)}`]: [`Error on line ${index + 1}: ${getError(newShift)}`]);
+                    const newError = validateShift(newShift);
+                    const isValid = Object.values(newError).every((value) => value === null)
+                    if (!isValid){ 
+                        setError((prev: ShiftError[])=> [...prev, newError]);
                     }else{ //No error
-                        setShiftData((prev: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">[] | null) => prev? [...prev, newShift] : [newShift]);
+                        setShiftData((prev) => [...prev, newShift]);
                     }
                 } );
-            }else{
-                setError(["Error: no shifts detected in file. Please check your file."]);
-            } 
+            }
         }
         reader.readAsText(file);
     },[]);
     const {createShift, error: creationError, loading} = useShifts();
     const [modalVisible, setModalVisible] = useState<boolean>(false);
-    const [selectedShift, setSelectedShift] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">|null>(null);
+    const [selectedShift, setSelectedShift] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">|null>(null);
     const [fileData, setFileData] = useState<FileData|null>(null);
-    const [shiftData, setShiftData] = useState< Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">[]|null>(null);
-    const [error, setError] = useState<string[]|null>(null);
+    const [shiftData, setShiftData] = useState<Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">[]>([]);
+    const [error, setError] = useState<ShiftError[]>([]);
 
     const {getRootProps, getInputProps} = useDropzone({
         onDrop,
@@ -64,9 +66,9 @@ export default function UploadCSV(){
 
     
     const handleRemove = ()=>{
-        setError(null);
+        setError([]);
         setFileData(null);
-        setShiftData(null)
+        setShiftData([])
     }
 
     const handleSave = (updatedShift: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => {
@@ -109,9 +111,17 @@ export default function UploadCSV(){
         </div>
         <div id="uploadcsv-uploaded" className={`py-6 flex flex-col gap-4 ${modalVisible?"opacity-50": null}`}>
             <h2 className="font-montserrat-b text-black text-2xl">Preview</h2>
-            {shiftData && shiftData.map((data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">) => <UploadShiftCard shiftObject={data} setModalVisible={setModalVisible} setSelectedShift={setSelectedShift}/>)}
+            {shiftData && shiftData.map((data: Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">) => <UploadShiftCard shiftObject={data} setModalVisible={setModalVisible} setSelectedShift={setSelectedShift}/>)}
             {!error && shiftData == null && <p className="font-montserrat-b text-gray-600 text-base">No shift data entered</p>}
-            {error? error.map((err) => {return <p className="font-montserrat-smb text-sm text-pink-500">{err}</p>}) : null}
+            {error.map((e, index) =>
+                Object.entries(e)
+                    .filter(([_, value]) => value !== null)
+                    .map(([key, value]) => (
+                    <p key={`${index}-${key}`} className="font-montserrat-smb text-sm text-pink-500">
+                        {`Error in entry ${index + 1} (${key}): ${value}`}
+                    </p>
+                ))
+            )}
         </div>
         {modalVisible && <UploadModal onSave={handleSave} onClose={()=>setModalVisible(false)} shift={selectedShift}/>}
         {shiftData && <button onClick={handleSubmit} className={`over:cursor-pointer hover:opacity-80 rounded-lg self-center p-2.5 rounded-8 w-fit  bg-primary-blue text-white font-montserrat-smb text-base ${modalVisible?"opacity-50": null}`}>Submit</button>}
@@ -130,9 +140,9 @@ type UploadFileCardProps = {
 };
 
 type UploadShiftCardProps = {
-    shiftObject:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">,
-    setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
-    setSelectedShift: React.Dispatch<React.SetStateAction< Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "client_id">|null>>
+    shiftObject:  Omit<Shift, "shift_id" | "created_at" | "status" | "staff_assigned" | "employer_name" | "submission_cycle" | "company_name">,
+    handleManageClick: Function;
+    handleModalClose: Function;
 }
 
 
@@ -149,14 +159,14 @@ function UploadFileCard({fileName, fileSize, handleRemove}: UploadFileCardProps)
     </div>
 }
 
-function UploadShiftCard({shiftObject, setModalVisible, setSelectedShift}: UploadShiftCardProps){
+function UploadShiftCard({shiftObject,  handleManageClick, handleModalClose}: UploadShiftCardProps){
     function handleManage(){
         setModalVisible(true);
         setSelectedShift(shiftObject);
     }
     return <div className="bg-white flex flex-row p-5 items-center justify-between rounded-2xl">
         <div className="flex flex-col gap-4"> 
-            <p className="text-XL font-montserrat-b text-primary-text">{shiftObject.title}</p>
+            <p className="text-XL font-montserrat-b text-primary-text">{shiftObject.job_title}</p>
             <div className="flex flex-row gap-2">
                 <img src = "/public/icons/clock.svg"/>
                 <p className="text-l font-montserrat text-secondary-text">{format(shiftObject.start_time, "EEEE, dd/MM/yyyy")}</p>

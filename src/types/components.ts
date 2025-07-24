@@ -21,6 +21,7 @@ export interface ShiftCardProps {
 export interface InputFieldProps {
   name: string;
   title: string;
+  disabled?: boolean
   placeholder?: string;
   className?: string;
   value?: string| number
@@ -34,6 +35,7 @@ export interface SelectProps{
   name: string;
   title: string;
   options: {label: string, value: string}[];
+  disabled?: boolean
   placeholder?: string;
   className?: string;
   value?: string| number
@@ -47,6 +49,7 @@ export interface InputAreaProps {
   name: string;
   title: string;
   placeholder?: string;
+  disabled?: boolean
   value?: string| number
   className?: string;
   valid?: boolean;

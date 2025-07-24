@@ -20,6 +20,7 @@ import Review from './pages/employer/Review'
 import EmployeeHistory from './pages/employee/EmployeeHistory';
 import ClientHistory from './pages/employer/ClientHistory'
 import EditListing from './pages/employer/ClientEdit'
+import ClientDbContainer from './pages/employer/ClientDbContainer'
 // Create a client for React Query
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,10 +47,10 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<ClientDashboard />} />
+          <Route path="dashboard" element={<ClientDbContainer />} />
           <Route path="roster" element={<ClientRoster />} />
-          <Route path="settings" element={<ClientDashboard />} />
-          <Route path="profile" element={<ClientDashboard />} />
+          <Route path="settings" element={<ClientDbContainer />} />
+          <Route path="profile" element={<ClientDbContainer />} />
           <Route path="uploadjobs" element={<UploadJobs />} />
           <Route path="uploadcsv" element={<UploadCSV />} />
           <Route path="edit" element={<EditListing shift={{
