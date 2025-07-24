@@ -5,7 +5,7 @@ import { Card } from "./ui/card";
 export interface JobseekerAssignmentCard {
   id: string;
   title: string;
-  company_name: string;
+  company: string;
   date: string;
   time: string;
   location: string;
@@ -50,8 +50,8 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
   };
 
   const getStatusDisplayName = (status?: string) => {
-    return statusNames[status as keyof typeof statusNames] ||
-      (status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown');
+    return statusNames[status as keyof typeof statusNames] || 
+           (status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown');
   };
 
   const renderGridItem = (icon: React.ReactNode, text: string, condition: boolean = true) => {
@@ -67,7 +67,7 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
   const renderActionButtons = () => {
     // Both upcoming and other statuses show the same "View Details" button
     return (
-      <Button
+      <Button 
         onClick={(e) => {
           e.stopPropagation();
           onViewDetails(assignment);
@@ -79,6 +79,7 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
       </Button>
     );
   };
+
   return (
     <Card className="p-4 transition-all duration-200 border border-border bg-card-color shadow-none hover:shadow-sm">
       <div className="flex justify-between items-start mb-3">
@@ -86,7 +87,7 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
           <h3 className="text-base font-bold text-primary-text mb-1">
             {assignment.title}
           </h3>
-          <p className="text-secondary-text text-sm">{assignment.company_name}</p>
+          <p className="text-secondary-text text-sm">{assignment.company}</p>
         </div>
         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(assignment.status)}`}>
           {getStatusDisplayName(assignment.status)}
@@ -105,5 +106,4 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
       {renderActionButtons()}
     </Card>
   );
-
 };

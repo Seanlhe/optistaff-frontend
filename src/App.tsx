@@ -6,7 +6,6 @@ import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
 import Auth from "./pages/Auth";
 import ClientLayout from "./pages/ClientLayout";
-import ClientDashboard from "./pages/employer/ClientDashboard";
 import UploadJobs from "./pages/employer/UploadJobs";
 import JSLayout from "./pages/JSLayout";
 import JSSettings from "./pages/employee/JSSettings";
@@ -19,8 +18,6 @@ import JSSchedule from "./pages/employee/JSSchedule";
 import EmployeeHistory from "./pages/employee/EmployeeHistory";
 import ClientDbContainer from "./pages/employer/ClientDbContainer";
 import ClientHistory from "./pages/employer/ClientHistory";
-import Review from './pages/employer/Review'
-import JSMyjobs from './pages/employee/JSMyjobs';
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -71,7 +68,6 @@ function App() {
           <Route path="history" element={<EmployeeHistory />} />
           <Route path="schedule" element={<JSSchedule />} />
           <Route path="settings" element={<JSSettings />} />
-          <Route path="myJobs" element={<JSMyjobs />} />
         </Route>
       </Routes>
     </QueryClientProvider>
