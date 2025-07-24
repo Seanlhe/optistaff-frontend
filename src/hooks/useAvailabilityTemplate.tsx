@@ -146,6 +146,8 @@ const fetchTemplate = useCallback(async (template_id: String) => {
       return null;
     }
 
+    
+
     await fetchAllTemplates();
 
     return data as AvailabilityTemplate;

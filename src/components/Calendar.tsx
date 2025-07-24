@@ -163,9 +163,12 @@ const Calendar = () => {
     console.error("Error saving template:", err);
   } finally {
     setTemplateSaveLoading(false);
+    setShowTemplateSelectDialog(false); // Close it first
+    setTimeout(() => {
+      setShowTemplateSelectDialog(true); // Reopen it after short delay
+    }, 50); // Short delay ensures re-render
     
       await fetchAllTemplates();
-       setShowTemplateNameDialog(false);
     }
   };
 
@@ -209,6 +212,10 @@ const handleUseTemplate = async (templateId: string) => {
   const handleDeleteTemplate = async (templateId: string) => {
     try {
       await deleteTemplate(templateId); // Your Supabase delete call
+      setShowTemplateSelectDialog(false); // Close it first
+      setTimeout(() => {
+        setShowTemplateSelectDialog(true); // Reopen it after short delay
+      }, 50); // Short delay ensures re-render
       // Optionally: refresh template list
       await fetchAllTemplates();
     } catch (err) {
