@@ -1,3 +1,9 @@
+// Error type for location-aware components
+export type MapError = {
+  type: 'PERMISSION_DENIED' | 'POSITION_UNAVAILABLE' | 'TIMEOUT' | string;
+  message: string;
+  canRetry?: boolean;
+};
 // Centralized hook interfaces
 
 // Location-related type definitions
