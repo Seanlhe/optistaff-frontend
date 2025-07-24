@@ -193,49 +193,102 @@ export interface Payout {
   status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
 }
 
+export interface Payout {
+  payout_id: string;
+  user_id: string;
+  amount: number;
+  start_period: string;
+  end_period: string;
+  created_at: string;
+  status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
+}
+
+
 
 // useAssignments interfaces
 export interface Assignment {
-  assignment_id: string;
-  employee_name: string;
-  employer_name: string;
-  employee_id: string;
-  job_title: string;
-  job_location: string;
-  postal_code: string;
-  job_description: string | null;
-  job_requirements: string | null;
-  job_type: string;
-  pay_rate: number;
-  start_time: Date;
-  end_time: Date;
-  break_hours: number;
-  contact_number: string;
-  contact_email: string;
-  check_in_time: string | null;
-  check_out_time: string | null;
-  status: string;
-  created_at: string;
+    assignment_id: string;
+    employee_name: string;
+    employer_name: string;
+    employee_id: string;
+    job_title: string;
+    job_location: string;
+    postal_code: string;
+    job_description: string | null;
+    job_requirements: string | null;
+    job_type: string;
+    pay_rate: number;
+    start_time: Date;
+    end_time: Date;
+    break_hours: number;
+    contact_number: string;
+    contact_email: string;
+    check_in_time: string | null;
+    check_out_time: string | null;
+    status: string;
+    created_at: string;
 }
 
-// useAvailabilityTemplate interfaces
-export interface AvailabilityTemplate {
-    template_id: string;
-    user_id: string;
-    template_name: string;
-    is_default: boolean;
-    created_at: Date;
-    updated_at: Date;
-    timeblocks: UI_Event[];
+// General status type for assignment cancellation
+
+export enum StatusEnum {
+  CancelByEmployer = 'cancel_by_employer',
+  CancelByEmployee = 'cancel_by_employee',
+  Confirmed = 'confirmed',
+  Upcoming = 'upcoming',
+  Active = 'active', // New status for active assignments
+  Completed = 'completed', // New status for completed assignments
+  NoShow = 'no_show', // New status for no-show assignments 
+  Pending = 'pending', // New status for pending assignments
 }
 
-//export interface Event says any object we call an Event must have
-// an id, title, startTime, and endTime.
-export interface UI_Event {
-  id: string;
-  day_of_week: number; // 1 = Monday,  7  = Sunday
-  startTime: Date;
-  endTime: Date;
+// Complete profile data structure
+export interface UserProfileData {
+  // Display data (read-only)
+  display: ProfileDisplayData;
+  
+  // Editable data
+  personalInfo: PersonalInfoFormData;
+  
+  // User role for conditional rendering
+  userRole: 'jobseeker' | 'employer';
+}
+
+// Legacy type for backward compatibility
+export type UserProfile = UserProfileData;
+
+// For displaying profile information (read-only)
+export interface ProfileDisplayData {
+  // Personal Info (from job_seekers/clients table)
+  firstName: string;
+  lastName: string;
+  fullName: string;        // computed: firstName + lastName
+  
+  // Job Seeker specific (only for job seekers)
+  rating?: number;         // from job_seekers.rating
+  accountStatus?: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE'; // from job_seekers.status
+  
+  // Client specific (only for clients)
+  companyName?: string;    // from clients.company_name
+  
+  // Account Info (from auth.users)
+  email: string;           // from auth.users.email
+  accountCreated: string;  // from auth.users.created_at
+}
+
+// For editing personal information
+export interface PersonalInfoFormData {
+  phoneNumber: string;     // job_seekers.phone_number OR clients.phone
+  homeAddress: string;     // job_seekers.address_coordinates OR clients.address  
+  postalCode: string;      // job_seekers.postal_code OR clients.postal_code
+}
+
+// For changing account details
+export interface AccountSettingsFormData {
+  email: string;           // auth.users.email
+  currentPassword: string; // for verification
+  newPassword?: string;    // optional - only if changing password
+  confirmPassword?: string; // optional - only if changing password
 }
 
 // useFeedback interfaces

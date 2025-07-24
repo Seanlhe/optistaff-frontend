@@ -104,6 +104,7 @@ export const useAssignments = () => {
         setLoading(false);
         return;
       }
+      console.log('Assignment status updated:', data);
       return data;
     } catch (err) {
       setError((err as Error).message);

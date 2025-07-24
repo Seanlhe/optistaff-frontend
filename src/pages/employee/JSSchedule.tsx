@@ -205,12 +205,13 @@ export default function JSSchedule() {
 							<div className="grid grid-cols-1 gap-4">
 								<div className="flex justify-between items-center mb-2 w-full">
 										<h2 className="text-base font-bold text-primary-text">
-											Past Assignments
+											Completed Assignments
 										</h2>
+										<p className="text-sm text-secondary-text">{getDateRange()}</p>
 								</div>
 
 								{displayAssignments
-                 .filter(assignment => assignment.status === 'completed' || assignment.status === 'cancel_by_employer' || assignment.status === 'cancel_by_employee')
+                 .filter(assignment => assignment.status === 'completed')
                 .map((assignment) => (
 									<JobseekerAssignmentCard
 										key={assignment.id}
