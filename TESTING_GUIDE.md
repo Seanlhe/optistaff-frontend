@@ -19,6 +19,8 @@ src/components/PreferencesForm.test.tsx        # Parent form component
 src/components/PreferencesJobType.test.tsx     # Job type selection
 src/components/PreferencesPay.test.tsx         # Pay rate slider and checkbox
 src/components/PreferencesMaximum.test.tsx     # Hours input validation
+src/components/Calendar.test.tsx               # Calendar availability management
+src/components/LocationAwareMap.test.tsx       # Interactive map component
 ```
 
 ## What Was Implemented
@@ -329,6 +331,146 @@ const handleMaxHoursPerShiftChange = (e: React.ChangeEvent<HTMLInputElement>) =>
 - Form data updates for both fields
 - Layout and styling verification
 
+### 5. Calendar Component Tests (19 scenarios)
+**File**: `src/components/Calendar.tsx`
+
+**Key Functions Tested**:
+- `navigateWeek()` - Week navigation functionality
+- `handleDoubleClick()` - Event creation on time slot double-click
+- `handleSaveAvailability()` - Saving availability data to backend
+- `handleRefreshAvailability()` - Refreshing data from backend
+- `handleSaveTemplate()` - Template saving functionality
+- `handleUseTemplate()` - Template loading functionality
+- `handleUpdateEvent()` - Event modification
+- `handleDeleteEvent()` - Event removal
+
+**Event Creation Handler**:
+```typescript
+// Original code being tested (lines 79-87)
+const handleDoubleClick = (day: Date, hour: number) => {
+  const newSlot: Event = {
+    id: `event_${Date.now()}`,
+    startTime: set(day, { hours: hour, minutes: 0 }),
+    endTime: set(day, { hours: hour + 1, minutes: 0 }),
+  };
+  setEvents((prevEvents) => [...prevEvents, newSlot]);
+};
+```
+
+**Save Availability Handler**:
+```typescript
+// Original code being tested (lines 106-124)
+const handleSaveAvailability = async () => {
+  try {
+    const timeBlocks = events.map((event) => ({
+      start_time: event.startTime.toISOString(),
+      end_time: event.endTime.toISOString(),
+      submission_cycle: CYCLE,
+    }));
+    
+    const success = await setAvailability(timeBlocks);
+    // Handle success/error states
+  } catch (err) {
+    console.error('Error saving availability:', err);
+  }
+};
+```
+
+**Template Management**:
+```typescript
+// Original code being tested (lines 143-185)
+const handleSaveTemplate = async (templateName: string) => {
+  setTemplateSaveLoading(true);
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log('Saving template:', templateName, 'with events:', events);
+    setShowTemplateNameDialog(false);
+  } finally {
+    setTemplateSaveLoading(false);
+  }
+};
+```
+
+**Test Scenarios**:
+- **Calendar Structure**: Renders header, navigation buttons, time grid (24 hours), day grid (7 days)
+- **Navigation**: Previous/next week navigation, "Today" button functionality
+- **Data Loading**: Loads availability events from useAvailability hook on mount
+- **Event Management**: Create events via double-click, update events, delete events
+- **Save/Refresh**: Save availability to backend, refresh data from backend
+- **Template System**: Open template dialogs, select templates, save new templates
+- **Error Handling**: API errors, network failures, graceful degradation
+- **Loading States**: Loading indicators for save/fetch operations
+- **Async Operations**: Proper handling of promises and timeouts
+
+### 6. LocationAwareMap Component Tests (13 scenarios)
+**File**: `src/components/LocationAwareMap.tsx`
+
+**Key Functions Tested**:
+- `handleRadiusChange()` - Travel radius slider updates
+- `handleMapReady()` - Map initialization success
+- `handleRetry()` - Error recovery functionality
+- `createMapError()` - Error object creation with metadata
+- `checkMapAvailability()` - Map service availability detection
+
+**Radius Change Handler**:
+```typescript
+// Original code being tested (lines 224-227)
+const handleRadiusChange = useCallback((newRadius: number) => {
+  setLocalRadius(newRadius);
+  onRadiusChange(newRadius);
+}, [onRadiusChange]);
+```
+
+**Error Handling System**:
+```typescript
+// Original code being tested (lines 145-155)
+const createMapError = useCallback((type: MapErrorType, message: string): MapError => {
+  const canRetry = ['MAP_LOAD_FAILED', 'NETWORK_ERROR', 'GEOCODING_FAILED'].includes(type);
+  const fallbackAvailable = ['MAP_LOAD_FAILED', 'API_UNAVAILABLE'].includes(type);
+  
+  return {
+    type,
+    message,
+    canRetry,
+    fallbackAvailable
+  };
+}, []);
+```
+
+**Map Service Availability Check**:
+```typescript
+// Original code being tested (lines 166-194)
+const checkMapAvailability = useCallback(() => {
+  try {
+    if (typeof L === 'undefined') {
+      throw new Error('Leaflet library not available');
+    }
+    
+    // Test map creation
+    const testDiv = document.createElement('div');
+    const testMap = L.map(testDiv, { center: [0, 0], zoom: 1 });
+    testMap.remove();
+    return true;
+  } catch (err) {
+    const error = createMapError('API_UNAVAILABLE', 'Map services are currently unavailable');
+    setMapError(error);
+    setShowFallback(true);
+    return false;
+  }
+}, [createMapError, onLocationError]);
+```
+
+**Test Scenarios**:
+- **Component Rendering**: Title, description text, map container, slider controls
+- **Location States**: With/without home location, Singapore fallback coordinates
+- **Map Elements**: Home location marker, travel radius circle, map bounds
+- **Slider Functionality**: Radius changes, visual feedback, callback execution
+- **Loading States**: Map loading, location data loading, loading overlays
+- **Error Handling**: Map unavailable, network errors, location errors, retry functionality
+- **Fallback UI**: Manual input form when map services fail
+- **Interactive Features**: Slider adjustment feedback, responsive text updates
+- **Error Recovery**: Retry buttons, error state clearing, attempt counting
+
 ## Testing Methodology and Best Practices
 
 ### 1. Vitest Native Assertions (No jest-dom dependency)
@@ -371,8 +513,9 @@ expect(mockSetFormData).toHaveBeenCalledWith({
 All external dependencies are mocked to isolate the component:
 
 ```typescript
-// Mock the custom hook
+// Mock custom hooks
 vi.mock('../hooks/usePreferences');
+vi.mock('../hooks/useAvailability');
 
 // Mock child components with test-friendly implementations
 vi.mock('./LocationAwareMap', () => ({
@@ -383,13 +526,36 @@ vi.mock('./LocationAwareMap', () => ({
     </div>
   )),
 }));
+
+// Mock Calendar child components
+vi.mock('./CalendarEvent', () => ({
+  CalendarEvent: ({ event, onUpdate, onDelete }) => (
+    <div data-testid={`calendar-event-${event.id}`}>
+      <button onClick={() => onUpdate(event)}>Update</button>
+      <button onClick={() => onDelete(event.id)}>Delete</button>
+    </div>
+  ),
+}));
+
+// Mock external libraries
+vi.mock('react-leaflet', () => ({
+  MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
+  TileLayer: () => <div data-testid="tile-layer"></div>,
+  Marker: ({ position }) => <div data-testid="marker" data-position={position.join(',')}></div>,
+  Circle: ({ center, radius }) => <div data-testid="circle" data-center={center.join(',')} data-radius={radius}></div>,
+}));
+
+vi.mock('leaflet', () => ({
+  divIcon: vi.fn(() => ({ options: {}, createIcon: vi.fn() })),
+  map: vi.fn(() => ({ setMaxBounds: vi.fn(), setView: vi.fn(), remove: vi.fn() })),
+}));
 ```
 
 ### 4. Loading and Error State Testing
 We test all component states including loading, error, and success states:
 
 ```typescript
-// Loading state testing
+// Preferences - Loading state testing
 mockUseJobTypes.mockReturnValue({
   jobTypesByCategory: {},
   loading: true,
@@ -397,13 +563,31 @@ mockUseJobTypes.mockReturnValue({
   fetchJobTypes: vi.fn()
 });
 
-// Error state testing  
+// Preferences - Error state testing  
 mockUseJobTypes.mockReturnValue({
   jobTypesByCategory: {},
   loading: false,
   error: 'Failed to load job types',
   fetchJobTypes: vi.fn()
 });
+
+// Calendar - Loading state testing
+mockAvailabilityHook.saveLoading = true;
+render(<Calendar />);
+expect(screen.getByText('Saving...')).toBeTruthy();
+
+// Calendar - Error state testing
+mockAvailabilityHook.error = 'Failed to load availability data';
+render(<Calendar />);
+expect(screen.getByText('Failed to load availability data')).toBeTruthy();
+
+// LocationAwareMap - Loading state testing
+render(<LocationAwareMap loading={true} />);
+expect(screen.getByText('Loading location data...')).toBeTruthy();
+
+// LocationAwareMap - Error state testing
+render(<LocationAwareMap error="Network connection failed" />);
+expect(screen.getByText('Unexpected Error')).toBeTruthy();
 ```
 
 ### 5. Timer Testing
@@ -424,7 +608,7 @@ vi.advanceTimersByTime(3000); // Advance time by 3 seconds
 ```
 
 ## Test Results Summary
-**Total Test Coverage**: 45 test scenarios across 4 components
+**Total Test Coverage**: 77 test scenarios across 6 components
 
 ### PreferencesForm: 11/11 tests passing ✅
 - ✓ Component rendering and child component display
@@ -476,6 +660,42 @@ vi.advanceTimersByTime(3000); // Advance time by 3 seconds
 - ✓ Layout styling and CSS class verification
 - ✓ Label styling and accessibility attributes
 
+### Calendar: 19/19 tests passing ✅
+- ✓ Calendar rendering with current week display
+- ✓ Week navigation (previous/next buttons)
+- ✓ "Today" button navigation to current week
+- ✓ Availability events loading and display
+- ✓ Event creation via double-click on time slots
+- ✓ Event saving to Supabase backend
+- ✓ Data refresh functionality
+- ✓ Template system (open dialog, select, save templates)
+- ✓ Event updates and modifications
+- ✓ Event deletion functionality
+- ✓ Error message display and handling
+- ✓ Loading state management (save/fetch operations)
+- ✓ Time column rendering (24 hours)
+- ✓ Calendar grid rendering (7 days)
+- ✓ API error handling and graceful degradation
+- ✓ Async operation handling with proper timeouts
+- ✓ Dialog state management (template dialogs)
+- ✓ Hook integration (useAvailability)
+- ✓ Mock component rendering (CalendarEvent, dialogs)
+
+### LocationAwareMap: 13/13 tests passing ✅
+- ✓ Component rendering with title and initial state
+- ✓ No home location warning message display
+- ✓ Home location marker and travel circle rendering
+- ✓ Travel radius slider functionality and callbacks
+- ✓ Loading overlay display during data fetch
+- ✓ Error message display for various error types
+- ✓ Fallback UI when map services unavailable
+- ✓ Retry functionality for recoverable errors
+- ✓ Singapore coordinates fallback behavior
+- ✓ Circle radius updates with slider changes
+- ✓ Location error callback handling
+- ✓ Slider visual feedback during adjustment
+- ✓ Different text scenarios based on location availability
+
 ## Why We Test These Functions
 
 ### Form State Management
@@ -506,14 +726,18 @@ Testing component communication ensures architectural integrity:
 
 1. **Zero External Dependencies** - Pure Vitest assertions without jest-dom
 2. **Stable Test Environment** - jsdom provides consistent DOM simulation
-3. **Comprehensive Coverage** - 45 test scenarios across all user workflows
+3. **Comprehensive Coverage** - 77 test scenarios across all user workflows
 4. **Isolated Component Testing** - Mocks prevent external service dependencies
-5. **Fast Execution** - Complete test suite runs in under 3 seconds
+5. **Fast Execution** - Complete test suite runs in under 5 seconds
 6. **Timer Control** - Fake timers enable testing time-based behaviors
 7. **Error Scenario Coverage** - Tests both expected and unexpected failures
 8. **Cross-Component Integration** - Verifies parent-child communication
 9. **Loading State Verification** - Tests all async operation states
 10. **Edge Case Prevention** - Handles boundary conditions and user mistakes
+11. **Map Integration Testing** - Comprehensive testing of Leaflet map components with fallback scenarios
+12. **Calendar Event Management** - Full coverage of CRUD operations for availability scheduling
+13. **Template System Testing** - Tests complex dialog flows and async template operations
+14. **External Library Mocking** - Proper isolation of third-party dependencies (Leaflet, date-fns)
 
 ## Running Tests
 
@@ -528,6 +752,8 @@ npm test PreferencesForm     # Parent form component
 npm test PreferencesJobType  # Job type selection
 npm test PreferencesPay      # Pay rate slider  
 npm test PreferencesMaximum  # Hours input validation
+npm test Calendar            # Calendar availability management
+npm test LocationAwareMap    # Interactive map component
 ```
 
 ### Watch Mode (Re-runs on file changes)

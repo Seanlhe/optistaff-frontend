@@ -50,8 +50,8 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
   };
 
   const getStatusDisplayName = (status?: string) => {
-    return statusNames[status as keyof typeof statusNames] || 
-           (status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown');
+    return statusNames[status as keyof typeof statusNames] ||
+      (status ? status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ') : 'Unknown');
   };
 
   const renderGridItem = (icon: React.ReactNode, text: string, condition: boolean = true) => {
@@ -67,7 +67,7 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
   const renderActionButtons = () => {
     // Both upcoming and other statuses show the same "View Details" button
     return (
-      <Button 
+      <Button
         onClick={(e) => {
           e.stopPropagation();
           onViewDetails(assignment);
@@ -79,7 +79,6 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
       </Button>
     );
   };
-
   return (
     <Card className="p-4 transition-all duration-200 border border-border bg-card-color shadow-none hover:shadow-sm">
       <div className="flex justify-between items-start mb-3">
@@ -106,4 +105,5 @@ export const JobseekerAssignmentCard = ({ assignment, onViewDetails }: Jobseeker
       {renderActionButtons()}
     </Card>
   );
+
 };

@@ -59,7 +59,7 @@ const Dashboard = () => {
 		return {
 			id: assignment.assignment_id,
 			title: assignment.job_title || "Assignment",
-			company: assignment.employer_name|| "Company", // Use employer_name instead of name
+			company_name: assignment.company_name|| "Company", // Use employer_name instead of name
 			date: formatDate(assignmentDate),
 			time: formatRealTime(new Date(assignment.start_time), new Date(assignment.end_time)), // Use real times
 			location: assignment.job_location || "Location TBD", // Use real job location
