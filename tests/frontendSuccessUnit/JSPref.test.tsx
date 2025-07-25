@@ -1,15 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import Preferences from './JSPref';
+import Preferences from '../../src/pages/employee/JSPref';
 
 // --- Mocks ---
 
 // Mock child components to isolate the main component
-vi.mock('../../components/PreferencesForm', () => ({
+vi.mock('../../src/components/PreferencesForm', () => ({
   default: vi.fn(() => <div data-testid="mock-preferences-form">Preferences Form</div>)
 }));
 
-vi.mock('../../components/Availability', () => ({
+vi.mock('../../src/components/Availability', () => ({
   default: vi.fn(() => <div data-testid="mock-availability">Availability Component</div>)
 }));
 

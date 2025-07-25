@@ -8,8 +8,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'], // Backend tests need Supabase setup
-    include: ['tests/**/*.test.{ts,tsx}'],
-    exclude: ['node_modules', 'dist', 'src/**/*.test.{ts,tsx}'],
+    include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}'],
+    exclude: ['node_modules', 'dist', 'tests/frontendSuccessUnit/**/*', 'tests/frontendFailUnit/**/*'],
     testTimeout: 10000, // Longer timeout for database operations
     hookTimeout: 10000,
   },

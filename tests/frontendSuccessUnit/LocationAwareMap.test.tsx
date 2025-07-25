@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { LocationAwareMap, LocationAwareMapProps } from './LocationAwareMap'; // Adjust the import path as needed
+import { LocationAwareMap, LocationAwareMapProps } from '../../src/components/LocationAwareMap'; // Adjust the import path as needed
 
 // Mocking react-leaflet components and hooks
 // This prevents actual map rendering and allows us to control the map's behavior in tests.

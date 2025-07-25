@@ -6,11 +6,12 @@ This project uses Vitest for testing with separate configurations for frontend a
 
 ```
 src/
-├── components/           # Frontend component tests (*.test.tsx)
 ├── test-setup-frontend.ts # Global frontend test setup
 └── test-setup.ts         # Backend test setup (Supabase)
 
 tests/
+├── frontendSuccessUnit/  # Frontend component tests (passing)
+├── frontendFailUnit/     # Frontend component tests (failing/WIP)
 ├── integration/          # Backend integration tests
 └── unit/                # Backend unit tests
 ```
@@ -18,11 +19,25 @@ tests/
 ## Available Test Scripts
 
 ### Frontend Tests (Component/UI Tests)
-- `npm run test:frontend` - Run frontend tests in watch mode
-- `npm run test:frontend:run` - Run frontend tests once
-- `npm run test:frontend:ui` - Run with Vitest UI
-- `npm run test:frontend:coverage` - Run with coverage report
-- `npm run test:frontend:watch` - Explicit watch mode
+- `npm run test:frontend` - Run all frontend tests (success + fail) in watch mode
+- `npm run test:frontend:run` - Run all frontend tests once
+- `npm run test:frontend:ui` - Run all frontend tests with Vitest UI
+- `npm run test:frontend:coverage` - Run all frontend tests with coverage report
+- `npm run test:frontend:watch` - Explicit watch mode for all frontend tests
+
+### Frontend Success Tests (Passing Tests)
+- `npm run test:frontendsuccess` - Run only passing frontend tests in watch mode
+- `npm run test:frontendsuccess:run` - Run only passing frontend tests once
+- `npm run test:frontendsuccess:ui` - Run only passing tests with Vitest UI
+- `npm run test:frontendsuccess:coverage` - Run only passing tests with coverage
+- `npm run test:frontendsuccess:watch` - Explicit watch mode for passing tests
+
+### Frontend Fail Tests (Failing/WIP Tests)
+- `npm run test:frontendfail` - Run only failing frontend tests in watch mode
+- `npm run test:frontendfail:run` - Run only failing frontend tests once
+- `npm run test:frontendfail:ui` - Run only failing tests with Vitest UI
+- `npm run test:frontendfail:coverage` - Run only failing tests with coverage
+- `npm run test:frontendfail:watch` - Explicit watch mode for failing tests
 
 ### Backend Tests (Integration/Database Tests)
 - `npm run test:backend` - Run backend tests in watch mode (starts Supabase)
@@ -41,10 +56,10 @@ tests/
 
 ```bash
 # Run specific test file
-npm run test:frontend -- src/components/Calendar.test.tsx
+npm run test:frontend -- tests/frontendSuccessUnit/Calendar.test.tsx
 
 # Run multiple specific files
-npm run test:frontend -- src/components/Calendar.test.tsx src/components/PreferencesForm.test.tsx
+npm run test:frontend -- tests/frontendSuccessUnit/Calendar.test.tsx tests/frontendSuccessUnit/PreferencesForm.test.tsx
 
 # Run tests matching a pattern in filename
 npm run test:frontend -- --grep "Calendar"
@@ -87,7 +102,7 @@ VITEST_GREP="renders correctly" npm run test:frontend
 
 ```bash
 # Frontend tests
-npx vitest --config vitest.frontend.config.ts src/components/Calendar.test.tsx
+npx vitest --config vitest.frontend.config.ts tests/frontendSuccessUnit/Calendar.test.tsx
 npx vitest --config vitest.frontend.config.ts --grep "Calendar"
 
 # Backend tests  
@@ -187,8 +202,8 @@ describe('Preferences Integration', () => {
 - **Config**: `vitest.frontend.config.ts`
 - **Setup**: `src/test-setup-frontend.ts` (global mocks & utilities)
 - **Environment**: jsdom
-- **Includes**: `src/**/*.test.{ts,tsx}`
-- **Excludes**: `tests/**/*`
+- **Includes**: `tests/frontendSuccessUnit/**/*.test.{ts,tsx}`, `tests/frontendFailUnit/**/*.test.{ts,tsx}`
+- **Excludes**: `tests/integration/**/*`, `tests/unit/**/*`
 - **Features**: 
   - Mocked Supabase client
   - Mocked React Router
@@ -201,8 +216,8 @@ describe('Preferences Integration', () => {
 - **Config**: `vitest.backend.config.ts`
 - **Setup**: `src/test-setup.ts` (real database & factories)
 - **Environment**: jsdom
-- **Includes**: `tests/**/*.test.{ts,tsx}`
-- **Excludes**: `src/**/*.test.{ts,tsx}`
+- **Includes**: `tests/unit/**/*.test.{ts,tsx}`, `tests/integration/**/*.test.{ts,tsx}`
+- **Excludes**: `tests/frontendSuccessUnit/**/*`, `tests/frontendFailUnit/**/*`
 - **Features**:
   - Real Supabase connection (local)
   - Automatic database cleanup between tests
@@ -318,14 +333,23 @@ describe('Database Operations', () => {
 
 ### Running Tests During Development
 ```bash
-# Start frontend tests in watch mode for component development
+# Start all frontend tests in watch mode for component development
 npm run test:frontend
+
+# Start only passing tests in watch mode
+npm run test:frontendsuccess
+
+# Start only failing tests in watch mode
+npm run test:frontendfail
 
 # Start backend tests for API/database development  
 npm run test:backend
 
 # Run specific test file while developing
-npm run test:frontend -- src/components/MyComponent.test.tsx
+npm run test:frontend -- tests/frontendSuccessUnit/MyComponent.test.tsx
+
+# Run specific failing test file
+npm run test:frontendfail -- tests/frontendFailUnit/MyComponent.test.tsx
 ```
 
 ### Running Tests in CI/CD
