@@ -277,6 +277,9 @@ export type Database = {
           preference_id: string
           updated_at: string
           user_id: string
+          max_hours_per_week: number | null
+          max_hours_per_shift: number | null
+          consider_lower_rate: boolean | null
         }
         Insert: {
           created_at?: string
@@ -286,6 +289,9 @@ export type Database = {
           preference_id?: string
           updated_at?: string
           user_id: string
+          max_hours_per_week?: number | null
+          max_hours_per_shift?: number | null
+          consider_lower_rate?: boolean | null
         }
         Update: {
           created_at?: string
@@ -295,6 +301,9 @@ export type Database = {
           preference_id?: string
           updated_at?: string
           user_id?: string
+          max_hours_per_week?: number | null
+          max_hours_per_shift?: number | null
+          consider_lower_rate?: boolean | null
         }
         Relationships: [
           {
@@ -386,6 +395,23 @@ export type Database = {
         Args: { email_to_check: string }
         Returns: boolean
       }
+      create_default_preferences: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: {
+          preference_id: string
+          user_id: string
+          min_pay_rate: number
+          max_travel_km: number
+          desired_roles: Json
+          created_at: string
+          updated_at: string
+          max_hours_per_week: number
+          max_hours_per_shift: number
+          consider_lower_rate: boolean
+        }[]
+      }
       create_shift: {
         Args: {
           client_id: string
@@ -416,9 +442,47 @@ export type Database = {
           total_earned: number
         }[]
       }
+      get_user_location: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: {
+          user_id: string
+          address_coordinates: string | null
+          postal_code: string | null
+          address: string | null
+          coordinates_lat: number | null
+          coordinates_lng: number | null
+          formatted_address: string | null
+        }[]
+      }
       is_user_assigned_to_shift: {
         Args: { p_shift_id: string; p_user_id: string }
         Returns: boolean
+      }
+      upsert_user_preferences: {
+        Args: {
+          p_target_user_id: string
+          p_min_pay_rate: number
+          p_max_travel_km: number
+          p_desired_roles: Json
+          p_max_hours_per_week: number
+          p_max_hours_per_shift: number
+          p_consider_lower_rate: boolean
+        }
+        Returns: {
+          preference_id: string
+          user_id: string
+          min_pay_rate: number
+          max_travel_km: number
+          desired_roles: Json
+          max_hours_per_week: number
+          max_hours_per_shift: number
+          consider_lower_rate: boolean
+          created_at: string
+          updated_at: string
+          validation_errors: string[]
+        }[]
       }
     }
     Enums: {

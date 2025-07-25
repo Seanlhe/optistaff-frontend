@@ -70,8 +70,20 @@ export const cleanupTestData = async () => {
 
 // Test data factories
 export const createTestJobSeeker = async (overrides = {}) => {
+  // First create an auth user
+  const testEmail = `test-${crypto.randomUUID()}@example.com`;
+  const testPassword = "testpassword123";
+  
+  const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+    email: testEmail,
+    password: testPassword,
+    email_confirm: true
+  });
+
+  if (authError) throw authError;
+  
   const defaultData = {
-    user_id: crypto.randomUUID(),
+    user_id: authData.user.id, // Use the auth user's ID
     first_name: "Test",
     last_name: "JobSeeker",
     phone_number: "12345678",

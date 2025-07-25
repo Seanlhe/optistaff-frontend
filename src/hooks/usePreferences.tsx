@@ -1,8 +1,8 @@
 /**
  * Preferences Hook
- * @description Custom hook for user preferences management
+ * @description Custom hook for user preferences management with database function integration
  * @author OptiStaff Team
- * @author OptiStaff Team
+ * @updated Uses create_default_preferences database function for consistent default creation
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -63,36 +63,25 @@ export const usePreferences = () => {
     }
   }, [user]);
 
-  // Create default preferences for new users
+  // Create default preferences for new users using database function
   const createDefaultPreferences = useCallback(async () => {
     if (!user) return;
 
-    const defaultPreferences: Omit<
-      UserPreferences,
-      "preference_id" | "created_at" | "updated_at"
-    > = {
-      user_id: user.id,
-      min_pay_rate: 15,
-      max_travel_km: 15, // More reasonable default for Singapore
-      desired_roles: [], // Empty array of job names
-      max_hours_per_week: 40,
-      max_hours_per_shift: 8,
-      consider_lower_rate: false,
-    };
-
     try {
-      const { data, error } = await supabase
-        .from("preferences")
-        .insert(defaultPreferences)
-        .select()
-        .single();
+      const { data, error } = await supabase.rpc('create_default_preferences', {
+        p_user_id: user.id
+      });
 
       if (error) {
         setError(error.message);
         return;
       }
 
-      setPreferences(data);
+      // Database function returns an array, get the first (and only) item
+      const preferences = data?.[0];
+      if (preferences) {
+        setPreferences(preferences);
+      }
     } catch (err) {
       setError((err as Error).message);
     }
@@ -134,24 +123,48 @@ export const usePreferences = () => {
     [user, preferences]
   );
 
-  // Reset preferences to defaults
+  // Reset preferences to defaults using database function
   const resetPreferences = useCallback(async () => {
     if (!user) {
       setError("User not authenticated");
       return false;
     }
 
-    const defaultPreferences: Partial<UserPreferences> = {
-      min_pay_rate: 15,
-      max_travel_km: 15, // More reasonable default for Singapore
-      desired_roles: [], // Empty array of job names
-      max_hours_per_week: 40,
-      max_hours_per_shift: 8,
-      consider_lower_rate: false,
-    };
+    try {
+      // First delete existing preferences
+      const { error: deleteError } = await supabase
+        .from("preferences")
+        .delete()
+        .eq("user_id", user.id);
 
-    return await updatePreferences(defaultPreferences);
-  }, [user, updatePreferences]);
+      if (deleteError) {
+        setError(deleteError.message);
+        return false;
+      }
+
+      // Then create new default preferences
+      const { data, error } = await supabase.rpc('create_default_preferences', {
+        p_user_id: user.id
+      });
+
+      if (error) {
+        setError(error.message);
+        return false;
+      }
+
+      // Database function returns an array, get the first (and only) item
+      const preferences = data?.[0];
+      if (preferences) {
+        setPreferences(preferences);
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      setError((err as Error).message);
+      return false;
+    }
+  }, [user]);
 
   // Helper to check if user has specific job preference
   const hasJobPreference = useCallback(
@@ -166,6 +179,56 @@ export const usePreferences = () => {
     if (!preferences) return [];
     return preferences.desired_roles;
   }, [preferences]);
+
+  // Save complete preferences using upsert database function with built-in validation
+  const savePreferences = useCallback(
+    async (preferencesData: Omit<UserPreferences, 'preference_id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+      if (!user) {
+        setError("User not authenticated");
+        return false;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const { data, error } = await supabase.rpc('upsert_user_preferences', {
+          p_target_user_id: user.id,
+          p_min_pay_rate: preferencesData.min_pay_rate,
+          p_max_travel_km: preferencesData.max_travel_km,
+          p_desired_roles: preferencesData.desired_roles,
+          p_max_hours_per_week: preferencesData.max_hours_per_week,
+          p_max_hours_per_shift: preferencesData.max_hours_per_shift,
+          p_consider_lower_rate: preferencesData.consider_lower_rate
+        });
+
+        if (error) {
+          setError(error.message);
+          return false;
+        }
+
+        const result = data?.[0];
+        if (result) {
+          // Check for validation errors
+          if (result.validation_errors && result.validation_errors.length > 0) {
+            setError(result.validation_errors.join(', '));
+            return false;
+          }
+
+          setPreferences(result);
+          return true;
+        }
+
+        return false;
+      } catch (err) {
+        setError((err as Error).message);
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user]
+  );
 
   // Load preferences on mount or user change
   useEffect(() => {
@@ -184,6 +247,7 @@ export const usePreferences = () => {
 
     // Actions
     fetchPreferences,
+    savePreferences,
     updatePreferences,
     resetPreferences,
     createDefaultPreferences,
