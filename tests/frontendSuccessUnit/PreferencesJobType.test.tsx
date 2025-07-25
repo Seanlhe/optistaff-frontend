@@ -8,7 +8,7 @@ vi.mock('../../src/hooks/useJobTypes');
 
 describe('PreferenceJobType', () => {
   const mockSetFormData = vi.fn();
-  const mockUseJobTypes = vi.mocked(useJobTypes);
+  const mockUseJobTypes = useJobTypes as vi.MockedFunction<typeof useJobTypes>;
 
   const mockJobTypesByCategory: JobTypesByCategory = {
     'Food Service': [

@@ -17,12 +17,31 @@ export const CalendarEvent = ({
   const HOUR_HEIGHT = 48;
   const DAY_WIDTH = 200;
 
-  // Calculate display properties
-  const duration = differenceInMinutes(event.endTime, event.startTime);
-  const height = (duration / 60) * HOUR_HEIGHT;
-  const topOffset =
-    event.startTime.getHours() * HOUR_HEIGHT +
-    (event.startTime.getMinutes() / 60) * HOUR_HEIGHT;
+  // Validate dates and provide fallbacks
+  const isValidStartTime = event.startTime instanceof Date && !isNaN(event.startTime.getTime());
+  const isValidEndTime = event.endTime instanceof Date && !isNaN(event.endTime.getTime());
+  
+  // Calculate display properties with error handling
+  let duration = 60; // Default 1 hour
+  let height = HOUR_HEIGHT;
+  let topOffset = 0;
+  
+  if (isValidStartTime && isValidEndTime) {
+    try {
+      duration = differenceInMinutes(event.endTime, event.startTime);
+      // Ensure minimum duration for display
+      if (duration <= 0) duration = 30;
+      height = (duration / 60) * HOUR_HEIGHT;
+      topOffset =
+        event.startTime.getHours() * HOUR_HEIGHT +
+        (event.startTime.getMinutes() / 60) * HOUR_HEIGHT;
+    } catch (error) {
+      // Use defaults if calculation fails
+      duration = 60;
+      height = HOUR_HEIGHT;
+      topOffset = 0;
+    }
+  }
 
   // State
   const [isDragging, setIsDragging] = useState(false);
@@ -33,7 +52,9 @@ export const CalendarEvent = ({
   useEffect(() => {
     const handleKeyDown = (keyEvent: KeyboardEvent) => {
       if (isSelected && (keyEvent.key === 'Delete' || keyEvent.key === 'Backspace')) {
-        onDelete(event.id);
+        if (onDelete && typeof onDelete === 'function') {
+          onDelete(event.id);
+        }
       }
     };
 
@@ -48,7 +69,7 @@ export const CalendarEvent = ({
     mouseEvent.preventDefault();
     mouseEvent.stopPropagation();
 
-    if (!eventRef.current) return;
+    if (!eventRef.current || !isValidStartTime || !isValidEndTime) return;
 
     // Check if click is on resize handle - if so, don't initiate drag
     if (mouseEvent.target instanceof Node) {
@@ -174,6 +195,9 @@ export const CalendarEvent = ({
     mouseEvent.preventDefault();
     mouseEvent.stopPropagation();
 
+    // Don't allow resize if dates are invalid
+    if (!isValidStartTime || !isValidEndTime) return;
+
     setIsSelected(false);
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
@@ -242,7 +266,7 @@ export const CalendarEvent = ({
       }}
     >
       <div className="text-xs text-white overflow-hidden h-full">
-        {format(event.startTime, "HH:mm")} - {format(event.endTime, "HH:mm")}
+        {isValidStartTime ? format(event.startTime, "HH:mm") : "--:--"} - {isValidEndTime ? format(event.endTime, "HH:mm") : "--:--"}
       </div>
       <div
         className="absolute bottom-0 left-0 right-0 h-2 bg-primary-blue cursor-ns-resize rounded-b opacity-0 hover:opacity-100 resize-handle"

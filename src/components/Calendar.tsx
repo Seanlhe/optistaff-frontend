@@ -317,30 +317,50 @@ const handleUseTemplate = async (templateId: string) => {
 
         {/* Days Grid */}
         <div className="flex-1 grid grid-cols-7">
-          {weekDays.map((day, index) => (
-            <div
-              key={day.toISOString()}
-              className="h-12 border-b border-r border-border text-center p-1 bg-white"
-            >
-              <div className="text-xs text-secondary-text">
-                {DAYS_OF_WEEK[index]}
+          {weekDays.map((day, index) => {
+            // Handle invalid dates gracefully
+            const isValidDate = day instanceof Date && !isNaN(day.getTime());
+            const dayKey = isValidDate ? day.toISOString() : `invalid-day-${index}`;
+            const dayText = isValidDate ? format(day, "d") : "--";
+            
+            return (
+              <div
+                key={dayKey}
+                className="h-12 border-b border-r border-border text-center p-1 bg-white"
+              >
+                <div className="text-xs text-secondary-text">
+                  {DAYS_OF_WEEK[index]}
+                </div>
+                <div className="text-lg text-secondary-text">{dayText}</div>
               </div>
-              <div className="text-lg text-secondary-text">{format(day, "d")}</div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Time Slots for each day */}
-          {weekDays.map((day) => (
-            <div key={day.toISOString()} className="relative border-r border-border">
+          {weekDays.map((day, index) => {
+            // Handle invalid dates gracefully for time slots
+            const isValidDate = day instanceof Date && !isNaN(day.getTime());
+            const dayKey = isValidDate ? day.toISOString() : `invalid-timeslot-${index}`;
+            
+            return (
+              <div key={dayKey} className="relative border-r border-border">
               {HOURS.map((hour) => (
                 <div
                   key={hour}
                   className="h-12 border-b border-border hover:bg-bg cursor-pointer"
-                  onDoubleClick={() => handleDoubleClick(day, hour)}
+                  onDoubleClick={() => isValidDate ? handleDoubleClick(day, hour) : null}
                 ></div>
               ))}
               {events
-                .filter((event) => isSameDay(event.startTime, day))
+                .filter((event) => {
+                  // Handle invalid dates in events gracefully
+                  if (!event.startTime || !isValidDate) return false;
+                  try {
+                    return isSameDay(event.startTime, day);
+                  } catch {
+                    return false;
+                  }
+                })
                 .map((event) => (
                   <CalendarEvent
                     key={event.id}
@@ -350,7 +370,8 @@ const handleUseTemplate = async (templateId: string) => {
                   />
                 ))}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
