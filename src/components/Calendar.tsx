@@ -181,14 +181,17 @@ const handleUseTemplate = async (templateId: string) => {
     if (!template) throw new Error("Failed to load template");
 
     const templateEvents: UI_Event[] = template.timeblocks.map((block) => {
-      const targetDay = weekDays[block.day_of_week - 1]; // Monday=1, Sunday=7
+      // Shift day_of_week backward by 1, wrapping 1 -> 7
+      const shiftedDay = block.day_of_week === 1 ? 7 : block.day_of_week - 1;
+
+      const targetDay = weekDays[shiftedDay - 1]; // weekDays[0] = Monday
 
       const blockStart = new Date(block.startTime);
       const blockEnd = new Date(block.endTime);
 
       return {
         id: block.id,
-        day_of_week: block.day_of_week,
+        day_of_week: shiftedDay,
         startTime: set(targetDay, {
           hours: blockStart.getHours(),
           minutes: blockStart.getMinutes(),
@@ -208,6 +211,8 @@ const handleUseTemplate = async (templateId: string) => {
     setTemplateLoadLoading(false);
   }
 };
+
+
 
   const handleDeleteTemplate = async (templateId: string) => {
     try {

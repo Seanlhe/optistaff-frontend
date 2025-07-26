@@ -142,6 +142,14 @@ export interface UserPreferences {
   updated_at?: string;
 }
 
+// an id, title, startTime, and endTime.
+export interface UI_Event {
+  id: string;
+  day_of_week: number; // 1 = Monday,  7  = Sunday
+  startTime: Date;
+  endTime: Date;
+}
+
 // Form data interface for frontend components
 export interface PreferencesFormData {
   payRate: number;
