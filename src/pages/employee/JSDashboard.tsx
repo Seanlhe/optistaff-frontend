@@ -8,7 +8,7 @@ import MonthlyCalendar from "../../components/MonthlyCalendar";
 import { useAssignments } from "../../hooks/useAssignments";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { Assignment } from "../../types/hooks";
-import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
 
 const Dashboard = () => {
 	const [selectedAssignment, setSelectedAssignment] = useState<JobseekerAssignmentCard | null>(null);
@@ -77,10 +77,33 @@ const Dashboard = () => {
 		};
 	};
 
-	// Use real assignment data
+	// Helper function to get current week boundaries
+	const getCurrentWeekBounds = () => {
+		const now = new Date();
+		const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday = 1
+		const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+		return { weekStart, weekEnd };
+	};
+
+	// Use real assignment data - filtered for current week only
 	const displayAssignments = useMemo(() => {
 		if (loading || assignments.length === 0) return [];
-		return assignments.map(transformAssignmentToCard);
+		
+		// Get current week boundaries
+		const { weekStart, weekEnd } = getCurrentWeekBounds();
+		
+		// Filter assignments for current week only
+		const currentWeekAssignments = assignments.filter(assignment => {
+			const assignmentDate = new Date(assignment.start_time || assignment.created_at);
+			
+			// Check if assignment falls within current week (Monday to Sunday)
+			return isWithinInterval(assignmentDate, {
+				start: weekStart,
+				end: weekEnd
+			});
+		});
+		
+		return currentWeekAssignments.map(transformAssignmentToCard);
 	}, [assignments, loading]);
 
 	// Callback function to refresh assignments when status changes

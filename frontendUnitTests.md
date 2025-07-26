@@ -2,7 +2,7 @@
 ## Unit Tests and Integration Tests
 
 ### Testing Strategy Overview
-The frontend testing for 5 React components is divided into two distinct categories:
+The frontend testing for 5 React components (PreferencesMaximum, CalendarEvent, JSPref, Calendar, and PreferencesJobType) is divided into two distinct categories:
 
 **Unit Tests** - Test individual components in isolation with mocked dependencies:
 - **Isolated Testing (IT)**: Tests individual component behavior without external dependencies
@@ -17,6 +17,36 @@ The frontend testing for 5 React components is divided into two distinct categor
 ---
 
 # UNIT TESTS
+
+## 5. PreferencesJobType Component (Job Selection Logic)
+
+**Component Purpose**: Job type selection interface with category-based organization and checkbox management
+**Testing Strategy**: State Management Testing (SMT) + Input Validation Testing (IVT)
+
+| Test Case ID | Test Case Name | Validation Type | Test Data | Expected Result | Test Category |
+|--------------|----------------|----------------|-----------|-----------------|---------------|
+| PJT-UT-01 | Component Structure Rendering | Initial Display | Mock job categories data | Success: Title, description, categories rendered | Display |
+| PJT-UT-02 | Checkbox State Initialization | State Management | formData with pre-selected jobs | Success: selectedJobs state matches formData.selectedJobNames | State Initialization |
+| PJT-UT-03 | Individual Checkbox Selection | State Management | Click unchecked job checkbox | Success: selectedJobs state updated, setFormData called | State Update |
+| PJT-UT-04 | Checkbox Deselection | State Management | Click checked job checkbox | Success: Job removed from selectedJobs and formData | State Update |
+| PJT-UT-05 | Multiple Checkbox Selection | State Management | Select multiple jobs across categories | Success: All selections maintained in state | State Persistence |
+| PJT-UT-06 | Category Organization | Layout Rendering | Multi-category job data | Success: Jobs grouped under correct category headers | Layout |
+| PJT-UT-07 | Checkbox Visual State | CSS Classes | Selected vs unselected checkboxes | Success: Selected jobs show bg-primary-blue/5 styling | Visual State |
+| PJT-UT-08 | Form Data Synchronization | Data Flow | Checkbox changes | Success: selectedJobNames array updated correctly | Data Sync |
+| PJT-UT-09 | Empty State Handling | Edge Case | No job types data | Success: Component renders without errors | Empty Data |
+| PJT-UT-10 | Grid Layout Responsiveness | CSS Classes | Check responsive grid classes | Success: grid-cols-1 sm:grid-cols-2 applied | Responsive Layout |
+
+### PreferencesJobType Unit Test Failure Cases
+
+| Test Case ID | Test Case Name | Failure Scenario | Test Data | Expected Behavior | Test Category |
+|--------------|----------------|------------------|-----------|-------------------|---------------|
+| PJT-UT-FAIL-01 | Corrupted Job Type Data | Data Corruption | Job types with missing properties | Success: Component handles missing job_type_id gracefully | Invalid Data |
+| PJT-UT-FAIL-02 | Invalid formData Structure | Data Validation | formData without selectedJobNames property | Success: Component initializes with empty selection | Missing Data |
+| PJT-UT-FAIL-03 | Rapid Checkbox Changes | Stress Testing | 50 rapid checkbox state changes | Success: State remains consistent, no race conditions | State Stability |
+| PJT-UT-FAIL-04 | Malformed Category Data | Data Structure | Categories with null/undefined job arrays | Success: Empty categories render without errors | Data Safety |
+| PJT-UT-FAIL-05 | setFormData Function Error | Callback Error | setFormData prop throws error | Success: Component continues functioning | Callback Failure |
+
+---
 
 ## 1. PreferencesMaximum Component (Hours Input Fields)
 
@@ -113,6 +143,31 @@ The frontend testing for 5 React components is divided into two distinct categor
 ---
 
 # INTEGRATION TESTS
+
+## 5. PreferencesJobType Component (Hook-Service Integration)
+
+**Integration Purpose**: Job type selection with external data service and loading states
+**Testing Strategy**: Service Integration Testing (SIT) + Hook Integration Testing (HIT)
+
+| Test Case ID | Test Case Name | Integration Aspect | Test Data | Expected Result | Test Category |
+|--------------|----------------|-------------------|-----------|-----------------|---------------|
+| PJT-INT-01 | useJobTypes Hook Integration | Hook Integration | Mock useJobTypes hook response | Success: Component receives and renders job data | Hook Integration |
+| PJT-INT-02 | Loading State Integration | Service Integration | useJobTypes returns loading: true | Success: Loading skeleton with animate-pulse rendered | Loading Integration |
+| PJT-INT-03 | Error State Integration | Service Integration | useJobTypes returns error message | Success: Error state with retry message displayed | Error Integration |
+| PJT-INT-04 | Data Transformation Integration | Data Integration | Raw job types from API | Success: Data correctly grouped by categories | Data Processing |
+| PJT-INT-05 | Parent Form Integration | Component Integration | formData prop changes | Success: Component re-syncs with parent form state | Form Integration |
+| PJT-INT-06 | State Persistence Integration | State Integration | Component unmount/remount cycle | Success: Selected jobs persist through lifecycle | State Persistence |
+
+### PreferencesJobType Integration Failure Cases
+
+| Test Case ID | Test Case Name | Failure Scenario | Test Data | Expected Behavior | Test Category |
+|--------------|----------------|------------------|-----------|-------------------|---------------|
+| PJT-INT-FAIL-01 | Hook Data Loading Error | Service Failure | useJobTypes hook throws error | Success: Error boundary catches and shows error state | Service Error |
+| PJT-INT-FAIL-02 | Parent Form Sync Error | Integration Error | setFormData callback fails | Success: Local state maintained, error handled gracefully | Form Sync Error |
+| PJT-INT-FAIL-03 | Invalid Hook Response | Data Integration | useJobTypes returns malformed data | Success: Component handles invalid data structure | Data Validation |
+| PJT-INT-FAIL-04 | Network Timeout Integration | Service Integration | API request times out | Success: Loading state persists, no crash | Network Error |
+
+---
 
 ## 1. JSPref Component (Parent-Child Integration)
 
@@ -244,19 +299,19 @@ The frontend testing for 5 React components is divided into two distinct categor
 ## Test Execution Results
 
 ### Unit Tests
-- **Total Unit Test Cases**: 28 tests across 4 components
-- **Success Tests**: 23 tests covering normal component operation
-- **Failure Tests**: 11 tests covering error conditions and edge cases
+- **Total Unit Test Cases**: 38 tests across 5 components
+- **Success Tests**: 33 tests covering normal component operation
+- **Failure Tests**: 16 tests covering error conditions and edge cases
 - **Focus**: Individual component behavior, isolated logic testing
 
 ### Integration Tests
-- **Total Integration Test Cases**: 18 tests across 4 components
-- **Success Tests**: 14 tests covering normal integration scenarios  
-- **Failure Tests**: 8 tests covering integration failure conditions
+- **Total Integration Test Cases**: 24 tests across 5 components
+- **Success Tests**: 20 tests covering normal integration scenarios  
+- **Failure Tests**: 12 tests covering integration failure conditions
 - **Focus**: Component interactions, service integration, data flow
 
 ### Overall Coverage
-- **Total Test Cases**: 46 tests across 5 components
+- **Total Test Cases**: 62 tests across 5 components
 - **Unit vs Integration Split**: 61% Unit Tests, 39% Integration Tests
 - **Component Coverage**: Complete coverage of both isolated and integrated functionality
 - **Testing Framework**: Vitest with React Testing Library for both unit and integration testing
