@@ -6,11 +6,12 @@
  */
 
 import { describe, test, expect, beforeEach } from 'vitest'
-import { testSupabase, createTestJobSeeker, cleanupTestData } from '../../src/test-setup'
+import { testSupabase, createTestJobSeeker, cleanupTestData, ensureTestJobTypes } from '../../src/test-setup'
 
 describe('create_default_preferences - Database Function Unit Tests', () => {
   beforeEach(async () => {
     await cleanupTestData()
+    await ensureTestJobTypes() // Ensure required job types exist
   })
 
   // ========================================
@@ -50,27 +51,31 @@ describe('create_default_preferences - Database Function Unit Tests', () => {
       const jobSeeker = await createTestJobSeeker()
       
       // Create preferences first time
-      await testSupabase.rpc('create_default_preferences', {
+      const firstResult = await testSupabase.rpc('create_default_preferences', {
         p_user_id: jobSeeker.user_id
       })
 
+      // Ensure first creation succeeded
+      expect(firstResult.error).toBeNull()
+
       // Act - Try to create again
-      const { data, error } = await testSupabase.rpc('create_default_preferences', {
+      const secondResult = await testSupabase.rpc('create_default_preferences', {
         p_user_id: jobSeeker.user_id
       })
 
       // Assert - Should return existing preferences, not create duplicates
-      expect(error).toBeNull()
-      expect(data).toBeTruthy()
-      expect(data.length).toBe(1)
+      expect(secondResult.error).toBeNull()
+      expect(secondResult.data).toBeTruthy()
+      expect(secondResult.data?.length).toBe(1)
 
       // Verify only one preference record exists
-      const { data: allPreferences } = await testSupabase
+      const { data: allPreferences, error: queryError } = await testSupabase
         .from('preferences')
         .select('*')
         .eq('user_id', jobSeeker.user_id)
 
-      expect(allPreferences).toHaveLength(1)
+      expect(queryError).toBeNull()
+      expect(allPreferences?.length).toBe(1)
     })
 
     test('creates preferences with correct default values structure', async () => {
@@ -178,9 +183,9 @@ describe('create_default_preferences - Database Function Unit Tests', () => {
       // Assert
       expect(rpcError).toBeNull()
       expect(directError).toBeNull()
-      expect(rpcData[0].preference_id).toBe(directData.preference_id)
-      expect(rpcData[0].min_pay_rate).toBe(directData.min_pay_rate)
-      expect(rpcData[0].desired_roles).toEqual(directData.desired_roles)
+      expect(rpcData?.[0]?.preference_id).toBe(directData?.preference_id)
+      expect(rpcData?.[0]?.min_pay_rate).toBe(directData?.min_pay_rate)
+      expect(rpcData?.[0]?.desired_roles).toEqual(directData?.desired_roles)
     })
 
     test('handles concurrent creation attempts', async () => {
@@ -198,12 +203,13 @@ describe('create_default_preferences - Database Function Unit Tests', () => {
       expect(result2.error).toBeNull()
 
       // Verify only one record exists
-      const { data: allPreferences } = await testSupabase
+      const { data: allPreferences, error: queryError } = await testSupabase
         .from('preferences')
         .select('*')
         .eq('user_id', jobSeeker.user_id)
 
-      expect(allPreferences).toHaveLength(1)
+      expect(queryError).toBeNull()
+      expect(allPreferences?.length).toBe(1)
     })
   })
 })
