@@ -11,12 +11,16 @@ import { UserLocationData } from "../types/hooks";
 import { useLocationGeocoding } from "./useLocationGeocoding";
 
 export const usePreferencesLocation = () => {
-  const [homeLocation, setHomeLocation] = useState<[number, number] | null>(null);
+  const [homeLocation, setHomeLocation] = useState<[number, number] | null>(
+    null
+  );
   const [homeAddress, setHomeAddress] = useState<string | null>(null);
-  const [locationData, setLocationData] = useState<UserLocationData | null>(null);
+  const [locationData, setLocationData] = useState<UserLocationData | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { user } = useAuth();
   const {
     geocodeAddress,
@@ -25,7 +29,7 @@ export const usePreferencesLocation = () => {
     error: geocodingError,
   } = useLocationGeocoding();
 
-  // Load home location data from job_seekers table with enhanced error handling
+  // Load home location data using database function
   const loadLocationData = useCallback(async () => {
     if (!user) {
       setError("User not authenticated");
@@ -36,88 +40,43 @@ export const usePreferencesLocation = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase
-        .from("job_seekers")
-        .select("address_coordinates, postal_code")
-        .eq("user_id", user.id)
-        .single();
+      const { data, error } = await supabase.rpc('get_user_location', {
+        p_user_id: user.id
+      });
 
       if (error) {
-        // If no job seeker record found, this is expected for new users
-        if (error.code === "PGRST116") {
-          setLocationData(null);
-          setHomeLocation(null);
-          setHomeAddress(null);
-          return;
-        }
+        setError(`Failed to load location data: ${error.message}`);
+        return;
+      }
 
-        // Enhanced error handling for different database errors
-        let errorMessage = "Failed to load location data";
-        if (error.code === "PGRST301") {
-          errorMessage = "Database connection error. Please try again.";
-        } else if (error.code === "PGRST204") {
-          errorMessage = "Location data not found. Please update your profile.";
-        } else {
-          errorMessage = `Location data error: ${error.message}`;
-        }
-
-        setError(errorMessage);
+      // Database function returns an array, get the first item
+      const locationResult = data?.[0];
+      
+      if (!locationResult) {
+        // No location data found - this is expected for new users
+        setLocationData(null);
+        setHomeLocation(null);
+        setHomeAddress(null);
         return;
       }
 
       const locationData: UserLocationData = {
-        address_coordinates: data.address_coordinates,
-        postal_code: data.postal_code,
-        address: undefined, // Address column exists but not used by preferences (used by profile management)
+        address_coordinates: locationResult.address_coordinates,
+        postal_code: locationResult.postal_code,
+        address: locationResult.address,
       };
 
       setLocationData(locationData);
 
-      // Parse coordinates from address_coordinates string if available with validation
-      if (data.address_coordinates) {
-        try {
-          const [lat, lng] = data.address_coordinates.split(",").map(Number);
-
-          // Validate coordinates are valid numbers and within Singapore bounds
-          if (!isNaN(lat) && !isNaN(lng)) {
-            // Singapore bounds validation
-            if (
-              lat >= 1.229 &&
-              lat <= 1.4784 &&
-              lng >= 103.6 &&
-              lng <= 104.012
-            ) {
-              setHomeLocation([lat, lng]);
-            } else {
-              console.warn(
-                "Home location coordinates are outside Singapore bounds:",
-                [lat, lng]
-              );
-              setError(
-                "Home location appears to be outside Singapore. Please update your profile."
-              );
-            }
-          } else {
-            console.warn(
-              "Invalid address coordinates:",
-              data.address_coordinates
-            );
-            setError(
-              "Invalid location data format. Please update your profile."
-            );
-          }
-        } catch (parseError) {
-          console.warn("Failed to parse address_coordinates:", parseError);
-          setError(
-            "Unable to parse location data. Please update your profile."
-          );
-        }
+      // Use parsed coordinates from database function (no validation needed)
+      if (locationResult.coordinates_lat && locationResult.coordinates_lng) {
+        setHomeLocation([locationResult.coordinates_lat, locationResult.coordinates_lng]);
       }
 
-      // Set home address from available data (only postal_code since no address column exists)
-      setHomeAddress(data.postal_code || null);
+      // Use formatted address from database function
+      setHomeAddress(locationResult.formatted_address || locationResult.postal_code || null);
+
     } catch (err) {
-      // Network or unexpected errors
       const errorMessage =
         err instanceof Error
           ? `Network error loading location: ${err.message}`
@@ -201,23 +160,21 @@ export const usePreferencesLocation = () => {
     geocodingError,
   ]);
 
-  // Helper function to validate Singapore coordinates
-  const isValidSingaporeCoordinates = useCallback((lat: number, lng: number): boolean => {
-    return lat >= 1.229 && lat <= 1.4784 && lng >= 103.6 && lng <= 104.012;
-  }, []);
-
-  // Helper function to parse coordinate string
-  const parseCoordinateString = useCallback((coordString: string): [number, number] | null => {
-    try {
-      const [lat, lng] = coordString.split(",").map(Number);
-      if (!isNaN(lat) && !isNaN(lng) && isValidSingaporeCoordinates(lat, lng)) {
-        return [lat, lng];
+  // Helper function to parse coordinate string (simplified)
+  const parseCoordinateString = useCallback(
+    (coordString: string): [number, number] | null => {
+      try {
+        const [lat, lng] = coordString.split(",").map(Number);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          return [lat, lng];
+        }
+      } catch (error) {
+        console.warn("Failed to parse coordinate string:", coordString, error);
       }
-    } catch (error) {
-      console.warn("Failed to parse coordinate string:", coordString, error);
-    }
-    return null;
-  }, [isValidSingaporeCoordinates]);
+      return null;
+    },
+    []
+  );
 
   // Load location data on mount or user change
   useEffect(() => {
@@ -241,7 +198,6 @@ export const usePreferencesLocation = () => {
     geocodeHomeLocation,
 
     // Helpers
-    isValidSingaporeCoordinates,
     parseCoordinateString,
   };
 };

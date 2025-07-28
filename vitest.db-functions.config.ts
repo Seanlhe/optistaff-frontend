@@ -8,18 +8,24 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'], // Backend tests need Supabase setup
-    include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}'],
-    exclude: ['node_modules', 'dist', 'tests/frontendSuccessUnit/**/*', 'tests/frontendFailUnit/**/*'],
+    include: [
+      'tests/unit/create-default-preferences.test.ts',
+      'tests/unit/upsert-user-preferences.test.ts', 
+      'tests/unit/validate-job-names.test.ts',
+      'tests/unit/get-user-location.test.ts'
+    ],
     testTimeout: 10000, // Longer timeout for database operations
     hookTimeout: 10000,
-    // Force sequential execution for database tests to avoid race conditions
-    pool: 'forks',
+    // Allow concurrent execution for these specific DB function tests
+    // since they're isolated unit tests
+    pool: 'threads',
     poolOptions: {
-      forks: {
-        singleFork: true, // Run all tests in single process
+      threads: {
+        maxThreads: 4, // One thread per test file
+        minThreads: 1,
       }
     },
-    maxConcurrency: 1, // Run one test file at a time
+    maxConcurrency: 4, // Allow up to 4 tests to run concurrently
   },
   resolve: {
     alias: {

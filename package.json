@@ -25,6 +25,8 @@
     "test:frontend:fail:coverage": "vitest run --coverage --config vitest.frontend.config.ts tests/frontendFailUnit/",
     "test:backend": "supabase start && vitest --config vitest.backend.config.ts",
     "test:backend:run": "supabase start && vitest run --config vitest.backend.config.ts",
+    "test:db-functions": "supabase start && vitest run --config vitest.backend.config.ts tests/unit/create-default-preferences.test.ts tests/unit/upsert-user-preferences.test.ts tests/unit/validate-job-names.test.ts tests/unit/get-user-location.test.ts",
+    "test:db-functions:ui": "supabase start && vitest --ui --config vitest.backend.config.ts tests/unit/create-default-preferences.test.ts tests/unit/upsert-user-preferences.test.ts tests/unit/validate-job-names.test.ts tests/unit/get-user-location.test.ts",
     "test:backend:ui": "supabase start && vitest --ui --config vitest.backend.config.ts",
     "test:backend:coverage": "supabase start && vitest run --coverage --config vitest.backend.config.ts",
     "test:backend:watch": "supabase start && vitest --watch --config vitest.backend.config.ts",
