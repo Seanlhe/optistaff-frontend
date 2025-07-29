@@ -12,7 +12,7 @@ export const UserTypeToggle = ({
 }: UserTypeToggleProps) => {
   return (
     <div className="space-y-3">
-      <label className="text-sm font-semibold text-primary-text">
+      <label className="text-sm font-montserrat-smb text-primary-text">
         I am a...
       </label>
       <div className="grid grid-cols-2 gap-3">
@@ -21,10 +21,10 @@ export const UserTypeToggle = ({
           variant="outline"
           onClick={() => setUserType("jobseeker")}
           className={cn(
-            "h-12 text-sm font-semibold transition-all border-2",
+            "h-12 text-sm font-montserrat-smb transition-all border-2",
             userType === "jobseeker"
               ? "border-primary-blue bg-primary-blue/10 text-primary-blue shadow-md"
-              : "border-border-color hover:border-primary-blue/50 hover:bg-primary-blue/5"
+              : "border-border hover:border-primary-blue/50 hover:bg-primary-blue/5"
           )}
         >
           🔍 Job Seeker
@@ -34,10 +34,10 @@ export const UserTypeToggle = ({
           variant="outline"
           onClick={() => setUserType("employer")}
           className={cn(
-            "h-12 text-sm font-semibold transition-all border-2",
+            "h-12 text-sm font-montserrat-smb transition-all border-2",
             userType === "employer"
               ? "border-green bg-green/10 text-green-dark shadow-md"
-              : "border-border-color hover:border-green/50 hover:bg-green/5"
+              : "border-border hover:border-green/50 hover:bg-green/5"
           )}
         >
           🏢 Employer

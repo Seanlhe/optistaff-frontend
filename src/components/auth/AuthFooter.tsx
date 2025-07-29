@@ -12,7 +12,7 @@ export const AuthFooter = ({ isSignup }: AuthFooterProps) => {
         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
         <Link
           to={`/auth?mode=${isSignup ? "login" : "signup"}`}
-          className="text-primary-blue hover:text-primary-blue/80 font-semibold transition-colors"
+          className="text-primary-blue hover:text-primary-blue/80 font-montserrat-smb transition-colors"
         >
           {isSignup ? "Sign In" : "Sign Up"}
         </Link>

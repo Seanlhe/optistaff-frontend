@@ -32,15 +32,15 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
 
   const getValidationColor = () => {
     if (!showValidation) return '';
-    return passwordsMatch ? 'border-success' : 'border-error';
+    return passwordsMatch ? 'border-green' : 'border-red';
   };
 
   const getValidationIcon = () => {
     if (!showValidation) return null;
     return passwordsMatch ? (
-      <Check className="h-4 w-4 text-success" />
+      <Check className="h-4 w-4 text-green" />
     ) : (
-      <X className="h-4 w-4 text-error" />
+      <X className="h-4 w-4 text-red" />
     );
   };
 
@@ -51,14 +51,14 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
     
     if (passwordsMatch) {
       return (
-        <p className="text-sm text-success-dark flex items-center gap-1 mt-1">
+        <p className="text-sm text-green flex items-center gap-1 mt-1">
           <Check className="h-3 w-3" />
           Passwords match
         </p>
       );
     } else {
       return (
-        <p className="text-sm text-error-dark flex items-center gap-1 mt-1">
+        <p className="text-sm text-red flex items-center gap-1 mt-1">
           <X className="h-3 w-3" />
           Passwords do not match
         </p>
@@ -70,7 +70,7 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
     <div className="space-y-2">
       <Label htmlFor="confirmPassword">
         {label}
-        {required && <span className="text-error ml-1">*</span>}
+        {required && <span className="text-red ml-1">*</span>}
       </Label>
       
       <div className="relative">
