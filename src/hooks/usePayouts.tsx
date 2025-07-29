@@ -115,7 +115,11 @@ export const usePayouts = () => {
 
   // Calculate estimated weekly pay using Supabase function
   const getEstimatedWeeklyPay = useCallback(async () => {
+    console.log('usePayouts: getEstimatedWeeklyPay called');
+    console.log('usePayouts: user?.id:', user?.id);
+    
     if (!user?.id) {
+      console.log('usePayouts: No user ID, returning 0');
       return 0;
     }
 
@@ -125,6 +129,12 @@ export const usePayouts = () => {
       const weekStart = startOfWeek(now, { weekStartsOn: 1 });
       const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
+      console.log('usePayouts: Week boundaries:', {
+        weekStart: format(weekStart, 'yyyy-MM-dd'),
+        weekEnd: format(weekEnd, 'yyyy-MM-dd'),
+        now: now.toISOString()
+      });
+
       // Call Supabase function to calculate earnings for this week
       const { data, error } = await supabase.rpc('calculate_user_payout', {
         target_user_id: user.id,
@@ -132,14 +142,17 @@ export const usePayouts = () => {
         period_end: format(weekEnd, 'yyyy-MM-dd')
       });
 
+      console.log('usePayouts: RPC call result:', { data, error });
+
       if (error) {
-        console.error('Error calculating weekly pay:', error);
+        console.error('usePayouts: Error calculating weekly pay:', error);
         return 0;
       }
 
+      console.log('usePayouts: Returning data:', data || 0);
       return data || 0;
     } catch (err) {
-      console.error('Error in getEstimatedWeeklyPay:', err);
+      console.error('usePayouts: Error in getEstimatedWeeklyPay:', err);
       return 0;
     }
   }, [user?.id]);

@@ -216,6 +216,7 @@ export interface Payout {
 // useAssignments interfaces
 export interface Assignment {
   assignment_id: string;
+  company_name: string;
   employee_name: string;
   employer_name: string;
   employee_id: string;
