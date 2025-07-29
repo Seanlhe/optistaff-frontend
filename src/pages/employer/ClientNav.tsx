@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import NavItem from "../../components/NavItem";
 import { NavItemProps } from "../../types/navigation";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function ClientNav(){
     const { logout, user } = useAuth();
+    const location = useLocation();
     const adminNavItems: NavItemProps[] = [{name:"Dashboard", src:"/icons/dashboardicon.svg", to:"dashboard"}, {name: "Roster", src: "/icons/calendaricon.svg", to: "roster"}, {name: "Upload Jobs", src: "/icons/uploadicon.svg", to: "uploadjobs"}, {name: "History", src: "/icons/history.svg", to: "history"}];
     const prefNavItems: NavItemProps[] = [{name: "Profile", src: "/icons/person.svg", to: "profile"}, {name: "Settings", src: "/icons/gearicon.svg", to: "settings"}];
     const [selected, setSelected] = useState<string>("Dashboard");
-    
     function handleClick(name: string){
         if (name === "Logout") {
             logout();
@@ -16,6 +17,26 @@ export default function ClientNav(){
             setSelected(name);
         }
     }
+    const getCurrentSelected = (): string => {
+        const pathname = location.pathname;
+        const path = pathname.split('/').pop(); // Get the last part of the path
+        // Map URL paths to navigation item names
+        const pathToNameMap: { [key: string]: string } = {
+          'dashboard': 'Dashboard',
+          'roster': 'Roster',
+          'settings': 'Settings',
+          'history': 'History',
+          'profile': 'Profile',
+          'uploadjobs': 'Upload Jobs'
+        };
+        return pathToNameMap[path || 'dashboard'] || 'Dashboard';
+      };
+    
+    useEffect(()=>{
+        setSelected(getCurrentSelected)
+    },[getCurrentSelected()])
+
+    
     
     return(
     <div id="navbar-container" className='sticky top-0 box-border col-span-1 h-screen flex flex-col gap-1 bg-gradient-to-b from-[#395886] to-[#628ECB] px-4 py-8'>

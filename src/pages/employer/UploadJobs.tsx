@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useShifts } from "../../hooks/useShifts";
 import { Shift } from "../../types/hooks";
-import {getDateForm, ShiftError, validateShift, createEmptyShiftError} from "../../utils/uploadjobs";
+import {getDateForm, ShiftError, validateShift, createEmptyShiftError, jobRoleOptions} from "../../utils/uploadjobs";
 import {format} from "date-fns";
 import CustomSelect from "../../components/CustomSelect";
 import CustomTextArea from "../../components/CustomTextArea";
@@ -25,28 +25,6 @@ export default function UploadJobs(){
     })
     const [valid, setValid] = useState<boolean>(true);
     const [shiftError, setShiftError] = useState<ShiftError>(createEmptyShiftError());
-    const jobRoleOptions = [
-        { label: "Kitchen Helper", value: "Kitchen Helper" },
-        { label: "Waiter/Waitress", value: "Waiter/Waitress" },
-        { label: "Dishwasher", value: "Dishwasher" },
-        { label: "Bartender/Barista", value: "Bartender/Barista" },
-        { label: "Banquet Server", value: "Banquet Server" },
-        { label: "Food Stall Assistant", value: "Food Stall Assistant" },
-        { label: "Cleaner", value: "Cleaner" },
-        { label: "Sales Associate", value: "Sales Associate" },
-        { label: "Cashier", value: "Cashier" },
-        { label: "Promoter", value: "Promoter" },
-        { label: "Usher", value: "Usher" },
-        { label: "Event Crew", value: "Event Crew" },
-        { label: "Customer Service", value: "Customer Service" },
-        { label: "Leaflet Distributor", value: "Leaflet Distributor" },
-        { label: "Packer", value: "Packer" },
-        { label: "Warehouse Assistant", value: "Warehouse Assistant" },
-        { label: "Inventory Checker", value: "Inventory Checker" },
-        { label: "Delivery", value: "Delivery" },
-        { label: "Sorter", value: "Sorter" }
-    ];
-
     const handleDataChange = (e:  React.ChangeEvent<HTMLInputElement>| React.ChangeEvent<HTMLTextAreaElement>|  React.ChangeEvent<HTMLSelectElement>) => {
         const name = e.target.name;
         let value = e.target.value;
@@ -64,10 +42,11 @@ export default function UploadJobs(){
                 break;
             }
             case "date": {
-                console.log(value);
                 const new_sd = getDateForm(value, format(formData.start_time, "HH:mm"));
                 const new_ed = getDateForm(value, format(formData.end_time, "HH:mm"));
-                setFormData(prev => ({ ...prev, start_time: new_sd, end_time: new_ed }));
+                if (!isNaN(new_sd.getTime())){
+                    setFormData(prev => ({ ...prev, start_time: new_sd, end_time: new_ed }));
+                }
                 break;
             }
             default:
@@ -82,6 +61,7 @@ export default function UploadJobs(){
     async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
         setValid(true);
+        console.log(formData)
         const newErrors = validateShift(formData);
         setShiftError(newErrors);
         console.log(newErrors)
@@ -108,7 +88,7 @@ export default function UploadJobs(){
                 <CustomTextArea className="col-span-12 h-[8rem]" name="job_description" title="Description"  valid = {valid} error={shiftError.job_description} placeholder="Format into sections to improve readability. Give clear responsibilities and roles" onChange={handleDataChange}/>
                 <CustomTextArea className="col-span-12 h-[8rem]" name="job_requirements" title="Requirements"  valid = {valid} error={shiftError.job_requirements} placeholder="Clearly state any preparation required by staff. For example, attire or tools required."onChange={handleDataChange}/>
                 <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">Time and Venue</p>
-                <CustomInputField className="col-span-3"  name="date" title="Date" type="date" valid={valid} error={formData.start_time <= new Date()? "Please choose a date after today.": null} onChange={handleDataChange}/>
+                <CustomInputField className="col-span-3"  name="date" title="Date" type="date" valid={valid} error={shiftError.date} onChange={handleDataChange}/>
                 <CustomInputField className="col-span-3" name="start_time" title="Start Time" type="time" valid = {valid} error={shiftError.start_time} onChange={handleDataChange}/>
                 <CustomInputField className="col-span-3" name="end_time" title="End Time" type="time" valid = {valid} error={shiftError.end_time} onChange={handleDataChange}/>
                 <CustomInputField className="col-span-3" name="break_duration" title="Break Duration (hrs)" type="number" valid = {valid}  error = {shiftError.break_duration} onChange={handleDataChange}/>
