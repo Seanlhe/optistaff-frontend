@@ -14,8 +14,7 @@ import {
 } from "../types/hooks";
 import { useLocationGeocoding } from "./useLocationGeocoding";
 
-// Feature flag for database function usage
-const USE_DATABASE_FUNCTIONS = true;
+// Using database functions for optimized performance
 
 export const useUserProfile = () => {
   // Main profile data
@@ -39,10 +38,17 @@ export const useUserProfile = () => {
   const { user } = useAuth();
   const { geocodeAddress } = useLocationGeocoding();
 
-  const fetchProfileWithDatabaseFunction =
-    useCallback(async (): Promise<UserProfileData | null> => {
-      if (!user) throw new Error("User not authenticated");
+  // Fetch profile data using optimized database function
+  const fetchProfile = useCallback(async () => {
+    if (!user) {
+      setError("User not authenticated");
+      return;
+    }
 
+    setLoading(true);
+    setError(null);
+
+    try {
       console.log(
         "Fetching profile using database function for user:",
         user.id
@@ -116,152 +122,8 @@ export const useUserProfile = () => {
         );
       }
 
-      console.log("Profile loaded successfully using database function");
-      return result;
-    }, [user]);
-
-  // Fallback function: Direct queries for reliability
-  const fetchProfileWithDirectQueries =
-    useCallback(async (): Promise<UserProfileData | null> => {
-      if (!user) throw new Error("User not authenticated");
-
-      console.log(
-        "Fetching profile using direct queries (fallback) for user:",
-        user.id
-      );
-
-      // Get auth user data
-      const { data: authUser, error: authError } =
-        await supabase.auth.getUser();
-      if (authError)
-        throw new Error(`Authentication error: ${authError.message}`);
-      if (!authUser?.user)
-        throw new Error("Authentication session expired. Please log in again.");
-
-      // Fetch profile data based on role
-      const isJobSeeker = user.role === "jobseeker";
-      const tableName = isJobSeeker ? "job_seekers" : "clients";
-      const idField = isJobSeeker ? "user_id" : "client_id";
-      const phoneField = isJobSeeker ? "phone_number" : "phone";
-
-      const selectFields = isJobSeeker
-        ? "first_name, last_name, phone_number, address, postal_code, rating, status"
-        : "company_name, first_name, last_name, phone, address, postal_code";
-
-      const { data, error } = await supabase
-        .from(tableName)
-        .select(selectFields)
-        .eq(idField, user.id)
-        .single();
-
-      if (error) {
-        if (error.code === "PGRST116") {
-          const roleText = isJobSeeker ? "Job seeker" : "Company";
-          throw new Error(
-            `${roleText} profile not found. Please contact support to set up your profile.`
-          );
-        }
-        throw new Error(`Database error: ${error.message}`);
-      }
-
-      if (!data) {
-        throw new Error("No profile data returned from database");
-      }
-
-      // Type-safe field access with proper validation
-      const profileData = data as any; // Type assertion to handle dynamic table queries
-
-      // Validate required fields
-      if (isJobSeeker && (!profileData.first_name || !profileData.last_name)) {
-        throw new Error(
-          "Profile is incomplete. Please ensure your first name and last name are set."
-        );
-      }
-      if (!isJobSeeker && !profileData.company_name) {
-        throw new Error(
-          "Company profile is incomplete. Please ensure your company name is set."
-        );
-      }
-
-      // Build structured result
-      const fullName =
-        profileData.first_name && profileData.last_name
-          ? `${profileData.first_name} ${profileData.last_name}`.trim()
-          : "Name not set";
-
-      const result: UserProfileData = {
-        display: {
-          firstName: profileData.first_name || "",
-          lastName: profileData.last_name || "",
-          fullName,
-          rating: isJobSeeker
-            ? typeof profileData.rating === "number"
-              ? profileData.rating
-              : 0
-            : undefined,
-          accountStatus: isJobSeeker
-            ? (profileData.status as "ACTIVE" | "SUSPENDED" | "INACTIVE") ||
-              "ACTIVE"
-            : "ACTIVE",
-          email: authUser.user.email || "",
-          accountCreated: authUser.user.created_at || "",
-          ...(!isJobSeeker && { companyName: profileData.company_name }),
-        },
-        personalInfo: {
-          phoneNumber: profileData[phoneField] || "",
-          homeAddress: profileData.address || "",
-          postalCode: profileData.postal_code || "",
-        },
-        userRole: user.role,
-      };
-
-      // Validate postal code format
-      if (
-        result.personalInfo.postalCode &&
-        !/^\d{6}$/.test(result.personalInfo.postalCode)
-      ) {
-        console.warn(
-          "Invalid postal code format in database:",
-          result.personalInfo.postalCode
-        );
-      }
-
-      console.log("Profile loaded successfully using direct queries");
-      return result;
-    }, [user]);
-
-  // Main fetch function with reliability pattern
-  const fetchProfile = useCallback(async () => {
-    if (!user) {
-      setError("User not authenticated");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      let result: UserProfileData | null = null;
-
-      // Try database function first, then fallback
-      if (USE_DATABASE_FUNCTIONS) {
-        try {
-          result = await fetchProfileWithDatabaseFunction();
-        } catch (error) {
-          console.warn("Database function failed, using fallback:", error);
-        }
-      }
-
-      if (!result) {
-        result = await fetchProfileWithDirectQueries();
-      }
-
-      if (result) {
-        setProfileData(result);
-        console.log("Profile loaded successfully for user:", user.id);
-      } else {
-        throw new Error("Failed to load profile data");
-      }
+      setProfileData(result);
+      console.log("Profile loaded successfully for user:", user.id);
     } catch (err) {
       console.error("fetchProfile error:", err);
       setError(
@@ -273,90 +135,9 @@ export const useUserProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, fetchProfileWithDatabaseFunction, fetchProfileWithDirectQueries]);
+  }, [user]);
 
-  // Update personal info using database function
-  const updatePersonalInfoWithDatabaseFunction = useCallback(
-    async (
-      formData: PersonalInfoFormData,
-      coordinates?: string | null
-    ): Promise<boolean> => {
-      if (!user) throw new Error("User not authenticated");
-
-      console.log("Updating personal info using database function");
-
-      const { data, error } = await supabase.rpc("update_user_profile", {
-        p_user_id: user.id,
-        p_phone_number: formData.phoneNumber || null,
-        p_address: formData.homeAddress || null,
-        p_postal_code: formData.postalCode || null,
-        p_address_coordinates: coordinates || null,
-      });
-
-      if (error) throw new Error(`Database function error: ${error.message}`);
-      if (!data) throw new Error("Update failed - no rows affected");
-
-      console.log("Personal info updated successfully using database function");
-      return true;
-    },
-    [user]
-  );
-
-  // Fallback: Direct table update
-  const updatePersonalInfoWithDirectQueries = useCallback(
-    async (
-      formData: PersonalInfoFormData,
-      coordinates?: string | null
-    ): Promise<boolean> => {
-      if (!user) throw new Error("User not authenticated");
-
-      console.log("Updating personal info using direct queries (fallback)");
-
-      const isJobSeeker = user.role === "jobseeker";
-      const tableName = isJobSeeker ? "job_seekers" : "clients";
-      const idField = isJobSeeker ? "user_id" : "client_id";
-      const phoneField = isJobSeeker ? "phone_number" : "phone";
-
-      const updateData: any = {
-        [phoneField]: formData.phoneNumber || null,
-        address: formData.homeAddress || null,
-        postal_code: formData.postalCode || null,
-        updated_at: new Date().toISOString(),
-      };
-
-      // Add coordinates for job seekers only
-      if (isJobSeeker && coordinates) {
-        updateData.address_coordinates = coordinates;
-      }
-
-      const { error } = await supabase
-        .from(tableName)
-        .update(updateData)
-        .eq(idField, user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      console.log("Personal info updated successfully using direct queries");
-      return true;
-    },
-    [user]
-  );
-
-  // Revert optimistic update helper
-  const revertOptimisticPersonalInfoUpdate = useCallback(
-    (originalData: PersonalInfoFormData) => {
-      console.log("Reverting optimistic personal info update");
-      setProfileData((prev) => ({
-        ...prev!,
-        personalInfo: originalData,
-      }));
-    },
-    []
-  );
-
-  // Main update function with optimistic updates and geocoding
+  // Update personal info with geocoding and database function
   const updatePersonalInfo = async (
     formData: PersonalInfoFormData
   ): Promise<boolean> => {
@@ -368,24 +149,19 @@ export const useUserProfile = () => {
     setPersonalInfoLoading(true);
     setPersonalInfoError(null);
 
-    const originalPersonalInfo = { ...profileData.personalInfo };
-
     try {
       // Validate input
       if (formData.postalCode && !/^\d{6}$/.test(formData.postalCode)) {
         throw new Error("Postal code must be 6 digits");
       }
 
-      // Optimistic update
-      setProfileData((prev) => ({ ...prev!, personalInfo: formData }));
-
       // Geocode if needed (job seekers only)
       let newCoordinates: string | null = null;
       if (user.role === "jobseeker") {
         const addressChanged =
-          formData.homeAddress !== originalPersonalInfo.homeAddress;
+          formData.homeAddress !== profileData.personalInfo.homeAddress;
         const postalCodeChanged =
-          formData.postalCode !== originalPersonalInfo.postalCode;
+          formData.postalCode !== profileData.personalInfo.postalCode;
 
         if (addressChanged || postalCodeChanged) {
           const addressToGeocode = formData.postalCode || formData.homeAddress;
@@ -407,27 +183,25 @@ export const useUserProfile = () => {
         }
       }
 
-      // Try database function first, then fallback
-      let updateSuccess = false;
-      if (USE_DATABASE_FUNCTIONS) {
-        try {
-          updateSuccess = await updatePersonalInfoWithDatabaseFunction(
-            formData,
-            newCoordinates
-          );
-        } catch (error) {
-          console.warn("Database function failed, using fallback:", error);
-        }
-      }
+      // Update using database function
+      console.log("Updating personal info using database function");
 
-      if (!updateSuccess) {
-        updateSuccess = await updatePersonalInfoWithDirectQueries(
-          formData,
-          newCoordinates
-        );
-      }
+      const { data, error } = await supabase.rpc("update_user_profile", {
+        p_user_id: user.id,
+        p_phone_number: formData.phoneNumber || null,
+        p_address: formData.homeAddress || null,
+        p_postal_code: formData.postalCode || null,
+        p_address_coordinates: newCoordinates || null,
+      });
 
-      if (!updateSuccess) throw new Error("All update methods failed");
+      if (error) throw new Error(`Database function error: ${error.message}`);
+      if (!data) throw new Error("Update failed - no rows affected");
+
+      // Update local state only after successful database update
+      setProfileData((prev) => ({
+        ...prev!,
+        personalInfo: formData,
+      }));
 
       console.log(
         newCoordinates
@@ -437,7 +211,6 @@ export const useUserProfile = () => {
       return true;
     } catch (err) {
       console.error("updatePersonalInfo error:", err);
-      revertOptimisticPersonalInfoUpdate(originalPersonalInfo);
       setPersonalInfoError(
         err instanceof Error
           ? err.message
@@ -449,22 +222,7 @@ export const useUserProfile = () => {
     }
   };
 
-  // Revert optimistic account settings update helper
-  const revertOptimisticAccountSettingsUpdate = useCallback(
-    (originalEmail: string) => {
-      console.log("Reverting optimistic account settings update");
-      setProfileData((prev) => ({
-        ...prev!,
-        display: {
-          ...prev!.display,
-          email: originalEmail,
-        },
-      }));
-    },
-    []
-  );
-
-  // Update account settings with optimistic updates
+  // Update account settings (email and password)
   const updateAccountSettings = async (
     formData: AccountSettingsFormData
   ): Promise<boolean> => {
@@ -476,30 +234,23 @@ export const useUserProfile = () => {
     setAccountSettingsLoading(true);
     setAccountSettingsError(null);
 
-    const originalEmail = profileData?.display.email || "";
-
     try {
       let emailChanged = false;
       let passwordChanged = false;
 
       // Handle email change
       if (formData.email && formData.email !== profileData?.display.email) {
-        // Optimistic update
+        const { error } = await supabase.auth.updateUser({
+          email: formData.email,
+        });
+        if (error) throw error;
+        emailChanged = true;
+
+        // Update local state after successful email change
         setProfileData((prev) => ({
           ...prev!,
           display: { ...prev!.display, email: formData.email },
         }));
-
-        try {
-          const { error } = await supabase.auth.updateUser({
-            email: formData.email,
-          });
-          if (error) throw error;
-          emailChanged = true;
-        } catch (error) {
-          revertOptimisticAccountSettingsUpdate(originalEmail);
-          throw error;
-        }
       }
 
       // Handle password change
