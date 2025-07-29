@@ -1,6 +1,6 @@
 import ClientShiftCard from "./ClientShiftCard";
 import { Shift } from "../types/hooks";
-import { format, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 
 interface CalendarDayProps {
   day: { name: string; date: string };
@@ -53,13 +53,12 @@ export default function ClientCalendarDay({
       {/* Shift Cards */}
       <div className="space-y-2">
         {dayShifts.map((shift) => (
-          <div key={shift.shift_id}>
-            <ClientShiftCard
-              {...shift}
-              onShiftClick={onShiftClick}
-              isSelected={selectedShift?.shift_id === shift.shift_id}
-            />
-          </div>
+          <ClientShiftCard
+            shiftData={shift}
+            key={shift.shift_id}
+            onShiftClick={onShiftClick}
+            isSelected={selectedShift?.shift_id === shift.shift_id}
+          />
         ))}
       </div>
     </div>

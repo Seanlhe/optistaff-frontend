@@ -1,7 +1,6 @@
 /**
- * User Profile Hook
- * @description Custom hook for user profile management
- * @author OptiStaff Team
+ * User Profile Hook - Optimized Version
+ * @description Custom hook for user profile management with database function optimization
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -14,6 +13,8 @@ import {
   AccountSettingsFormData,
 } from "../types/hooks";
 import { useLocationGeocoding } from "./useLocationGeocoding";
+
+// Using database functions for optimized performance
 
 export const useUserProfile = () => {
   // Main profile data
@@ -37,7 +38,7 @@ export const useUserProfile = () => {
   const { user } = useAuth();
   const { geocodeAddress } = useLocationGeocoding();
 
-  // Core function: Fetch profile data from both database and auth
+  // Fetch profile data using optimized database function
   const fetchProfile = useCallback(async () => {
     if (!user) {
       setError("User not authenticated");
@@ -48,153 +49,95 @@ export const useUserProfile = () => {
     setError(null);
 
     try {
-      // Step 1: Get current auth user data
-      const { data: authUser, error: authError } =
-        await supabase.auth.getUser();
-      if (authError) {
-        throw new Error(`Authentication error: ${authError.message}`);
-      }
+      console.log(
+        "Fetching profile using database function for user:",
+        user.id
+      );
 
-      if (!authUser?.user) {
-        throw new Error("Authentication session expired. Please log in again.");
-      }
-
-      let profileTableData: any;
-      let displayData: ProfileDisplayData;
-
-      // Step 2: Fetch from appropriate profile table based on user role
-      if (user.role === "jobseeker") {
-        const { data, error } = await supabase
-          .from("job_seekers")
-          .select(
-            "first_name, last_name, phone_number, address_coordinates, address, postal_code, rating, status"
-          )
-          .eq("user_id", user.id)
-          .single();
-
-        // Note: address_coordinates stores coordinates (lat,lng), address stores readable address
-
-        if (error) {
-          if (error.code === "PGRST116") {
-            throw new Error(
-              "Job seeker profile not found. Please contact support to set up your profile."
-            );
-          }
-          throw new Error(`Database error: ${error.message}`);
-        }
-
-        // Validate required fields for job seekers
-        if (!data.first_name || !data.last_name) {
-          throw new Error(
-            "Profile is incomplete. Please ensure your first name and last name are set."
-          );
-        }
-
-        profileTableData = data;
-
-        // Build display data for job seeker with proper defaults
-        displayData = {
-          firstName: data.first_name,
-          lastName: data.last_name,
-          fullName: `${data.first_name} ${data.last_name}`,
-          rating: typeof data.rating === "number" ? data.rating : 0,
-          accountStatus:
-            (data.status as "ACTIVE" | "SUSPENDED" | "INACTIVE") || "ACTIVE",
-          email: authUser.user.email || "",
-          accountCreated: authUser.user.created_at || "",
-        };
-      } else if (user.role === "employer") {
-        const { data, error } = await supabase
-          .from("clients")
-          .select(
-            "company_name, first_name, last_name, phone, address, postal_code"
-          )
-          .eq("client_id", user.id)
-          .single();
-
-        if (error) {
-          if (error.code === "PGRST116") {
-            throw new Error(
-              "Company profile not found. Please contact support to set up your profile."
-            );
-          }
-          throw new Error(`Database error: ${error.message}`);
-        }
-
-        // Validate required fields for clients
-        if (!data.company_name) {
-          throw new Error(
-            "Company profile is incomplete. Please ensure your company name is set."
-          );
-        }
-
-        profileTableData = data;
-
-        // Build display data for client with proper defaults
-        const firstName = data.first_name || "";
-        const lastName = data.last_name || "";
-        const fullName = `${firstName} ${lastName}`.trim();
-
-        displayData = {
-          firstName,
-          lastName,
-          fullName: fullName || "Name not set",
-          companyName: data.company_name,
-          email: authUser.user.email || "",
-          accountCreated: authUser.user.created_at || "",
-        };
-      } else {
-        throw new Error(
-          `Invalid user role: ${user.role}. Expected 'jobseeker' or 'employer'.`
-        );
-      }
-
-      // Step 3: Build personal info data with proper field mapping and validation
-      const personalInfo: PersonalInfoFormData = {
-        phoneNumber:
-          user.role === "jobseeker"
-            ? profileTableData.phone_number || ""
-            : profileTableData.phone || "",
-        homeAddress:
-          user.role === "jobseeker"
-            ? profileTableData.address || ""
-            : profileTableData.address || "",
-        postalCode: profileTableData.postal_code || "",
-      };
-
-      // Step 4: Validate postal code format if it exists
-      if (personalInfo.postalCode && !/^\d{6}$/.test(personalInfo.postalCode)) {
-        console.warn(
-          "Invalid postal code format in database:",
-          personalInfo.postalCode
-        );
-        // Don't throw error, just warn - let user fix it in the form
-      }
-
-      // Step 5: Combine all data
-      setProfileData({
-        display: displayData,
-        personalInfo: personalInfo,
-        userRole: user.role,
+      const { data, error } = await supabase.rpc("get_user_profile_data", {
+        p_user_id: user.id,
       });
 
+      if (error) throw new Error(`Database function error: ${error.message}`);
+      if (!data || data.length === 0) throw new Error("Profile not found");
+
+      const profile = data[0];
+
+      // Validate required fields
+      if (
+        profile.user_role === "jobseeker" &&
+        (!profile.first_name || !profile.last_name)
+      ) {
+        throw new Error(
+          "Profile is incomplete. Please ensure your first name and last name are set."
+        );
+      }
+      if (profile.user_role === "employer" && !profile.company_name) {
+        throw new Error(
+          "Company profile is incomplete. Please ensure your company name is set."
+        );
+      }
+
+      // Build structured data
+      const isJobSeeker = profile.user_role === "jobseeker";
+      const fullName =
+        profile.first_name && profile.last_name
+          ? `${profile.first_name} ${profile.last_name}`.trim()
+          : "Name not set";
+
+      const result: UserProfileData = {
+        display: {
+          firstName: profile.first_name || "",
+          lastName: profile.last_name || "",
+          fullName,
+          rating: isJobSeeker
+            ? typeof profile.rating === "number"
+              ? profile.rating
+              : 0
+            : undefined,
+          accountStatus:
+            (profile.status as "ACTIVE" | "SUSPENDED" | "INACTIVE") || "ACTIVE",
+          email: profile.email || "",
+          accountCreated: profile.created_at || "",
+          ...(profile.user_role === "employer" && {
+            companyName: profile.company_name || "",
+          }),
+        },
+        personalInfo: {
+          phoneNumber: profile.phone_number || "",
+          homeAddress: profile.address || "",
+          postalCode: profile.postal_code || "",
+        },
+        userRole: profile.user_role as "jobseeker" | "employer",
+      };
+
+      // Validate postal code format
+      if (
+        result.personalInfo.postalCode &&
+        !/^\d{6}$/.test(result.personalInfo.postalCode)
+      ) {
+        console.warn(
+          "Invalid postal code format in database:",
+          result.personalInfo.postalCode
+        );
+      }
+
+      setProfileData(result);
       console.log("Profile loaded successfully for user:", user.id);
     } catch (err) {
       console.error("fetchProfile error:", err);
-      const errorMessage =
+      setError(
         err instanceof Error
           ? err.message
-          : "Unknown error occurred while loading profile";
-      setError(errorMessage);
-
-      // Clear profile data on error
+          : "Unknown error occurred while loading profile"
+      );
       setProfileData(null);
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  // Update personal information (phone, address, postal code)
+  // Update personal info with geocoding and database function
   const updatePersonalInfo = async (
     formData: PersonalInfoFormData
   ): Promise<boolean> => {
@@ -207,113 +150,72 @@ export const useUserProfile = () => {
     setPersonalInfoError(null);
 
     try {
-      // Step 1: Validate input data
+      // Validate input
       if (formData.postalCode && !/^\d{6}$/.test(formData.postalCode)) {
         throw new Error("Postal code must be 6 digits");
       }
 
-      // Step 2: Geocode address if postal code or address changed (for job seekers only)
+      // Geocode if needed (job seekers only)
       let newCoordinates: string | null = null;
       if (user.role === "jobseeker") {
-        const currentPersonalInfo = profileData.personalInfo;
         const addressChanged =
-          formData.homeAddress !== currentPersonalInfo.homeAddress;
+          formData.homeAddress !== profileData.personalInfo.homeAddress;
         const postalCodeChanged =
-          formData.postalCode !== currentPersonalInfo.postalCode;
+          formData.postalCode !== profileData.personalInfo.postalCode;
 
         if (addressChanged || postalCodeChanged) {
-          // Try to geocode using postal code first (more reliable), then address
           const addressToGeocode = formData.postalCode || formData.homeAddress;
-
           if (addressToGeocode?.trim()) {
             try {
               console.log("Geocoding address:", addressToGeocode);
               const coordinates = await geocodeAddress(addressToGeocode);
-
               if (coordinates) {
                 newCoordinates = `${coordinates[0]},${coordinates[1]}`;
                 console.log(
                   "Successfully geocoded to coordinates:",
                   newCoordinates
                 );
-              } else {
-                console.warn(
-                  "Geocoding returned null for address:",
-                  addressToGeocode
-                );
-                // Don't fail the update if geocoding fails - just warn
               }
             } catch (geocodeError) {
               console.warn("Geocoding failed:", geocodeError);
-              // Don't fail the update if geocoding fails - just warn
             }
           }
         }
       }
 
-      // Step 3: Prepare update data based on user role
-      let updateData: any;
-      let tableName: string;
-      let whereClause: any;
+      // Update using database function
+      console.log("Updating personal info using database function");
 
-      if (user.role === "jobseeker") {
-        updateData = {
-          phone_number: formData.phoneNumber || null,
-          address: formData.homeAddress || null, // Store readable address, not coordinates
-          postal_code: formData.postalCode || null,
-          updated_at: new Date().toISOString(),
-        };
+      const { data, error } = await supabase.rpc("update_user_profile", {
+        p_user_id: user.id,
+        p_phone_number: formData.phoneNumber || null,
+        p_address: formData.homeAddress || null,
+        p_postal_code: formData.postalCode || null,
+        p_address_coordinates: newCoordinates || null,
+      });
 
-        // Add coordinates if geocoding was successful
-        if (newCoordinates) {
-          updateData.address_coordinates = newCoordinates;
-        }
+      if (error) throw new Error(`Database function error: ${error.message}`);
+      if (!data) throw new Error("Update failed - no rows affected");
 
-        tableName = "job_seekers";
-        whereClause = { user_id: user.id };
-      } else if (user.role === "employer") {
-        updateData = {
-          phone: formData.phoneNumber || null,
-          address: formData.homeAddress || null,
-          postal_code: formData.postalCode || null,
-          updated_at: new Date().toISOString(),
-        };
-        tableName = "clients";
-        whereClause = { client_id: user.id };
-      } else {
-        throw new Error("Invalid user role");
-      }
-
-      // Step 4: Execute database update
-      const { error } = await supabase
-        .from(tableName)
-        .update(updateData)
-        .match(whereClause)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Step 5: Update local state with new data
+      // Update local state only after successful database update
       setProfileData((prev) => ({
         ...prev!,
         personalInfo: formData,
       }));
 
-      if (newCoordinates) {
-        console.log("Personal info and coordinates updated successfully");
-      } else {
-        console.log("Personal info updated successfully");
-      }
-
+      console.log(
+        newCoordinates
+          ? "Personal info and coordinates updated successfully"
+          : "Personal info updated successfully"
+      );
       return true;
     } catch (err) {
       console.error("updatePersonalInfo error:", err);
-      const errorMessage =
+      setPersonalInfoError(
         err instanceof Error
           ? err.message
-          : "Failed to update personal information";
-      setPersonalInfoError(errorMessage);
+          : "Failed to update personal information"
+      );
       return false;
     } finally {
       setPersonalInfoLoading(false);
@@ -336,64 +238,52 @@ export const useUserProfile = () => {
       let emailChanged = false;
       let passwordChanged = false;
 
-      // Step 1: Handle email change if different from current
+      // Handle email change
       if (formData.email && formData.email !== profileData?.display.email) {
-        const { error: emailError } = await supabase.auth.updateUser({
+        const { error } = await supabase.auth.updateUser({
           email: formData.email,
         });
-
-        if (emailError) throw emailError;
+        if (error) throw error;
         emailChanged = true;
+
+        // Update local state after successful email change
+        setProfileData((prev) => ({
+          ...prev!,
+          display: { ...prev!.display, email: formData.email },
+        }));
       }
 
-      // Step 2: Handle password change if new password provided
+      // Handle password change
       if (formData.newPassword) {
-        // Validate password requirements
         if (formData.newPassword.length < 6) {
           throw new Error("New password must be at least 6 characters");
         }
-
         if (formData.newPassword !== formData.confirmPassword) {
           throw new Error("New passwords do not match");
         }
 
-        // Update password
-        const { error: passwordError } = await supabase.auth.updateUser({
+        const { error } = await supabase.auth.updateUser({
           password: formData.newPassword,
         });
-
-        if (passwordError) throw passwordError;
+        if (error) throw error;
         passwordChanged = true;
       }
 
-      // Step 3: Update local state if email changed
-      if (emailChanged) {
-        setProfileData((prev) => ({
-          ...prev!,
-          display: {
-            ...prev!.display,
-            email: formData.email,
-          },
-        }));
-      }
-
-      // Step 4: Log success
-      if (emailChanged && passwordChanged) {
-        console.log("Email and password updated successfully");
-      } else if (emailChanged) {
-        console.log("Email updated successfully");
-      } else if (passwordChanged) {
-        console.log("Password updated successfully");
+      // Log success
+      const changes = [
+        emailChanged && "email",
+        passwordChanged && "password",
+      ].filter(Boolean);
+      if (changes.length > 0) {
+        console.log(`${changes.join(" and ")} updated successfully`);
       }
 
       return true;
     } catch (err) {
       console.error("updateAccountSettings error:", err);
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Failed to update account settings";
-      setAccountSettingsError(errorMessage);
+      setAccountSettingsError(
+        err instanceof Error ? err.message : "Failed to update account settings"
+      );
       return false;
     } finally {
       setAccountSettingsLoading(false);

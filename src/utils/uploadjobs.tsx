@@ -47,17 +47,20 @@ export const jobRoleOptions = [
 
 
 export type ShiftError = {
-    [K in keyof Omit<
-      Shift,
-      | "shift_id"
-      | "created_at"
-      | "status"
-      | "staff_assigned"
-      | "employer_name"
-      | "submission_cycle"
-      | "company_name"
-    >]: string | null;
+  [K in keyof Omit<
+    Shift,
+    | "shift_id"
+    | "created_at"
+    | "status"
+    | "staff_assigned"
+    | "employer_name"
+    | "submission_cycle"
+    | "company_name"
+  >]: string | null;
+} & {
+  date: string | null;
 };
+
 
 export function createEmptyShiftError(): ShiftError {
     return {
@@ -68,12 +71,15 @@ export function createEmptyShiftError(): ShiftError {
       job_requirements: null,
       job_type: null,
       pay_rate: null,
+      date: null,
       start_time: null,
       end_time: null,
       break_duration: null,
       staff_needed: null,
     };
 }
+
+const isValidDate = (d: any) => d instanceof Date && !isNaN(d.getTime());
 
 export function validateShift(
     shift: Omit<
@@ -121,7 +127,6 @@ export function validateShift(
       errors.staff_needed = "Staff No. must be a positive number.";
     }
   
-    const isValidDate = (d: any) => d instanceof Date && !isNaN(d.getTime());
   
     const startValid = isValidDate(shift.start_time);
     const endValid = isValidDate(shift.end_time);
@@ -135,6 +140,9 @@ export function validateShift(
     }
   
     if (startValid && endValid) {
+      if (shift.start_time < new Date()){
+        errors.date = "Please enter a date later than today";
+      }
       const durationMs = shift.end_time.getTime() - shift.start_time.getTime();
       const durationHours = durationMs / (1000 * 60 * 60); // convert ms to hours
   

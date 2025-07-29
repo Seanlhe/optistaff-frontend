@@ -29,7 +29,6 @@ export const useFeedback = () => {
         .from('feedback')
         .select('*')
         .eq('reviewer_id', user.id);
-
           console.log('Query all response:', { data, error });
 
       if (error) {
