@@ -79,7 +79,7 @@ export const useShifts = () => {
     return data;
   };
 
-  const updateShift = async (shift_id: string, shift_data: Partial<Shift>) => {
+  const updateShift = async (shift_data: Omit<Shift, "employer_name" | "company_name" | "job_type" | "staff_assigned" | "submission_cycle" | "status" | "created_at">) => {
     setLoading(true);
     setError(null);
     if (!user) {
@@ -88,11 +88,34 @@ export const useShifts = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from('shifts')
-      .update(shift_data)
-      .eq('shift_id', shift_id);
+    const { 
+      shift_id, 
+      job_title,
+      postal_code,
+      job_location,
+      job_description,
+      job_requirements,
+      pay_rate,
+      start_time, 
+      end_time, 
+      break_duration, 
+      staff_needed, 
+      } = shift_data;
 
+    const { error } = await supabase
+      .rpc('update_shift', {
+        p_shift_id: shift_id,
+        p_job_title: job_title,
+        p_job_location: job_location,
+        p_job_description: job_description,
+        p_job_requirements: job_requirements,
+        p_start_time: start_time.toISOString(),
+        p_end_time: end_time.toISOString(),
+        p_postal_code: postal_code,
+        p_pay_rate: pay_rate,
+        p_break_duration: break_duration,
+        p_staff_needed: staff_needed,
+      })
 
     if (error) {
       setError(error.message);
