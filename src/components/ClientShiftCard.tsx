@@ -2,59 +2,28 @@ import { JSX } from "react";
 import { Shift } from "../types/hooks";
 import { format } from "date-fns";
 
-interface ClientShiftCardProps extends Shift {
+interface ClientShiftCardProps {
+  shiftData: Shift;
   onShiftClick?: (shift: Shift) => void;
   isSelected?: boolean;
 }
 
 export default function ClientShiftCard({
-  shift_id,
-  employer_name,
-  job_title,
-  job_description,
-  start_time,
-  end_time,
-  pay_rate,
-  job_location,
-  staff_needed,
-  staff_assigned,
-  submission_cycle,
-  created_at,
-  break_duration,
-  status,
+  shiftData,
   onShiftClick,
   isSelected = false,
 }: ClientShiftCardProps): JSX.Element {
-  const isFilled = staff_assigned >= staff_needed;
+  const isFilled = shiftData.staff_assigned >= shiftData.staff_needed;
   const borderColor = isFilled ? "border-l-green-dark" : "border-l-red-dark";
   const bgColor = isFilled ? "bg-green" : "bg-red";
 
   // Format times for display
-  const startTimeFormatted = format(start_time, "h:mm a");
-  const endTimeFormatted = format(end_time, "h:mm a");
+  const startTimeFormatted = format(shiftData.start_time, "h:mm a");
+  const endTimeFormatted = format(shiftData.end_time, "h:mm a");
 
   const handleClick = () => {
     if (onShiftClick) {
-      onShiftClick({
-        shift_id,
-        employer_name,
-        job_title,
-        job_description,
-        start_time,
-        end_time,
-        pay_rate,
-        job_location,
-        staff_needed,
-        staff_assigned,
-        submission_cycle,
-        created_at,
-        break_duration,
-        status,
-        company_name: "",
-        postal_code: 0,
-        job_requirements: null,
-        job_type: "",
-      });
+      onShiftClick(shiftData);
     }
   };
 
@@ -66,7 +35,7 @@ export default function ClientShiftCard({
       }`}
     >
       <p className="font-montserrat-smb mb-1.5 line-clamp-2 leading-tight">
-        {job_title}
+        {shiftData.job_title}
       </p>
 
       <div className="flex items-start mb-1.5">
@@ -84,7 +53,7 @@ export default function ClientShiftCard({
           className="h-3 w-3 mr-1 brightness-0"
         />
         <span>
-          {staff_assigned}/{staff_needed}
+          {shiftData.staff_assigned}/{shiftData.staff_needed}
         </span>
       </div>
     </div>
