@@ -16,12 +16,12 @@ export default function ClientDashboard({
 
   function calculateFilled(shiftCardData: Shift[]): number[] {
     let filledStaffCount = 0;
-    let unfilledStaffCount = 0;
+    let totalStaff = 0;
     for (let i: number = 0; i < shiftCardData.length; i++) {
-      filledStaffCount += shiftCardData[i].staff_needed;
-      unfilledStaffCount += shiftCardData[i].staff_assigned;
+      totalStaff += shiftCardData[i].staff_needed;
+      filledStaffCount += shiftCardData[i].staff_assigned;
     }
-    return [filledStaffCount, unfilledStaffCount];
+    return [filledStaffCount, totalStaff];
   }
 
   function handleUploadClick() {
@@ -148,7 +148,7 @@ function DashboardPositions({
                     calculateFilled(shifts)[1] + calculateFilled(shifts)[0],
                   color: "var(--color-primary-blue)",
                 },
-                { id: 1, value: calculateFilled(shifts)[1], color: "#FFFFFF" },
+                { id: 1, value: calculateFilled(shifts)[1] - calculateFilled(shifts)[0], color: "#FFFFFF" },
               ],
             },
           ]}
@@ -157,7 +157,7 @@ function DashboardPositions({
         />
         <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-montserrat-b text-xl">{`${Math.floor(
           (calculateFilled(shifts)[0] /
-            (calculateFilled(shifts)[0] + calculateFilled(shifts)[1])) *
+            (calculateFilled(shifts)[1])) *
             100
         )}%`}</p>
       </div>
@@ -173,10 +173,10 @@ function DashboardInProgress({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
-      <div className="flex flex-row gap-2 items-center">
-        <img className="h-4 w-4" src="/icons/calendar.svg" />
-        <h1 className="text-lg text-black font-montserrat-b">
+    <div data-testid="dashboard-in-progress" className="bg-secondary-bg flex flex-col p-8 rounded-3xl gap-8">
+      <div className="flex flex-row gap-4 items-center">
+        <img className="h-5 w-5" src="/icons/warningicon.svg" />
+        <h1 className="text-xl text-secondary-text font-montserrat-b">
           In Progress
         </h1>
       </div>

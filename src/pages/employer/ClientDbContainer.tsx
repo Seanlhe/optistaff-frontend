@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useShifts } from "../../hooks/useShifts";
 import ClientEdit from "./ClientEdit";
 import ClientDashboard from "./ClientDashboard";
-import { startOfWeek, endOfWeek, isWithinInterval } from "date-fns"; // Using date-fns for date manipulation
+import { startOfWeek, endOfWeek, isWithinInterval, addDays, subDays } from "date-fns"; // Using date-fns for date manipulation
 
 export default function ClientDbContainer() {
   const { shifts } = useShifts();
