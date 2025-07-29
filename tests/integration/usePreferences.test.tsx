@@ -105,7 +105,7 @@ describe('usePreferences Hook - Integration Tests', () => {
     test('handles database error gracefully', async () => {
       // Arrange - Create invalid user ID to trigger error
       const invalidUser = { id: 'invalid-user-id' }
-      vi.mocked(vi.importActual('../../src/hooks/useAuth')).useAuth = () => ({ user: invalidUser })
+      (vi.importActual('../../src/hooks/useAuth') as any).useAuth = () => ({ user: invalidUser })
 
       // Act
       const { result } = renderHook(() => usePreferences(), {

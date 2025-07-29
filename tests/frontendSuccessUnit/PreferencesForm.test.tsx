@@ -44,7 +44,7 @@ describe('PreferencesForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetFormData.mockReturnValue(defaultMockData);
-    vi.mocked(usePreferencesForm).mockReturnValue({
+    (usePreferencesForm as vi.MockedFunction<typeof usePreferencesForm>).mockReturnValue({
       savePreferences: mockSavePreferences,
       getFormData: mockGetFormData,
       loading: false,
@@ -99,7 +99,7 @@ describe('PreferencesForm', () => {
   });
 
   it('displays a general error message from the hook', () => {
-    vi.mocked(usePreferencesForm).mockReturnValue({
+    (usePreferencesForm as vi.MockedFunction<typeof usePreferencesForm>).mockReturnValue({
       savePreferences: mockSavePreferences,
       getFormData: mockGetFormData,
       loading: false,
