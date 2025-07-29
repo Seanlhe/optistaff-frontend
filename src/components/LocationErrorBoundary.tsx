@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -77,7 +77,7 @@ export class LocationErrorBoundary extends Component<Props, State> {
                 <summary className="text-sm font-medium text-red-800 cursor-pointer">
                   Error Details (Development Only)
                 </summary>
-                <div className="mt-2 p-3 bg-red-100 rounded text-xs font-mono text-red-800 overflow-auto">
+                <div className="mt-2 p-3 bg-red-100 rounded text-xs font-montserrat text-red-800 overflow-auto">
                   <div className="mb-2">
                     <strong>Error:</strong> {this.state.error.message}
                   </div>

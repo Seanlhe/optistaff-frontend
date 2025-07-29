@@ -69,7 +69,7 @@ export const PasswordField: FC<PasswordFieldProps> = ({
       </div>
       
       {error && (
-        <p className="text-sm text-red-dark mt-1 font-montserrat">{error}</p>
+        <p className="text-sm text-red mt-1 font-montserrat">{error}</p>
       )}
       
       {minLength && (

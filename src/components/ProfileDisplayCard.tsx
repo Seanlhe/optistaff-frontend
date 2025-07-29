@@ -37,13 +37,13 @@ const ProfileDisplayCard = () => {
   const getStatusBadgeStyle = (status?: string) => {
     switch (status) {
       case 'ACTIVE':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green text-white border-green-dark';
       case 'SUSPENDED':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red text-white border-red-dark';
       case 'INACTIVE':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-secondary-text text-white border-secondary-text';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-secondary-text text-white border-secondary-text';
     }
   };
 
@@ -56,11 +56,11 @@ const ProfileDisplayCard = () => {
   return (
     <div className="bg-card-color p-6 rounded-xl border border-border">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Profile Overview</h2>
+        <h2 className="text-xl font-semibold text-primary-text">Profile Overview</h2>
         
         {/* Profile completion indicator for job seekers */}
         {isJobSeeker() && (
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center text-sm text-secondary-text">
             <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -73,15 +73,15 @@ const ProfileDisplayCard = () => {
         {/* Left Column */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
-            <p className="text-lg font-medium text-gray-900">
+            <label className="block text-sm font-medium text-secondary-text mb-1">Full Name</label>
+            <p className="text-lg font-medium text-primary-text">
               {displayData.fullName || 'Name not set'}
             </p>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
-            <p className="text-gray-900 font-mono text-sm bg-gray-50 px-3 py-2 rounded-md border">
+            <label className="block text-sm font-medium text-secondary-text mb-1">Email Address</label>
+            <p className="text-primary-text font-montserrat text-sm bg-white px-3 py-2 rounded-md border border-border">
               {displayData.email}
             </p>
           </div>
@@ -89,8 +89,8 @@ const ProfileDisplayCard = () => {
           {/* Company name for clients */}
           {isClient() && displayData.companyName && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Company</label>
-              <p className="text-lg font-medium text-gray-900">
+              <label className="block text-sm font-medium text-secondary-text mb-1">Company</label>
+              <p className="text-lg font-medium text-primary-text">
                 {displayData.companyName}
               </p>
             </div>
@@ -102,7 +102,7 @@ const ProfileDisplayCard = () => {
           {/* Rating for job seekers */}
           {isJobSeeker() && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Rating</label>
+              <label className="block text-sm font-medium text-secondary-text mb-1">Rating</label>
               <div className="flex items-center">
                 <div className="flex items-center mr-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -111,7 +111,7 @@ const ProfileDisplayCard = () => {
                       className={`h-5 w-5 ${
                         star <= (displayData.rating || 0)
                           ? 'text-yellow-400'
-                          : 'text-gray-300'
+                          : 'text-secondary-text'
                       }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
@@ -120,7 +120,7 @@ const ProfileDisplayCard = () => {
                     </svg>
                   ))}
                 </div>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-primary-text">
                   {formatRating(displayData.rating)}
                 </span>
               </div>
@@ -130,11 +130,11 @@ const ProfileDisplayCard = () => {
           {/* Account status for job seekers */}
           {isJobSeeker() && displayData.accountStatus && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Account Status</label>
+              <label className="block text-sm font-medium text-secondary-text mb-1">Account Status</label>
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadgeStyle(displayData.accountStatus)}`}>
                 <div className={`w-2 h-2 rounded-full mr-2 ${
-                  displayData.accountStatus === 'ACTIVE' ? 'bg-green-400' :
-                  displayData.accountStatus === 'SUSPENDED' ? 'bg-red-400' : 'bg-gray-400'
+                  displayData.accountStatus === 'ACTIVE' ? 'bg-green-dark' :
+                  displayData.accountStatus === 'SUSPENDED' ? 'bg-red-dark' : 'bg-secondary-text'
                 }`}></div>
                 {displayData.accountStatus}
               </span>
@@ -142,8 +142,8 @@ const ProfileDisplayCard = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Member Since</label>
-            <p className="text-gray-900">
+            <label className="block text-sm font-medium text-secondary-text mb-1">Member Since</label>
+            <p className="text-primary-text">
               {formatDate(displayData.accountCreated)}
             </p>
           </div>
@@ -151,8 +151,8 @@ const ProfileDisplayCard = () => {
       </div>
 
       {/* Additional info section */}
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="flex items-center justify-between text-sm text-gray-500">
+      <div className="mt-6 pt-6 border-t border-border">
+        <div className="flex items-center justify-between text-sm text-secondary-text">
           <span>
             {isJobSeeker() ? 'Job Seeker Account' : 'Employer Account'}
           </span>
