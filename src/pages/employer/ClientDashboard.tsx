@@ -29,7 +29,7 @@ export default function ClientDashboard({
   }
 
   return (
-    <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8 ">
+    <div className="border-box bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8 ">
       <div
         id="DashboardHeader"
         className="flex flex-row w-full justify-between"
@@ -57,11 +57,11 @@ export default function ClientDashboard({
         </div>
       </div>
       <div className="flex flex-row gap-10">
-        <DashboardUpcoming
+        <DashboardUpcoming  
           handleManageClick={handleManageClick}
           shifts={shifts}
         />
-        <div className="grow flex flex-col gap-15">
+        <div className="w-1/2 flex flex-col gap-15">
           <DashboardPositions
             shifts={shifts}
             calculateFilled={calculateFilled}
@@ -84,7 +84,7 @@ function DashboardUpcoming({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
+    <div data-testid="dashboard-upcoming" className="w-1/2 bg-secondary-bg  flex flex-col p-8 rounded-3xl gap-8">
       <div className="flex flex-row gap-4 items-center">
         <img className="h-5 w-5" src="/icons/calendar.svg" />
         <h1 className="text-xl text-secondary-text font-montserrat-b">
@@ -95,7 +95,7 @@ function DashboardUpcoming({
         <div className="overflow-hidden">
           <ul className="z-50 flex flex-col gap-8 animate-slidedown">
             {shifts.map((shift) =>
-              shift.staff_assigned == shift.staff_needed ? (
+              shift.staff_assigned == shift.staff_needed? (
                 <li key={shift.shift_id}>
                   <ShiftCard
                     shift={shift}
@@ -173,9 +173,9 @@ function DashboardInProgress({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
+    <div className="bg-secondary-bg flex flex-col p-8 rounded-3xl gap-8">
       <div className="flex flex-row gap-4 items-center">
-        <img className="h-5 w-5" src="/icons/calendar.svg" />
+        <img className="h-5 w-5" src="/icons/warningicon.svg" />
         <h1 className="text-xl text-secondary-text font-montserrat-b">
           In Progress
         </h1>
