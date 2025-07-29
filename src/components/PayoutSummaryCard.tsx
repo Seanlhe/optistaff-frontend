@@ -20,7 +20,9 @@ const PayoutSummaryCard = ({ refreshTrigger, onRefresh }: PayoutSummaryCardProps
     setRefreshError(null);
     try {
       const amount = await getEstimatedWeeklyPay();
-      setWeeklyEarnings(amount);
+      // Ensure we always have a valid number
+      const validAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 0;
+      setWeeklyEarnings(validAmount);
     } catch (error) {
       setWeeklyEarnings(0);
       setRefreshError('Failed to load earnings');
@@ -51,10 +53,10 @@ const PayoutSummaryCard = ({ refreshTrigger, onRefresh }: PayoutSummaryCardProps
     }
   };
 
-  // Prepare display value
+  // Prepare display value with additional safety checks
   const displayValue = weeklyLoading 
     ? "Loading..." 
-    : `$${weeklyEarnings.toFixed(2)}`;
+    : `$${(typeof weeklyEarnings === 'number' && !isNaN(weeklyEarnings) ? weeklyEarnings : 0).toFixed(2)}`;
 
   // Custom icon with refresh button
   const iconWithRefresh = (
