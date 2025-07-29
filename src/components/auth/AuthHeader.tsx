@@ -9,15 +9,15 @@ export const AuthHeader = ({ isSignup }: AuthHeaderProps) => {
     <div className="text-center space-y-4 mb-8">
       <Link
         to="/"
-        className="text-4xl font-bold text-primary-text hover:text-secondary-text transition-colors"
+        className="text-4xl font-montserrat-b text-primary-text hover:text-secondary-text transition-colors"
       >
         OptiStaff
       </Link>
       <div className="space-y-2">
-        <h2 className="text-3xl font-semibold text-primary-text">
+        <h2 className="text-3xl font-montserrat-smb text-primary-text">
           {isSignup ? "Create Account" : "Welcome Back"}
         </h2>
-        <p className="text-secondary-text">
+        <p className="text-secondary-text font-montserrat">
           {isSignup ? "Sign up for OptiStaff" : "Sign in to your account"}
         </p>
       </div>

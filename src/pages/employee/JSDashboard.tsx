@@ -13,6 +13,7 @@ import { startOfWeek, endOfWeek, format, isWithinInterval } from 'date-fns';
 const Dashboard = () => {
 	const [selectedAssignment, setSelectedAssignment] = useState<JobseekerAssignmentCard | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [payoutRefreshTrigger, setPayoutRefreshTrigger] = useState<number>(0);
 
 	// Fetch data using custom hooks
 	const { assignments, loading, fetchAssignments } = useAssignments();
@@ -109,6 +110,16 @@ const Dashboard = () => {
 	// Callback function to refresh assignments when status changes
 	const handleAssignmentChange = () => {
 		fetchAssignments();
+		
+		// Smart refresh: only trigger payout refresh if current week assignments change
+		// We'll check this after the assignments are fetched and displayAssignments is updated
+		// For now, always trigger refresh when assignments change
+		setPayoutRefreshTrigger(Date.now());
+	};
+
+	// Manual refresh handler for PayoutSummaryCard
+	const handlePayoutRefresh = () => {
+		setPayoutRefreshTrigger(Date.now());
 	};
 
 	const handleViewDetails = (assignment: JobseekerAssignmentCard) => {
@@ -140,7 +151,7 @@ const Dashboard = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-bg p-8 pr-12">
+		<div className="min-h-screen bg-bg pt-8 px-8 pr-12 pb-4">
 			{/* Header */}
 			<div className="flex justify-between items-center mb-4">
 				<h1 className="text-xl font-bold text-primary-text">
@@ -157,46 +168,57 @@ const Dashboard = () => {
 
 			{/* Main Content */}
 			{!loading && (
-				<div className="grid grid-cols-[2fr_1fr] gap-4 mb-6">
-					{/* Assignments List */}
-					<div className="bg-card-color rounded-xl p-6 w-full md:order-1">
-						{displayAssignments.length === 0 ? (
-							<div className="flex items-center justify-center h-32">
-								<div className="text-secondary-text text-sm">No upcoming assignments</div>
+				<div className="flex gap-4 h-[calc(100vh-6rem)]">
+					{/* Left Column - Scrollable Assignments */}
+					<div className="flex-[2] bg-card-color rounded-xl overflow-hidden flex flex-col">
+						{/* Header - Fixed */}
+						<div className="p-6 border-b border-border flex-shrink-0">
+							<div className="flex justify-between items-center">
+								<h2 className="text-base font-bold text-primary-text">
+									Upcoming Assignments
+								</h2>
+								<p className="text-sm text-secondary-text">{getDateRange()}</p>
 							</div>
-						) : (
-							<div className="grid grid-cols-1 gap-4">
-								<div className="flex justify-between items-center mb-2 w-full">
-										<h2 className="text-base font-bold text-primary-text">
-											Upcoming Assignments
-										</h2>
-										<p className="text-sm text-secondary-text">{getDateRange()}</p>
+						</div>
+						
+						{/* Content - Scrollable */}
+						<div className="flex-1 overflow-y-auto p-6">
+							{displayAssignments.length === 0 ? (
+								<div className="flex items-center justify-center h-32">
+									<div className="text-secondary-text text-sm">No upcoming assignments</div>
 								</div>
-
-								{displayAssignments.map((assignment) => (
-									<JobseekerAssignmentCard
-										key={assignment.id}
-										assignment={assignment}
-										onViewDetails={handleViewDetails}
-									/>
-								))}
-							</div>
-						)}
+							) : (
+								<div className="space-y-4">
+									{displayAssignments.map((assignment) => (
+										<JobseekerAssignmentCard
+											key={assignment.id}
+											assignment={assignment}
+											onViewDetails={handleViewDetails}
+										/>
+									))}
+								</div>
+							)}
+						</div>
 					</div>
 
-					{/* Stats and Calendar */}
-					<div className="bg-card-color rounded-xl p-6 w-full md:order-2 text-primary-blue">
-						<div className="space-y-4">
-							<PayoutSummaryCard />
-							<StatsCard
-								title="Rating"
-								value={typeof profileData === 'object' && profileData && 'rating' in profileData 
-									? Number(profileData.rating).toFixed(1) 
-									: "0.0"
-								}
-								icon={<Star />}
-							/>
-							<MonthlyCalendar />
+					{/* Right Column - Fixed Stats/Calendar */}
+					<div className="flex-1 bg-card-color rounded-xl p-6 overflow-hidden">
+						<div className="h-full overflow-y-auto">
+							<div className="space-y-4">
+								<PayoutSummaryCard 
+									refreshTrigger={payoutRefreshTrigger}
+									onRefresh={handlePayoutRefresh}
+								/>
+								<StatsCard
+									title="Rating"
+									value={typeof profileData === 'object' && profileData && 'rating' in profileData 
+										? Number(profileData.rating).toFixed(1) 
+										: "0.0"
+									}
+									icon={<Star />}
+								/>
+								<MonthlyCalendar />
+							</div>
 						</div>
 					</div>
 				</div>

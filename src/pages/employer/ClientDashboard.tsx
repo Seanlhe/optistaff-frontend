@@ -29,20 +29,20 @@ export default function ClientDashboard({
   }
 
   return (
-    <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8 ">
+    <div className="bg-tertiary-bg min-h-screen flex flex-col px-12 py-6 gap-6">
       <div
         id="DashboardHeader"
         className="flex flex-row w-full justify-between"
       >
-        <div className="flex flex-col gap-2">
-          <p className="text-lg text-secondary-text font-montserrat-smb">
+        <div className="flex flex-col gap-1">
+          <p className="text-md text-secondary-text font-montserrat-smb">
             Welcome Back,
           </p>
-          <p className="text-2xl text-primary-text font-montserrat-b">
+          <p className="text-xl text-black font-montserrat-b">
             Marriot Plaza
           </p>
         </div>
-        <div className="flex flex-row items-center gap-12">
+        <div className="flex flex-row items-center gap-8">
           <IconButton
             onClick={() => {
               handleUploadClick();
@@ -56,12 +56,12 @@ export default function ClientDashboard({
           />
         </div>
       </div>
-      <div className="flex flex-row gap-10">
+      <div className="flex flex-row gap-6">
         <DashboardUpcoming
           handleManageClick={handleManageClick}
           shifts={shifts}
         />
-        <div className="grow flex flex-col gap-15">
+        <div className="grow flex flex-col gap-6">
           <DashboardPositions
             shifts={shifts}
             calculateFilled={calculateFilled}
@@ -84,16 +84,16 @@ function DashboardUpcoming({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
-      <div className="flex flex-row gap-4 items-center">
-        <img className="h-5 w-5" src="/icons/calendar.svg" />
-        <h1 className="text-xl text-secondary-text font-montserrat-b">
+    <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
+      <div className="flex flex-row gap-2 items-center">
+        <img className="h-4 w-4" src="/icons/calendar.svg" />
+        <h1 className="text-lg text-black font-montserrat-b">
           This Week
         </h1>
       </div>
       {shifts && (
-        <div className="overflow-hidden">
-          <ul className="z-50 flex flex-col gap-8 animate-slidedown">
+        <div className="overflow-auto max-h-[calc(100vh-240px)]">
+          <ul className="z-50 flex flex-col gap-4 animate-slidedown">
             {shifts.map((shift) =>
               shift.staff_assigned == shift.staff_needed ? (
                 <li key={shift.shift_id}>
@@ -119,19 +119,19 @@ function DashboardPositions({
   calculateFilled: Function;
 }) {
   return (
-    <div className="bg-secondary-bg flex flex-row p-8 gap-13 rounded-3xl justify-between items-center">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-row gap-4 items-center">
-          <img className="h-5 w-5" src="/public/icons/personicon.svg" />
-          <h1 className="text-xl text-secondary-text font-montserrat-b">
+    <div className="bg-secondary-bg flex flex-row p-5 gap-6 rounded-2xl justify-between items-center">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row gap-2 items-center">
+          <img className="h-4 w-4" src="/public/icons/personicon.svg" />
+          <h1 className="text-lg text-black font-montserrat-b">
             Positions
           </h1>
         </div>
-        <p className="text-3xl font-montserrat-b text-primary-text">
+        <p className="text-xl font-montserrat-b text-black">
           {`${calculateFilled(shifts)[0]}/${
             calculateFilled(shifts)[0] + calculateFilled(shifts)[1]
           } `}
-          <span className="text-base font-montserrat text-primary-text">
+          <span className="text-sm font-montserrat text-primary-text">
             Filled
           </span>
         </p>
@@ -140,22 +140,22 @@ function DashboardPositions({
         <PieChart
           series={[
             {
-              innerRadius: 45,
+              innerRadius: 40,
               data: [
                 {
                   id: 0,
                   value:
                     calculateFilled(shifts)[1] + calculateFilled(shifts)[0],
-                  color: "oklch(0.48 0.27 263.26)",
+                  color: "var(--color-primary-blue)",
                 },
                 { id: 1, value: calculateFilled(shifts)[1], color: "#FFFFFF" },
               ],
             },
           ]}
-          width={172}
-          height={172}
+          width={100}
+          height={100}
         />
-        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-montserrat-b text-3xl">{`${Math.floor(
+        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-montserrat-b text-xl">{`${Math.floor(
           (calculateFilled(shifts)[0] /
             (calculateFilled(shifts)[0] + calculateFilled(shifts)[1])) *
             100
@@ -173,15 +173,15 @@ function DashboardInProgress({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-8 rounded-3xl gap-8">
-      <div className="flex flex-row gap-4 items-center">
-        <img className="h-5 w-5" src="/icons/calendar.svg" />
-        <h1 className="text-xl text-secondary-text font-montserrat-b">
+    <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
+      <div className="flex flex-row gap-2 items-center">
+        <img className="h-4 w-4" src="/icons/calendar.svg" />
+        <h1 className="text-lg text-black font-montserrat-b">
           In Progress
         </h1>
       </div>
-      <div className="overflow-hidden">
-        <ul className="flex flex-col gap-8 animate-slidedown">
+      <div className="overflow-auto max-h-[calc(100vh-240px)]">
+        <ul className="flex flex-col gap-4 animate-slidedown">
           {shifts.map((shift) =>
             shift.staff_assigned < shift.staff_needed ? (
               <li key={shift.shift_id}>

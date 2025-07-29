@@ -11,11 +11,11 @@ const Alert = React.forwardRef<
     ref={ref}
     role="alert"
     className={cn(
-      "relative w-full rounded-lg border p-4",
+      "relative w-full rounded-lg border p-4 font-montserrat",
       {
-        "bg-tertiary-bg border-error text-error-dark": variant === "destructive",
+        "bg-tertiary-bg border-red text-red-dark": variant === "destructive",
         "bg-tertiary-bg border-primary-blue text-primary-blue": variant === "default",
-        "bg-tertiary-bg border-border-color text-secondary-text": variant === "warning",
+        "bg-tertiary-bg border-border text-secondary-text": variant === "warning",
       },
       className
     )}

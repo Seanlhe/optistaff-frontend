@@ -24,8 +24,8 @@ export const FormField = ({
 }: FormFieldProps) => {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>
-        {label} {required && <span className="text-error">*</span>}
+      <Label htmlFor={id} className="font-montserrat-smb">
+        {label} {required && <span className="text-red">*</span>}
       </Label>
       <Input
         id={id}

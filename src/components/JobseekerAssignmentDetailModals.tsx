@@ -43,7 +43,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
           
           <div>
             <label className="text-sm text-secondary-text">Assignment ID</label>
-            <p className="font-mono text-sm">{assignment.id}</p>
+            <p className="font-montserrat text-sm">{assignment.id}</p>
           </div>
         </div>
       </div>

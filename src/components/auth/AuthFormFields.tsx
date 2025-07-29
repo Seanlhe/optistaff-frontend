@@ -46,7 +46,7 @@ export const AuthFormFields = ({
       {/* Personal Information Section */}
       {isSignup && (
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-primary-text border-b border-border-color pb-2">
+          <h3 className="text-sm font-montserrat-smb text-primary-text border-b border-border pb-2">
             Personal Information
           </h3>
 
@@ -96,7 +96,7 @@ export const AuthFormFields = ({
       {/* Contact Information Section */}
       {isSignup && (
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-primary-text border-b border-border-color pb-2">
+          <h3 className="text-sm font-montserrat-smb text-primary-text border-b border-border pb-2">
             Contact Information
           </h3>
 
@@ -146,7 +146,7 @@ export const AuthFormFields = ({
       {/* Account Credentials Section */}
       <div className="space-y-4">
         {isSignup && (
-          <h3 className="text-sm font-medium text-primary-text border-b border-border-color pb-2">
+          <h3 className="text-sm font-montserrat-smb text-primary-text border-b border-border pb-2">
             Account Credentials
           </h3>
         )}

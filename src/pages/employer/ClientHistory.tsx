@@ -48,23 +48,34 @@ export default function ClientHistory(){
         console.log("sorting");
     }
 
-    return <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8 ">
-        <div className="flex flex-col gap-2">
-            <p className="text-2xl text-primary-text font-montserrat-b">History</p>
-            <p className="text-lg text-secondary-text font-montserrat-smb">View past completed jobs and rate past employees</p>
+    return <div className="bg-tertiary-bg min-h-screen flex flex-col px-12 py-6 gap-6">
+        <div className="flex flex-col gap-1">
+            <p className="text-xl text-primary-text font-montserrat-b">History</p>
+            <p className="text-md text-secondary-text font-montserrat-smb">View past completed jobs and rate past employees</p>
         </div>
-        <div id="history-content" className="flex flex-row gap-8">
-            <div id="previous-jobs" className="grow flex flex-col gap-6 py-5">
-                <div className="flex flex-row justify-between">
-                    <p className="font-montserrat-b text-xl text-primary-text">Previous Jobs</p>
-                    <button onClick={() => handleSort()} className="hover:cursor-pointer hover:opacity-80 flex flex-col items-center justify-center bg-[#D9D9D9] rounded-full h-9 w-9"><img className="w-3 h-3"src="/icons/sorticon.svg"/></button>
+        <div id="history-content" className="flex flex-row gap-6 h-[calc(100vh-150px)]">
+            <div id="previous-jobs" className="grow flex flex-col gap-4">
+                <div className="flex flex-row justify-between mb-2">
+                    <p className="font-montserrat-b text-lg text-primary-text">Previous Jobs</p>
+                    <button onClick={() => handleSort()} className="hover:cursor-pointer hover:opacity-80 flex flex-col items-center justify-center bg-[#D9D9D9] rounded-full h-8 w-8"><img className="w-3 h-3"src="/icons/sorticon.svg"/></button>
                 </div>
-                {pastShifts.length != 0? pastShifts.map((shift) => (<PastShiftCard key={shift.shift_id} selectedShift={selectedShift} shift={shift} handleSelectShift={()=>handleSelectShift(shift)}/>)): <p className="font-montserrat text-secondary-text text-base">No past shifts found. Click upload jobs to create new listings</p>}
+                <div className="overflow-auto pr-2" style={{maxHeight: "calc(100vh - 200px)"}}>
+                    {pastShifts.length != 0? pastShifts.map((shift) => (
+                        <div className="mb-4" key={shift.shift_id}>
+                            <PastShiftCard selectedShift={selectedShift} shift={shift} handleSelectShift={()=>handleSelectShift(shift)}/>
+                        </div>
+                    )): <p className="font-montserrat text-secondary-text text-sm">No past shifts found. Click upload jobs to create new listings</p>}
+                </div>
             </div>
-            <div className="w-116 min-h-screen flex flex-col gap-6 p-5 rounded-xl bg-secondary-bg ">
-                <p className="font-montserrat-b text-xl text-primary-text">Assigned Staff</p>
-                {selectedShift != null && assignments.length > 0? assignments.map((a)=> <HistoryRateCard assignment={a} handleClick={()=>handleModalClick(a)}/>): <p className="self-center font-montserrat text-secondary-text text-base">Select a job. Display staff here.</p>}
-                {selectedShift == null? null: null}
+            <div className="w-96 flex flex-col gap-4 p-4 rounded-xl bg-secondary-bg">
+                <p className="font-montserrat-b text-lg text-primary-text mb-2">Assigned Staff</p>
+                <div className="overflow-auto" style={{maxHeight: "calc(100vh - 200px)"}}>
+                    {selectedShift != null && assignments.length > 0? assignments.map((a)=> (
+                        <div className="mb-3" key={a.assignment_id}>
+                            <HistoryRateCard assignment={a} handleClick={()=>handleModalClick(a)}/>
+                        </div>
+                    )): <p className="self-center font-montserrat text-secondary-text text-sm">Select a job. Display staff here.</p>}
+                </div>
             </div>
         </div>
         {modalVisible && selAssignment && (
@@ -76,36 +87,36 @@ export default function ClientHistory(){
 }
 
 function HistoryRateCard({handleClick, assignment}: {handleClick:Function, assignment:Assignment}){
-    return <div className="w-full flex flex-row justify-between items-center bg-white p-5 rounded-lg">
-        <div className="flex flex-row items-center gap-5">
-            <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
-            <div className="flex flex-col gap-2">
-                <p className="font-montserrat text-base text-primary-text">{assignment.employee_name}</p>
+    return <div className="w-full flex flex-row justify-between items-center bg-white p-3 rounded-lg">
+        <div className="flex flex-row items-center gap-3">
+            <img className="bg-[#D9D9D9] rounded-full w-12 h-12"src=""/>
+            <div className="flex flex-col">
+                <p className="font-montserrat text-sm text-primary-text">{assignment.employee_name}</p>
             </div>
         </div>
-        <button onClick={()=>handleClick()}className="hover:bg-gray-300 hover:cursor-pointer border-1 h-fit border-primary-text text-primary-text font-montserrat px-2 py-1 rounded-md">Review</button>
+        <button onClick={()=>handleClick()}className="hover:bg-gray-100 hover:cursor-pointer border border-primary-text text-primary-text font-montserrat px-2 py-1 rounded-md text-xs">Review</button>
     </div>
 }
 
 function PastShiftCard({shift, selectedShift, handleSelectShift}: { shift: Shift, selectedShift: Shift|null, handleSelectShift: Function }){
-    return <div onClick={()=>handleSelectShift()} className={`${selectedShift==shift?"border-primary-blue border-2":"border-[#B3B3B3]"} hover:cursor-pointer border flex flex-row  items-center justify-between rounded-2xl`}>
-        <div className="w-full flex flex-col gap-4 rounded-2xl p-5"> 
-            <p className="text-base font-montserrat-b text-primary-text mb-2">{shift.job_title}</p>
-            <div className="flex flex-row gap-4 items-center">
-                <img className="w-5 h-5" src = "/icons/map.svg"/>
-                <p className="text-base font-montserrat text-secondary-text">{shift.job_location}</p>
+    return <div onClick={()=>handleSelectShift()} className={`${selectedShift==shift?"border-primary-blue border":"border-[#B3B3B3]"} hover:cursor-pointer border flex flex-row items-center justify-between rounded-lg`}>
+        <div className="w-full flex flex-col gap-3 rounded-lg p-3"> 
+            <p className="text-sm font-montserrat-b text-primary-text">{shift.job_title}</p>
+            <div className="flex flex-row gap-2 items-center">
+                <img className="w-4 h-4" src = "/icons/map.svg"/>
+                <p className="text-xs font-montserrat text-secondary-text">{shift.job_location}</p>
             </div>
-            <div className="flex flex-row gap-4 items-center">
-                <img className="w-5 h-5" src = "/icons/calendar.svg"/>
-                <p className="text-base font-montserrat text-secondary-text">{format(shift.start_time, "EEEE, dd/MM/yyyy")}</p>
+            <div className="flex flex-row gap-2 items-center">
+                <img className="w-4 h-4" src = "/icons/calendar.svg"/>
+                <p className="text-xs font-montserrat text-secondary-text">{format(shift.start_time, "EEEE, dd/MM/yyyy")}</p>
             </div>
-            <div className="flex flex-row gap-4 items-center">
-                <img src = "/icons/clock.svg"/>
-                <p className="text-base font-montserrat text-secondary-text">{`${format(shift.start_time, "hh:mm a")} - ${format(shift.end_time, "hh:mm a")}`}</p>
+            <div className="flex flex-row gap-2 items-center">
+                <img className="w-4 h-4" src = "/icons/clock.svg"/>
+                <p className="text-xs font-montserrat text-secondary-text">{`${format(shift.start_time, "hh:mm a")} - ${format(shift.end_time, "hh:mm a")}`}</p>
             </div>
-            <div className="flex flex-row gap-4 items-center">
-                <img src = "/icons/users.svg" />
-                <p className="text-base font-montserrat text-secondary-text">{shift.staff_needed}</p>
+            <div className="flex flex-row gap-2 items-center">
+                <img className="w-4 h-4" src = "/icons/users.svg" />
+                <p className="text-xs font-montserrat text-secondary-text">{shift.staff_needed}</p>
             </div>
         </div>
     </div>
@@ -143,14 +154,14 @@ function RatingModal({handleClose, assignment}: {handleClose: Function, assignme
         }
     }
 
-    return <div className="relative w-120 flex flex-col bg-white rounded-xl gap-8 p-8 shadow">
-        <div className="flex flex-row gap-6 items-center">
-            <img className="bg-[#D9D9D9] rounded-full w-18 h-18"src=""/>
-            <p className="font-montserrat-b text-xl">{assignment.employee_name}</p>
+    return <div className="relative w-100 flex flex-col bg-white rounded-lg gap-6 p-6 shadow">
+        <div className="flex flex-row gap-4 items-center">
+            <img className="bg-[#D9D9D9] rounded-full w-14 h-14"src=""/>
+            <p className="font-montserrat-b text-lg text-primary-text">{assignment.employee_name}</p>
         </div>
-        <div className="flex flex-col gap-6">
-            <p className="font-montserrat-smb text-secondary-text">Help us improve your working experience by rating this employee.</p>
-            <div className="hover:cursor-pointer self-center flex flex-row gap-3">
+        <div className="flex flex-col gap-4">
+            <p className="font-montserrat-smb text-secondary-text text-sm">Help us improve your working experience by rating this employee.</p>
+            <div className="hover:cursor-pointer self-center flex flex-row gap-2">
                 {feedbackData && feedbackData.rating_score !== undefined && [...Array(5)].map((_, index) => (
                     <img 
                     key={index}
@@ -165,10 +176,10 @@ function RatingModal({handleClose, assignment}: {handleClose: Function, assignme
                     />
                 ))}
             </div>
-            {displayError && error.rating_score? <p className="self-center font-montserrat text-pink-500">{error.rating_score}</p>: null}
+            {displayError && error.rating_score? <p className="self-center font-montserrat text-pink-500 text-xs">{error.rating_score}</p>: null}
         </div>
-        <div className="flex flex-col gap-6">
-            <p className="font-montserrat-smb text-secondary-text">Write up to 50 characters</p>
+        <div className="flex flex-col gap-4">
+            <p className="font-montserrat-smb text-secondary-text text-sm">Write up to 50 characters</p>
             <textarea
                 onChange={(e) => {
                     setFeedbackData((prevData) => ({
@@ -179,11 +190,11 @@ function RatingModal({handleClose, assignment}: {handleClose: Function, assignme
                 name="comment"
                 placeholder="Be as descriptive as possible"
                 id="feedback_comment"
-                className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-50 p-5"
+                className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-40 p-3 text-sm"
             />
-            {displayError && error.comment? <p className="self-center font-montserrat text-pink-500">{error.comment}</p>: null}
+            {displayError && error.comment? <p className="self-center font-montserrat text-pink-500 text-xs">{error.comment}</p>: null}
         </div> 
-        <button className="hover:cursor-pointer absolute top-4 right-4"onClick={()=>handleClose()}><img src="/icons/crossicon.svg"/></button>
-        <button onClick={()=>handleSubmit()}className="hover:cursor-pointer hover:opacity-80 bg-primary-blue rounded-lg py-2  text-white font-montserrat">Rate</button>
+        <button className="hover:cursor-pointer absolute top-3 right-3"onClick={()=>handleClose()}><img src="/icons/crossicon.svg"/></button>
+        <button onClick={()=>handleSubmit()}className="hover:cursor-pointer hover:opacity-80 bg-primary-blue rounded-lg py-2 text-white font-montserrat text-sm">Rate</button>
     </div>
 }
