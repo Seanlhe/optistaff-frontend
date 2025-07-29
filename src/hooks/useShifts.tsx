@@ -32,7 +32,13 @@ export const useShifts = () => {
         setLoading(false);
         return;
       }
-      setShifts(data as Shift[]);
+
+      const shiftsWithDates = data.map((shift: Shift) => ({
+        ...shift,  // Keep all other fields intact
+        start_time: new Date(shift.start_time),  // Convert start_time to a Date object
+        end_time: new Date(shift.end_time),      // Convert end_time to a Date object (if needed)
+      }));
+      setShifts(shiftsWithDates as Shift[]);
       return data as Shift[];
     } catch (err) {
       setError((err as Error).message);
