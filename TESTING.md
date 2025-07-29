@@ -26,18 +26,16 @@ tests/
 - `npm run test:frontend:watch` - Explicit watch mode for all frontend tests
 
 ### Frontend Success Tests (Passing Tests)
-- `npm run test:frontendsuccess` - Run only passing frontend tests in watch mode
-- `npm run test:frontendsuccess:run` - Run only passing frontend tests once
-- `npm run test:frontendsuccess:ui` - Run only passing tests with Vitest UI
-- `npm run test:frontendsuccess:coverage` - Run only passing tests with coverage
-- `npm run test:frontendsuccess:watch` - Explicit watch mode for passing tests
+- `npm run test:frontend:success` - Run only passing frontend tests in watch mode
+- `npm run test:frontend:success:run` - Run only passing frontend tests once
+- `npm run test:frontend:success:ui` - Run only passing tests with Vitest UI
+- `npm run test:frontend:success:coverage` - Run only passing tests with coverage
 
 ### Frontend Fail Tests (Failing/WIP Tests)
-- `npm run test:frontendfail` - Run only failing frontend tests in watch mode
-- `npm run test:frontendfail:run` - Run only failing frontend tests once
-- `npm run test:frontendfail:ui` - Run only failing tests with Vitest UI
-- `npm run test:frontendfail:coverage` - Run only failing tests with coverage
-- `npm run test:frontendfail:watch` - Explicit watch mode for failing tests
+- `npm run test:frontend:fail` - Run only failing frontend tests in watch mode
+- `npm run test:frontend:fail:run` - Run only failing frontend tests once
+- `npm run test:frontend:fail:ui` - Run only failing tests with Vitest UI
+- `npm run test:frontend:fail:coverage` - Run only failing tests with coverage
 
 ### Backend Tests (Integration/Database Tests)
 - `npm run test:backend` - Run backend tests in watch mode (starts Supabase)
