@@ -18,6 +18,7 @@ import JSSchedule from "./pages/employee/JSSchedule";
 import EmployeeHistory from "./pages/employee/EmployeeHistory";
 import ClientDbContainer from "./pages/employer/ClientDbContainer";
 import ClientHistory from "./pages/employer/ClientHistory";
+import ClientSettings from "./pages/employer/ClientSettings";
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -48,7 +49,7 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<ClientDbContainer />} />
           <Route path="roster" element={<ClientRoster />} />
-          <Route path="settings" element={<ClientDbContainer />} />
+          <Route path="settings" element={<ClientSettings />} />
           <Route path="profile" element={<ClientDbContainer />} />
           <Route path="uploadjobs" element={<UploadJobs />} />
           <Route path="uploadcsv" element={<UploadCSV />} />

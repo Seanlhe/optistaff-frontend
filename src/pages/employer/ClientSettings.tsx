@@ -1,5 +1,31 @@
-export default function ClientSettings(){
-    return <div>
-        
+/**
+ * ClientSettings Page
+ * @description Employer Settings page with profile management
+ * Uses the ProfilePage component with three cards for complete profile management
+ * @author OptiStaff Team
+ */
+
+import ProfilePage from "../../components/ProfilePage";
+
+const ClientSettings = () => {
+  return (
+    <div className="bg-tertiary-bg min-h-full p-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Page Header */}
+        <div className="py-8">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+            <p className="text-gray-600 mt-2">
+              Manage your company profile and account settings
+            </p>
+          </div>
+        </div>
+
+        {/* Profile Management Content */}
+        <ProfilePage />
+      </div>
     </div>
-}
+  );
+};
+
+export default ClientSettings;
