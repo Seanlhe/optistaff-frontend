@@ -201,16 +201,6 @@ export interface Payout {
   status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
 }
 
-export interface Payout {
-  payout_id: string;
-  user_id: string;
-  amount: number;
-  start_period: string;
-  end_period: string;
-  created_at: string;
-  status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
-}
-
 
 
 // useAssignments interfaces

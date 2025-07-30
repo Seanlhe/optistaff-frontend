@@ -1,40 +1,16 @@
-/**
- * Payouts Hook
- * @description Simplified hook focused on weekly earnings calculation
- */
 
 import { useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '../integrations/supabase/client';
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 
-// Interface for payout records returned by get_user_payouts_by_time_range
-interface PayoutTimeRangeRecord {
-  payout_id: string;
-  assignment_id: string;
-  amount: number;
-  payout_date: string;
-  assignment_start_time: string;
-  assignment_end_time: string;
-  shift_title: string;
-  status?: string; // Assignment status from assignments table
-}
-
-// Define statuses that should be excluded from earnings calculation
-// These match the status.name values in your database
-const EXCLUDED_STATUSES = ['cancel_by_employer', 'cancel_by_employee', 'no_show'];
-
 export const usePayouts = () => {
   // Get user context
   const { user } = useAuth();
 
-  // Calculate estimated weekly pay using Supabase function
-  const getEstimatedWeeklyPay = useCallback(async () => {
-    console.log('usePayouts: getEstimatedWeeklyPay called');
-    console.log('usePayouts: user?.id:', user?.id);
-    
+  // Calculate estimated weekly pay - ALTERNATIVE approach
+  const getEstimatedWeeklyPay = useCallback(async (): Promise<number> => {
     if (!user?.id) {
-      console.log('usePayouts: No user ID, returning 0');
       return 0;
     }
 
@@ -44,77 +20,65 @@ export const usePayouts = () => {
       const weekStart = startOfWeek(now, { weekStartsOn: 1 });
       const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
 
-      console.log('usePayouts: Week boundaries:', {
+      console.log('Week boundaries:', {
         weekStart: format(weekStart, 'yyyy-MM-dd'),
-        weekEnd: format(weekEnd, 'yyyy-MM-dd'),
-        now: now.toISOString()
+        weekEnd: format(weekEnd, 'yyyy-MM-dd')
       });
 
-      // Call Supabase function to get payout records for this week
-      const { data, error } = await supabase.rpc('get_user_payouts_by_time_range', {
-        p_user_id: user.id,
-        p_start_time: format(weekStart, 'yyyy-MM-dd'),
-        p_end_time: format(weekEnd, 'yyyy-MM-dd')
-      });
+      // Get completed assignments using earnings breakdown
+      const { data: completedEarnings, error: completedError } = await supabase.rpc(
+        'get_earnings_breakdown',
+        {
+          target_user_id: user.id,
+          period_start: format(weekStart, 'yyyy-MM-dd'),
+          period_end: format(weekEnd, 'yyyy-MM-dd')
+        }
+      );
 
-      console.log('usePayouts: RPC call result:', { data, error });
+      // Get upcoming assignments (this works as expected)
+      const { data: upcomingEstimates, error: upcomingError } = await supabase.rpc(
+        'get_estimated_pay_for_upcoming_assignments',
+        {
+          p_user_id: user.id,
+          p_start_date: format(weekStart, 'yyyy-MM-dd'),
+          p_end_date: format(weekEnd, 'yyyy-MM-dd')
+        }
+      );
 
-      if (error) {
-        console.error('usePayouts: Error calculating weekly pay:', error);
+      if (completedError || upcomingError) {
+        console.error('Errors getting earnings:', { completedError, upcomingError });
         return 0;
       }
 
-      // Handle the RPC function returning an array of payout records
-      let weeklyEarnings = 0;
-      if (Array.isArray(data) && data.length > 0) {
-        // Filter out cancelled assignments if status information is available
-        const validPayouts = (data as PayoutTimeRangeRecord[]).filter(payout => {
-          // Only filter if status is available from backend
-          if (!payout.status) {
-            return true; // Include all payouts if status is not available
-          }
-          
-          const status = payout.status.toLowerCase();
-          const isExcluded = EXCLUDED_STATUSES.includes(status);
-          
-          if (isExcluded) {
-            console.log(`usePayouts: Excluding payout for ${payout.shift_title} with status: ${status}`);
-            return false;
-          }
-          return true;
-        });
+      // Calculate totals
+      const completedTotal = Array.isArray(completedEarnings) 
+        ? completedEarnings.reduce((sum, earning) => sum + (Number(earning.total_earned) || 0), 0)
+        : 0;
 
-        weeklyEarnings = validPayouts.reduce((total, payout) => {
-          const amount = Number(payout.amount) || 0;
-          return total + amount;
-        }, 0);
+      const upcomingTotal = Array.isArray(upcomingEstimates) 
+        ? upcomingEstimates.reduce((sum, assignment) => sum + (Number(assignment.estimated_pay) || 0), 0)
+        : 0;
 
-        console.log('usePayouts: Calculated total from', validPayouts.length, 'valid payout records');
-        console.log('usePayouts: Valid payouts:', validPayouts.map(p => ({ 
-          amount: p.amount, 
-          title: p.shift_title,
-          status: p.status || 'status_not_available'
-        })));
-        
-        if (data.length !== validPayouts.length) {
-          console.log(`usePayouts: Excluded ${data.length - validPayouts.length} cancelled assignments from earnings`);
-        }
-      } else {
-        console.log('usePayouts: No payout records found for this week');
-        weeklyEarnings = 0;
-      }
+      const totalEarnings = completedTotal + upcomingTotal;
 
-      console.log('usePayouts: Processed earnings value:', weeklyEarnings);
-      console.log('usePayouts: Returning data:', weeklyEarnings);
-      return weeklyEarnings;
+      console.log('Earnings breakdown:', {
+        completedTotal,
+        upcomingTotal,
+        totalEarnings,
+        completedCount: Array.isArray(completedEarnings) ? completedEarnings.length : 0,
+        upcomingCount: Array.isArray(upcomingEstimates) ? upcomingEstimates.length : 0
+      });
+
+      return totalEarnings;
+
     } catch (err) {
-      console.error('usePayouts: Error in getEstimatedWeeklyPay:', err);
+      console.error('Error in getEstimatedWeeklyPay:', err);
       return 0;
     }
   }, [user?.id]);
 
-  // Return only what's actually needed
+  // Return only what you need
   return {
-    getEstimatedWeeklyPay,
+    getEstimatedWeeklyPay
   };
 };
