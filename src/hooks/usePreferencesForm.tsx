@@ -14,7 +14,7 @@ import { supabase } from "../integrations/supabase/client";
 
 export const usePreferencesForm = () => {
   const { user } = useAuth();
-  
+
   // Get core preferences functionality
   const {
     preferences: corePreferences,
@@ -36,8 +36,9 @@ export const usePreferencesForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [optimisticPreferences, setOptimisticPreferences] = useState<UserPreferences | null>(null);
-  
+  const [optimisticPreferences, setOptimisticPreferences] =
+    useState<UserPreferences | null>(null);
+
   // Use optimistic preferences if available, otherwise use core preferences
   const preferences = optimisticPreferences || corePreferences;
 
@@ -54,7 +55,7 @@ export const usePreferencesForm = () => {
   // Helper function for batch job name validation using database function
   const validateJobNames = useCallback(
     async (
-      jobNames: string[]
+      jobNames: string[],
     ): Promise<{ isValid: boolean; error?: string }> => {
       if (!jobNames || jobNames.length === 0) {
         return { isValid: true };
@@ -64,7 +65,7 @@ export const usePreferencesForm = () => {
       try {
         const { data: isValid, error } = await supabase.rpc(
           "validate_job_names",
-          { job_names: jobNames }
+          { job_names: jobNames },
         );
 
         if (error) {
@@ -78,7 +79,7 @@ export const usePreferencesForm = () => {
         setValidating(false);
       }
     },
-    []
+    [],
   );
 
   // Helper function for saving preferences with database function and fallback
@@ -100,7 +101,7 @@ export const usePreferencesForm = () => {
               p_max_hours_per_week: formData.maxHoursPerWeek,
               p_max_hours_per_shift: formData.maxHoursPerShift,
               p_consider_lower_rate: formData.considerLowerRate,
-            }
+            },
           );
 
           if (error) throw new Error(error.message);
@@ -113,7 +114,7 @@ export const usePreferencesForm = () => {
               return null;
             }
             console.log("✅ Database function succeeded");
-            
+
             // Convert database function result to UserPreferences format
             const { validation_errors, ...preferencesData } = result;
             return preferencesData as UserPreferences;
@@ -121,7 +122,7 @@ export const usePreferencesForm = () => {
         } catch (functionError) {
           console.warn(
             "Database function failed, using fallback:",
-            functionError
+            functionError,
           );
         }
       }
@@ -156,7 +157,7 @@ export const usePreferencesForm = () => {
       console.log("✅ Direct upsert succeeded");
       return data;
     },
-    [user?.id, revertOptimisticUpdate]
+    [user?.id, revertOptimisticUpdate],
   );
 
   // Convert preferences to form data for frontend
@@ -212,7 +213,7 @@ export const usePreferencesForm = () => {
         updated_at: new Date().toISOString(),
       };
       console.log("🚀 Applying optimistic update:", optimisticPreferences);
-      
+
       // Apply optimistic update to local state (not database)
       setOptimisticPreferences(optimisticPreferences);
 
@@ -220,7 +221,7 @@ export const usePreferencesForm = () => {
         // Optimization 1: Batch Validation using database function
         console.log("🔍 Validating job names:", formData.selectedJobNames);
         const validationResult = await validateJobNames(
-          formData.selectedJobNames
+          formData.selectedJobNames,
         );
         if (!validationResult.isValid) {
           console.log("❌ Validation failed, reverting optimistic update");
@@ -228,7 +229,7 @@ export const usePreferencesForm = () => {
           await revertOptimisticUpdate();
           setFormError(
             validationResult.error ||
-              "One or more selected job types are invalid or inactive"
+              "One or more selected job types are invalid or inactive",
           );
           return false;
         }
@@ -260,7 +261,7 @@ export const usePreferencesForm = () => {
       validateJobNames,
       savePreferencesWithFallback,
       revertOptimisticUpdate,
-    ]
+    ],
   );
 
   // Combined loading and error states
@@ -270,7 +271,7 @@ export const usePreferencesForm = () => {
   return {
     // Form data
     preferences,
-    
+
     // Form state
     loading,
     validating,

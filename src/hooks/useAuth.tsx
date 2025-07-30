@@ -29,15 +29,15 @@ export const useAuth = () => {
       // Add timeout protection for database queries
       const withTimeout = function <T>(
         promise: Promise<T>,
-        timeoutMs: number = 5000
+        timeoutMs: number = 5000,
       ): Promise<T> {
         return Promise.race([
           promise,
           new Promise<T>((_, reject) =>
             setTimeout(
               () => reject(new Error("Database query timeout")),
-              timeoutMs
-            )
+              timeoutMs,
+            ),
           ),
         ]);
       };
@@ -56,7 +56,7 @@ export const useAuth = () => {
           // Fallback: Check database tables to determine role (only if no cache)
           try {
             console.log(
-              "🔍 Auth Debug - No cached role found, checking database..."
+              "🔍 Auth Debug - No cached role found, checking database...",
             );
             // Use Promise.allSettled with timeout to check both tables simultaneously
             const [jobSeekerResult, clientResult] = await Promise.allSettled([
@@ -66,8 +66,8 @@ export const useAuth = () => {
                     .from("job_seekers")
                     .select("user_id")
                     .eq("user_id", user.id)
-                    .single()
-                )
+                    .single(),
+                ),
               ),
               withTimeout(
                 Promise.resolve(
@@ -75,8 +75,8 @@ export const useAuth = () => {
                     .from("clients")
                     .select("client_id")
                     .eq("client_id", user.id)
-                    .single()
-                )
+                    .single(),
+                ),
               ),
             ]);
 
@@ -93,7 +93,7 @@ export const useAuth = () => {
             } else {
               // If both queries fail or return no data, we need to handle this gracefully
               console.log(
-                "🔍 Auth Debug - No role found in database, user may need to complete registration"
+                "🔍 Auth Debug - No role found in database, user may need to complete registration",
               );
               role = "jobseeker"; // Default fallback
             }
@@ -105,7 +105,7 @@ export const useAuth = () => {
             }
           } catch (error) {
             console.log(
-              "🔍 Auth Debug - Database role check failed, using default fallback"
+              "🔍 Auth Debug - Database role check failed, using default fallback",
             );
             role = "jobseeker"; // Ensure we always have a role
           }
@@ -115,7 +115,7 @@ export const useAuth = () => {
       // Ensure we always have a role - this prevents infinite loading
       if (!role) {
         console.log(
-          "🔍 Auth Debug - WARNING: No role determined, using jobseeker as fallback"
+          "🔍 Auth Debug - WARNING: No role determined, using jobseeker as fallback",
         );
         role = "jobseeker"; // Fallback to prevent infinite loading
       }
@@ -140,7 +140,7 @@ export const useAuth = () => {
         navigate(targetRoute);
       }
     },
-    [navigate]
+    [navigate],
   );
 
   // Helper function to clear user state
@@ -334,13 +334,13 @@ export const useAuth = () => {
         console.log("🔍 Signup Debug - User created successfully");
         console.log(
           "🔍 Signup Debug - User metadata stored:",
-          data.user.user_metadata
+          data.user.user_metadata,
         );
 
         // Check if the user needs email confirmation immediately
         if (data.user && !data.session) {
           console.log(
-            "🔍 Signup Debug - Email confirmation required, redirecting to login"
+            "🔍 Signup Debug - Email confirmation required, redirecting to login",
           );
           // User was created but needs to confirm email before they can log in
           // Set a success message and navigate to login page immediately
@@ -353,7 +353,7 @@ export const useAuth = () => {
           // Store success message for the login page to display
           sessionStorage.setItem(
             "signup_success",
-            "Account created successfully! Please check your email and confirm your account, then log in."
+            "Account created successfully! Please check your email and confirm your account, then log in.",
           );
 
           // Navigate to login page immediately

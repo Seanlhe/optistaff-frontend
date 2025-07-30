@@ -19,7 +19,18 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "vitest.config.ts", "tests/frontendSuccessUnit/Calendar.test.tsx", "tests/frontendSuccessUnit/CalendarEvent.test.tsx", "tests/frontendSuccessUnit/LocationAwareMap.test.tsx", "tests/frontendSuccessUnit/PreferencesForm.test.tsx", "tests/frontendSuccessUnit/PreferencesJobType.test.tsx", "tests/frontendSuccessUnit/PreferencesMaximum.test.tsx", "tests/frontendSuccessUnit/PreferencesPay.test.tsx", "tests/frontendSuccessUnit/JSPref.test.tsx"]
+  "include": [
+    "src",
+    "vitest.config.ts",
+    "tests/frontendSuccessUnit/Calendar.test.tsx",
+    "tests/frontendSuccessUnit/CalendarEvent.test.tsx",
+    "tests/frontendSuccessUnit/LocationAwareMap.test.tsx",
+    "tests/frontendSuccessUnit/PreferencesForm.test.tsx",
+    "tests/frontendSuccessUnit/PreferencesJobType.test.tsx",
+    "tests/frontendSuccessUnit/PreferencesMaximum.test.tsx",
+    "tests/frontendSuccessUnit/PreferencesPay.test.tsx",
+    "tests/frontendSuccessUnit/JSPref.test.tsx"
+  ]
 }

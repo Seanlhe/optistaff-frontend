@@ -111,14 +111,14 @@ The preferences system includes the following components:
 ## Usage Example
 
 ```tsx
-import { usePreferences } from '../hooks/usePreferences';
+import { usePreferences } from "../hooks/usePreferences";
 
 const MyComponent = () => {
   const { preferences, savePreferences, loading, error } = usePreferences();
-  
+
   // Use preferences data
   console.log(preferences?.min_pay_rate);
-  
+
   // Save preferences
   const handleSave = async () => {
     const formData = {
@@ -127,20 +127,16 @@ const MyComponent = () => {
       maxHoursPerWeek: 40,
       maxHoursPerShift: 8,
       maxTravelKm: 30,
-      selectedJobNames: ['Waiter/Waitress', 'Bartender/Barista']
+      selectedJobNames: ["Waiter/Waitress", "Bartender/Barista"],
     };
-    
+
     const success = await savePreferences(formData);
     if (success) {
-      console.log('Preferences saved successfully!');
+      console.log("Preferences saved successfully!");
     }
   };
-  
-  return (
-    <div>
-      {/* Component content */}
-    </div>
-  );
+
+  return <div>{/* Component content */}</div>;
 };
 ```
 
@@ -149,13 +145,14 @@ const MyComponent = () => {
 If you encounter the error "Could not find the 'consider_lower_rate' column of 'preferences' in the schema cache", it means your database schema is outdated. The following migration has been applied to fix this issue:
 
 ```sql
-ALTER TABLE preferences 
+ALTER TABLE preferences
 ADD COLUMN max_hours_per_week INTEGER CHECK (max_hours_per_week > 0 AND max_hours_per_week <= 44),
 ADD COLUMN max_hours_per_shift INTEGER CHECK (max_hours_per_shift > 0 AND max_hours_per_shift <= 12),
 ADD COLUMN consider_lower_rate BOOLEAN DEFAULT false;
 ```
 
 After applying this migration, existing records were updated with default values:
+
 - `max_hours_per_week`: 40
 - `max_hours_per_shift`: 8
 - `consider_lower_rate`: false

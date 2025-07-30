@@ -1,27 +1,33 @@
-import { useState, useEffect } from 'react';
-import { useJobTypes } from '../hooks/useJobTypes';
-import { PreferenceJobTypeProps } from '../types/components';
+import { useState, useEffect } from "react";
+import { useJobTypes } from "../hooks/useJobTypes";
+import { PreferenceJobTypeProps } from "../types/components";
 
-export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({ 
-  formData, 
-  setFormData 
+export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
+  formData,
+  setFormData,
 }) => {
   // Use hooks for data management
-  const { jobTypesByCategory, loading: jobTypesLoading, error: jobTypesError } = useJobTypes();
-  
+  const {
+    jobTypesByCategory,
+    loading: jobTypesLoading,
+    error: jobTypesError,
+  } = useJobTypes();
+
   // state to hold the selected jobs
-  const [selectedJobs, setSelectedJobs] = useState<{ [key: string]: boolean }>({});
+  const [selectedJobs, setSelectedJobs] = useState<{ [key: string]: boolean }>(
+    {},
+  );
 
   // Load existing preferences when component mounts
   useEffect(() => {
     if (formData.selectedJobNames) {
       // Convert job names array to selection object
       const selectedJobNames: { [key: string]: boolean } = {};
-      
-      formData.selectedJobNames.forEach(jobName => {
+
+      formData.selectedJobNames.forEach((jobName) => {
         selectedJobNames[jobName] = true;
       });
-      
+
       setSelectedJobs(selectedJobNames);
     }
   }, [formData.selectedJobNames]);
@@ -29,9 +35,9 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
   // handle changes when a checkbox is clicked.
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
-    
+
     // Update local state
-    setSelectedJobs(prev => ({
+    setSelectedJobs((prev) => ({
       ...prev, // Copies the previous state to not lose other selections
       [name]: checked, // Updates the state for the clicked item
     }));
@@ -39,12 +45,12 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
     // Update parent form data
     const updatedSelectedJobs = { ...selectedJobs, [name]: checked };
     const selectedJobNames = Object.keys(updatedSelectedJobs).filter(
-      jobName => updatedSelectedJobs[jobName]
+      (jobName) => updatedSelectedJobs[jobName],
     );
-    
+
     setFormData({
       ...formData,
-      selectedJobNames
+      selectedJobNames,
     });
   };
 
@@ -56,11 +62,11 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
           <div className="h-6 bg-border rounded mb-4"></div>
           <div className="h-4 bg-border rounded mb-6 w-3/4"></div>
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div key={i}>
                 <div className="h-5 bg-border rounded mb-2"></div>
                 <div className="grid grid-cols-2 gap-2">
-                  {[1, 2, 3, 4].map(j => (
+                  {[1, 2, 3, 4].map((j) => (
                     <div key={j} className="h-12 bg-border rounded"></div>
                   ))}
                 </div>
@@ -109,9 +115,10 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
                 htmlFor={jobType.job_type_id}
                 className={`
                   flex items-center p-3 rounded-radius cursor-pointer transition-colors
-                  ${selectedJobs[jobType.type_name]
-                    ? 'bg-primary-blue/5 text-gradient-end' 
-                    : 'bg-card-color text-secondary-text hover:bg-border/30' 
+                  ${
+                    selectedJobs[jobType.type_name]
+                      ? "bg-primary-blue/5 text-gradient-end"
+                      : "bg-card-color text-secondary-text hover:bg-border/30"
                   }
                 `}
               >

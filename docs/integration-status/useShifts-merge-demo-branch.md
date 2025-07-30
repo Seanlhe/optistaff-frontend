@@ -1,12 +1,14 @@
 # useShifts Hook Merge Documentation
 
 ## Merge Summary
+
 **Date:** July 14, 2025  
 **Source Branch:** dev-hooks  
 **Target Branch:** demo  
 **Files Merged:** `src/hooks/useShifts.tsx`
 
 ## Merge Strategy
+
 The useShifts hook was successfully merged from the dev-hooks branch to the demo branch using a manual file copy approach. This was chosen because:
 
 1. **No conflicts**: The demo branch had no existing useShifts hook
@@ -16,9 +18,10 @@ The useShifts hook was successfully merged from the dev-hooks branch to the demo
 ## Files Added to Demo Branch
 
 ### src/hooks/useShifts.tsx
+
 - **Source:** dev-hooks branch commit bd27b6d
 - **Status:** ✅ Successfully merged
-- **Dependencies verified:** 
+- **Dependencies verified:**
   - ✅ `useAuth` hook available
   - ✅ Supabase client integration available
   - ✅ React hooks (useState, useEffect, useCallback) available
@@ -44,17 +47,18 @@ The merged useShifts hook provides:
 ## Usage Example
 
 ```tsx
-import { useShifts } from '../hooks/useShifts';
+import { useShifts } from "../hooks/useShifts";
 
 const ShiftComponent = () => {
-  const { shifts, loading, error, createShift, updateShift, deleteShift } = useShifts();
+  const { shifts, loading, error, createShift, updateShift, deleteShift } =
+    useShifts();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
-      {shifts.map(shift => (
+      {shifts.map((shift) => (
         <div key={shift.shift_id}>
           <h3>{shift.title}</h3>
           <p>{shift.description}</p>
@@ -75,6 +79,7 @@ const ShiftComponent = () => {
 ## Related Documentation
 
 For detailed implementation information, see:
+
 - `docs/dev-hooks-useShifts-documentation.md` - Complete development documentation
 - `src/hooks/useAuth.tsx` - Authentication dependency
 - `src/integrations/supabase/client.ts` - Database integration
@@ -84,6 +89,7 @@ For detailed implementation information, see:
 The useShifts hook expects the following database structure:
 
 ### Table: `shifts`
+
 - `shift_id` (string, primary key)
 - `client_id` (string, foreign key)
 - `title` (string)
@@ -100,6 +106,7 @@ The useShifts hook expects the following database structure:
 - `status` (integer: 0 | 1 | 2)
 
 ### RPC Function: `create_shift`
+
 - Function to handle shift creation with business logic
 - Should accept shift data and return success/error
 

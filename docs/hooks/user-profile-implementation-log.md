@@ -14,6 +14,7 @@ This document details the complete implementation of the user profile management
 ## 🎯 Implementation Goals
 
 ### **Primary Objectives:**
+
 1. **Profile Display**: View name, rating, account status (read-only)
 2. **Personal Information Management**: Edit phone number, home address, postal code
 3. **Account Settings**: Change email and password
@@ -21,6 +22,7 @@ This document details the complete implementation of the user profile management
 5. **Integration**: Seamless integration with existing JSSettings page
 
 ### **Technical Requirements:**
+
 - Type-safe TypeScript implementation
 - Real-time validation and error handling
 - Optimistic UI updates
@@ -43,9 +45,9 @@ export interface ProfileDisplayData {
   firstName: string;
   lastName: string;
   fullName: string;
-  rating?: number;                    // Job seekers only
-  accountStatus?: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE'; // Job seekers only
-  companyName?: string;               // Clients only
+  rating?: number; // Job seekers only
+  accountStatus?: "ACTIVE" | "SUSPENDED" | "INACTIVE"; // Job seekers only
+  companyName?: string; // Clients only
   email: string;
   accountCreated: string;
 }
@@ -69,11 +71,12 @@ export interface AccountSettingsFormData {
 export interface UserProfileData {
   display: ProfileDisplayData;
   personalInfo: PersonalInfoFormData;
-  userRole: 'jobseeker' | 'employer';
+  userRole: "jobseeker" | "employer";
 }
 ```
 
 **Impact:**
+
 - ✅ **Type Safety**: Complete TypeScript coverage for all profile operations
 - ✅ **Role-Based Types**: Different interfaces for job seekers vs employers
 - ✅ **Form Validation**: Structured data for form handling and validation
@@ -89,6 +92,7 @@ export interface UserProfileData {
 **Complete Implementation Features:**
 
 #### **State Management:**
+
 ```typescript
 // Granular state management for better UX
 const [profileData, setProfileData] = useState<UserProfileData | null>(null);
@@ -97,34 +101,41 @@ const [personalInfoLoading, setPersonalInfoLoading] = useState(false);
 const [accountSettingsLoading, setAccountSettingsLoading] = useState(false);
 const [error, setError] = useState<string | null>(null);
 const [personalInfoError, setPersonalInfoError] = useState<string | null>(null);
-const [accountSettingsError, setAccountSettingsError] = useState<string | null>(null);
+const [accountSettingsError, setAccountSettingsError] = useState<string | null>(
+  null,
+);
 ```
 
 #### **Core Functions Implemented:**
 
 ##### **fetchProfile() - Enhanced Data Fetching**
+
 ```typescript
 const fetchProfile = useCallback(async () => {
   // 1. Get auth user data from Supabase Auth
   const { data: authUser, error: authError } = await supabase.auth.getUser();
-  
+
   // 2. Fetch profile data based on user role
-  if (user.role === 'jobseeker') {
+  if (user.role === "jobseeker") {
     // Fetch from job_seekers table
     const { data, error } = await supabase
-      .from('job_seekers')
-      .select('first_name, last_name, phone_number, address_coordinates, postal_code, rating, status')
-      .eq('user_id', user.id)
+      .from("job_seekers")
+      .select(
+        "first_name, last_name, phone_number, address_coordinates, postal_code, rating, status",
+      )
+      .eq("user_id", user.id)
       .single();
-  } else if (user.role === 'employer') {
+  } else if (user.role === "employer") {
     // Fetch from clients table
     const { data, error } = await supabase
-      .from('clients')
-      .select('company_name, first_name, last_name, phone, address, postal_code')
-      .eq('client_id', user.id)
+      .from("clients")
+      .select(
+        "company_name, first_name, last_name, phone, address, postal_code",
+      )
+      .eq("client_id", user.id)
       .single();
   }
-  
+
   // 3. Combine auth + profile data into structured format
   // 4. Validate required fields and data integrity
   // 5. Update local state with combined data
@@ -132,21 +143,25 @@ const fetchProfile = useCallback(async () => {
 ```
 
 **Key Features:**
+
 - ✅ **Role-Based Queries**: Different database tables for job seekers vs employers
 - ✅ **Data Validation**: Validates required fields and postal code format
 - ✅ **Error Handling**: Specific error messages for different failure scenarios
 - ✅ **Data Transformation**: Combines auth and profile data into structured format
 
 ##### **updatePersonalInfo() - Personal Information Updates**
+
 ```typescript
-const updatePersonalInfo = async (formData: PersonalInfoFormData): Promise<boolean> => {
+const updatePersonalInfo = async (
+  formData: PersonalInfoFormData,
+): Promise<boolean> => {
   // 1. Input validation (postal code format)
   if (formData.postalCode && !/^\d{6}$/.test(formData.postalCode)) {
     throw new Error("Postal code must be 6 digits");
   }
-  
+
   // 2. Role-based database updates
-  if (user.role === 'jobseeker') {
+  if (user.role === "jobseeker") {
     updateData = {
       phone_number: formData.phoneNumber || null,
       address: formData.homeAddress || null, // Store readable address
@@ -154,38 +169,42 @@ const updatePersonalInfo = async (formData: PersonalInfoFormData): Promise<boole
       address_coordinates: newCoordinates || null, // Auto-geocoded coordinates
       updated_at: new Date().toISOString(),
     };
-    tableName = 'job_seekers';
-  } else if (user.role === 'employer') {
+    tableName = "job_seekers";
+  } else if (user.role === "employer") {
     updateData = {
       phone: formData.phoneNumber || null,
       address: formData.homeAddress || null,
       postal_code: formData.postalCode || null,
       updated_at: new Date().toISOString(),
     };
-    tableName = 'clients';
+    tableName = "clients";
   }
-  
+
   // 3. Execute database update
   // 4. Optimistic UI update
 };
 ```
 
 **Key Features:**
+
 - ✅ **Input Validation**: Real-time validation with user feedback
 - ✅ **Role-Based Updates**: Different field mappings for job seekers vs employers
 - ✅ **Optimistic Updates**: Immediate UI feedback after successful operations
 - ✅ **Error Isolation**: Errors only affect personal info section
 
 ##### **updateAccountSettings() - Account Management**
+
 ```typescript
-const updateAccountSettings = async (formData: AccountSettingsFormData): Promise<boolean> => {
+const updateAccountSettings = async (
+  formData: AccountSettingsFormData,
+): Promise<boolean> => {
   // 1. Handle email changes via Supabase Auth
   if (formData.email !== profileData?.display.email) {
     const { error: emailError } = await supabase.auth.updateUser({
-      email: formData.email
+      email: formData.email,
     });
   }
-  
+
   // 2. Handle password changes with validation
   if (formData.newPassword) {
     if (formData.newPassword.length < 6) {
@@ -194,23 +213,25 @@ const updateAccountSettings = async (formData: AccountSettingsFormData): Promise
     if (formData.newPassword !== formData.confirmPassword) {
       throw new Error("New passwords do not match");
     }
-    
+
     const { error: passwordError } = await supabase.auth.updateUser({
-      password: formData.newPassword
+      password: formData.newPassword,
     });
   }
-  
+
   // 3. Update local state and provide user feedback
 };
 ```
 
 **Key Features:**
+
 - ✅ **Email Updates**: Uses Supabase Auth with confirmation email
 - ✅ **Password Security**: Validation and confirmation matching
 - ✅ **Conditional Updates**: Only updates what actually changed
 - ✅ **User Feedback**: Different success messages based on what was changed
 
 ##### **Helper Functions - Memoized for Performance**
+
 ```typescript
 const isJobSeeker = useCallback((): boolean => {
   return profileData?.userRole === "jobseeker";
@@ -235,6 +256,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 ```
 
 **Key Features:**
+
 - ✅ **Performance Optimization**: All helpers wrapped in useCallback
 - ✅ **Proper Dependencies**: Minimal, specific dependencies to prevent re-renders
 - ✅ **Type Safety**: Full TypeScript support with proper return types
@@ -251,9 +273,9 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 
 ```typescript
 const ProfilePage = () => {
-  const { 
-    profileData, 
-    loading, 
+  const {
+    profileData,
+    loading,
     error,
     isJobSeeker,
     isClient
@@ -261,10 +283,10 @@ const ProfilePage = () => {
 
   // Loading state with skeleton UI
   if (loading) return <ProfileSkeleton />;
-  
+
   // Error state with retry option
   if (error) return <ProfileError error={error} />;
-  
+
   // Main content with three cards
   return (
     <div className="space-y-6">
@@ -277,6 +299,7 @@ const ProfilePage = () => {
 ```
 
 **Key Features:**
+
 - ✅ **Loading States**: Skeleton UI for smooth loading experience
 - ✅ **Error Handling**: User-friendly error messages with retry options
 - ✅ **Component Orchestration**: Manages three profile cards
@@ -296,7 +319,7 @@ const ProfileDisplayCard = () => {
   return (
     <div className="bg-card-color p-6 rounded-xl border border-border">
       <h2>Profile Overview</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Column: Name, Email, Company */}
         <div>
@@ -322,6 +345,7 @@ const ProfileDisplayCard = () => {
 ```
 
 **Key Features:**
+
 - ✅ **Role-Based Display**: Different information for job seekers vs employers
 - ✅ **Visual Elements**: Star ratings, status badges, formatted dates
 - ✅ **Responsive Design**: Grid layout that adapts to screen size
@@ -335,7 +359,7 @@ const ProfileDisplayCard = () => {
 
 ```typescript
 const PersonalInfoCard = () => {
-  const { 
+  const {
     getPersonalInfoData,
     updatePersonalInfo,
     personalInfoLoading,
@@ -375,7 +399,7 @@ const PersonalInfoCard = () => {
           <AddressField label={isJobSeeker() ? 'Home Address' : 'Office Address'} />
           <PostalCodeField />
         </div>
-        
+
         {isEditing && (
           <button type="submit" disabled={!hasChanges() || !isValid()}>
             Save Changes
@@ -388,6 +412,7 @@ const PersonalInfoCard = () => {
 ```
 
 **Key Features:**
+
 - ✅ **Edit Mode Toggle**: Switch between view and edit modes
 - ✅ **Real-time Validation**: Postal code format validation with visual feedback
 - ✅ **Change Detection**: Only enables save when changes are made
@@ -402,7 +427,7 @@ const PersonalInfoCard = () => {
 
 ```typescript
 const AccountSettingsCard = () => {
-  const { 
+  const {
     getAccountFormData,
     updateAccountSettings,
     accountSettingsLoading,
@@ -429,11 +454,11 @@ const AccountSettingsCard = () => {
   return (
     <div className="bg-card-color p-6 rounded-xl border border-border">
       <h2>Account Settings</h2>
-      
+
       <form onSubmit={handleSubmit}>
         {/* Email Change Section */}
         <EmailField />
-        
+
         {/* Password Change Section */}
         <div className="border-t pt-6">
           <div className="flex items-center justify-between">
@@ -442,7 +467,7 @@ const AccountSettingsCard = () => {
               {isChangingPassword ? 'Cancel' : 'Change Password'}
             </button>
           </div>
-          
+
           {isChangingPassword && (
             <div className="space-y-4">
               <CurrentPasswordField />
@@ -451,7 +476,7 @@ const AccountSettingsCard = () => {
             </div>
           )}
         </div>
-        
+
         <button type="submit" disabled={!hasChanges() || !isValid()}>
           Update Account
         </button>
@@ -462,6 +487,7 @@ const AccountSettingsCard = () => {
 ```
 
 **Key Features:**
+
 - ✅ **Progressive Disclosure**: Password fields only show when needed
 - ✅ **Email Confirmation**: Notifies users about confirmation emails
 - ✅ **Password Validation**: Requirements and confirmation matching
@@ -505,6 +531,7 @@ const JSSettings = () => {
 ```
 
 **Changes Made:**
+
 - ✅ **Simplified Implementation**: Replaced 200+ lines with clean ProfilePage integration
 - ✅ **Removed Hardcoded Data**: Now uses real data from useUserProfile hook
 - ✅ **Better UX**: Consistent styling and improved user experience
@@ -527,6 +554,7 @@ type Tab = "PreferencesForm" | "Availability";
 ```
 
 **Impact:**
+
 - ✅ **Clear Separation**: JSPref handles job preferences, JSSettings handles profile
 - ✅ **Reduced Complexity**: Each page has a single, focused responsibility
 - ✅ **Better Navigation**: Users know where to find profile vs preference settings
@@ -542,6 +570,7 @@ type Tab = "PreferencesForm" | "Availability";
 **Issue**: Excessive auth debug logs due to infinite re-render loops
 
 **Root Cause:**
+
 ```typescript
 // Before: Caused infinite re-renders
 useEffect(() => {
@@ -550,18 +579,21 @@ useEffect(() => {
 ```
 
 **Solution Applied:**
+
 ```typescript
 // After: Runs only once with proper auth listener
 useEffect(() => {
   let isMounted = true;
-  
+
   // Set up auth state listener
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange(async (event, session) => {
     if (!isMounted) return;
-    
-    if (event === 'SIGNED_IN' && session?.user) {
+
+    if (event === "SIGNED_IN" && session?.user) {
       await updateUserState(session.user);
-    } else if (event === 'SIGNED_OUT') {
+    } else if (event === "SIGNED_OUT") {
       clearUserState();
     }
   });
@@ -577,6 +609,7 @@ useEffect(() => {
 ```
 
 **Optimizations Made:**
+
 - ✅ **Removed Problematic Dependencies**: Empty dependency array prevents re-renders
 - ✅ **Added Auth State Listener**: Proper Supabase auth change handling
 - ✅ **Component Unmount Protection**: Prevents memory leaks
@@ -587,10 +620,13 @@ useEffect(() => {
 **Issue**: "Maximum update depth exceeded" error in AccountSettingsCard
 
 **Root Cause:**
+
 ```typescript
 // Before: Functions recreated on every render
 const getAccountFormData = (): AccountSettingsFormData => {
-  return { /* data */ };
+  return {
+    /* data */
+  };
 };
 
 // Used in component:
@@ -601,6 +637,7 @@ useEffect(() => {
 ```
 
 **Solution Applied:**
+
 ```typescript
 // After: Properly memoized functions
 const getAccountFormData = useCallback((): AccountSettingsFormData => {
@@ -614,6 +651,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 ```
 
 **All Helper Functions Memoized:**
+
 - ✅ `isJobSeeker()` - Memoized with `[profileData?.userRole]`
 - ✅ `isClient()` - Memoized with `[profileData?.userRole]`
 - ✅ `getDisplayData()` - Memoized with `[profileData?.display]`
@@ -625,12 +663,14 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 ## 📊 Implementation Statistics
 
 ### **Files Created:**
+
 - ✅ `src/components/ProfilePage.tsx` (122 lines)
 - ✅ `src/components/ProfileDisplayCard.tsx` (168 lines)
 - ✅ `src/components/PersonalInfoCard.tsx` (246 lines)
 - ✅ `src/components/AccountSettingsCard.tsx` (282 lines)
 
 ### **Files Modified:**
+
 - ✅ `src/types/hooks.ts` - Added profile-related interfaces
 - ✅ `src/hooks/useUserProfile.tsx` - Complete implementation (431 lines)
 - ✅ `src/pages/employee/JSSettings.tsx` - Simplified integration (31 lines)
@@ -638,6 +678,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 - ✅ `src/hooks/useAuth.tsx` - Performance optimizations
 
 ### **Total Lines of Code:**
+
 - **New Code**: ~1,100 lines
 - **Refactored Code**: ~200 lines
 - **Removed Code**: ~150 lines (hardcoded JSSettings implementation)
@@ -647,6 +688,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 ## 🎯 Features Implemented
 
 ### **✅ Core Functionality:**
+
 1. **Profile Display**: Name, email, rating, account status, member since
 2. **Personal Info Editing**: Phone number, home/office address, postal code
 3. **Account Settings**: Email and password changes
@@ -657,6 +699,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 8. **Success Feedback**: Confirmation messages for all operations
 
 ### **✅ Technical Features:**
+
 1. **Type Safety**: Complete TypeScript coverage
 2. **Performance Optimization**: Memoized functions and minimal re-renders
 3. **Error Boundaries**: Isolated error handling per section
@@ -671,6 +714,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 ## 🚀 User Experience Improvements
 
 ### **Before Implementation:**
+
 - ❌ Hardcoded profile data
 - ❌ No real database integration
 - ❌ Complex modal-based password changes
@@ -679,6 +723,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 - ❌ No loading states
 
 ### **After Implementation:**
+
 - ✅ **Real Data Integration**: Live data from Supabase
 - ✅ **Intuitive Interface**: Three clear sections for different functions
 - ✅ **Smooth Interactions**: Loading states and optimistic updates
@@ -691,6 +736,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 ## 🔮 Future Enhancements
 
 ### **Potential Improvements:**
+
 1. **Profile Image Upload**: Integration with Supabase Storage
 2. **Profile Completion Tracking**: Progress indicators for incomplete profiles
 3. **Notification Settings**: Email and push notification preferences
@@ -701,6 +747,7 @@ const getAccountFormData = useCallback((): AccountSettingsFormData => {
 8. **Export Data**: GDPR compliance with data export
 
 ### **Technical Debt:**
+
 1. **Testing**: Add comprehensive unit and integration tests
 2. **Internationalization**: Multi-language support
 3. **Offline Support**: Cached profile data for offline viewing
@@ -727,15 +774,19 @@ The implementation provides a solid foundation for user profile management that 
 **Implementation Completed**: July 20, 2025  
 **Status**: ✅ Ready for Production  
 **Next Steps**: Testing and user feedback collection
+
 #
+
 # Enhanced Personal Info Updates with Automatic Geocoding
 
 ### Overview
+
 Enhanced the `useUserProfile` hook to automatically update location coordinates when users modify their address or postal code, ensuring location-aware maps always display current location data.
 
 ### Implementation Details
 
 #### Automatic Geocoding Integration
+
 ```typescript
 // Import geocoding functionality
 import { useLocationGeocoding } from "./useLocationGeocoding";
@@ -745,11 +796,13 @@ const { geocodeAddress } = useLocationGeocoding();
 ```
 
 #### Smart Change Detection
+
 ```typescript
 // Detect if address or postal code changed
 const currentPersonalInfo = profileData.personalInfo;
 const addressChanged = formData.homeAddress !== currentPersonalInfo.homeAddress;
-const postalCodeChanged = formData.postalCode !== currentPersonalInfo.postalCode;
+const postalCodeChanged =
+  formData.postalCode !== currentPersonalInfo.postalCode;
 
 if (addressChanged || postalCodeChanged) {
   // Trigger geocoding only when needed
@@ -757,6 +810,7 @@ if (addressChanged || postalCodeChanged) {
 ```
 
 #### Prioritized Geocoding Strategy
+
 ```typescript
 // Try postal code first (more reliable), then address
 const addressToGeocode = formData.postalCode || formData.homeAddress;
@@ -770,6 +824,7 @@ if (addressToGeocode?.trim()) {
 ```
 
 #### Database Update with Coordinates
+
 ```typescript
 // For job seekers, include coordinates in update
 if (user.role === "jobseeker") {
@@ -779,7 +834,7 @@ if (user.role === "jobseeker") {
     postal_code: formData.postalCode || null,
     updated_at: new Date().toISOString(),
   };
-  
+
   // Add coordinates if geocoding successful
   if (newCoordinates) {
     updateData.address_coordinates = newCoordinates;
@@ -790,17 +845,20 @@ if (user.role === "jobseeker") {
 ### Benefits
 
 #### User Experience
+
 - **Seamless Updates**: Location-aware maps automatically reflect address changes
 - **No Manual Intervention**: Users don't need to manually refresh or re-enter data
 - **Real-time Sync**: Coordinates update immediately when profile is saved
 
 #### Technical Advantages
+
 - **Smart Optimization**: Only geocodes when address actually changes
 - **Reliable Geocoding**: Prioritizes postal codes for Singapore addresses
 - **Graceful Degradation**: Profile updates succeed even if geocoding fails
 - **Data Consistency**: Ensures address and coordinates are always synchronized
 
 #### Error Handling
+
 - **Non-blocking**: Geocoding failures don't prevent profile updates
 - **Comprehensive Logging**: Detailed console logs for debugging
 - **User-friendly**: No error messages shown to users for geocoding issues
@@ -808,11 +866,13 @@ if (user.role === "jobseeker") {
 ### Integration Points
 
 #### PersonalInfoCard Component
+
 - Works transparently with existing form submission
 - No changes required to component logic
 - Automatic coordinate updates on successful form submission
 
 #### Location-aware Maps
+
 - Immediately reflect new coordinates after profile updates
 - No need for manual refresh or data reload
 - Consistent with user's current address information
@@ -820,6 +880,7 @@ if (user.role === "jobseeker") {
 ### Testing Scenarios
 
 #### Successful Geocoding
+
 1. User updates address from "123 Old Street" to "8 Somapah Road"
 2. User updates postal code to "487372"
 3. Hook detects changes and geocodes "487372"
@@ -827,6 +888,7 @@ if (user.role === "jobseeker") {
 5. Maps display new location immediately
 
 #### Geocoding Failure Handling
+
 1. User updates to invalid or non-existent address
 2. Geocoding fails or returns null
 3. Profile update still succeeds with readable address
@@ -834,6 +896,7 @@ if (user.role === "jobseeker") {
 5. User can still use the application normally
 
 ### Future Enhancements
+
 - **Batch Geocoding**: Handle multiple address updates efficiently
 - **Coordinate Validation**: Verify coordinates are within expected geographic bounds
 - **Fallback Strategies**: Alternative geocoding services if primary fails

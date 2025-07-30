@@ -3,10 +3,10 @@
  * @description Password confirmation field with real-time validation
  */
 
-import { FC, useState } from 'react';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Eye, EyeOff, Check, X } from 'lucide-react';
+import { FC, useState } from "react";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Eye, EyeOff, Check, X } from "lucide-react";
 
 interface ConfirmPasswordFieldProps {
   password: string;
@@ -21,18 +21,19 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
   password,
   confirmPassword,
   onConfirmPasswordChange,
-  label = 'Confirm Password',
+  label = "Confirm Password",
   required = true,
   disabled = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const passwordsMatch = password && confirmPassword && password === confirmPassword;
+  const passwordsMatch =
+    password && confirmPassword && password === confirmPassword;
   const showValidation = confirmPassword.length > 0;
 
   const getValidationColor = () => {
-    if (!showValidation) return '';
-    return passwordsMatch ? 'border-green' : 'border-red';
+    if (!showValidation) return "";
+    return passwordsMatch ? "border-green" : "border-red";
   };
 
   const getValidationIcon = () => {
@@ -46,9 +47,9 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
 
   const getValidationMessage = () => {
     if (!showValidation) return null;
-    
+
     if (confirmPassword.length === 0) return null;
-    
+
     if (passwordsMatch) {
       return (
         <p className="text-sm text-green flex items-center gap-1 mt-1">
@@ -72,21 +73,21 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
         {label}
         {required && <span className="text-red ml-1">*</span>}
       </Label>
-      
+
       <div className="relative">
         <Input
           id="confirmPassword"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           value={confirmPassword}
           onChange={(e) => onConfirmPasswordChange(e.target.value)}
           placeholder="Re-enter your password"
           disabled={disabled}
           className={`pr-16 ${getValidationColor()}`}
         />
-        
+
         <div className="absolute inset-y-0 right-0 flex items-center gap-1 pr-3">
           {getValidationIcon()}
-          
+
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
@@ -102,9 +103,9 @@ export const ConfirmPasswordField: FC<ConfirmPasswordFieldProps> = ({
           </button>
         </div>
       </div>
-      
+
       {getValidationMessage()}
-      
+
       {required && (
         <p className="text-xs text-secondary-text">
           Password confirmation is required

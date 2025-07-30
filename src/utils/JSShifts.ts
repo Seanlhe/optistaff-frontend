@@ -4,12 +4,12 @@ export const filterShiftsByDate = (
   shifts: EmployeeShiftProps[],
   date: string,
 ): EmployeeShiftProps[] => {
-  return shifts.filter(
-    (shift) => shift.date === date
-  );
+  return shifts.filter((shift) => shift.date === date);
 };
 
-export const sortShiftsByTime = (shifts: EmployeeShiftProps[]): EmployeeShiftProps[] => {
+export const sortShiftsByTime = (
+  shifts: EmployeeShiftProps[],
+): EmployeeShiftProps[] => {
   return shifts.sort((a, b) => a.startTime.localeCompare(b.startTime));
 };
 

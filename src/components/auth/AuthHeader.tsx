@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 interface AuthHeaderProps {
-  isSignup: boolean
+  isSignup: boolean;
 }
 
 export const AuthHeader = ({ isSignup }: AuthHeaderProps) => {
@@ -22,5 +22,5 @@ export const AuthHeader = ({ isSignup }: AuthHeaderProps) => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};

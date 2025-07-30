@@ -1,18 +1,23 @@
-import { PreferencesPayProps } from '../types/components';
+import { PreferencesPayProps } from "../types/components";
 
-export const PreferencesPay: React.FC<PreferencesPayProps> = ({ formData, setFormData }) => {
+export const PreferencesPay: React.FC<PreferencesPayProps> = ({
+  formData,
+  setFormData,
+}) => {
   const handlePayRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     setFormData({
       ...formData,
-      payRate: value
+      payRate: value,
     });
   };
 
-  const handleConsiderLowerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConsiderLowerChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setFormData({
       ...formData,
-      considerLowerRate: e.target.checked
+      considerLowerRate: e.target.checked,
     });
   };
 

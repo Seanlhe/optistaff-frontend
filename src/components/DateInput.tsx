@@ -3,10 +3,10 @@
  * @description Enhanced date picker for date of birth with validation
  */
 
-import { FC } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Label } from './ui/label';
+import { FC } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Label } from "./ui/label";
 
 interface DateInputProps {
   label: string;
@@ -23,15 +23,15 @@ export const DateInput: FC<DateInputProps> = ({
   onChange,
   required = false,
   error,
-  placeholder = 'Select date...',
+  placeholder = "Select date...",
 }) => {
   const handleDateChange = (date: Date | null) => {
     if (date) {
       // Format date as YYYY-MM-DD for consistency
-      const formattedDate = date.toISOString().split('T')[0];
+      const formattedDate = date.toISOString().split("T")[0];
       onChange(formattedDate);
     } else {
-      onChange('');
+      onChange("");
     }
   };
 
@@ -55,7 +55,7 @@ export const DateInput: FC<DateInputProps> = ({
         {label}
         {required && <span className="text-error ml-1">*</span>}
       </Label>
-      
+
       <div className="relative">
         <DatePicker
           id={`datepicker-${label}`}
@@ -72,18 +72,16 @@ export const DateInput: FC<DateInputProps> = ({
           className={`
             w-full px-3 py-2 border rounded-md shadow-sm text-sm placeholder:text-secondary-text
             focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-primary-blue
-            ${error ? 'border-error' : 'border-border-color'}
+            ${error ? "border-error" : "border-border-color"}
             bg-card-color
           `}
           wrapperClassName="w-full"
           calendarClassName="shadow-lg border border-border-color rounded-md"
         />
       </div>
-      
-      {error && (
-        <p className="text-sm text-error-dark mt-1">{error}</p>
-      )}
-      
+
+      {error && <p className="text-sm text-error-dark mt-1">{error}</p>}
+
       {required && (
         <p className="text-xs text-secondary-text mt-1">
           Must be at least 18 years old

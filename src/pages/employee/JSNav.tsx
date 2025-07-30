@@ -8,28 +8,28 @@ import { useState } from "react";
 export default function JSNav() {
   const { logout, user } = useAuth();
   const location = useLocation();
-  
+
   useEffect(() => {
     console.log("JSNav mounted");
   }, []);
-  
+
   // Function to get the current selected item based on the URL pathname
   const getCurrentSelected = (): string => {
     const pathname = location.pathname;
-    const path = pathname.split('/').pop(); // Get the last part of the path
-    
+    const path = pathname.split("/").pop(); // Get the last part of the path
+
     // Map URL paths to navigation item names
     const pathToNameMap: { [key: string]: string } = {
-      'dashboard': 'Dashboard',
-      'schedule': 'My Jobs',
-      'settings': 'Account',
-      'preferences': 'Preferences',
-      'employee': 'Dashboard' // Handle base employee path
+      dashboard: "Dashboard",
+      schedule: "My Jobs",
+      settings: "Account",
+      preferences: "Preferences",
+      employee: "Dashboard", // Handle base employee path
     };
-    
-    return pathToNameMap[path || 'dashboard'] || 'Dashboard';
+
+    return pathToNameMap[path || "dashboard"] || "Dashboard";
   };
-  
+
   const adminNavItems: NavItemProps[] = [
     { name: "Dashboard", src: "/icons/calendaricon.svg", to: "dashboard" },
     { name: "My Jobs", src: "/icons/calendaricon.svg", to: "schedule" },
@@ -39,11 +39,11 @@ export default function JSNav() {
     { name: "Account", src: "/icons/gearicon.svg", to: "settings" },
     { name: "Preferences", src: "/icons/gearicon.svg", to: "preferences" },
   ];
-  
+
   const [selected, setSelected] = useState<string>(getCurrentSelected());
-  useEffect(()=>{
-    setSelected(getCurrentSelected)
-  },[getCurrentSelected()])
+  useEffect(() => {
+    setSelected(getCurrentSelected);
+  }, [getCurrentSelected()]);
 
   function handleClick(name: string) {
     if (name === "Logout") {

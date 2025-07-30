@@ -38,9 +38,7 @@ export default function ClientDashboard({
           <p className="text-md text-secondary-text font-montserrat-smb">
             Welcome Back,
           </p>
-          <p className="text-xl text-black font-montserrat-b">
-            Marriot Plaza
-          </p>
+          <p className="text-xl text-black font-montserrat-b">Marriot Plaza</p>
         </div>
         <div className="flex flex-row items-center gap-8">
           <IconButton
@@ -87,9 +85,7 @@ function DashboardUpcoming({
     <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
       <div className="flex flex-row gap-2 items-center">
         <img className="h-4 w-4" src="/icons/calendar.svg" />
-        <h1 className="text-lg text-black font-montserrat-b">
-          This Week
-        </h1>
+        <h1 className="text-lg text-black font-montserrat-b">This Week</h1>
       </div>
       {shifts && (
         <div className="overflow-auto max-h-[calc(100vh-240px)]">
@@ -102,7 +98,7 @@ function DashboardUpcoming({
                     handleManageClick={handleManageClick}
                   />
                 </li>
-              ) : null
+              ) : null,
             )}
           </ul>
         </div>
@@ -123,9 +119,7 @@ function DashboardPositions({
       <div className="flex flex-col gap-3">
         <div className="flex flex-row gap-2 items-center">
           <img className="h-4 w-4" src="/public/icons/personicon.svg" />
-          <h1 className="text-lg text-black font-montserrat-b">
-            Positions
-          </h1>
+          <h1 className="text-lg text-black font-montserrat-b">Positions</h1>
         </div>
         <p className="text-xl font-montserrat-b text-black">
           {`${calculateFilled(shifts)[0]}/${
@@ -158,7 +152,7 @@ function DashboardPositions({
         <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-montserrat-b text-xl">{`${Math.floor(
           (calculateFilled(shifts)[0] /
             (calculateFilled(shifts)[0] + calculateFilled(shifts)[1])) *
-            100
+            100,
         )}%`}</p>
       </div>
     </div>
@@ -176,9 +170,7 @@ function DashboardInProgress({
     <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
       <div className="flex flex-row gap-2 items-center">
         <img className="h-4 w-4" src="/icons/calendar.svg" />
-        <h1 className="text-lg text-black font-montserrat-b">
-          In Progress
-        </h1>
+        <h1 className="text-lg text-black font-montserrat-b">In Progress</h1>
       </div>
       <div className="overflow-auto max-h-[calc(100vh-240px)]">
         <ul className="flex flex-col gap-4 animate-slidedown">
@@ -190,7 +182,7 @@ function DashboardInProgress({
                   shift={shift}
                 />
               </li>
-            ) : null
+            ) : null,
           )}
         </ul>
       </div>

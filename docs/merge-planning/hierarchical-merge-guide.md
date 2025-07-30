@@ -9,12 +9,14 @@
 ## 🏗️ **Why Hierarchical Merge is Better**
 
 ### **Problem with Direct Merge:**
+
 - **Complex 3-way conflicts** between auth, feedback, and foundation hooks
 - **Difficult rollback** if issues occur
 - **Testing complexity** - multiple systems integrated at once
 - **Higher failure risk** due to conflict complexity
 
 ### **Solution with Hierarchical Merge:**
+
 - **Isolated conflicts** - handle hook conflicts separately
 - **Easier testing** - validate hook system before main integration
 - **Logical grouping** - related functionality merged together
@@ -27,6 +29,7 @@
 ### **Target:** Create unified `devnew-hooks` with all hook functionality
 
 #### **Step 1.1: Merge Authentication System**
+
 ```bash
 # Switch to hook foundation branch
 git checkout devnew-hooks
@@ -48,6 +51,7 @@ git commit -m "feat: integrate complete authentication system into hooks foundat
 ```
 
 #### **Step 1.2: Merge Feedback System**
+
 ```bash
 # Still on devnew-hooks branch
 git merge devnew-hooks-feedback
@@ -57,7 +61,7 @@ git merge devnew-hooks-feedback
 # - UI components might have naming conflicts
 # - Database operations might conflict
 
-# Resolution strategy:  
+# Resolution strategy:
 # - Preserve all unique functionality from feedback system
 # - Resolve component naming conflicts with descriptive names
 # - Test feedback functionality with existing auth system
@@ -66,6 +70,7 @@ git commit -m "feat: integrate feedback system into consolidated hooks"
 ```
 
 #### **Step 1.3: Validation Point**
+
 ```bash
 # Critical testing before Phase 2
 npm install          # Ensure dependencies resolve
@@ -86,6 +91,7 @@ npm run dev          # Test in development mode
 ### **Target:** Integrate consolidated systems into `devnew`
 
 #### **Step 2.1: Merge Consolidated Hook System**
+
 ```bash
 # Switch to main development branch
 git checkout devnew
@@ -109,16 +115,17 @@ git commit -m "feat: integrate complete hook system into main application"
 ```
 
 #### **Step 2.2: Merge Business Features**
+
 ```bash
 # Merge roster management
 git merge employee-roster
 git commit -m "feat: integrate employee roster management"
 
-# Merge individual contributions  
+# Merge individual contributions
 git merge devnew-jovita
 git commit -m "feat: integrate Jovita's features"
 
-git merge devnew-claudine  
+git merge devnew-claudine
 git commit -m "feat: integrate Claudine's features"
 
 # Apply final modifications
@@ -131,12 +138,14 @@ git commit -m "feat: apply Sean's final modifications"
 ## ⚠️ **Conflict Resolution Priorities**
 
 ### **Phase 1 Conflicts (Hook Consolidation)**
+
 1. **Keep auth system intact** - It's production-ready and well-tested
 2. **Preserve feedback functionality** - Ensure no features are lost
 3. **Merge dependencies carefully** - Test build after resolution
 4. **Maintain hook patterns** - Follow established architecture
 
-### **Phase 2 Conflicts (Main Integration)**  
+### **Phase 2 Conflicts (Main Integration)**
+
 1. **Trust consolidated hook system** - It's been validated in Phase 1
 2. **Integrate business logic** - Ensure roster and individual features work
 3. **Maintain backward compatibility** - Don't break existing functionality
@@ -147,6 +156,7 @@ git commit -m "feat: apply Sean's final modifications"
 ## 🧪 **Testing Strategy**
 
 ### **After Phase 1 (Hook Consolidation)**
+
 ```bash
 # Build verification
 npm run build
@@ -156,7 +166,7 @@ npm run dev
 
 # Manual testing checklist:
 # □ User registration works
-# □ User login/logout works  
+# □ User login/logout works
 # □ Protected routes function
 # □ Feedback system operational
 # □ All hooks integrate properly
@@ -164,6 +174,7 @@ npm run dev
 ```
 
 ### **After Phase 2 (Main Integration)**
+
 ```bash
 # Full application testing
 npm run build
@@ -184,6 +195,7 @@ npm run dev
 ## 🔄 **Rollback Procedures**
 
 ### **If Phase 1 Fails:**
+
 ```bash
 # Rollback hook consolidation
 git checkout devnew-hooks
@@ -195,6 +207,7 @@ git clean -fd
 ```
 
 ### **If Phase 2 Fails:**
+
 ```bash
 # Rollback main integration
 git checkout devnew
@@ -209,18 +222,21 @@ git clean -fd
 ## ✅ **Advantages of This Approach**
 
 ### **For Development Team:**
+
 1. **Reduced risk** - Conflicts handled in logical groups
 2. **Easier debugging** - Can isolate issues to specific phases
 3. **Better testing** - Validate each integration separately
 4. **Logical progression** - Related functionality grouped together
 
 ### **For Claude/Automation:**
+
 1. **Clearer context** - Phase-specific conflict resolution
 2. **Simpler decisions** - Fewer simultaneous conflicts
 3. **Better validation** - Test points between phases
 4. **Easier rollback** - Can undo specific phases
 
 ### **For Project Success:**
+
 1. **Higher success rate** - Less complex conflicts per merge
 2. **Preserved functionality** - Less likely to lose features
 3. **Faster resolution** - Conflicts are more focused
@@ -231,12 +247,14 @@ git clean -fd
 ## 🎯 **Success Metrics**
 
 ### **Phase 1 Success:**
+
 - All hook functionality working together
 - No conflicts between auth and feedback systems
 - Clean TypeScript compilation
 - All tests passing
 
 ### **Phase 2 Success:**
+
 - Complete application functionality
 - All business features integrated
 - No functionality regressions

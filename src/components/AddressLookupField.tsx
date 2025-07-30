@@ -3,12 +3,12 @@
  * @description Smart address input with postal code auto-fill for Singapore
  */
 
-import { FC, useState, useEffect } from 'react';
-import { useAddressLookup } from '../hooks/useAddressLookup';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { Check, X, Loader2 } from 'lucide-react';
+import { FC, useState, useEffect } from "react";
+import { useAddressLookup } from "../hooks/useAddressLookup";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Check, X, Loader2 } from "lucide-react";
 
 interface AddressLookupFieldProps {
   postalCode: string;
@@ -31,14 +31,22 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
   required = false,
   disabled = false,
 }) => {
-  const { loading, error, postalCode: lookupResult, lookupPostalCode, clearError } = useAddressLookup();
+  const {
+    loading,
+    error,
+    postalCode: lookupResult,
+    lookupPostalCode,
+    clearError,
+  } = useAddressLookup();
   const [isManualEdit, setIsManualEdit] = useState(false);
-  const [validationState, setValidationState] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
+  const [validationState, setValidationState] = useState<
+    "idle" | "validating" | "valid" | "invalid"
+  >("idle");
 
   // Update validation state based on loading state
   useEffect(() => {
     if (loading) {
-      setValidationState('validating');
+      setValidationState("validating");
     }
   }, [loading]);
 
@@ -47,10 +55,10 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
     if (!isManualEdit && !loading) {
       if (lookupResult) {
         onPostalCodeChange(lookupResult);
-        setValidationState('valid');
+        setValidationState("valid");
       } else {
         // Clear postal code when hook clears it (e.g., on validation start or error)
-        onPostalCodeChange('');
+        onPostalCodeChange("");
       }
     }
   }, [lookupResult, isManualEdit, onPostalCodeChange, loading]);
@@ -58,7 +66,7 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
   // Update validation state based on errors
   useEffect(() => {
     if (error && !loading) {
-      setValidationState('invalid');
+      setValidationState("invalid");
     }
   }, [error, loading]);
 
@@ -72,11 +80,11 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
     onAddressChange(value);
     clearError();
     setIsManualEdit(false); // Reset manual edit when user types
-    setValidationState('idle'); // Reset validation state when user types
-    
+    setValidationState("idle"); // Reset validation state when user types
+
     // Clear postal code if address is too short
     if (value.trim().length < 5) {
-      onPostalCodeChange('');
+      onPostalCodeChange("");
     }
   };
 
@@ -87,7 +95,7 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
 
   const handlePostalCodeChange = (value: string) => {
     // Only allow digits and limit to 6 characters
-    const digits = value.replace(/\D/g, '').slice(0, 6);
+    const digits = value.replace(/\D/g, "").slice(0, 6);
     onPostalCodeChange(digits);
     setIsManualEdit(true);
   };
@@ -95,19 +103,19 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
   // Function to render validation indicator
   const renderValidationIndicator = () => {
     switch (validationState) {
-      case 'validating':
+      case "validating":
         return (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
             <Loader2 className="h-4 w-4 animate-spin text-primary-blue" />
           </div>
         );
-      case 'valid':
+      case "valid":
         return (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
             <Check className="h-4 w-4 text-success" />
           </div>
         );
-      case 'invalid':
+      case "invalid":
         return (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
             <X className="h-4 w-4 text-error" />
@@ -126,7 +134,7 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
           {label}
           {required && <span className="text-error ml-1">*</span>}
         </Label>
-        
+
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Input
@@ -136,14 +144,14 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
               onChange={(e) => handleAddressChange(e.target.value)}
               placeholder={placeholder}
               disabled={disabled || loading}
-              className={`${error && !error.includes('postal code') ? 'border-error' : ''} ${
-                validationState === 'valid' ? 'border-success' : ''
-              } ${validationState === 'invalid' ? 'border-error' : ''}`}
+              className={`${error && !error.includes("postal code") ? "border-error" : ""} ${
+                validationState === "valid" ? "border-success" : ""
+              } ${validationState === "invalid" ? "border-error" : ""}`}
             />
-            
+
             {renderValidationIndicator()}
           </div>
-          
+
           <Button
             type="button"
             variant="outline"
@@ -151,26 +159,32 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
             disabled={disabled || loading || address.trim().length < 5}
             className="shrink-0"
           >
-            {loading ? 'Validating...' : 'Validate'}
+            {loading ? "Validating..." : "Validate"}
           </Button>
         </div>
-        
-        {error && !error.includes('postal code') && (
+
+        {error && !error.includes("postal code") && (
           <p className="text-sm text-error-dark">{error}</p>
         )}
-        
+
         <div className="text-xs text-secondary-text">
-          {validationState === 'idle' && (
+          {validationState === "idle" && (
             <p>Click "Validate" to auto-fill postal code</p>
           )}
-          {validationState === 'validating' && (
-            <p className="text-primary-blue">Validating address... (this may take up to 10 seconds)</p>
+          {validationState === "validating" && (
+            <p className="text-primary-blue">
+              Validating address... (this may take up to 10 seconds)
+            </p>
           )}
-          {validationState === 'valid' && (
-            <p className="text-success-dark">✓ Valid address - postal code auto-filled</p>
+          {validationState === "valid" && (
+            <p className="text-success-dark">
+              ✓ Valid address - postal code auto-filled
+            </p>
           )}
-          {validationState === 'invalid' && (
-            <p className="text-error-dark">✗ Please check address or enter postal code manually</p>
+          {validationState === "invalid" && (
+            <p className="text-error-dark">
+              ✗ Please check address or enter postal code manually
+            </p>
           )}
         </div>
       </div>
@@ -181,7 +195,7 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
           Postal Code
           {required && <span className="text-error ml-1">*</span>}
         </Label>
-        
+
         <Input
           id="postalCode"
           type="text"
@@ -190,19 +204,19 @@ export const AddressLookupField: FC<AddressLookupFieldProps> = ({
           placeholder="123456"
           maxLength={6}
           disabled={disabled}
-          className={`${error && error.includes('postal code') ? 'border-error' : ''}`}
+          className={`${error && error.includes("postal code") ? "border-error" : ""}`}
         />
-        
-        {error && error.includes('postal code') && (
+
+        {error && error.includes("postal code") && (
           <p className="text-sm text-error-dark">{error}</p>
         )}
-        
+
         {isManualEdit && postalCode && (
           <p className="text-xs text-primary-blue">
             ✓ Postal code edited manually
           </p>
         )}
-        
+
         {!isManualEdit && postalCode && address.trim().length >= 5 && (
           <p className="text-xs text-success-dark">
             ✓ Postal code auto-populated from address

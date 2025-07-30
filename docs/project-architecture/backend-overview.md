@@ -1,6 +1,6 @@
 # OptiStaff Backend Overview
 
-*Generated on: July 16, 2025*
+_Generated on: July 16, 2025_
 
 ## Database Schema Overview
 
@@ -11,11 +11,12 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### 1. User Management Tables
 
 #### `job_seekers`
+
 - **Purpose**: Stores profile information for job seekers (employees)
 - **Primary Key**: `user_id` (UUID, references `auth.users.id`)
 - **Key Fields**:
   - `first_name`, `last_name`: Personal information
-  - `phone_number`: Contact information  
+  - `phone_number`: Contact information
   - `address_coordinates`, `postal_code`: Location data for shift matching (coordinates auto-updated via geocoding)
   - `date_of_birth`: Age verification
   - `rating`: Performance rating (0.0-5.0, calculated automatically)
@@ -27,6 +28,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Relationships**: One-to-many with preferences, availability, assignments, payouts
 
 #### `clients`
+
 - **Purpose**: Stores company/client information for shift creators
 - **Primary Key**: `client_id` (UUID, references `auth.users.id`)
 - **Key Fields**:
@@ -41,6 +43,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### 2. Scheduling & Availability Tables
 
 #### `shifts`
+
 - **Purpose**: Core table for job postings and shift management
 - **Primary Key**: `shift_id` (UUID)
 - **Key Fields**:
@@ -59,6 +62,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
   - Auto-reopens when staff drops below needed
 
 #### `availability`
+
 - **Purpose**: Stores when job seekers are available to work
 - **Primary Key**: `availability_id` (UUID)
 - **Key Fields**:
@@ -69,6 +73,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Features**: Used for shift matching and template application
 
 #### `availability_templates`
+
 - **Purpose**: Named templates for reusable availability patterns
 - **Primary Key**: `template_id` (UUID)
 - **Key Fields**:
@@ -80,6 +85,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### 3. Assignment & Work Management Tables
 
 #### `assignments`
+
 - **Purpose**: Links job seekers to specific shifts (the work contract)
 - **Primary Key**: `assignment_id` (UUID)
 - **Key Fields**:
@@ -93,6 +99,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
   - Triggers rating recalculation on status changes
 
 #### `feedback`
+
 - **Purpose**: Bidirectional rating system between clients and job seekers
 - **Primary Key**: `feedback_id` (UUID)
 - **Key Fields**:
@@ -108,6 +115,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### 4. Job Classification & Status Tables
 
 #### `job_categories`
+
 - **Purpose**: Hierarchical categorization of job types
 - **Primary Key**: `category_id` (UUID)
 - **Key Fields**:
@@ -118,6 +126,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Features**: Supports nested categories for job organization
 
 #### `job_types`
+
 - **Purpose**: Specific job types within categories
 - **Primary Key**: `job_type_id` (UUID)
 - **Key Fields**:
@@ -128,6 +137,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Relationships**: Many-to-one with job_categories, one-to-many with shifts
 
 #### `status`
+
 - **Purpose**: Standardized integer-based status lookup table
 - **Primary Key**: `status_id` (integer, identity)
 - **Key Fields**:
@@ -140,6 +150,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### 5. Preferences & Financial Tables
 
 #### `preferences`
+
 - **Purpose**: Job seeker work preferences and filters
 - **Primary Key**: `preference_id` (UUID)
 - **Key Fields**:
@@ -152,6 +163,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
   - `consider_lower_rate`: Whether to consider lower pay rates (default: false)
 
 #### `payouts`
+
 - **Purpose**: Financial records and earnings tracking
 - **Primary Key**: `payout_id` (UUID)
 - **Key Fields**:
@@ -165,6 +177,7 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### Core Business Logic Functions
 
 #### `handle_new_user()`
+
 - **Type**: Trigger function (executes on auth.users insert)
 - **Purpose**: Automatically creates job_seeker or client records based on signup type
 - **Enhanced Features**:
@@ -176,37 +189,42 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
   - Proper DATE conversion for birth dates
 
 #### `calculate_user_payout(target_user_id, period_start, period_end)`
+
 - **Purpose**: Calculates earnings for a specific period
-- **Logic**: 
+- **Logic**:
   - `pay_rate * hours_worked - break_time_deduction`
   - Only processes COMPLETED assignments (status = 9)
   - Prevents duplicate payout records with `ON CONFLICT DO NOTHING`
 
 #### `update_job_seeker_rating()`
+
 - **Type**: Trigger function
 - **Purpose**: Dynamically updates job seeker ratings based on feedback and reliability
-- **Enhanced Formula**: 
+- **Enhanced Formula**:
   - Base: Average CLIENT_TO_EMPLOYEE feedback rating
   - Reliability Penalties: Cancellations (-0.1), No-shows (-0.3)
   - Experience Scaling: New users get lighter penalties
   - Status Codes: Uses integer status (7 = CANCELLED_BY_USER, 8 = NO_SHOW)
 
 #### `update_staff_assigned()`
+
 - **Type**: Trigger function
 - **Purpose**: Maintains shift capacity counters
-- **Logic**: 
+- **Logic**:
   - Increments/decrements `staff_assigned` based on CONFIRMED status (status = 5)
   - Handles INSERT, UPDATE, and DELETE operations
   - Ensures accurate capacity tracking
 
 #### `auto_update_shift_status()`
-- **Type**: Trigger function  
+
+- **Type**: Trigger function
 - **Purpose**: Automatically manages shift open/filled status
 - **Logic**: Status 1 (OPEN) ↔ Status 2 (FILLED) based on capacity
 
 ### Advanced Business Functions
 
 #### `find_matching_job_seekers(p_shift_id)`
+
 - **Purpose**: Advanced matching algorithm for job seekers
 - **Logic**:
   - Pay rate compatibility check
@@ -217,11 +235,13 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 - **Returns**: user_id, name, rating, match_score, preferred_categories, distance
 
 #### `get_job_categories_with_types()`
+
 - **Purpose**: Hierarchical job classification data
 - **Returns**: Categories with nested job types as JSONB
 - **Usage**: Populates job selection dropdowns and preference forms
 
 #### `update_assignment_status(p_assignment_id, p_status_name)`
+
 - **Purpose**: Safe assignment status updates with validation
 - **Features**:
   - Validates status names against status table
@@ -232,16 +252,19 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### Query & Reporting Functions
 
 #### `get_shifts_by_client(p_client_id)`
+
 - **Purpose**: Client-specific shift management queries
 - **Returns**: Complete shift details with status names and job types
 - **Usage**: Client dashboard and shift management interfaces
 
 #### `get_assignment_by_jobseeker(p_user_id)`
+
 - **Purpose**: Job seeker assignment history and status
 - **Returns**: Assignment details with job titles and status information
 - **Usage**: Job seeker dashboard and assignment tracking
 
 #### `get_assignment_status_summary(p_shift_id)`
+
 - **Purpose**: Shift-specific assignment status breakdown
 - **Returns**: Status counts for capacity planning
 - **Usage**: Shift management and reporting
@@ -249,22 +272,26 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ### Utility Functions
 
 #### `is_user_assigned_to_shift(shift_id, user_id)`
+
 - **Purpose**: Checks if a user is assigned to a specific shift
 - **Returns**: Boolean
 - **Usage**: Prevents duplicate assignments and access control
 
 #### `create_shift(...)`
+
 - **Purpose**: Safe shift creation with validation
 - **Parameters**: All shift fields including job_type_id
 - **Returns**: New shift UUID or NULL on error
 - **Features**: Proper error handling and validation
 
 #### `get_earnings_breakdown(user_id, period_start, period_end)`
+
 - **Purpose**: Detailed earnings report by shift
 - **Returns**: Record set with shift details, hours worked, and earnings
 - **Usage**: Payroll processing and earnings statements
 
 #### `validate_job_names(job_names[])`
+
 - **Purpose**: Validates job type names against active job types
 - **Returns**: Boolean indicating if all names are valid
 - **Usage**: Preference validation and job selection
@@ -272,47 +299,54 @@ The OptiStaff backend is built on **Supabase**, utilizing PostgreSQL as the prim
 ## Row Level Security (RLS) Policies
 
 ### Job Seekers Policies
+
 - **Own Data Access**: Users can view/update their own profile
 - **Client Visibility**: Clients can view job seekers assigned to their shifts
 - **Service Role**: Full access for system operations
 
-### Shifts Policies  
+### Shifts Policies
+
 - **Client Management**: Clients can manage their own shifts
 - **Job Seeker View**: Can view open shifts OR assigned shifts
 - **Assignment Check**: Uses `is_user_assigned_to_shift()` function
 
 ### Assignments Policies
+
 - **Own Assignments**: Job seekers can manage their assignments
 - **Client Access**: Clients can manage assignments for their shifts
 
 ### Feedback Policies
+
 - **Bidirectional**: Both reviewer and reviewee can view feedback
 - **Time-Limited Editing**: 24-hour edit window
 - **Assignment Validation**: Must be related to user's assignment
 
 ### Availability & Preferences Policies
+
 - **Personal Data**: Users can only access their own availability and preferences
 
 ## Database Triggers
 
-| Table | Trigger | Function | Event | Purpose |
-|-------|---------|----------|-------|---------|
-| `auth.users` | `on_auth_user_created` | `handle_new_user()` | INSERT | Auto-create profile tables |
-| `assignments` | `trigger_update_staff_assigned` | `update_staff_assigned()` | INSERT/UPDATE/DELETE | Maintain shift capacity |
-| `assignments` | `trigger_update_rating_on_assignment` | `update_job_seeker_rating()` | UPDATE | Update ratings on status change |
-| `feedback` | `trigger_update_rating_on_feedback` | `update_job_seeker_rating()` | INSERT/UPDATE | Update ratings on new feedback |
-| `shifts` | `trigger_auto_update_shift_status` | `auto_update_shift_status()` | UPDATE | Auto-manage shift status |
+| Table         | Trigger                               | Function                     | Event                | Purpose                         |
+| ------------- | ------------------------------------- | ---------------------------- | -------------------- | ------------------------------- |
+| `auth.users`  | `on_auth_user_created`                | `handle_new_user()`          | INSERT               | Auto-create profile tables      |
+| `assignments` | `trigger_update_staff_assigned`       | `update_staff_assigned()`    | INSERT/UPDATE/DELETE | Maintain shift capacity         |
+| `assignments` | `trigger_update_rating_on_assignment` | `update_job_seeker_rating()` | UPDATE               | Update ratings on status change |
+| `feedback`    | `trigger_update_rating_on_feedback`   | `update_job_seeker_rating()` | INSERT/UPDATE        | Update ratings on new feedback  |
+| `shifts`      | `trigger_auto_update_shift_status`    | `auto_update_shift_status()` | UPDATE               | Auto-manage shift status        |
 
 ## Database Extensions
 
 ### Installed Extensions
+
 - **pgcrypto**: Cryptographic functions for security
-- **uuid-ossp**: UUID generation utilities  
+- **uuid-ossp**: UUID generation utilities
 - **pg_stat_statements**: Query performance monitoring
 - **pg_graphql**: GraphQL API support
 - **supabase_vault**: Secure secrets management
 
 ### Available Extensions
+
 - **postgis**: Geospatial data support (for future location features)
 - **pg_cron**: Scheduled job support (for automated payouts)
 - **http**: HTTP client capabilities (for integrations)
@@ -354,6 +388,7 @@ availability_templates
 ```
 
 ### Key Relationships
+
 - **User Authentication**: `auth.users` → `job_seekers` or `clients` (1:1)
 - **Job Classification**: `job_categories` → `job_types` → `shifts` (hierarchical)
 - **Status Management**: `status` lookup table → `shifts` and `assignments`
@@ -365,19 +400,23 @@ availability_templates
 ## Status System Reference
 
 ### Integer-Based Status Management
+
 The platform uses an integer-based status system with a lookup table for consistency and performance:
 
 #### Shift Status Codes
+
 - **1**: OPEN - Shift is available for assignment
 - **2**: FILLED - Shift has reached capacity (staff_assigned >= staff_needed)
 
 #### Assignment Status Codes
+
 - **5**: CONFIRMED - Job seeker is confirmed for the shift
 - **7**: CANCELLED_BY_USER - Job seeker cancelled their assignment
 - **8**: NO_SHOW - Job seeker failed to show up for confirmed shift
 - **9**: COMPLETED - Assignment completed successfully
 
 ### Status Transitions
+
 - **Automatic Shift Status**: Triggers update shift status based on capacity
 - **Assignment Lifecycle**: CONFIRMED → COMPLETED (normal flow)
 - **Cancellation Flow**: CONFIRMED → CANCELLED_BY_USER or NO_SHOW
@@ -398,6 +437,7 @@ The platform uses an integer-based status system with a lookup table for consist
 ### 5. Database Views
 
 #### `shift_status_view`
+
 - **Purpose**: Denormalized view of shifts with status information
 - **Key Fields**: All shift fields plus `status_name` and `status_code`
 - **Usage**: Simplifies queries that need both shift and status information
@@ -406,6 +446,7 @@ The platform uses an integer-based status system with a lookup table for consist
 ### 6. Job Classification Tables
 
 #### `job_categories`
+
 - **Purpose**: Hierarchical categorization of job types
 - **Primary Key**: `category_id` (UUID)
 - **Key Fields**:
@@ -416,6 +457,7 @@ The platform uses an integer-based status system with a lookup table for consist
 - **Features**: Supports nested categories for job organization
 
 #### `job_types`
+
 - **Purpose**: Specific job types within categories
 - **Primary Key**: `job_type_id` (UUID)
 - **Key Fields**:
@@ -426,6 +468,7 @@ The platform uses an integer-based status system with a lookup table for consist
 - **Relationships**: Many-to-one with job_categories, one-to-many with shifts
 
 #### `status`
+
 - **Purpose**: Standardized status values for shifts
 - **Primary Key**: `status_id` (integer, identity)
 - **Key Fields**:
@@ -435,8 +478,9 @@ The platform uses an integer-based status system with a lookup table for consist
 ## Migration History
 
 Recent migrations focus on:
+
 - Enhanced user registration fields (postal codes, addresses)
-- Availability template system for recurring schedules  
+- Availability template system for recurring schedules
 - Postal code validation and indexing
 - Job classification system (categories and types)
 - Enhanced preferences system with work hour limits

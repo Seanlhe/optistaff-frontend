@@ -1,4 +1,3 @@
-
 const completedShifts = [
   {
     title: "Cashier at Supermarket",
@@ -35,23 +34,32 @@ const completedShifts = [
 export default function EmployeeHistory() {
   return (
     <div className="bg-[#f1f5f9] min-h-screen p-8 pr-12">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Recently Completed Jobs</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+        Recently Completed Jobs
+      </h2>
 
       <div className="space-y-4 max-w-[900px]">
         {completedShifts.map((job, i) => (
-          <div key={i} className="flex justify-between bg-white shadow rounded-lg p-4 border border-gray-200">
+          <div
+            key={i}
+            className="flex justify-between bg-white shadow rounded-lg p-4 border border-gray-200"
+          >
             <div className="w-[70%]">
               <p className="text-lg font-semibold text-gray-800">
                 {job.title}
-                <span className={`ml-2 text-xs font-medium px-2 py-1 rounded-full ${
-                  job.status === "Paid"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
-                }`}>
+                <span
+                  className={`ml-2 text-xs font-medium px-2 py-1 rounded-full ${
+                    job.status === "Paid"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
                   {job.status}
                 </span>
               </p>
-              <p className="text-sm text-gray-500">{job.date} | {job.time}</p>
+              <p className="text-sm text-gray-500">
+                {job.date} | {job.time}
+              </p>
               <p className="text-sm text-gray-500">{job.location}</p>
 
               <div className="bg-green-100 rounded-md px-3 py-2 mt-3 text-sm">

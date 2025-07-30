@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { format, differenceInMinutes, addMinutes, addDays, set, isSameDay } from "date-fns";
+import {
+  format,
+  differenceInMinutes,
+  addMinutes,
+  addDays,
+  set,
+  isSameDay,
+} from "date-fns";
 import type { Event } from "./Calendar";
 
 interface CalendarEventProps {
@@ -18,14 +25,16 @@ export const CalendarEvent = ({
   const DAY_WIDTH = 200;
 
   // Validate dates and provide fallbacks
-  const isValidStartTime = event.startTime instanceof Date && !isNaN(event.startTime.getTime());
-  const isValidEndTime = event.endTime instanceof Date && !isNaN(event.endTime.getTime());
-  
+  const isValidStartTime =
+    event.startTime instanceof Date && !isNaN(event.startTime.getTime());
+  const isValidEndTime =
+    event.endTime instanceof Date && !isNaN(event.endTime.getTime());
+
   // Calculate display properties with error handling
   let duration = 60; // Default 1 hour
   let height = HOUR_HEIGHT;
   let topOffset = 0;
-  
+
   if (isValidStartTime && isValidEndTime) {
     try {
       duration = differenceInMinutes(event.endTime, event.startTime);
@@ -51,16 +60,19 @@ export const CalendarEvent = ({
   // Handle keyboard delete
   useEffect(() => {
     const handleKeyDown = (keyEvent: KeyboardEvent) => {
-      if (isSelected && (keyEvent.key === 'Delete' || keyEvent.key === 'Backspace')) {
-        if (onDelete && typeof onDelete === 'function') {
+      if (
+        isSelected &&
+        (keyEvent.key === "Delete" || keyEvent.key === "Backspace")
+      ) {
+        if (onDelete && typeof onDelete === "function") {
           onDelete(event.id);
         }
       }
     };
 
     if (isSelected) {
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [isSelected, event.id, onDelete]);
 
@@ -73,7 +85,7 @@ export const CalendarEvent = ({
 
     // Check if click is on resize handle - if so, don't initiate drag
     if (mouseEvent.target instanceof Node) {
-      const resizeHandle = eventRef.current.querySelector('.resize-handle');
+      const resizeHandle = eventRef.current.querySelector(".resize-handle");
       if (resizeHandle && resizeHandle.contains(mouseEvent.target)) {
         return; // Let handleResizeStart handle this
       }
@@ -92,8 +104,8 @@ export const CalendarEvent = ({
       const deltaX = moveEvent.clientX - startX;
 
       // Calculate vertical movement in 15-minute increments
-      const minutesMoved = Math.round((deltaY / HOUR_HEIGHT) * 60 / 15) * 15;
-      
+      const minutesMoved = Math.round(((deltaY / HOUR_HEIGHT) * 60) / 15) * 15;
+
       // Calculate horizontal movement in day increments
       const daysMoved = Math.round(deltaX / DAY_WIDTH);
 
@@ -102,24 +114,40 @@ export const CalendarEvent = ({
       let newEnd = addMinutes(originalEnd, minutesMoved);
 
       // Get the current day boundaries before any day movement
-      const currentDayStart = set(originalStart, { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-      const currentDayEnd = set(originalStart, { hours: 23, minutes: 59, seconds: 59, milliseconds: 999 });
+      const currentDayStart = set(originalStart, {
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      });
+      const currentDayEnd = set(originalStart, {
+        hours: 23,
+        minutes: 59,
+        seconds: 59,
+        milliseconds: 999,
+      });
 
       // Clamp to current day boundaries first (prevent auto day shifting)
       if (newStart < currentDayStart) {
         newStart = new Date(currentDayStart);
         newEnd = addMinutes(newStart, duration);
       }
-      
+
       if (newEnd > currentDayEnd) {
         newEnd = new Date(currentDayEnd);
         newStart = addMinutes(newEnd, -duration);
-        
+
         // If start time goes before day start after clamping end
         if (newStart < currentDayStart) {
           newStart = new Date(currentDayStart);
-          const maxPossibleDuration = differenceInMinutes(currentDayEnd, currentDayStart);
-          newEnd = addMinutes(newStart, Math.min(duration, maxPossibleDuration));
+          const maxPossibleDuration = differenceInMinutes(
+            currentDayEnd,
+            currentDayStart,
+          );
+          newEnd = addMinutes(
+            newStart,
+            Math.min(duration, maxPossibleDuration),
+          );
         }
       }
 
@@ -129,27 +157,43 @@ export const CalendarEvent = ({
         newEnd = addDays(newEnd, daysMoved);
 
         // Get the new target day boundaries after day movement
-        const targetDayStart = set(newStart, { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-        const targetDayEnd = set(newStart, { hours: 23, minutes: 59, seconds: 59, milliseconds: 999 });
+        const targetDayStart = set(newStart, {
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          milliseconds: 0,
+        });
+        const targetDayEnd = set(newStart, {
+          hours: 23,
+          minutes: 59,
+          seconds: 59,
+          milliseconds: 999,
+        });
 
         // Ensure event stays within the target day boundaries
         if (newStart < targetDayStart) {
           newStart = new Date(targetDayStart);
           newEnd = addMinutes(newStart, duration);
-          
+
           if (newEnd > targetDayEnd) {
             newEnd = new Date(targetDayEnd);
           }
         }
-        
+
         if (newEnd > targetDayEnd) {
           newEnd = new Date(targetDayEnd);
           newStart = addMinutes(newEnd, -duration);
-          
+
           if (newStart < targetDayStart) {
             newStart = new Date(targetDayStart);
-            const maxPossibleDuration = differenceInMinutes(targetDayEnd, targetDayStart);
-            newEnd = addMinutes(newStart, Math.min(duration, maxPossibleDuration));
+            const maxPossibleDuration = differenceInMinutes(
+              targetDayEnd,
+              targetDayStart,
+            );
+            newEnd = addMinutes(
+              newStart,
+              Math.min(duration, maxPossibleDuration),
+            );
           }
         }
       }
@@ -160,17 +204,21 @@ export const CalendarEvent = ({
       const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1); // Sunday = 0, Monday = 1
       originalWeekStart.setDate(originalWeekStart.getDate() + mondayOffset);
       originalWeekStart.setHours(0, 0, 0, 0);
-      
+
       const originalWeekEnd = addDays(originalWeekStart, 6);
       originalWeekEnd.setHours(23, 59, 59, 999);
 
       // Clamp to week boundaries if event moved outside current week
       if (newStart < originalWeekStart) {
-        const daysToMove = Math.ceil(differenceInMinutes(originalWeekStart, newStart) / (60 * 24));
+        const daysToMove = Math.ceil(
+          differenceInMinutes(originalWeekStart, newStart) / (60 * 24),
+        );
         newStart = addDays(newStart, daysToMove);
         newEnd = addDays(newEnd, daysToMove);
       } else if (newEnd > originalWeekEnd) {
-        const daysToMove = Math.ceil(differenceInMinutes(newEnd, originalWeekEnd) / (60 * 24));
+        const daysToMove = Math.ceil(
+          differenceInMinutes(newEnd, originalWeekEnd) / (60 * 24),
+        );
         newStart = addDays(newStart, -daysToMove);
         newEnd = addDays(newEnd, -daysToMove);
       }
@@ -180,15 +228,14 @@ export const CalendarEvent = ({
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
   // FIX ENDS HERE
-
 
   // Handle resizing
   const handleResizeStart = (mouseEvent: React.MouseEvent) => {
@@ -202,19 +249,25 @@ export const CalendarEvent = ({
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!eventRef.current) return;
-      
+
       const rect = eventRef.current.getBoundingClientRect();
       const newHeight = Math.max(HOUR_HEIGHT / 4, moveEvent.clientY - rect.top);
-      
+
       // Snap to 15-minute increments
-      const snappedHeight = Math.round(newHeight / (HOUR_HEIGHT / 4)) * (HOUR_HEIGHT / 4);
+      const snappedHeight =
+        Math.round(newHeight / (HOUR_HEIGHT / 4)) * (HOUR_HEIGHT / 4);
       const newDuration = Math.max(15, (snappedHeight / HOUR_HEIGHT) * 60); // Minimum 15 minutes
-      
+
       let newEndTime = addMinutes(event.startTime, newDuration);
-      
+
       // Get the day boundary (strict 23:59:59)
-      const dayEnd = set(event.startTime, { hours: 23, minutes: 59, seconds: 59, milliseconds: 999 });
-      
+      const dayEnd = set(event.startTime, {
+        hours: 23,
+        minutes: 59,
+        seconds: 59,
+        milliseconds: 999,
+      });
+
       // Clamp end time to day boundary - no crossing midnight
       if (newEndTime > dayEnd) {
         newEndTime = dayEnd;
@@ -224,12 +277,12 @@ export const CalendarEvent = ({
     };
 
     const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   // Handle double-click delete
@@ -243,11 +296,13 @@ export const CalendarEvent = ({
       ref={eventRef}
       className={`
         absolute left-1 right-1 rounded border p-1 cursor-grab select-none
-        ${isSelected
-          ? 'bg-primary-blue border-primary-blue'
-          : 'bg-primary-blue/40 border-primary-blue/60'}
-        ${!isSelected ? 'hover:bg-primary-blue/80 hover:border-primary-blue' : ''}
-        ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
+        ${
+          isSelected
+            ? "bg-primary-blue border-primary-blue"
+            : "bg-primary-blue/40 border-primary-blue/60"
+        }
+        ${!isSelected ? "hover:bg-primary-blue/80 hover:border-primary-blue" : ""}
+        ${isDragging ? "opacity-50 cursor-grabbing" : ""}
       `}
       style={{
         top: `${topOffset}px`,
@@ -261,12 +316,13 @@ export const CalendarEvent = ({
       onFocus={() => setIsSelected(true)}
       onBlur={() => {
         if (!isDragging) {
-            setIsSelected(false);
+          setIsSelected(false);
         }
       }}
     >
       <div className="text-xs text-white overflow-hidden h-full">
-        {isValidStartTime ? format(event.startTime, "HH:mm") : "--:--"} - {isValidEndTime ? format(event.endTime, "HH:mm") : "--:--"}
+        {isValidStartTime ? format(event.startTime, "HH:mm") : "--:--"} -{" "}
+        {isValidEndTime ? format(event.endTime, "HH:mm") : "--:--"}
       </div>
       <div
         className="absolute bottom-0 left-0 right-0 h-2 bg-primary-blue cursor-ns-resize rounded-b opacity-0 hover:opacity-100 resize-handle"

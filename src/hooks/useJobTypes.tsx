@@ -4,12 +4,13 @@
  * @author OptiStaff Team
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../integrations/supabase/client';
-import { JobCategory, JobType, JobTypesByCategory } from '../types/hooks';
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "../integrations/supabase/client";
+import { JobCategory, JobType, JobTypesByCategory } from "../types/hooks";
 
 export const useJobTypes = () => {
-  const [jobTypesByCategory, setJobTypesByCategory] = useState<JobTypesByCategory>({});
+  const [jobTypesByCategory, setJobTypesByCategory] =
+    useState<JobTypesByCategory>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,17 +21,19 @@ export const useJobTypes = () => {
 
     try {
       const { data, error } = await supabase
-        .from('job_types')
-        .select(`
+        .from("job_types")
+        .select(
+          `
           *,
           job_categories (
             category_id,
             category_name,
             description
           )
-        `)
-        .eq('is_active', true)
-        .order('type_name');
+        `,
+        )
+        .eq("is_active", true)
+        .order("type_name");
 
       if (error) {
         setError(error.message);
@@ -38,14 +41,14 @@ export const useJobTypes = () => {
       }
 
       const typedData = data as (JobType & { job_categories: JobCategory })[];
-      const processedJobTypes = typedData.map(item => ({
+      const processedJobTypes = typedData.map((item) => ({
         ...item,
-        category: item.job_categories
+        category: item.job_categories,
       }));
 
       // Group job types by category
       const grouped = processedJobTypes.reduce((acc, jobType) => {
-        const categoryName = jobType.category?.category_name || 'Uncategorized';
+        const categoryName = jobType.category?.category_name || "Uncategorized";
         if (!acc[categoryName]) {
           acc[categoryName] = [];
         }

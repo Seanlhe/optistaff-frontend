@@ -9,12 +9,14 @@
 ## 🎯 Merge Objectives
 
 ### Primary Goals
+
 1. **Consolidate all feature development** into a single `devnew` branch
 2. **Preserve all functionality** from individual branches
 3. **Resolve conflicts systematically** with minimal code loss
 4. **Maintain production readiness** of core features
 
 ### Success Metrics
+
 - All branches successfully merged without data loss
 - Build system functional post-merge
 - Authentication system fully operational
@@ -26,6 +28,7 @@
 ## 📋 Pre-Merge Checklist
 
 ### Documentation Requirements
+
 - [ ] **Current state of `devnew` base branch** documented
 - [ ] **Feature inventory** for each branch completed
 - [ ] **Dependency mapping** between branches identified
@@ -33,6 +36,7 @@
 - [ ] **File modification matrix** created
 
 ### Technical Preparation
+
 - [ ] **Backup all branches** to prevent data loss
 - [ ] **Clean working directory** - no uncommitted changes
 - [ ] **Verify build status** of each branch individually
@@ -40,6 +44,7 @@
 - [ ] **Package.json analysis** for dependency conflicts
 
 ### Team Coordination
+
 - [ ] **Stakeholder notification** of merge timeline
 - [ ] **Code freeze** on target branches during merge
 - [ ] **Rollback plan** prepared in case of issues
@@ -49,6 +54,7 @@
 ## 🔧 Merge Strategy - Hierarchical Approach
 
 ### **Phase 1: Consolidate Hook Sub-branches** 🪝
+
 **Target:** Merge all `devnew-hooks-*` branches into `devnew-hooks`
 
 ```bash
@@ -58,7 +64,7 @@ git merge devnew-hooks-auth
 # Resolve conflicts, test authentication
 git commit -m "Integrate authentication system into hooks"
 
-# Step 2: Merge feedback system  
+# Step 2: Merge feedback system
 git merge devnew-hooks-feedback
 # Resolve conflicts, test feedback functionality
 git commit -m "Integrate feedback system into hooks"
@@ -67,6 +73,7 @@ git commit -m "Integrate feedback system into hooks"
 ```
 
 ### **Phase 2: Consolidate Main Features** 🚀
+
 **Target:** Merge remaining feature branches into `devnew`
 
 ```bash
@@ -95,6 +102,7 @@ git commit -m "Apply final modifications"
 ## ⚠️ Known Risk Areas
 
 ### High-Conflict Probability
+
 1. **`package.json`** - Multiple branches likely modified dependencies
 2. **Authentication files** - Core auth system may conflict with other auth modifications
 3. **Routing configuration** - Different branches may have added conflicting routes
@@ -102,6 +110,7 @@ git commit -m "Apply final modifications"
 5. **Component naming** - Similar components in different branches
 
 ### Conflict Resolution Strategy
+
 1. **Favor production-ready code** - `devnew-hooks-auth` takes precedence for auth
 2. **Preserve unique features** - Ensure no functionality is lost
 3. **Maintain backward compatibility** - Don't break existing integrations
@@ -114,26 +123,31 @@ git commit -m "Apply final modifications"
 ### File-Level Conflicts
 
 #### `package.json`
+
 - Merge all unique dependencies
 - Use latest compatible versions
 - Test build after resolution
 
 #### Authentication Files
+
 - `devnew-hooks-auth` has most comprehensive implementation
 - Integrate unique features from other branches
 - Maintain authentication hook patterns
 
 #### Component Conflicts
+
 - Rename conflicting components with descriptive suffixes
 - Update all imports accordingly
 - Ensure no functionality is lost
 
 #### CSS/Styling Conflicts
+
 - Merge unique styles
 - Resolve naming conflicts with BEM methodology
 - Test visual consistency
 
 ### Database Conflicts
+
 - Run migrations in dependency order
 - Combine related schema changes
 - Backup database before applying changes
@@ -143,6 +157,7 @@ git commit -m "Apply final modifications"
 ## 🧪 Post-Merge Validation
 
 ### Automated Testing
+
 ```bash
 # Build verification
 npm run build
@@ -158,6 +173,7 @@ npm run test
 ```
 
 ### Manual Testing Checklist
+
 - [ ] **Application starts** without errors
 - [ ] **Authentication flow** works completely
 - [ ] **All routes** are accessible
@@ -167,6 +183,7 @@ npm run test
 - [ ] **Mobile responsiveness** maintained
 
 ### Feature-Specific Testing
+
 - [ ] **useAuth hook** - Login/logout/session management
 - [ ] **useAvailability hook** - Calendar integration
 - [ ] **useShifts hook** - CRUD operations
@@ -179,6 +196,7 @@ npm run test
 ## 🔄 Rollback Plan
 
 ### If Merge Fails at Any Phase
+
 1. **Stop immediately** - Don't proceed to next phase
 2. **Document the issue** - Capture error details
 3. **Reset to last good state**:
@@ -190,6 +208,7 @@ npm run test
 5. **Retry with updated approach**
 
 ### Complete Rollback Procedure
+
 ```bash
 # If complete rollback needed
 git checkout devnew
@@ -202,12 +221,14 @@ git push --force-with-lease origin devnew
 ## 📊 Success Validation
 
 ### Technical Validation
+
 - [ ] Clean TypeScript compilation
 - [ ] No console errors in development mode
 - [ ] Build process completes successfully
 - [ ] All environment configurations work
 
 ### Functional Validation
+
 - [ ] User registration/login flow
 - [ ] Protected route access
 - [ ] Database read/write operations
@@ -215,6 +236,7 @@ git push --force-with-lease origin devnew
 - [ ] Form submissions and validations
 
 ### Performance Validation
+
 - [ ] Page load times acceptable
 - [ ] No memory leaks detected
 - [ ] Bundle size within reasonable limits
@@ -225,6 +247,7 @@ git push --force-with-lease origin devnew
 ## 📝 Post-Merge Actions
 
 ### Immediate Tasks
+
 1. **Update documentation** to reflect merged state
 2. **Clean up branch references** in docs
 3. **Update README** with current functionality
@@ -232,12 +255,14 @@ git push --force-with-lease origin devnew
 5. **Deploy to staging** for comprehensive testing
 
 ### Team Communication
+
 1. **Notify stakeholders** of merge completion
 2. **Update development workflows** to use `devnew`
 3. **Archive old branches** (don't delete immediately)
 4. **Update CI/CD** to target `devnew` branch
 
 ### Documentation Updates
+
 1. **Update branch state documentation**
 2. **Consolidate feature documentation**
 3. **Update integration guides**
@@ -250,12 +275,14 @@ git push --force-with-lease origin devnew
 To help Claude perform this merge successfully, ensure:
 
 ### Required Information
+
 1. **Complete branch state documentation** for each branch
-2. **Clear conflict resolution preferences** 
+2. **Clear conflict resolution preferences**
 3. **Priority hierarchy** for conflicting features
 4. **Testing requirements** for validation
 
 ### Optimal Documentation Structure
+
 ```
 docs/
 ├── branch-states/           # Current state of each branch
@@ -265,6 +292,7 @@ docs/
 ```
 
 ### Claude Success Factors
+
 - **Detailed context** about each branch's purpose
 - **Clear decision criteria** for conflict resolution
 - **Validation steps** to verify merge success
@@ -272,6 +300,6 @@ docs/
 
 ---
 
-*Created: July 16, 2025*  
-*Purpose: Guide automated branch merge process*  
-*Status: Ready for execution with complete branch documentation*
+_Created: July 16, 2025_  
+_Purpose: Guide automated branch merge process_  
+_Status: Ready for execution with complete branch documentation_

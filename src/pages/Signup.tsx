@@ -44,18 +44,18 @@ export default function SignUp() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    
+
     if (role === "Company") {
       if (companyData.password !== companyData.confirmPassword) {
         return; // Passwords don't match
       }
-      
+
       await signup({
         email: companyData.email,
         password: companyData.password,
-        userType: 'employer',
-        firstName: '',
-        lastName: '',
+        userType: "employer",
+        firstName: "",
+        lastName: "",
         phoneNumber: companyData.mobileNo,
         companyName: companyData.companyName,
       });
@@ -63,11 +63,11 @@ export default function SignUp() {
       if (employeeData.password !== employeeData.confirmPassword) {
         return; // Passwords don't match
       }
-      
+
       await signup({
         email: employeeData.email,
         password: employeeData.password,
-        userType: 'jobseeker',
+        userType: "jobseeker",
         firstName: employeeData.firstName,
         lastName: employeeData.lastName,
         phoneNumber: employeeData.mobileNo,
@@ -108,7 +108,12 @@ export default function SignUp() {
           <h1 className="text-4xl text-center font-montserrat-b">
             Create an account
           </h1>
-          <ToggleSwitchButton option1="Employee" option2 = "Company" selected={role} onClick={() => handleChangeRole()}/>
+          <ToggleSwitchButton
+            option1="Employee"
+            option2="Company"
+            selected={role}
+            onClick={() => handleChangeRole()}
+          />
           <form
             className="w-full flex flex-col gap-9 items-center"
             onSubmit={handleSubmit}
@@ -129,7 +134,7 @@ export default function SignUp() {
                 employeeData={employeeData}
               />
             )}
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="hover:cursor-pointer hover:opacity-80 w-full bg-primary-blue py-4 rounded-3xl text-base font-montserrat text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -204,12 +209,12 @@ function CompanyForm({ handleChange, companyData }: CompanyFormProps) {
           companyData.password == "" ||
           isValidCreatePassword(
             companyData.password,
-            companyData.confirmPassword
+            companyData.confirmPassword,
           )
         }
         error={getCreatePasswordError(
           companyData.password,
-          companyData.confirmPassword
+          companyData.confirmPassword,
         )}
         onChange={handleChange}
       />
@@ -275,12 +280,12 @@ function EmployeeForm({ handleChange, employeeData }: EmployeeFormProps) {
           employeeData.password == "" ||
           isValidCreatePassword(
             employeeData.password,
-            employeeData.confirmPassword
+            employeeData.confirmPassword,
           )
         }
         error={getCreatePasswordError(
           employeeData.password,
-          employeeData.confirmPassword
+          employeeData.confirmPassword,
         )}
       />
       <CustomInputField

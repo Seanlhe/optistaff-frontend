@@ -1,9 +1,9 @@
-import {PreferencesFormData, UI_Event } from "./hooks";
+import { PreferencesFormData, UI_Event } from "./hooks";
 
 export interface IconButtonProps {
-  text: string,
-  src: string
-  onClick: React.MouseEventHandler<HTMLButtonElement> | undefined
+  text: string;
+  src: string;
+  onClick: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
 export interface CircleButtonProps {
@@ -22,10 +22,10 @@ export interface ShiftCardProps {
 export interface InputFieldProps {
   name: string;
   title: string;
-  disabled?: boolean
+  disabled?: boolean;
   placeholder?: string;
   className?: string;
-  value?: string | number
+  value?: string | number;
   type?: string;
   valid?: boolean;
   error?: string | null;
@@ -35,11 +35,11 @@ export interface InputFieldProps {
 export interface SelectProps {
   name: string;
   title: string;
-  options: { label: string, value: string }[];
-  disabled?: boolean
+  options: { label: string; value: string }[];
+  disabled?: boolean;
   placeholder?: string;
   className?: string;
-  value?: string | number
+  value?: string | number;
   type?: string;
   valid?: boolean;
   error?: string | null;
@@ -50,14 +50,13 @@ export interface InputAreaProps {
   name: string;
   title: string;
   placeholder?: string;
-  disabled?: boolean
-  value?: string | number
+  disabled?: boolean;
+  value?: string | number;
   className?: string;
   valid?: boolean;
   error?: string | null;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
-
 
 export interface LoginFormProps {
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import { TemplateNameDialogProps } from '../types/components';
+import { TemplateNameDialogProps } from "../types/components";
 
 export const TemplateNameDialog = ({
   isOpen,
@@ -26,26 +26,25 @@ export const TemplateNameDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 bg-secondary-text/50 flex items-center justify-center z-50"
-    >
-      <div
-        className="bg-card-color rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border"
-      >
+    <div className="fixed inset-0 bg-secondary-text/50 flex items-center justify-center z-50">
+      <div className="bg-card-color rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-primary-text">Save Template</h2>
           <button
-            onClick={handleClose} 
+            onClick={handleClose}
             className="p-1 hover:bg-bg rounded transition-colors"
             disabled={loading}
           >
             <X className="h-5 w-5 text-secondary-text" />
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="templateName" className="block text-base text-primary-text mb-2">
+            <label
+              htmlFor="templateName"
+              className="block text-base text-primary-text mb-2"
+            >
               Template Name
             </label>
             <input
@@ -59,7 +58,7 @@ export const TemplateNameDialog = ({
               autoFocus
             />
           </div>
-          
+
           <div className="flex justify-end gap-3">
             <button
               type="button"

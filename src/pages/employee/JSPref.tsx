@@ -13,7 +13,7 @@ const Preferences = () => {
     try {
       setActiveTab(tab);
     } catch (error) {
-      console.log('Error switching tabs:', error);
+      console.log("Error switching tabs:", error);
       // Continue with current tab if switch fails
     }
   };

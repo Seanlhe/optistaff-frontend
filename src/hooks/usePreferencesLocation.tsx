@@ -12,11 +12,11 @@ import { useLocationGeocoding } from "./useLocationGeocoding";
 
 export const usePreferencesLocation = () => {
   const [homeLocation, setHomeLocation] = useState<[number, number] | null>(
-    null
+    null,
   );
   const [homeAddress, setHomeAddress] = useState<string | null>(null);
   const [locationData, setLocationData] = useState<UserLocationData | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +40,8 @@ export const usePreferencesLocation = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc('get_user_location', {
-        p_user_id: user.id
+      const { data, error } = await supabase.rpc("get_user_location", {
+        p_user_id: user.id,
       });
 
       if (error) {
@@ -51,7 +51,7 @@ export const usePreferencesLocation = () => {
 
       // Database function returns an array, get the first item
       const locationResult = data?.[0];
-      
+
       if (!locationResult) {
         // No location data found - this is expected for new users
         setLocationData(null);
@@ -70,12 +70,16 @@ export const usePreferencesLocation = () => {
 
       // Use parsed coordinates from database function (no validation needed)
       if (locationResult.coordinates_lat && locationResult.coordinates_lng) {
-        setHomeLocation([locationResult.coordinates_lat, locationResult.coordinates_lng]);
+        setHomeLocation([
+          locationResult.coordinates_lat,
+          locationResult.coordinates_lng,
+        ]);
       }
 
       // Use formatted address from database function
-      setHomeAddress(locationResult.formatted_address || locationResult.postal_code || null);
-
+      setHomeAddress(
+        locationResult.formatted_address || locationResult.postal_code || null,
+      );
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -105,7 +109,7 @@ export const usePreferencesLocation = () => {
     const addressToGeocode = locationData.postal_code;
     if (!addressToGeocode) {
       setError(
-        "No postal code available for geocoding. Please update your profile with a valid Singapore postal code."
+        "No postal code available for geocoding. Please update your profile with a valid Singapore postal code.",
       );
       return null;
     }
@@ -135,7 +139,7 @@ export const usePreferencesLocation = () => {
           setError(`Location lookup failed: ${geocodingError.message}`);
         } else {
           setError(
-            "Unable to find location for the provided postal code. Please verify your postal code in your profile."
+            "Unable to find location for the provided postal code. Please verify your postal code in your profile.",
           );
         }
       }
@@ -173,7 +177,7 @@ export const usePreferencesLocation = () => {
       }
       return null;
     },
-    []
+    [],
   );
 
   // Load location data on mount or user change

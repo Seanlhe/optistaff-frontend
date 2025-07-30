@@ -1,12 +1,14 @@
 # useAvailability Hook - Development Documentation
 
 ## Hook Overview
+
 **Hook Name:** `useAvailability`  
 **Primary Author:** Geoffrey Pagdilao (CincoDeMayo13)  
 **Development Period:** July 11-12, 2025  
 **Current Status:** Production Ready
 
 ## Summary
+
 This document details the development and implementation of the `useAvailability` hook, which provides complete availability management functionality for job seekers. The hook includes Supabase database integration and works seamlessly with interactive calendar components for managing work availability time slots.
 
 ---
@@ -14,12 +16,14 @@ This document details the development and implementation of the `useAvailability
 ## Commit History
 
 ### **Latest Commit: `930e149` - "finished avail hooks and front end connection (calendar)"**
+
 **Date:** July 12, 2025, 12:29:17 +0800  
 **Author:** Geoffrey Pagdilao
 
 **Files Modified:** 7 files (308 insertions, 98 deletions)
 
 #### **Major Implementation:**
+
 - `src/hooks/useAvailability.tsx` (110+ lines added) - **Complete implementation**
 - `src/components/Calendar.tsx` (90+ lines modified) - **Enhanced with Supabase integration**
 - `src/components/CalendarEvent.tsx` (86 lines modified) - **Improved event handling**
@@ -30,10 +34,12 @@ This document details the development and implementation of the `useAvailability
 ---
 
 ### **Foundation Commit: `f6d7e21` - "add hook files"**
+
 **Date:** July 11, 2025, 11:16:54 +0800  
 **Author:** wongkang01
 
 **Files Added:** 6 files (258 insertions)
+
 - Initial hook structure including `useAvailability.tsx` skeleton
 - Documentation for improved cancel shift use case
 
@@ -44,23 +50,26 @@ This document details the development and implementation of the `useAvailability
 ### 🔧 **useAvailability Hook - Complete Implementation**
 
 #### **Core Features:**
+
 ```typescript
 interface TimeBlock {
   id?: string;
   user_id: string;
   start_time: string; // ISO string
-  end_time: string;   // ISO string
-  submission_cycle: 'PRIMARY' | 'SECONDARY'; // Scheduling cycle
+  end_time: string; // ISO string
+  submission_cycle: "PRIMARY" | "SECONDARY"; // Scheduling cycle
 }
 ```
 
 #### **Key Functions:**
+
 1. **`getAvailability(cycle)`** - Fetches user availability for specific cycle
 2. **`setAvailability(timeBlocks)`** - Saves availability with automatic cleanup
 3. **State Management** - Loading states and error handling
 4. **Authentication Integration** - Uses `useAuth` hook for user context
 
 #### **Database Operations:**
+
 - **Read**: Query availability table by user_id and submission_cycle
 - **Write**: Delete existing records + Insert new time blocks
 - **Error Handling**: Comprehensive Supabase error management
@@ -70,6 +79,7 @@ interface TimeBlock {
 ### 🎨 **Calendar Component - Enhanced Implementation**
 
 #### **New Features:**
+
 1. **Supabase Integration** - Real-time data loading and saving
 2. **Interactive Event Management** - Double-click to create, drag to modify, delete events
 3. **Week Navigation** - Previous/Next week with month/year display
@@ -77,6 +87,7 @@ interface TimeBlock {
 5. **Real-time Updates** - Immediate UI feedback for user actions
 
 #### **Technical Enhancements:**
+
 - **Event State Management** - Local state synced with database
 - **Date Handling** - Uses `date-fns` for robust date operations
 - **Error Handling** - Loading states and error messages
@@ -87,14 +98,16 @@ interface TimeBlock {
 ### 🏗️ **Component Architecture**
 
 #### **New Component: `Availability.tsx`**
+
 - **Purpose**: Wrapper component for availability management
-- **Features**: 
+- **Features**:
   - Maximum hours per week input
   - Clean UI layout with rounded borders
   - Integrates Calendar component
 - **UI Elements**: Form inputs, styling containers
 
 #### **Enhanced: `Preferences.tsx`**
+
 - **Tab System**: Toggle between Preferences and Availability
 - **Navigation**: Clean tab interface with active/inactive states
 - **Layout**: Responsive design with proper spacing
@@ -105,6 +118,7 @@ interface TimeBlock {
 ## Database Schema Integration
 
 ### **Availability Table Structure:**
+
 ```sql
 -- Based on implementation analysis
 CREATE TABLE availability (
@@ -118,6 +132,7 @@ CREATE TABLE availability (
 ```
 
 ### **Data Flow:**
+
 1. **Load**: Fetch existing availability on component mount
 2. **Create**: Double-click calendar slots to create new availability
 3. **Modify**: Drag events to adjust timing
@@ -130,6 +145,7 @@ CREATE TABLE availability (
 ## User Experience Improvements
 
 ### ✅ **Interactive Calendar Features:**
+
 - **Visual Time Slots** - Clear hourly grid layout
 - **Drag & Drop** - Intuitive event manipulation
 - **Double-Click Creation** - Quick slot creation
@@ -137,6 +153,7 @@ CREATE TABLE availability (
 - **Save Feedback** - Loading states and success indicators
 
 ### ✅ **Form Integration:**
+
 - **Tab Navigation** - Clean separation of concerns
 - **Maximum Hours** - Weekly hour limit input
 - **Responsive Design** - Mobile-friendly layout
@@ -147,6 +164,7 @@ CREATE TABLE availability (
 ## Architecture Patterns
 
 ### 🔄 **State Management:**
+
 ```typescript
 // Local component state for immediate UI feedback
 const [events, setEvents] = useState<Event[]>([]);
@@ -159,6 +177,7 @@ const { user } = useAuth();
 ```
 
 ### 🔄 **Data Synchronization:**
+
 ```typescript
 // Load data on mount
 useEffect(() => {
@@ -181,6 +200,7 @@ const handleSaveAvailability = async () => {
 ## File Structure Changes
 
 ### **New Files Created:**
+
 ```
 src/components/
 └── Availability.tsx          # New availability wrapper component
@@ -190,6 +210,7 @@ src/hooks/
 ```
 
 ### **Modified Files:**
+
 ```
 src/components/
 ├── Calendar.tsx               # Major Supabase integration
@@ -205,16 +226,19 @@ src/pages/jobseeker/
 ## Integration Points
 
 ### 🔗 **Hook Dependencies:**
+
 - **`useAuth`** - User authentication and ID retrieval
 - **`supabase`** - Database client for availability operations
 - **React State** - Loading, error, and data management
 
 ### 🔗 **Component Dependencies:**
+
 - **`date-fns`** - Date manipulation and formatting
 - **`lucide-react`** - UI icons (ChevronLeft, ChevronRight)
 - **Calendar Events** - Drag & drop event management
 
 ### 🔗 **Database Dependencies:**
+
 - **`availability` table** - Primary data storage
 - **User authentication** - Row-level security with user_id
 - **Submission cycles** - PRIMARY/SECONDARY scheduling periods
@@ -224,12 +248,14 @@ src/pages/jobseeker/
 ## Testing Considerations
 
 ### 🧪 **Unit Testing Opportunities:**
+
 - `useAvailability` hook functions (getAvailability, setAvailability)
 - Calendar event manipulation (create, update, delete)
 - Tab navigation in Preferences component
 - Date formatting and time slot calculations
 
 ### 🧪 **Integration Testing:**
+
 - Supabase CRUD operations
 - Authentication flow with availability data
 - Calendar-to-database synchronization
@@ -240,12 +266,14 @@ src/pages/jobseeker/
 ## Performance Optimizations
 
 ### ⚡ **Implemented:**
+
 - **Efficient re-renders** - Proper useEffect dependencies
 - **Batch operations** - Delete all + insert all for saves
 - **Local state management** - Immediate UI feedback
 - **Conditional rendering** - Loading states for async operations
 
 ### ⚡ **Future Opportunities:**
+
 - **Debounced saves** - Auto-save with delay
 - **Optimistic updates** - Update UI before API confirmation
 - **Data caching** - Cache availability data between sessions
@@ -256,6 +284,7 @@ src/pages/jobseeker/
 ## Next Steps & Integration
 
 ### 🚀 **Ready for Integration:**
+
 1. ✅ **Complete useAvailability implementation**
 2. ✅ **Functional calendar interface**
 3. ✅ **Database integration working**
@@ -263,12 +292,14 @@ src/pages/jobseeker/
 5. ✅ **Error handling implemented**
 
 ### 🔄 **Merge Considerations:**
+
 - **Compatibility** with `dev-hooks-auth` authentication system
 - **Database schema** alignment across branches
 - **Component styling** consistency with UI library
 - **Hook patterns** standardization across features
 
 ### 📈 **Future Enhancements:**
+
 - **Recurring availability** - Weekly/monthly patterns
 - **Availability templates** - Save/load common schedules
 - **Conflict detection** - Warn about overlapping slots
@@ -278,6 +309,7 @@ src/pages/jobseeker/
 ---
 
 ## Branch Statistics
+
 - **Total Commits:** 2 major commits (1 implementation + 1 foundation)
 - **Lines Added:** ~370+
 - **Lines Removed:** ~100
@@ -290,6 +322,7 @@ src/pages/jobseeker/
 ---
 
 ## Code Quality Metrics
+
 - **TypeScript Coverage:** 100% - Full type safety
 - **Error Handling:** Comprehensive Supabase error management
 - **State Management:** Clean separation of local/remote state
@@ -299,7 +332,7 @@ src/pages/jobseeker/
 
 ---
 
-*Generated on July 12, 2025*  
-*Branch: dev-hooks-avail*  
-*Primary Author: Geoffrey Pagdilao*  
-*Contributing Author: wongkang01*
+_Generated on July 12, 2025_  
+_Branch: dev-hooks-avail_  
+_Primary Author: Geoffrey Pagdilao_  
+_Contributing Author: wongkang01_

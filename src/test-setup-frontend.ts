@@ -1,14 +1,16 @@
 // Frontend test setup - no Supabase required
-import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock Supabase client for frontend tests that might import it
-vi.mock('@supabase/supabase-js', () => ({
+vi.mock("@supabase/supabase-js", () => ({
   createClient: vi.fn(() => ({
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+      onAuthStateChange: vi.fn(() => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      })),
     },
     from: vi.fn(() => ({
       select: vi.fn().mockReturnThis(),
@@ -19,22 +21,22 @@ vi.mock('@supabase/supabase-js', () => ({
       single: vi.fn().mockResolvedValue({ data: null, error: null }),
     })),
   })),
-}))
+}));
 
 // Mock React Router if needed
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useNavigate: () => vi.fn(),
-    useLocation: () => ({ pathname: '/' }),
+    useLocation: () => ({ pathname: "/" }),
     useParams: () => ({}),
-  }
-})
+  };
+});
 
 // Mock React Query if used in components
-vi.mock('@tanstack/react-query', async () => {
-  const actual = await vi.importActual('@tanstack/react-query')
+vi.mock("@tanstack/react-query", async () => {
+  const actual = await vi.importActual("@tanstack/react-query");
   return {
     ...actual,
     useQuery: vi.fn(() => ({
@@ -48,5 +50,5 @@ vi.mock('@tanstack/react-query', async () => {
       isLoading: false,
       error: null,
     })),
-  }
-})
+  };
+});

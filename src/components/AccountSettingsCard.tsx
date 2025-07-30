@@ -10,24 +10,24 @@ import { useUserProfile } from "../hooks/useUserProfile";
 import { AccountSettingsFormData } from "../types/hooks";
 
 const AccountSettingsCard = () => {
-  const { 
+  const {
     getAccountFormData,
     updateAccountSettings,
     accountSettingsLoading,
     accountSettingsError,
-    getDisplayData
+    getDisplayData,
   } = useUserProfile();
 
   const [formData, setFormData] = useState<AccountSettingsFormData>({
-    email: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    email: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Load existing account data
   useEffect(() => {
@@ -38,36 +38,39 @@ const AccountSettingsCard = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const success = await updateAccountSettings(formData);
-    
+
     if (success) {
       // Determine success message based on what was changed
       const displayData = getDisplayData();
       const emailChanged = formData.email !== displayData?.email;
-      const passwordChanged = formData.newPassword && formData.newPassword.length > 0;
-      
+      const passwordChanged =
+        formData.newPassword && formData.newPassword.length > 0;
+
       if (emailChanged && passwordChanged) {
-        setSuccessMessage('Email and password updated successfully!');
+        setSuccessMessage("Email and password updated successfully!");
       } else if (emailChanged) {
-        setSuccessMessage('Email updated successfully! Please check your email to confirm the change.');
+        setSuccessMessage(
+          "Email updated successfully! Please check your email to confirm the change.",
+        );
       } else if (passwordChanged) {
-        setSuccessMessage('Password updated successfully!');
+        setSuccessMessage("Password updated successfully!");
       } else {
-        setSuccessMessage('Account settings updated successfully!');
+        setSuccessMessage("Account settings updated successfully!");
       }
-      
+
       setSubmitSuccess(true);
       setIsChangingPassword(false);
-      
+
       // Clear password fields
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       }));
-      
+
       setTimeout(() => setSubmitSuccess(false), 5000);
     }
   };
@@ -84,8 +87,11 @@ const AccountSettingsCard = () => {
   const hasChanges = () => {
     const displayData = getDisplayData();
     const emailChanged = formData.email !== displayData?.email;
-    const passwordChanged = isChangingPassword && formData.newPassword && formData.newPassword.length > 0;
-    
+    const passwordChanged =
+      isChangingPassword &&
+      formData.newPassword &&
+      formData.newPassword.length > 0;
+
     return emailChanged || passwordChanged;
   };
 
@@ -103,14 +109,24 @@ const AccountSettingsCard = () => {
 
   return (
     <div className="bg-card-color p-6 rounded-xl border border-border">
-      <h2 className="text-xl font-montserrat-smb text-primary-text mb-6">Account Settings</h2>
+      <h2 className="text-xl font-montserrat-smb text-primary-text mb-6">
+        Account Settings
+      </h2>
 
       {/* Success message */}
       {submitSuccess && (
         <div className="mb-4 p-4 bg-tertiary-bg border border-green text-green-dark rounded-lg">
           <div className="flex items-center">
-            <svg className="h-5 w-5 text-green mr-3" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            <svg
+              className="h-5 w-5 text-green mr-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
             </svg>
             <span className="text-sm font-medium">{successMessage}</span>
           </div>
@@ -121,12 +137,24 @@ const AccountSettingsCard = () => {
       {accountSettingsError && (
         <div className="mb-4 p-4 bg-tertiary-bg border border-red text-red-dark rounded-lg">
           <div className="flex items-start">
-            <svg className="h-5 w-5 text-red mt-0.5 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <svg
+              className="h-5 w-5 text-red mt-0.5 mr-3 flex-shrink-0"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
             </svg>
             <div>
-              <h3 className="text-sm font-montserrat-smb text-red-dark">Error Updating Account</h3>
-              <p className="text-sm text-red-dark mt-1">{accountSettingsError}</p>
+              <h3 className="text-sm font-montserrat-smb text-red-dark">
+                Error Updating Account
+              </h3>
+              <p className="text-sm text-red-dark mt-1">
+                {accountSettingsError}
+              </p>
             </div>
           </div>
         </div>
@@ -136,110 +164,137 @@ const AccountSettingsCard = () => {
         <div className="space-y-6">
           {/* Email Change Section */}
           <div>
-            <label htmlFor="email" className="block text-sm font-montserrat-smb text-primary-text mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-montserrat-smb text-primary-text mb-2"
+            >
               Email Address
             </label>
             <input
               type="email"
               id="email"
               value={formData.email}
-              onChange={(e) => setFormData(prev => ({
-                ...prev,
-                email: e.target.value
-              }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
+              }
               className="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-blue focus:border-primary-blue font-montserrat"
               required
             />
             <p className="mt-1 text-sm text-secondary-text">
-              You'll receive a confirmation email if you change your email address.
+              You'll receive a confirmation email if you change your email
+              address.
             </p>
           </div>
 
           {/* Password Change Section */}
           <div className="border-t border-border pt-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-montserrat-smb text-primary-text">Change Password</h3>
+              <h3 className="text-lg font-montserrat-smb text-primary-text">
+                Change Password
+              </h3>
               <button
                 type="button"
                 onClick={() => {
                   setIsChangingPassword(!isChangingPassword);
                   if (isChangingPassword) {
                     // Clear password fields when canceling
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
-                      currentPassword: '',
-                      newPassword: '',
-                      confirmPassword: ''
+                      currentPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
                     }));
                   }
                 }}
                 className="text-primary-blue hover:text-primary-blue text-sm font-montserrat-smb"
               >
-                {isChangingPassword ? 'Cancel Password Change' : 'Change Password'}
+                {isChangingPassword
+                  ? "Cancel Password Change"
+                  : "Change Password"}
               </button>
             </div>
 
             {isChangingPassword && (
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-montserrat-smb text-primary-text mb-2">
+                  <label
+                    htmlFor="currentPassword"
+                    className="block text-sm font-montserrat-smb text-primary-text mb-2"
+                  >
                     Current Password
                   </label>
                   <input
                     type="password"
                     id="currentPassword"
                     value={formData.currentPassword}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      currentPassword: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        currentPassword: e.target.value,
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary-blue focus:border-primary-blue font-montserrat"
                     required={isChangingPassword}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="newPassword" className="block text-sm font-montserrat-smb text-primary-text mb-2">
+                  <label
+                    htmlFor="newPassword"
+                    className="block text-sm font-montserrat-smb text-primary-text mb-2"
+                  >
                     New Password
                   </label>
                   <input
                     type="password"
                     id="newPassword"
                     value={formData.newPassword}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      newPassword: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        newPassword: e.target.value,
+                      }))
+                    }
                     className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-blue focus:border-primary-blue font-montserrat ${
-                      formData.newPassword && !isValidPassword(formData.newPassword)
-                        ? 'border-red focus:ring-red focus:border-red'
-                        : 'border-border'
+                      formData.newPassword &&
+                      !isValidPassword(formData.newPassword)
+                        ? "border-red focus:ring-red focus:border-red"
+                        : "border-border"
                     }`}
                     required={isChangingPassword}
                   />
-                  {formData.newPassword && !isValidPassword(formData.newPassword) && (
-                    <p className="mt-1 text-sm text-red">
-                      Password must be at least 6 characters long
-                    </p>
-                  )}
+                  {formData.newPassword &&
+                    !isValidPassword(formData.newPassword) && (
+                      <p className="mt-1 text-sm text-red">
+                        Password must be at least 6 characters long
+                      </p>
+                    )}
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-montserrat-smb text-primary-text mb-2">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-montserrat-smb text-primary-text mb-2"
+                  >
                     Confirm New Password
                   </label>
                   <input
                     type="password"
                     id="confirmPassword"
                     value={formData.confirmPassword}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      confirmPassword: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
+                    }
                     className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-primary-blue focus:border-primary-blue font-montserrat ${
                       formData.confirmPassword && !passwordsMatch
-                        ? 'border-red focus:ring-red focus:border-red'
-                        : 'border-border'
+                        ? "border-red focus:ring-red focus:border-red"
+                        : "border-border"
                     }`}
                     required={isChangingPassword}
                   />
@@ -263,14 +318,30 @@ const AccountSettingsCard = () => {
           >
             {accountSettingsLoading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Updating...
               </>
             ) : (
-              'Update Account'
+              "Update Account"
             )}
           </button>
         </div>
