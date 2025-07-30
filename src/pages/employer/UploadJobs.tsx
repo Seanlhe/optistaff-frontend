@@ -47,6 +47,7 @@ export default function UploadJobs() {
   );
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
   const handleDataChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -55,17 +56,65 @@ export default function UploadJobs() {
   ) => {
     const name = e.target.name;
     let value = e.target.value;
+
+    // Clear the error for this field if it has a value
+    if (value.trim() !== "" && shiftError[name as keyof ShiftError]) {
+      setShiftError((prev) => ({ ...prev, [name]: null }));
+    }
+
     switch (name) {
       case "start_time": {
         const baseDate = format(formData.start_time, "yyyy-MM-dd");
         const new_start = getDateForm(baseDate, value);
         setFormData((prev) => ({ ...prev, start_time: new_start }));
+        // Clear time-related errors
+        if (value.trim() !== "") {
+          setShiftError((prev) => ({ ...prev, start_time: null }));
+        }
         break;
       }
       case "end_time": {
         const baseDate = format(formData.start_time, "yyyy-MM-dd");
         const new_end = getDateForm(baseDate, value);
         setFormData((prev) => ({ ...prev, end_time: new_end }));
+        // Clear time-related errors
+        if (value.trim() !== "") {
+          setShiftError((prev) => ({ ...prev, end_time: null }));
+        }
+        break;
+      }
+      case "pay_rate":
+      case "staff_needed":
+      case "break_duration": {
+        // Only allow numbers and decimal points
+        const numericValue = value.replace(/[^0-9.]/g, "");
+        // Prevent multiple decimal points
+        const parts = numericValue.split(".");
+        const cleanValue =
+          parts.length > 2
+            ? parts[0] + "." + parts.slice(1).join("")
+            : numericValue;
+
+        const numValue = parseFloat(cleanValue);
+        setFormData((prevData) => ({ ...prevData, [name]: numValue || 0 }));
+        // Clear error if valid number
+        if (!isNaN(numValue) && numValue > 0) {
+          setShiftError((prev) => ({ ...prev, [name]: null }));
+        }
+        break;
+      }
+      case "postal_code": {
+        // Only allow numbers for postal code (Singapore postal codes are 6 digits)
+        const numericValue = value.replace(/[^0-9]/g, "");
+        // Limit to 6 digits for Singapore postal codes
+        const limitedValue = numericValue.slice(0, 6);
+
+        const numValue = parseInt(limitedValue);
+        setFormData((prevData) => ({ ...prevData, [name]: numValue || 0 }));
+        // Clear error if valid postal code (6 digits)
+        if (limitedValue.length === 6) {
+          setShiftError((prev) => ({ ...prev, [name]: null }));
+        }
         break;
       }
       default:
@@ -86,6 +135,8 @@ export default function UploadJobs() {
           start_time: new_sd,
           end_time: new_ed,
         }));
+        // Clear date error when valid date is selected
+        setShiftError((prev) => ({ ...prev, date: null }));
       }
     }
   };
@@ -108,13 +159,19 @@ export default function UploadJobs() {
 
     if (isValid) {
       try {
-        await createShift(formData);
+        console.log("🔄 About to call createShift...");
+        const result = await createShift(formData);
+        console.log("✅ createShift result:", result);
         setValid(true);
         setSubmitSuccess(true);
-        console.log("✅ Submitted shift:", formData);
+        console.log("✅ Success state set to true");
         // Hide success message after 3 seconds
-        setTimeout(() => setSubmitSuccess(false), 3000);
+        setTimeout(() => {
+          console.log("⏰ Hiding success message after 3 seconds");
+          setSubmitSuccess(false);
+        }, 3000);
       } catch (error) {
+        console.error("❌ Error in createShift:", error);
         setSubmitError("Failed to create job listing. Please try again.");
         console.error("❌ Failed to submit shift:", error);
       }
@@ -139,9 +196,12 @@ export default function UploadJobs() {
         className="bg-card-color rounded-xl p-8 w-full max-w-7xl"
       >
         <form className="grid grid-cols-12 gap-x-4 gap-y-12 items-center">
-          <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">
-            Title and Description
-          </p>
+          <div className="pt-3 col-span-12">
+            <p className="font-montserrat-b text-lg text-primary-text mb-2">
+              Title and Description
+            </p>
+            <hr className="border-border" />
+          </div>
           <CustomInputField
             className="col-span-6"
             name="job_title"
@@ -181,9 +241,12 @@ export default function UploadJobs() {
             placeholder="Clearly state any preparation required by staff. For example, attire or tools required."
             onChange={handleDataChange}
           />
-          <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">
-            Time and Venue
-          </p>
+          <div className="pt-3 col-span-12">
+            <p className="font-montserrat-b text-lg text-primary-text mb-2">
+              Time and Venue
+            </p>
+            <hr className="border-border" />
+          </div>
           <div className="col-span-3">
             <DateInput
               label="Date"
@@ -192,6 +255,10 @@ export default function UploadJobs() {
               required={false}
               error={shiftError.date || undefined}
               placeholder="Select shift date..."
+              minDate={new Date()}
+              maxDate={
+                new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+              }
             />
           </div>
           <CustomInputField
@@ -220,6 +287,7 @@ export default function UploadJobs() {
             valid={valid}
             error={shiftError.break_duration}
             onChange={handleDataChange}
+            numericOnly={true}
           />
           <CustomInputField
             className="col-span-6"
@@ -238,10 +306,15 @@ export default function UploadJobs() {
             valid={valid}
             error={shiftError.postal_code}
             onChange={handleDataChange}
+            numericOnly={true}
+            maxLength={6}
           />
-          <p className="pt-3 col-span-12 font-montserrat-b text-lg text-black">
-            Staffing Requirements
-          </p>
+          <div className="pt-3 col-span-12">
+            <p className="font-montserrat-b text-lg text-primary-text mb-2">
+              Staffing Requirements
+            </p>
+            <hr className="border-border" />
+          </div>
           <CustomInputField
             className="col-span-6"
             placeholder="Eg. 7000"
@@ -251,6 +324,7 @@ export default function UploadJobs() {
             valid={valid}
             error={shiftError.pay_rate}
             onChange={handleDataChange}
+            numericOnly={true}
           />
           <CustomInputField
             className="col-span-6"
@@ -261,6 +335,7 @@ export default function UploadJobs() {
             valid={valid}
             error={shiftError.staff_needed}
             onChange={handleDataChange}
+            numericOnly={true}
           />
           <div
             id="upload-btns"

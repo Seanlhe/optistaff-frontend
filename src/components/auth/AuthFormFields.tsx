@@ -76,6 +76,8 @@ export const AuthFormFields = ({
               value={formData.dateOfBirth}
               onChange={setFormData.setDateOfBirth}
               required
+              minDate={new Date(new Date().setFullYear(new Date().getFullYear() - 80))}
+              maxDate={new Date(new Date().setFullYear(new Date().getFullYear() - 18))}
             />
           )}
 
