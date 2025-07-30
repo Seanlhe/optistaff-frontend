@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import StatsCard from "../../components/StatsCard";
-import PayoutSummaryCard from "../../components/PayoutSummaryCard";
+import PayoutSummaryCard from "../../components/PayoutWeeklySummaryCard";
 import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
 import { JobseekerAssignmentCard } from "../../components/JobseekerAssignmentCard";
 import { Star } from "lucide-react";

@@ -1,6 +1,6 @@
 // Error type for location-aware components
 export type MapError = {
-  type: "PERMISSION_DENIED" | "POSITION_UNAVAILABLE" | "TIMEOUT" | string;
+  type: 'PERMISSION_DENIED' | 'POSITION_UNAVAILABLE' | 'TIMEOUT' | string;
   message: string;
   canRetry?: boolean;
 };
@@ -21,7 +21,7 @@ export interface UserLocationData {
 interface User {
   id: string;
   email: string;
-  role: "jobseeker" | "employer";
+  role: 'jobseeker' | 'employer';
 }
 
 export interface AuthState {
@@ -34,15 +34,15 @@ export interface SignupData {
   email: string;
   password: string;
   confirmPassword: string;
-  userType: "jobseeker" | "employer";
+  userType: 'jobseeker' | 'employer';
   firstName: string;
   lastName: string;
   phoneNumber?: string;
-  dateOfBirth?: string; // New field for job seekers
-  address?: string; // New field for both user types
-  postalCode?: string; // New field for both user types
+  dateOfBirth?: string;        // New field for job seekers
+  address?: string;            // New field for both user types
+  postalCode?: string;         // New field for both user types
   companyName?: string;
-  officeNumber?: string; // New field for employers
+  officeNumber?: string;       // New field for employers
 }
 
 // useShifts interfaces
@@ -62,7 +62,7 @@ export interface Shift {
   break_duration: number | null; // in hours 0.5 for 30 minutes 1.45 for 1 hour 45 minutes, in 15 minute increments
   staff_needed: number;
   staff_assigned: number;
-  submission_cycle: "PRIMARY" | "SECONDARY";
+  submission_cycle: 'PRIMARY' | 'SECONDARY';
   status: string;
   created_at: Date;
 }
@@ -72,8 +72,8 @@ export interface TimeBlock {
   id?: string;
   user_id: string;
   start_time: string; // ISO string
-  end_time: string; // ISO string
-  submission_cycle: "PRIMARY" | "SECONDARY"; // Scheduling cycle
+  end_time: string;   // ISO string
+  submission_cycle: 'PRIMARY' | 'SECONDARY'; // Scheduling cycle
   day_of_week: number; // 1 = Monday,  7  = Sunday
 }
 
@@ -84,32 +84,32 @@ export interface ProfileDisplayData {
   // Personal Info (from job_seekers/clients table)
   firstName: string;
   lastName: string;
-  fullName: string; // computed: firstName + lastName
+  fullName: string;        // computed: firstName + lastName
 
   // Job Seeker specific (only for job seekers)
-  rating?: number; // from job_seekers.rating
-  accountStatus?: "ACTIVE" | "SUSPENDED" | "INACTIVE"; // from job_seekers.status
+  rating?: number;         // from job_seekers.rating
+  accountStatus?: 'ACTIVE' | 'SUSPENDED' | 'INACTIVE'; // from job_seekers.status
 
   // Client specific (only for clients)
-  companyName?: string; // from clients.company_name
+  companyName?: string;    // from clients.company_name
 
   // Account Info (from auth.users)
-  email: string; // from auth.users.email
-  accountCreated: string; // from auth.users.created_at
+  email: string;           // from auth.users.email
+  accountCreated: string;  // from auth.users.created_at
 }
 
 // For editing personal information
 export interface PersonalInfoFormData {
-  phoneNumber: string; // job_seekers.phone_number OR clients.phone
-  homeAddress: string; // job_seekers.address_coordinates OR clients.address
-  postalCode: string; // job_seekers.postal_code OR clients.postal_code
+  phoneNumber: string;     // job_seekers.phone_number OR clients.phone
+  homeAddress: string;     // job_seekers.address_coordinates OR clients.address  
+  postalCode: string;      // job_seekers.postal_code OR clients.postal_code
 }
 
 // For changing account details
 export interface AccountSettingsFormData {
-  email: string; // auth.users.email
+  email: string;           // auth.users.email
   currentPassword: string; // for verification
-  newPassword?: string; // optional - only if changing password
+  newPassword?: string;    // optional - only if changing password
   confirmPassword?: string; // optional - only if changing password
 }
 
@@ -122,7 +122,7 @@ export interface UserProfileData {
   personalInfo: PersonalInfoFormData;
 
   // User role for conditional rendering
-  userRole: "jobseeker" | "employer";
+  userRole: 'jobseeker' | 'employer';
 }
 
 // Legacy type for backward compatibility
@@ -190,16 +190,17 @@ export interface JobTypesByCategory {
   [categoryName: string]: JobType[];
 }
 
-// // usePayouts interfaces
-// export interface Payout {
-//   payout_id: string;
-//   user_id: string;
-//   amount: number;
-//   start_period: string;
-//   end_period: string;
-//   created_at: string;
-//   status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
-// }
+export interface Payout {
+  payout_id: string;
+  assignment_id: string;  // Links to assignments table (not user_id directly)
+  amount: number;
+  pay_rate: number;
+  start_time: string;     // timestamp with time zone
+  end_time: string;       // timestamp with time zone
+  break_hours: number | null;
+  created_at: string;     // timestamp with time zone
+}
+
 
 // useAssignments interfaces
 export interface Assignment {
@@ -241,14 +242,14 @@ export interface Feedback {
 // General status type for assignment cancellation
 
 export enum StatusEnum {
-  CancelByEmployer = "cancel_by_employer",
-  CancelByEmployee = "cancel_by_employee",
-  Confirmed = "confirmed",
-  Upcoming = "upcoming",
-  Active = "active", // New status for active assignments
-  Completed = "completed", // New status for completed assignments
-  NoShow = "no_show", // New status for no-show assignments
-  Pending = "pending", // New status for pending assignments
+  CancelByEmployer = 'cancel_by_employer',
+  CancelByEmployee = 'cancel_by_employee',
+  Confirmed = 'confirmed',
+  Upcoming = 'upcoming',
+  Active = 'active', // New status for active assignments
+  Completed = 'completed', // New status for completed assignments
+  NoShow = 'no_show', // New status for no-show assignments 
+  Pending = 'pending', // New status for pending assignments
 }
 
 // Enhanced usePreferences hook return type with location support
@@ -274,6 +275,7 @@ export interface UsePreferencesReturn {
   loadLocationData: () => Promise<void>; // Load home location from job_seekers table
   geocodeHomeLocation: () => Promise<[number, number] | null>; // Convert address to coordinates
 }
+
 
 export interface WeeklyEarningSummary {
   assignment_id: string;

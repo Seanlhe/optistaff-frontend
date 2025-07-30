@@ -2,9 +2,9 @@
  * usePayouts Hook
  * @description Custom hook for actual payout data management (real money from payouts table)
  */
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "./useAuth";
-import { supabase } from "../integrations/supabase/client";
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './useAuth';
+import { supabase } from '../integrations/supabase/client';
 
 export const usePayouts = () => {
   const [totalEarnings, setTotalEarnings] = useState<number>(0);
@@ -27,9 +27,12 @@ export const usePayouts = () => {
     setError(null);
 
     try {
-      const { data, error } = await supabase.rpc("get_user_total_earnings", {
-        target_user_id: user.id,
-      });
+      const { data, error } = await supabase.rpc(
+        'get_user_total_earnings',
+        {
+          target_user_id: user.id
+        }
+      );
 
       if (error) {
         setError(error.message);

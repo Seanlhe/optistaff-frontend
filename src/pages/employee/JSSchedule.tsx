@@ -11,7 +11,7 @@ import { useState,useMemo } from "react";
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 import { Star } from "lucide-react";
 import StatsCard from "../../components/StatsCard";
-import PayoutSummaryCard from "../../components/PayoutSummaryCard";
+import PayoutTotalSummaryCard from "../../components/PayoutTotalSummaryCard";
 
 
 export default function JSSchedule() {
@@ -191,7 +191,7 @@ export default function JSSchedule() {
 
              {/* Stats and Calendar */}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 ">
-            <PayoutSummaryCard />
+            <PayoutTotalSummaryCard />
             <StatsCard
               title="Rating"
               value={getRating()}
