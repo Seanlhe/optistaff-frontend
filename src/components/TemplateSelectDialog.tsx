@@ -11,7 +11,11 @@ export const TemplateSelectDialog = ({
   onSaveTemplate,
   loading = false,
 }: TemplateSelectDialogProps) => {
-  const { templates, fetchAllTemplates, loading: templateLoading } = useAvailabilityTemplate();
+  const {
+    templates,
+    fetchAllTemplates,
+    loading: templateLoading,
+  } = useAvailabilityTemplate();
 
   useEffect(() => {
     if (isOpen) {
@@ -48,12 +52,16 @@ export const TemplateSelectDialog = ({
 
         {templateLoading ? (
           <div className="text-center py-4">
-            <div className="text-sm text-secondary-text">Loading templates...</div>
+            <div className="text-sm text-secondary-text">
+              Loading templates...
+            </div>
           </div>
         ) : templates.length === 0 ? (
           <div className="text-center py-4">
             <Calendar className="h-8 w-8 text-secondary-text mx-auto mb-2" />
-            <div className="text-sm text-secondary-text">No templates found</div>
+            <div className="text-sm text-secondary-text">
+              No templates found
+            </div>
           </div>
         ) : (
           <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -67,24 +75,24 @@ export const TemplateSelectDialog = ({
                     {template.template_name}
                   </div>
                   <div className="text-sm text-secondary-text">
-                    Created: {new Date(template.created_at).toLocaleDateString()}
+                    Created:{" "}
+                    {new Date(template.created_at).toLocaleDateString()}
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
+                    onClick={() => onDelete(template.template_id)}
+                  >
+                    Delete
+                  </button>
 
-                      <button
-                      className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
-                      onClick={() =>  onDelete(template.template_id)}
-                    >
-                      Delete
-                    </button>
-
-                      <button
-                      className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
-                      onClick={() =>  onSelect(template.template_id)}
-                    >
-                      Use
-                    </button>
+                  <button
+                    className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
+                    onClick={() => onSelect(template.template_id)}
+                  >
+                    Use
+                  </button>
                 </div>
               </div>
             ))}

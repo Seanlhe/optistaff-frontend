@@ -24,7 +24,7 @@ export const UserTypeToggle = ({
             "h-12 text-sm font-montserrat-smb transition-all border-2",
             userType === "jobseeker"
               ? "border-primary-blue bg-primary-blue/10 text-primary-blue shadow-md"
-              : "border-border hover:border-primary-blue/50 hover:bg-primary-blue/5"
+              : "border-border hover:border-primary-blue/50 hover:bg-primary-blue/5",
           )}
         >
           🔍 Job Seeker
@@ -37,7 +37,7 @@ export const UserTypeToggle = ({
             "h-12 text-sm font-montserrat-smb transition-all border-2",
             userType === "employer"
               ? "border-green bg-green/10 text-green-dark shadow-md"
-              : "border-border hover:border-green/50 hover:bg-green/5"
+              : "border-border hover:border-green/50 hover:bg-green/5",
           )}
         >
           🏢 Employer

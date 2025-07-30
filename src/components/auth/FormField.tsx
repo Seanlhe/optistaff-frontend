@@ -1,15 +1,15 @@
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 interface FormFieldProps {
-  id: string
-  label: string
-  type?: string
-  required?: boolean
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  minLength?: number
+  id: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  minLength?: number;
 }
 
 export const FormField = ({
@@ -37,5 +37,5 @@ export const FormField = ({
         minLength={minLength}
       />
     </div>
-  )
-}
+  );
+};

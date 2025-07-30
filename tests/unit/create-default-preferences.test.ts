@@ -32,7 +32,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: jobSeeker.user_id,
-        }
+        },
       );
 
       // Assert
@@ -71,7 +71,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: jobSeeker.user_id,
-        }
+        },
       );
 
       // Assert - Should return existing preferences, not create duplicates
@@ -98,7 +98,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: jobSeeker.user_id,
-        }
+        },
       );
 
       // Assert - Verify all expected fields are present and correct
@@ -136,7 +136,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: null,
-        }
+        },
       );
 
       // Assert - Should handle gracefully (implementation dependent)
@@ -149,7 +149,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: "invalid-uuid-format",
-        }
+        },
       );
 
       // Assert
@@ -165,10 +165,10 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: nonExistentUserId,
-        }
+        },
       );
 
-      // Assert - Should fail due to foreign key constraint 
+      // Assert - Should fail due to foreign key constraint
       // (preferences table enforces FK to job_seekers)
       expect(error).not.toBeNull();
       expect(error.code).toBe("23503"); // Foreign key violation
@@ -182,7 +182,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: "",
-        }
+        },
       );
 
       // Assert
@@ -200,7 +200,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
         "create_default_preferences",
         {
           p_user_id: jobSeeker.user_id,
-        }
+        },
       );
 
       // Verify via direct table query

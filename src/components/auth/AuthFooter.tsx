@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 interface AuthFooterProps {
-  isSignup: boolean
+  isSignup: boolean;
 }
 
 export const AuthFooter = ({ isSignup }: AuthFooterProps) => {
@@ -26,5 +26,5 @@ export const AuthFooter = ({ isSignup }: AuthFooterProps) => {
         ← Back to home
       </Link>
     </div>
-  )
-}
+  );
+};

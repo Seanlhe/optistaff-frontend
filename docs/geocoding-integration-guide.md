@@ -1,11 +1,13 @@
 # Geocoding Integration Guide
 
 ## Overview
+
 This document describes the automatic geocoding system that keeps location coordinates synchronized with user address data across the OptiStaff application.
 
 ## Architecture
 
 ### Components Involved
+
 1. **useLocationGeocoding Hook**: Core geocoding functionality using Google Maps API
 2. **useUserProfile Hook**: Enhanced with automatic coordinate updates
 3. **usePreferences Hook**: Reads and parses stored coordinates for map display
@@ -13,6 +15,7 @@ This document describes the automatic geocoding system that keeps location coord
 5. **Database**: `job_seekers.address_coordinates` field stores geocoded data
 
 ### Data Flow
+
 ```
 User Updates Address/Postal Code
          ↓
@@ -34,18 +37,22 @@ Location-aware Maps Auto-refresh
 ## Implementation Details
 
 ### Automatic Geocoding Trigger
+
 The system automatically geocodes when:
+
 - User updates their address in PersonalInfoCard
 - User updates their postal code in PersonalInfoCard
 - Changes are detected by comparing current vs. new values
 - Only applies to job seekers (employers don't need coordinates)
 
 ### Geocoding Priority
+
 1. **Postal Code** (preferred): More reliable for Singapore addresses
 2. **Address Text** (fallback): Used when postal code unavailable
 3. **Combined**: Appends "Singapore" to improve geocoding accuracy
 
 ### Error Handling Strategy
+
 - **Non-blocking**: Geocoding failures don't prevent profile updates
 - **Graceful degradation**: User can still update profile information
 - **Logging**: Detailed console logs for debugging
@@ -54,28 +61,31 @@ The system automatically geocodes when:
 ## Code Examples
 
 ### Hook Integration
+
 ```typescript
 // useUserProfile.tsx
 import { useLocationGeocoding } from "./useLocationGeocoding";
 
 export const useUserProfile = () => {
   const { geocodeAddress } = useLocationGeocoding();
-  
+
   const updatePersonalInfo = async (formData: PersonalInfoFormData) => {
     // Detect changes
-    const addressChanged = formData.homeAddress !== currentPersonalInfo.homeAddress;
-    const postalCodeChanged = formData.postalCode !== currentPersonalInfo.postalCode;
-    
+    const addressChanged =
+      formData.homeAddress !== currentPersonalInfo.homeAddress;
+    const postalCodeChanged =
+      formData.postalCode !== currentPersonalInfo.postalCode;
+
     // Geocode if needed
     if (addressChanged || postalCodeChanged) {
       const addressToGeocode = formData.postalCode || formData.homeAddress;
       const coordinates = await geocodeAddress(addressToGeocode);
-      
+
       if (coordinates) {
         newCoordinates = `${coordinates[0]},${coordinates[1]}`;
       }
     }
-    
+
     // Update database with both address and coordinates
     const updateData = {
       address: formData.homeAddress,
@@ -87,6 +97,7 @@ export const useUserProfile = () => {
 ```
 
 ### Database Schema
+
 ```sql
 -- job_seekers table
 CREATE TABLE job_seekers (
@@ -109,16 +120,19 @@ INSERT INTO job_seekers VALUES (
 ## Integration Points
 
 ### PersonalInfoCard Component
+
 - **No changes required**: Works transparently with existing form
 - **Automatic updates**: Coordinates updated on successful form submission
 - **User experience**: Seamless - users don't see geocoding process
 
 ### Location-aware Maps
+
 - **Real-time updates**: Maps immediately reflect new coordinates
 - **Data consistency**: Always shows current address location
 - **No manual refresh**: Automatic synchronization
 
 ### usePreferences Hook
+
 - **Coordinate parsing**: Reads `address_coordinates` string format
 - **Map display**: Converts to coordinate arrays for map components
 - **Validation**: Ensures coordinates are within Singapore bounds
@@ -126,11 +140,13 @@ INSERT INTO job_seekers VALUES (
 ## Configuration
 
 ### Environment Variables
+
 ```env
 VITE_GOOGLE_MAPS_API_KEY=your_api_key_here
 ```
 
 ### API Limits and Caching
+
 - **Caching**: Results cached to reduce API calls
 - **Rate limiting**: Built-in retry logic with exponential backoff
 - **Quota management**: Only geocodes when addresses actually change
@@ -138,24 +154,26 @@ VITE_GOOGLE_MAPS_API_KEY=your_api_key_here
 ## Testing
 
 ### Manual Testing Scenarios
+
 1. **Address Update**: Change address, verify coordinates update
 2. **Postal Code Update**: Change postal code, verify coordinates update
 3. **Invalid Address**: Enter invalid address, verify profile still updates
 4. **Network Failure**: Simulate API failure, verify graceful handling
 
 ### Automated Testing
+
 ```typescript
 // Example test cases
-describe('useUserProfile geocoding', () => {
-  it('should update coordinates when postal code changes', async () => {
+describe("useUserProfile geocoding", () => {
+  it("should update coordinates when postal code changes", async () => {
     // Test implementation
   });
-  
-  it('should handle geocoding failures gracefully', async () => {
+
+  it("should handle geocoding failures gracefully", async () => {
     // Test implementation
   });
-  
-  it('should not geocode when address unchanged', async () => {
+
+  it("should not geocode when address unchanged", async () => {
     // Test implementation
   });
 });
@@ -164,16 +182,18 @@ describe('useUserProfile geocoding', () => {
 ## Monitoring and Debugging
 
 ### Console Logs
+
 - **Geocoding attempts**: "Geocoding address: 487372"
 - **Success**: "Successfully geocoded to coordinates: 1.3043,103.8318"
 - **Failures**: "Geocoding failed: [error details]"
 - **Warnings**: "Geocoding returned null for address: invalid_address"
 
 ### Database Verification
+
 ```sql
 -- Check coordinate updates
 SELECT user_id, address, postal_code, address_coordinates, updated_at
-FROM job_seekers 
+FROM job_seekers
 WHERE updated_at > NOW() - INTERVAL '1 hour'
 ORDER BY updated_at DESC;
 ```
@@ -181,12 +201,14 @@ ORDER BY updated_at DESC;
 ## Performance Considerations
 
 ### Optimization Strategies
+
 - **Change detection**: Only geocode when address actually changes
 - **Caching**: Avoid duplicate API calls for same addresses
 - **Async processing**: Non-blocking geocoding doesn't delay profile updates
 - **Batch processing**: Future enhancement for multiple address updates
 
 ### API Usage
+
 - **Efficient calls**: Prioritize postal codes (more reliable, faster)
 - **Error handling**: Robust retry logic with exponential backoff
 - **Quota management**: Monitor usage to stay within Google Maps API limits
@@ -194,6 +216,7 @@ ORDER BY updated_at DESC;
 ## Future Enhancements
 
 ### Planned Improvements
+
 1. **Batch geocoding**: Handle multiple addresses efficiently
 2. **Coordinate validation**: Verify results are within expected bounds
 3. **Alternative providers**: Fallback geocoding services
@@ -201,6 +224,7 @@ ORDER BY updated_at DESC;
 5. **Background processing**: Queue geocoding for better performance
 
 ### Potential Features
+
 - **Address suggestions**: Auto-complete during address entry
 - **Coordinate verification**: Allow users to verify/adjust map pins
 - **Bulk updates**: Admin tools for batch coordinate updates

@@ -5,182 +5,209 @@
  * @testing_approach Simplified functional testing
  */
 
-import { describe, test, expect, beforeEach } from 'vitest'
-import { testSupabase, createTestJobSeeker, cleanupTestData, ensureTestJobTypes } from '../../src/test-setup'
+import { describe, test, expect, beforeEach } from "vitest";
+import {
+  testSupabase,
+  createTestJobSeeker,
+  cleanupTestData,
+  ensureTestJobTypes,
+} from "../../src/test-setup";
 
-describe('upsert_user_preferences - Database Function Unit Tests', () => {
+describe("upsert_user_preferences - Database Function Unit Tests", () => {
   beforeEach(async () => {
-    await cleanupTestData()
-    await ensureTestJobTypes() // Ensure required job types exist
-  })
+    await cleanupTestData();
+    await ensureTestJobTypes(); // Ensure required job types exist
+  });
 
-  describe('Basic Function Tests', () => {
-    test('creates new preferences successfully', async () => {
+  describe("Basic Function Tests", () => {
+    test("creates new preferences successfully", async () => {
       // Arrange
-      const jobSeeker = await createTestJobSeeker()
+      const jobSeeker = await createTestJobSeeker();
 
       // Act
-      const { data, error } = await testSupabase.rpc('upsert_user_preferences', {
-        p_target_user_id: jobSeeker.user_id,
-        p_min_pay_rate: 20,
-        p_max_travel_km: 15,
-        p_desired_roles: ['Waiter/Waitress'],
-        p_max_hours_per_week: 40,
-        p_max_hours_per_shift: 8,
-        p_consider_lower_rate: false
-      })
+      const { data, error } = await testSupabase.rpc(
+        "upsert_user_preferences",
+        {
+          p_target_user_id: jobSeeker.user_id,
+          p_min_pay_rate: 20,
+          p_max_travel_km: 15,
+          p_desired_roles: ["Waiter/Waitress"],
+          p_max_hours_per_week: 40,
+          p_max_hours_per_shift: 8,
+          p_consider_lower_rate: false,
+        },
+      );
 
       // Assert
-      expect(error).toBeNull()
-      expect(data).toBeTruthy()
-      expect(data.length).toBe(1)
-      
-      const result = data[0]
-      expect(result.validation_errors).toEqual([])
-      expect(result.user_id).toBe(jobSeeker.user_id)
-      expect(result.min_pay_rate).toBe(20)
-      expect(result.max_travel_km).toBe(15)
-      expect(result.desired_roles).toEqual(['Waiter/Waitress'])
-      expect(result.max_hours_per_week).toBe(40)
-      expect(result.max_hours_per_shift).toBe(8)
-      expect(result.consider_lower_rate).toBe(false)
-    })
+      expect(error).toBeNull();
+      expect(data).toBeTruthy();
+      expect(data.length).toBe(1);
 
-    test('updates existing preferences', async () => {
+      const result = data[0];
+      expect(result.validation_errors).toEqual([]);
+      expect(result.user_id).toBe(jobSeeker.user_id);
+      expect(result.min_pay_rate).toBe(20);
+      expect(result.max_travel_km).toBe(15);
+      expect(result.desired_roles).toEqual(["Waiter/Waitress"]);
+      expect(result.max_hours_per_week).toBe(40);
+      expect(result.max_hours_per_shift).toBe(8);
+      expect(result.consider_lower_rate).toBe(false);
+    });
+
+    test("updates existing preferences", async () => {
       // Arrange
-      const jobSeeker = await createTestJobSeeker()
-      
+      const jobSeeker = await createTestJobSeeker();
+
       // Create initial preferences
-      await testSupabase.rpc('create_default_preferences', {
-        p_user_id: jobSeeker.user_id
-      })
+      await testSupabase.rpc("create_default_preferences", {
+        p_user_id: jobSeeker.user_id,
+      });
 
       // Act - Update preferences
-      const { data, error } = await testSupabase.rpc('upsert_user_preferences', {
-        p_target_user_id: jobSeeker.user_id,
-        p_min_pay_rate: 25,
-        p_max_travel_km: 20,
-        p_desired_roles: ['Kitchen Helper'],
-        p_max_hours_per_week: 35,
-        p_max_hours_per_shift: 8,
-        p_consider_lower_rate: true
-      })
+      const { data, error } = await testSupabase.rpc(
+        "upsert_user_preferences",
+        {
+          p_target_user_id: jobSeeker.user_id,
+          p_min_pay_rate: 25,
+          p_max_travel_km: 20,
+          p_desired_roles: ["Kitchen Helper"],
+          p_max_hours_per_week: 35,
+          p_max_hours_per_shift: 8,
+          p_consider_lower_rate: true,
+        },
+      );
 
       // Assert
-      expect(error).toBeNull()
-      expect(data).toBeTruthy()
-      expect(data.length).toBe(1)
-      
-      const result = data[0]
-      expect(result.validation_errors).toEqual([])
-      expect(result.user_id).toBe(jobSeeker.user_id)
-      expect(result.min_pay_rate).toBe(25)
-      expect(result.max_travel_km).toBe(20)
-      expect(result.desired_roles).toEqual(['Kitchen Helper'])
-      expect(result.max_hours_per_week).toBe(35)
-      expect(result.max_hours_per_shift).toBe(8)
-      expect(result.consider_lower_rate).toBe(true)
-    })
+      expect(error).toBeNull();
+      expect(data).toBeTruthy();
+      expect(data.length).toBe(1);
 
-    test('validates empty desired_roles', async () => {
+      const result = data[0];
+      expect(result.validation_errors).toEqual([]);
+      expect(result.user_id).toBe(jobSeeker.user_id);
+      expect(result.min_pay_rate).toBe(25);
+      expect(result.max_travel_km).toBe(20);
+      expect(result.desired_roles).toEqual(["Kitchen Helper"]);
+      expect(result.max_hours_per_week).toBe(35);
+      expect(result.max_hours_per_shift).toBe(8);
+      expect(result.consider_lower_rate).toBe(true);
+    });
+
+    test("validates empty desired_roles", async () => {
       // Arrange
-      const jobSeeker = await createTestJobSeeker()
+      const jobSeeker = await createTestJobSeeker();
 
       // Act
-      const { data, error } = await testSupabase.rpc('upsert_user_preferences', {
-        p_target_user_id: jobSeeker.user_id,
-        p_min_pay_rate: 20,
-        p_max_travel_km: 15,
-        p_desired_roles: [],
-        p_max_hours_per_week: 40,
-        p_max_hours_per_shift: 8,
-        p_consider_lower_rate: false
-      })
+      const { data, error } = await testSupabase.rpc(
+        "upsert_user_preferences",
+        {
+          p_target_user_id: jobSeeker.user_id,
+          p_min_pay_rate: 20,
+          p_max_travel_km: 15,
+          p_desired_roles: [],
+          p_max_hours_per_week: 40,
+          p_max_hours_per_shift: 8,
+          p_consider_lower_rate: false,
+        },
+      );
 
       // Assert
-      expect(error).toBeNull()
-      expect(data).toBeTruthy()
-      expect(data[0].validation_errors).toContain('Please select at least one preferred job type')
-    })
+      expect(error).toBeNull();
+      expect(data).toBeTruthy();
+      expect(data[0].validation_errors).toContain(
+        "Please select at least one preferred job type",
+      );
+    });
 
-    test('validates non-existent job names', async () => {
+    test("validates non-existent job names", async () => {
       // Arrange
-      const jobSeeker = await createTestJobSeeker()
+      const jobSeeker = await createTestJobSeeker();
 
       // Act
-      const { data, error } = await testSupabase.rpc('upsert_user_preferences', {
-        p_target_user_id: jobSeeker.user_id,
-        p_min_pay_rate: 20,
-        p_max_travel_km: 15,
-        p_desired_roles: ['NonExistentJob'],
-        p_max_hours_per_week: 40,
-        p_max_hours_per_shift: 8,
-        p_consider_lower_rate: false
-      })
+      const { data, error } = await testSupabase.rpc(
+        "upsert_user_preferences",
+        {
+          p_target_user_id: jobSeeker.user_id,
+          p_min_pay_rate: 20,
+          p_max_travel_km: 15,
+          p_desired_roles: ["NonExistentJob"],
+          p_max_hours_per_week: 40,
+          p_max_hours_per_shift: 8,
+          p_consider_lower_rate: false,
+        },
+      );
 
       // Assert
-      expect(error).toBeNull()
-      expect(data).toBeTruthy()
-      expect(data[0].validation_errors).toContain('One or more selected job types are invalid or inactive')
-    })
-  })
+      expect(error).toBeNull();
+      expect(data).toBeTruthy();
+      expect(data[0].validation_errors).toContain(
+        "One or more selected job types are invalid or inactive",
+      );
+    });
+  });
 
-  describe('Edge Cases', () => {
-    test('handles invalid UUID format', async () => {
+  describe("Edge Cases", () => {
+    test("handles invalid UUID format", async () => {
       // Act
-      const { data, error } = await testSupabase.rpc('upsert_user_preferences', {
-        p_target_user_id: 'invalid-uuid',
-        p_min_pay_rate: 20,
-        p_max_travel_km: 15,
-        p_desired_roles: ['Waiter/Waitress'],
-        p_max_hours_per_week: 40,
-        p_max_hours_per_shift: 8,
-        p_consider_lower_rate: false
-      })
+      const { data, error } = await testSupabase.rpc(
+        "upsert_user_preferences",
+        {
+          p_target_user_id: "invalid-uuid",
+          p_min_pay_rate: 20,
+          p_max_travel_km: 15,
+          p_desired_roles: ["Waiter/Waitress"],
+          p_max_hours_per_week: 40,
+          p_max_hours_per_shift: 8,
+          p_consider_lower_rate: false,
+        },
+      );
 
       // Assert
-      expect(error).not.toBeNull()
-    })
+      expect(error).not.toBeNull();
+    });
 
-    test('handles concurrent upsert operations', async () => {
+    test("handles concurrent upsert operations", async () => {
       // Arrange
-      const jobSeeker = await createTestJobSeeker()
+      const jobSeeker = await createTestJobSeeker();
 
       // Act - Simulate concurrent updates
-      const update1Promise = testSupabase.rpc('upsert_user_preferences', {
+      const update1Promise = testSupabase.rpc("upsert_user_preferences", {
         p_target_user_id: jobSeeker.user_id,
         p_min_pay_rate: 20,
         p_max_travel_km: 10,
-        p_desired_roles: ['Cashier'],
+        p_desired_roles: ["Cashier"],
         p_max_hours_per_week: 35,
         p_max_hours_per_shift: 7,
-        p_consider_lower_rate: false
-      })
+        p_consider_lower_rate: false,
+      });
 
-      const update2Promise = testSupabase.rpc('upsert_user_preferences', {
+      const update2Promise = testSupabase.rpc("upsert_user_preferences", {
         p_target_user_id: jobSeeker.user_id,
         p_min_pay_rate: 25,
         p_max_travel_km: 15,
-        p_desired_roles: ['Kitchen Helper'],
+        p_desired_roles: ["Kitchen Helper"],
         p_max_hours_per_week: 40,
         p_max_hours_per_shift: 8,
-        p_consider_lower_rate: true
-      })
+        p_consider_lower_rate: true,
+      });
 
-      const [result1, result2] = await Promise.all([update1Promise, update2Promise])
+      const [result1, result2] = await Promise.all([
+        update1Promise,
+        update2Promise,
+      ]);
 
       // Assert - Both should succeed (last one wins due to upsert)
-      expect(result1.error).toBeNull()
-      expect(result2.error).toBeNull()
+      expect(result1.error).toBeNull();
+      expect(result2.error).toBeNull();
 
       // Verify final state
       const { data: finalPrefs } = await testSupabase
-        .from('preferences')
-        .select('*')
-        .eq('user_id', jobSeeker.user_id)
-        .single()
+        .from("preferences")
+        .select("*")
+        .eq("user_id", jobSeeker.user_id)
+        .single();
 
-      expect(finalPrefs).toBeTruthy()
-    })
-  })
-})
+      expect(finalPrefs).toBeTruthy();
+    });
+  });
+});

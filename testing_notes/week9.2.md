@@ -9,9 +9,9 @@
 
 Recall
 
--   Unit testing - test individual smallest units of the system.
--   Integration testing - test related units/subcomponents of the system, which are related (according to the system design)
--   System testing - test the system as a whole, (often according to the user cases).
+- Unit testing - test individual smallest units of the system.
+- Integration testing - test related units/subcomponents of the system, which are related (according to the system design)
+- System testing - test the system as a whole, (often according to the user cases).
 
 In this unit, we study integration testing.
 
@@ -19,8 +19,8 @@ In this unit, we study integration testing.
 
 There are two main approaches of performing integration tests
 
--   Decomposition-based testing
--   Call graph-based testing
+- Decomposition-based testing
+- Call graph-based testing
 
 ### Decomposition-based testing[¶](https://sutd50003.github.io/notes/l9_2_integrationtest/#decomposition-based-testing "Permanent link")
 
@@ -450,9 +450,9 @@ Besides top-down or bottom-up strategies, an alternative is to perform pair-wise
 
 System testing is often less formal compared to unit testing and integration test. Test cases of the system testing can be derived from
 
--   The use case documents and use case diagrams
--   The sequence diagrams
--   The state machine diagrams
+- The use case documents and use case diagrams
+- The sequence diagrams
+- The state machine diagrams
 
 For instance given the following use case document
 
@@ -474,17 +474,17 @@ In Iterative Software Dvelopment Life Cycle, we break and stage different parts/
 
 In terms of testing, we follow a similar structure of waterfall testing for each iteration, except that towards the end, we conduct regression testing and progression testing instead of system test.
 
--   Regression testing - to re-test the test cases defined and passed in the previous iterations.
--   Progress testing - to pre-test the test cases defined in the upcoming iterations, some of them should fail.
+- Regression testing - to re-test the test cases defined and passed in the previous iterations.
+- Progress testing - to pre-test the test cases defined in the upcoming iterations, some of them should fail.
 
 ### Agile Testing[¶](https://sutd50003.github.io/notes/l9_2_integrationtest/#agile-testing "Permanent link")
 
 Recall in Agile development, the development plans are engineered to focus
 
--   Customer-driven
--   Bottom–up development
--   Flexibility with respect to changing requirements
--   Early delivery of fully functional components
+- Customer-driven
+- Bottom–up development
+- Flexibility with respect to changing requirements
+- Early delivery of fully functional components
 
 Agile Development is often divided into sprints. In each sprints, development team liaise with the project users to identify the deliverables that should be delivered in the particular sprint. In the testing aspect, the testing must be aligned with the user story development for each sprint.
 

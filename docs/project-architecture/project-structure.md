@@ -47,6 +47,7 @@ optistaff-main/
 ### Components (`src/components/`)
 
 #### Core Components
+
 - **`Availability.tsx`**: Availability management interface with calendar integration
 - **`Calendar.tsx`**: Calendar view for scheduling with useAvailability hook integration
 - **`CalendarEvent.tsx`**: Individual calendar event component
@@ -56,6 +57,7 @@ optistaff-main/
 - **`NavItem.tsx`**: Navigation item component for sidebars
 
 #### UI Components (`src/components/ui/`)
+
 - **`button.tsx`**: Reusable button component with variants
 - **`card.tsx`**: Card container component
 - **`input.tsx`**: Form input component
@@ -63,6 +65,7 @@ optistaff-main/
 - **`alert.tsx`**: Alert/notification component
 
 #### Interactive Components
+
 - **`CircleButton.tsx`**: Circular icon button
 - **`IconButton.tsx`**: Button with icon and text
 - **`ShiftCard.tsx`**: Display component for shift information
@@ -72,6 +75,7 @@ optistaff-main/
 - **`ProgressIndicator.tsx`**: Multi-step progress indicator
 
 #### Authentication Components (`src/components/auth/`)
+
 - **`AuthHeader.tsx`**: Authentication page header
 - **`AuthFooter.tsx`**: Authentication page footer
 - **`AuthFormFields.tsx`**: Common form fields for auth
@@ -81,6 +85,7 @@ optistaff-main/
 ### Custom Hooks (`src/hooks/`)
 
 **Authentication & User Management:**
+
 - **`useAuth.tsx`**: Authentication state management
   - User login/logout with role caching
   - Session management with timeout protection
@@ -92,6 +97,7 @@ optistaff-main/
 - **`usePreferences.tsx`**: Job seeker preferences management
 
 **Scheduling & Availability:**
+
 - **`useAvailability.tsx`**: Availability data management
   - Calendar integration
   - Time slot management
@@ -101,6 +107,7 @@ optistaff-main/
   - Shift assignment operations
 
 **Business Operations:**
+
 - **`useAssignments.tsx`**: Job assignment management
 - **`usePayouts.tsx`**: Payment and payout tracking
 - **`useFeedback.tsx`**: User feedback and rating system
@@ -108,33 +115,39 @@ optistaff-main/
 ### Pages (`src/pages/`)
 
 #### Public Pages
+
 - **`LandingPage.tsx`**: Homepage with company showcase
 - **`Auth.tsx`**: Unified authentication page
 - **`Login.tsx`**: Dedicated login page
 - **`Signup.tsx`**: User registration page
 
 #### Layout Components
+
 - **`ClientLayout.tsx`**: Layout wrapper for employer pages
 - **`JSLayout.tsx`**: Layout wrapper for job seeker pages
 - **`ProtectedRoute.tsx`**: Route protection wrapper
 
 #### Employer Pages (`src/pages/employer/`)
+
 - **`ClientDashboard.tsx`**: Employer dashboard overview
 - **`ClientNav.tsx`**: Employer navigation sidebar
 - **`ClientRoster.tsx`**: Staff roster management
 - **`UploadJobs.tsx`**: Job posting interface
 
 #### Employee/Job Seeker Pages (`src/pages/employee/`)
+
 - **`JSDashboard.tsx`**: Job seeker dashboard
 - **`JSNav.tsx`**: Job seeker navigation sidebar
 - **`JSPref.tsx`**: Job seeker preferences management
 
 #### Alternative Employee Structure (`src/pages/jobseeker/`)
+
 - **`Preferences.tsx`**: Alternative preferences component
 
 ### Integrations (`src/integrations/`)
 
 #### Supabase Integration (`src/integrations/supabase/`)
+
 - **`client.ts`**: Supabase client configuration
   - Database connection setup
   - Authentication configuration
@@ -163,20 +176,24 @@ optistaff-main/
 ## Public Assets (`public/`)
 
 ### Images (`public/images/`)
+
 - Company logos: capitaland.svg, fourseasons.svg, marriot.svg, mercure.svg, sats.svg, tripdotcom.svg
 - Application graphics: dashboard.svg, optistafflogo.svg
 
 ### Icons (`public/icons/`)
+
 - Navigation icons: calendar.svg, clock.svg, person.svg, users.svg
 - Feature icons: analytics.png, notifications.svg, gearicon.svg, dooricon.svg
 - Action icons: uploadicon.svg, quotationicon.svg
 
 ### Fonts (`public/fonts/`)
+
 - Montserrat font family variants: Bold, Italic, Medium, SemiBold
 
 ## Documentation (`docs/`)
 
 ### Project Documentation Files
+
 - **`project-structure.md`**: This comprehensive project structure documentation
 - **`auth-page-enhancement-plan.md`**: Detailed plan for authentication page enhancements with Google Maps integration
 - **`comprehensive-integration-plan.md`**: Full integration strategy and implementation plan
@@ -184,6 +201,7 @@ optistaff-main/
 - **`integration-changes-log.md`**: Log of all integration changes and modifications
 
 ### Development Branch Documentation
+
 - **`dev-hooks-auth-branch-changes.md`**: Changes and updates in the authentication hooks development branch
 - **`dev-hooks-avail-branch-changes.md`**: Availability management development branch documentation
 - **`dev-hooks-useShifts-documentation.md`**: Shift management hooks development documentation
@@ -193,11 +211,13 @@ optistaff-main/
 ## Configuration Files
 
 ### TypeScript Configuration
+
 - **`tsconfig.json`**: Main TypeScript configuration
 - **`tsconfig.app.json`**: Application-specific TypeScript settings
 - **`tsconfig.node.json`**: Node.js environment TypeScript settings
 
 ### Build & Development Tools
+
 - **`vite.config.ts`**: Vite build configuration with React, Tailwind, and SVG support
 - **`eslint.config.js`**: ESLint configuration for code quality
 - **`tailwind.config.js`** & **`tailwind.config.ts`**: Tailwind CSS configuration
@@ -205,24 +225,28 @@ optistaff-main/
 ## Key Features
 
 ### User Authentication
+
 - Dual role system (Employer/Job Seeker)
 - Supabase-powered authentication
 - Protected routes based on user roles
 - Session persistence
 
 ### Employer Features
+
 - Dashboard with shift overview
 - Staff roster management
 - Job posting and management
 - Real-time staff availability tracking
 
 ### Job Seeker Features
+
 - Availability calendar management
 - Job preferences setting
 - Interactive location selection with maps
 - Shift browsing and application
 
 ### Responsive Design
+
 - Mobile-first approach with Tailwind CSS
 - Component-based UI architecture
 - Consistent design system with Radix UI
@@ -230,6 +254,7 @@ optistaff-main/
 ## Development Workflow
 
 ### Available Scripts
+
 - `npm run dev`: Start development server
 - `npm run build`: Production build
 - `npm run build:dev`: Development build
@@ -237,11 +262,13 @@ optistaff-main/
 - `npm run preview`: Preview production build
 
 ### State Management
+
 - React Query for server state management
 - Local state with React hooks
 - Custom hooks for domain-specific logic
 
 ### Data Flow
+
 1. Authentication via Supabase
 2. Protected routes based on user role
 3. Role-specific layouts and navigation
@@ -253,6 +280,7 @@ optistaff-main/
 ### Recent Major Updates (July 2025)
 
 #### Database Schema Enhancements
+
 - **Enhanced User Registration**: Complete field support for job seekers and clients
 - **Job Classification System**: Hierarchical categories and job types
 - **Status Standardization**: Integer-based status system with lookup table
@@ -261,6 +289,7 @@ optistaff-main/
 - **Postal Code Validation**: 6-digit Singapore postal code constraints
 
 #### Authentication System Overhaul
+
 - **Complete authentication refactor** with modern React patterns
 - **New authentication components** in `src/components/auth/` directory
 - **Enhanced useAuth hook** with real-time state management and role caching
@@ -272,6 +301,7 @@ optistaff-main/
 - **Cross-tab session management** with proper authentication state synchronization
 
 #### Hooks Architecture Implementation
+
 - **Comprehensive custom hooks** for all major business logic
 - **Availability management** with calendar integration and templates
 - **Shift management** system with advanced filtering and matching
@@ -280,6 +310,7 @@ optistaff-main/
 - **Feedback system** implementation with bidirectional ratings
 
 #### UI Component System Enhancement
+
 - **Radix UI integration** for accessible component primitives
 - **shadcn/ui style components** for consistent design system
 - **Enhanced form components** with better validation
@@ -288,6 +319,7 @@ optistaff-main/
 - **Calendar integration** with Leaflet maps for location features
 
 #### Backend Integration Improvements
+
 - **Supabase client optimization** with proper error handling
 - **Real-time subscription management** for live data updates
 - **Environment-based configuration** for different deployment stages
@@ -296,6 +328,7 @@ optistaff-main/
 - **Advanced query functions** for reporting and analytics
 
 ### Current Development Status
+
 - **Current Branch**: `devnew`
 - **Integration Status**: 99% complete
 - **Database Schema**: Fully implemented with all business logic
@@ -304,6 +337,7 @@ optistaff-main/
 - **Recent Migrations**: 14 migrations applied (July 2025)
 
 #### Latest Updates (July 22, 2025)
+
 - **Authentication System Fixes**: Resolved infinite loading issues on employer portal pages
 - **Role Caching Implementation**: Added localStorage-based role caching to prevent unnecessary database queries
 - **Navigation Improvements**: Fixed page refresh redirects to maintain current page context
@@ -311,7 +345,9 @@ optistaff-main/
 - **Session Management**: Enhanced cross-tab authentication behavior with proper session isolation
 
 ### Database Migration History
+
 Latest migrations include:
+
 - Enhanced user registration fields
 - Job categories and types system
 - Status standardization
@@ -324,6 +360,7 @@ Latest migrations include:
 ## Future Considerations
 
 ### Potential Enhancements
+
 - Add comprehensive testing setup
 - Implement error boundary components
 - Add internationalization (i18n)
@@ -332,6 +369,7 @@ Latest migrations include:
 - Implement offline capabilities
 
 ### Scalability
+
 - Consider state management library for complex state
 - Implement code splitting for better performance
 - Add monitoring and analytics
@@ -339,4 +377,4 @@ Latest migrations include:
 
 ---
 
-*This documentation reflects the current project structure as of July 14, 2025, including recent major updates to authentication system, hooks architecture, and UI components. The project is in active development with significant progress in core functionality implementation.*
+_This documentation reflects the current project structure as of July 14, 2025, including recent major updates to authentication system, hooks architecture, and UI components. The project is in active development with significant progress in core functionality implementation._

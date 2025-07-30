@@ -30,15 +30,18 @@ tests/
 ### 1. `create_default_preferences` - Equivalence Class Testing (ECT)
 
 **Valid Input Classes:**
+
 - New user with valid UUID
 - Existing user (idempotent operation)
 
 **Invalid Input Classes:**
+
 - Null user_id
 - Invalid UUID format
 - Non-existent user_id
 
 **Test Coverage:**
+
 - ✅ Creates default preferences with correct values
 - ✅ Handles duplicate creation gracefully
 - ✅ Error handling for invalid inputs
@@ -47,19 +50,20 @@ tests/
 
 **Decision Rules Tested:**
 
-| Rule | Existing Prefs | Valid User | Valid Pay | Valid Travel | Valid Jobs | Valid Hours/Week | Valid Hours/Shift | Expected Result |
-|------|----------------|------------|-----------|--------------|------------|------------------|-------------------|-----------------|
-| R1   | No             | Yes        | Yes (min) | Yes (min)    | Yes (empty)| Yes (min)        | Yes (min)         | CREATE_SUCCESS  |
-| R2   | No             | Yes        | Yes (max) | Yes (max)    | Yes (multi)| Yes (max)        | Yes (max)         | CREATE_SUCCESS  |
-| R3   | Yes            | Yes        | Yes       | Yes          | Yes        | Yes              | Yes               | UPDATE_SUCCESS  |
-| R4   | No             | Yes        | Yes       | Yes          | No (empty) | Yes              | Yes               | VALIDATION_FAIL |
-| R5   | No             | Yes        | Yes       | Yes          | No (invalid)| Yes             | Yes               | VALIDATION_FAIL |
-| R6   | No             | Yes        | Yes       | Yes          | Yes        | No (>44)         | Yes               | CONSTRAINT_ERROR|
-| R7   | No             | Yes        | Yes       | Yes          | Yes        | Yes              | No (>12)          | CONSTRAINT_ERROR|
+| Rule | Existing Prefs | Valid User | Valid Pay | Valid Travel | Valid Jobs   | Valid Hours/Week | Valid Hours/Shift | Expected Result  |
+| ---- | -------------- | ---------- | --------- | ------------ | ------------ | ---------------- | ----------------- | ---------------- |
+| R1   | No             | Yes        | Yes (min) | Yes (min)    | Yes (empty)  | Yes (min)        | Yes (min)         | CREATE_SUCCESS   |
+| R2   | No             | Yes        | Yes (max) | Yes (max)    | Yes (multi)  | Yes (max)        | Yes (max)         | CREATE_SUCCESS   |
+| R3   | Yes            | Yes        | Yes       | Yes          | Yes          | Yes              | Yes               | UPDATE_SUCCESS   |
+| R4   | No             | Yes        | Yes       | Yes          | No (empty)   | Yes              | Yes               | VALIDATION_FAIL  |
+| R5   | No             | Yes        | Yes       | Yes          | No (invalid) | Yes              | Yes               | VALIDATION_FAIL  |
+| R6   | No             | Yes        | Yes       | Yes          | Yes          | No (>44)         | Yes               | CONSTRAINT_ERROR |
+| R7   | No             | Yes        | Yes       | Yes          | Yes          | Yes              | No (>12)          | CONSTRAINT_ERROR |
 
 ### 3. `validate_job_names` - Boundary Value Testing (BVT)
 
 **Boundary Values Tested:**
+
 - **Array Length**: Empty (0), Single (1), Multiple (3), Large (10+)
 - **Job Name Validity**: Valid, Invalid, Mixed, Inactive
 - **Edge Cases**: Null input, Duplicates, Malformed data
@@ -67,16 +71,19 @@ tests/
 ### 4. `get_user_location` - Equivalence Class Testing (ECT)
 
 **Valid Input Classes:**
+
 - User with complete location data
 - User with partial location data (postal code only)
 - User with address but no coordinates
 
 **Invalid Input Classes:**
+
 - Non-existent user
 - Invalid UUID format
 - Null user_id
 
 **Edge Cases:**
+
 - Malformed coordinate strings
 - Non-numeric coordinate values
 - Missing comma in coordinates
@@ -86,6 +93,7 @@ tests/
 ### Prerequisites
 
 1. **Local Supabase Instance**: Ensure Supabase is running locally
+
    ```bash
    supabase start
    ```
@@ -132,11 +140,13 @@ npm run test:coverage
 **Purpose**: Test individual database functions in isolation
 
 **Test Types:**
+
 - **Boundary Value Testing**: `validate_job_names` function
 - **Equivalence Class Testing**: `create_default_preferences`, `get_user_location`
 - **Decision Table Testing**: `upsert_user_preferences`
 
 **Key Features:**
+
 - Direct database function calls
 - Comprehensive input validation
 - Error scenario coverage
@@ -147,6 +157,7 @@ npm run test:coverage
 **Purpose**: Test complete workflows as they occur in the application
 
 **Workflows Tested:**
+
 - New user setup: defaults → validation → upsert
 - Existing user update: fetch → validate → update
 - Location + preferences integration
@@ -158,11 +169,13 @@ npm run test:coverage
 **Purpose**: Test React hooks with successful scenarios
 
 **Hooks Tested:**
+
 - `usePreferences`: Core CRUD operations
 - `usePreferencesLocation`: Location data management
 - `usePreferencesForm`: Form-specific logic with optimistic updates
 
 **Features:**
+
 - Mocked Supabase client
 - React hook testing with `@testing-library/react`
 - State management validation
@@ -173,6 +186,7 @@ npm run test:coverage
 **Purpose**: Test error handling and edge cases in React hooks
 
 **Error Scenarios:**
+
 - Authentication failures
 - Database connection errors
 - Network timeouts
@@ -185,51 +199,55 @@ npm run test:coverage
 ### Database Test Setup (`src/test-setup.ts`)
 
 **Features:**
+
 - Local Supabase client configuration
 - Test data cleanup utilities
 - Test data factories
 - Global test lifecycle management
 
 **Key Functions:**
+
 ```typescript
-cleanupTestData()           // Clean database between tests
-createTestJobSeeker()       // Create test job seeker
-createTestClient()          // Create test client
-createTestShift()           // Create test shift
+cleanupTestData(); // Clean database between tests
+createTestJobSeeker(); // Create test job seeker
+createTestClient(); // Create test client
+createTestShift(); // Create test shift
 ```
 
 ### Mock Strategies
 
 **Database Function Mocking:**
+
 ```typescript
 // Mock successful RPC call
 mockSupabase.rpc.mockResolvedValue({
   data: [expectedResult],
-  error: null
-})
+  error: null,
+});
 
 // Mock validation error
 mockSupabase.rpc.mockResolvedValue({
-  data: [{ validation_errors: ['Error message'] }],
-  error: null
-})
+  data: [{ validation_errors: ["Error message"] }],
+  error: null,
+});
 ```
 
 **Authentication Mocking:**
+
 ```typescript
 // Mock authenticated user
 mockUseAuth.mockReturnValue({
-  user: { id: 'test-user-id', email: 'test@example.com' },
+  user: { id: "test-user-id", email: "test@example.com" },
   loading: false,
-  error: null
-})
+  error: null,
+});
 
 // Mock unauthenticated state
 mockUseAuth.mockReturnValue({
   user: null,
   loading: false,
-  error: null
-})
+  error: null,
+});
 ```
 
 ## 📈 Test Metrics and Coverage
@@ -253,6 +271,7 @@ mockUseAuth.mockReturnValue({
 ### Common Issues and Solutions
 
 1. **Database Connection Failures**
+
    ```bash
    # Ensure Supabase is running
    supabase status
@@ -260,12 +279,14 @@ mockUseAuth.mockReturnValue({
    ```
 
 2. **Function Not Found Errors**
+
    ```bash
    # Deploy database functions
    supabase db push
    ```
 
 3. **Test Data Conflicts**
+
    ```bash
    # Reset database
    supabase db reset
@@ -279,10 +300,11 @@ mockUseAuth.mockReturnValue({
 ### Debug Logging
 
 Enable debug logging in tests:
+
 ```typescript
 // Add to test setup
-console.log('Mock called with:', mockSupabase.rpc.mock.calls)
-console.log('Current state:', result.current)
+console.log("Mock called with:", mockSupabase.rpc.mock.calls);
+console.log("Current state:", result.current);
 ```
 
 ## 🎯 Best Practices

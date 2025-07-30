@@ -15,12 +15,14 @@ OptiStaff is a comprehensive React-based workforce management platform that conn
 ## 🏗️ Architecture Overview
 
 ### Frontend Architecture
+
 - **Component-Based**: Modular React components with TypeScript
 - **Custom Hooks**: Domain-specific logic (useAuth, useShifts, useAvailability)
 - **Role-Based Routing**: Separate layouts for employers and job seekers
 - **Real-time Updates**: Live data synchronization via Supabase subscriptions
 
 ### Backend Architecture (Supabase)
+
 - **Dual User System**: Separate profiles for job seekers and clients
 - **Automated Business Logic**: Database triggers for ratings, capacity management
 - **Row Level Security**: Secure data access with RLS policies
@@ -29,11 +31,13 @@ OptiStaff is a comprehensive React-based workforce management platform that conn
 ## 🔧 Development Setup
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 - Supabase account and project
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -51,6 +55,7 @@ npm run dev
 ```
 
 ### Available Scripts
+
 - `npm run dev` - Start development server
 - `npm run build` - Production build
 - `npm run build:dev` - Development build
@@ -60,6 +65,7 @@ npm run dev
 ## 📊 Database Schema
 
 ### Core Tables
+
 - **`job_seekers`** - Employee profiles and ratings
 - **`clients`** - Employer company information
 - **`shifts`** - Job postings with scheduling details
@@ -70,13 +76,16 @@ npm run dev
 - **`payouts`** - Earnings tracking and payment records
 
 ### Status System
+
 The platform uses an integer-based status system with a lookup table:
+
 - **Shift Status**: 1 = OPEN, 2 = FILLED
 - **Assignment Status**: 5 = CONFIRMED, 7 = CANCELLED_BY_USER, 8 = NO_SHOW, 9 = COMPLETED
 
 ## 🎯 Key Features
 
 ### For Job Seekers
+
 - **Availability Management**: Calendar-based scheduling with templates
 - **Job Preferences**: Set pay rates, travel distance, preferred roles
 - **Shift Browsing**: View and apply for available shifts
@@ -84,6 +93,7 @@ The platform uses an integer-based status system with a lookup table:
 - **Rating System**: Build reputation through client feedback
 
 ### For Employers
+
 - **Shift Management**: Create and manage job postings
 - **Staff Matching**: Automated matching algorithm for job seekers
 - **Roster Management**: Track staff assignments and capacity
@@ -91,6 +101,7 @@ The platform uses an integer-based status system with a lookup table:
 - **Feedback System**: Rate job seeker performance
 
 ### Advanced Features
+
 - **Smart Matching**: Algorithm considers pay rate, location, preferences, and ratings
 - **Template System**: Reusable availability patterns
 - **Automated Triggers**: Rating updates, capacity management, status changes

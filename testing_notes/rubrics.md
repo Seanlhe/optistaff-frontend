@@ -6,17 +6,18 @@ Here is the **Markdown-formatted** extraction for **Project Meeting 3** (worth 5
 
 ### ✅ Requirements
 
-* Any changes in requirement and design (compared to 2nd meeting) — **0.5%**
-* Complete design — **1%**
-* Implementation of additional features (demo) — **1%**
-* Test Plan — **1%**
+- Any changes in requirement and design (compared to 2nd meeting) — **0.5%**
+- Complete design — **1%**
+- Implementation of additional features (demo) — **1%**
+- Test Plan — **1%**
 
-  * Unit test cases (some core features) — described in **table document format**
-  * Integration test cases (some core features) — described in **table format** with strategy (e.g., top-down, bottom-up)
-  * (Optional) End-to-end testing for some use cases or user stories
-  * Timeline for implementing and executing remaining tests
-* Implementation of some tests (demo) — **1%**
-* Commit records to show workload distribution — **0.5%**
+  - Unit test cases (some core features) — described in **table document format**
+  - Integration test cases (some core features) — described in **table format** with strategy (e.g., top-down, bottom-up)
+  - (Optional) End-to-end testing for some use cases or user stories
+  - Timeline for implementing and executing remaining tests
+
+- Implementation of some tests (demo) — **1%**
+- Commit records to show workload distribution — **0.5%**
 
 ---
 

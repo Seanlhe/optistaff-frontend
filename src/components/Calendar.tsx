@@ -16,9 +16,6 @@ import { TemplateNameDialog } from "./TemplateNameDialog";
 import { TemplateSelectDialog } from "./TemplateSelectDialog";
 import { UI_Event } from "../types/hooks"; // Import the Event type
 
-
-
-
 // Define the cycle for which we are managing availability
 const CYCLE: "PRIMARY" | "SECONDARY" = "PRIMARY";
 
@@ -26,21 +23,30 @@ const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   // State to hold the events (availability slots)
-  const [events, setEvents] = useState<UI_Event[]>([]); 
+  const [events, setEvents] = useState<UI_Event[]>([]);
 
   // Track if we've loaded initial data to prevent refetching
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
 
   // Template dialog states
   const [showTemplateNameDialog, setShowTemplateNameDialog] = useState(false);
-  const [showTemplateSelectDialog, setShowTemplateSelectDialog] = useState(false);
+  const [showTemplateSelectDialog, setShowTemplateSelectDialog] =
+    useState(false);
   const [templateSaveLoading, setTemplateSaveLoading] = useState(false);
   const [templateLoadLoading, setTemplateLoadLoading] = useState(false);
 
   // Use the custom hook to manage availability data
-  const { getAvailability, setAvailability, fetchLoading, saveLoading, loading, error } = useAvailability();
+  const {
+    getAvailability,
+    setAvailability,
+    fetchLoading,
+    saveLoading,
+    loading,
+    error,
+  } = useAvailability();
 
-  const { createTemplate, fetchTemplate, deleteTemplate,fetchAllTemplates} = useAvailabilityTemplate();
+  const { createTemplate, fetchTemplate, deleteTemplate, fetchAllTemplates } =
+    useAvailabilityTemplate();
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
 
@@ -53,7 +59,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchAvailability = async () => {
       if (loading || hasLoadedInitialData) return; // Don't fetch if still loading auth or already loaded
-      
+
       try {
         const timeBlocks = await getAvailability(CYCLE);
         setEvents(
@@ -62,14 +68,14 @@ const Calendar = () => {
             startTime: new Date(tb.start_time),
             endTime: new Date(tb.end_time),
             day_of_week: tb.day_of_week || new Date(tb.start_time).getDay() + 1, // Convert JS day (0-6) to 1-7
-          }))
+          })),
         );
         setHasLoadedInitialData(true); // Mark as loaded to prevent refetching
       } catch (err) {
-        console.error('Error fetching availability:', err);
+        console.error("Error fetching availability:", err);
       }
     };
-    
+
     // Only fetch when auth loading is complete and we haven't loaded yet
     if (!loading && !hasLoadedInitialData) {
       fetchAvailability();
@@ -111,16 +117,16 @@ const Calendar = () => {
         end_time: event.endTime.toISOString(),
         submission_cycle: CYCLE,
       }));
-      
+
       const success = await setAvailability(timeBlocks, "PRIMARY");
-      
+
       if (success) {
         // Optionally refresh data from database after successful save
         // For now, we'll keep the local state as is since it should match the saved data
-        console.log('Availability saved successfully');
+        console.log("Availability saved successfully");
       }
     } catch (err) {
-      console.error('Error saving availability:', err);
+      console.error("Error saving availability:", err);
     }
   };
 
@@ -134,85 +140,83 @@ const Calendar = () => {
           startTime: new Date(tb.start_time),
           endTime: new Date(tb.end_time),
           day_of_week: tb.day_of_week || new Date(tb.start_time).getDay() + 1, // Convert JS day (0-6) to 1-7
-        }))
+        })),
       );
     } catch (err) {
-      console.error('Error refreshing availability:', err);
+      console.error("Error refreshing availability:", err);
     }
   };
 
   // Template functions
   const handleSaveTemplate = async (templateName: string) => {
     setTemplateSaveLoading(true);
-  try {
-    const newTemplate = {
-      template_name: templateName,
-      is_default: false, // Or true, if applicable
-      timeblocks: events, // Pass your current events (UI_Event[])
-    };
+    try {
+      const newTemplate = {
+        template_name: templateName,
+        is_default: false, // Or true, if applicable
+        timeblocks: events, // Pass your current events (UI_Event[])
+      };
 
-    const result = await createTemplate(newTemplate);
+      const result = await createTemplate(newTemplate);
 
-    if (result) {
-      console.log("Template saved successfully:", result);
-      setShowTemplateNameDialog(false);
-    } else {
-      console.error("Failed to save template",result);
-    }
-  } catch (err) {
-    console.error("Error saving template:", err);
-  } finally {
-    setTemplateSaveLoading(false);
-    setShowTemplateSelectDialog(false); // Close it first
-    setTimeout(() => {
-      setShowTemplateSelectDialog(true); // Reopen it after short delay
-    }, 50); // Short delay ensures re-render
-    
+      if (result) {
+        console.log("Template saved successfully:", result);
+        setShowTemplateNameDialog(false);
+      } else {
+        console.error("Failed to save template", result);
+      }
+    } catch (err) {
+      console.error("Error saving template:", err);
+    } finally {
+      setTemplateSaveLoading(false);
+      setShowTemplateSelectDialog(false); // Close it first
+      setTimeout(() => {
+        setShowTemplateSelectDialog(true); // Reopen it after short delay
+      }, 50); // Short delay ensures re-render
+
       await fetchAllTemplates();
     }
   };
 
-const handleUseTemplate = async (templateId: string) => {
-  setTemplateLoadLoading(true);
-  try {
-    console.log("Loading template:", templateId);
+  const handleUseTemplate = async (templateId: string) => {
+    setTemplateLoadLoading(true);
+    try {
+      console.log("Loading template:", templateId);
 
-    const template = await fetchTemplate(templateId);
-    if (!template) throw new Error("Failed to load template");
+      const template = await fetchTemplate(templateId);
+      if (!template) throw new Error("Failed to load template");
 
-    const templateEvents: UI_Event[] = template.timeblocks.map((block) => {
-      // Shift day_of_week backward by 1, wrapping 1 -> 7
-      const shiftedDay = block.day_of_week === 1 ? 7 : block.day_of_week - 1;
+      const templateEvents: UI_Event[] = template.timeblocks.map((block) => {
+        // Shift day_of_week backward by 1, wrapping 1 -> 7
+        const shiftedDay = block.day_of_week === 1 ? 7 : block.day_of_week - 1;
 
-      const targetDay = weekDays[shiftedDay - 1]; // weekDays[0] = Monday
+        const targetDay = weekDays[shiftedDay - 1]; // weekDays[0] = Monday
 
-      const blockStart = new Date(block.startTime);
-      const blockEnd = new Date(block.endTime);
+        const blockStart = new Date(block.startTime);
+        const blockEnd = new Date(block.endTime);
 
-      return {
-        id: block.id,
-        day_of_week: shiftedDay,
-        startTime: set(targetDay, {
-          hours: blockStart.getHours(),
-          minutes: blockStart.getMinutes(),
-        }),
-        endTime: set(targetDay, {
-          hours: blockEnd.getHours(),
-          minutes: blockEnd.getMinutes(),
-        }),
-      };
-    });
+        return {
+          id: block.id,
+          day_of_week: shiftedDay,
+          startTime: set(targetDay, {
+            hours: blockStart.getHours(),
+            minutes: blockStart.getMinutes(),
+          }),
+          endTime: set(targetDay, {
+            hours: blockEnd.getHours(),
+            minutes: blockEnd.getMinutes(),
+          }),
+        };
+      });
 
-    setEvents(templateEvents);
-    setShowTemplateSelectDialog(false);
-  } catch (err) {
-    console.error("Error loading template:", err);
-  } finally {
-    setTemplateLoadLoading(false);
-  }
-};
-
-
+      setEvents(templateEvents);
+      setShowTemplateSelectDialog(false);
+    } catch (err) {
+      console.error("Error loading template:", err);
+    } finally {
+      setTemplateLoadLoading(false);
+    }
+  };
 
   const handleDeleteTemplate = async (templateId: string) => {
     try {
@@ -226,12 +230,7 @@ const handleUseTemplate = async (templateId: string) => {
     } catch (err) {
       console.error("Failed to delete template", err);
     }
-
-
-    
   };
-
-
 
   // direction argument must be either the string "prev" or the string "next"
   const navigateWeek = (direction: "prev" | "next") => {
@@ -285,7 +284,7 @@ const handleUseTemplate = async (templateId: string) => {
             disabled={saveLoading}
           >
             <Save className="h-4 w-4" />
-            {saveLoading ? 'Saving...' : 'Save'}
+            {saveLoading ? "Saving..." : "Save"}
           </button>
 
           <button
@@ -294,7 +293,9 @@ const handleUseTemplate = async (templateId: string) => {
             disabled={fetchLoading}
             title="Refresh"
           >
-            <RefreshCw className={`h-4 w-4 ${fetchLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${fetchLoading ? "animate-spin" : ""}`}
+            />
           </button>
         </div>
       </header>
@@ -325,9 +326,11 @@ const handleUseTemplate = async (templateId: string) => {
           {weekDays.map((day, index) => {
             // Handle invalid dates gracefully
             const isValidDate = day instanceof Date && !isNaN(day.getTime());
-            const dayKey = isValidDate ? day.toISOString() : `invalid-day-${index}`;
+            const dayKey = isValidDate
+              ? day.toISOString()
+              : `invalid-day-${index}`;
             const dayText = isValidDate ? format(day, "d") : "--";
-            
+
             return (
               <div
                 key={dayKey}
@@ -345,36 +348,40 @@ const handleUseTemplate = async (templateId: string) => {
           {weekDays.map((day, index) => {
             // Handle invalid dates gracefully for time slots
             const isValidDate = day instanceof Date && !isNaN(day.getTime());
-            const dayKey = isValidDate ? day.toISOString() : `invalid-timeslot-${index}`;
-            
+            const dayKey = isValidDate
+              ? day.toISOString()
+              : `invalid-timeslot-${index}`;
+
             return (
               <div key={dayKey} className="relative border-r border-border">
-              {HOURS.map((hour) => (
-                <div
-                  key={hour}
-                  className="h-12 border-b border-border hover:bg-bg cursor-pointer"
-                  onDoubleClick={() => isValidDate ? handleDoubleClick(day, hour) : null}
-                ></div>
-              ))}
-              {events
-                .filter((event) => {
-                  // Handle invalid dates in events gracefully
-                  if (!event.startTime || !isValidDate) return false;
-                  try {
-                    return isSameDay(event.startTime, day);
-                  } catch {
-                    return false;
-                  }
-                })
-                .map((event) => (
-                  <CalendarEvent
-                    key={event.id}
-                    event={event}
-                    onUpdate={handleUpdateEvent}
-                    onDelete={handleDeleteEvent}
-                  />
+                {HOURS.map((hour) => (
+                  <div
+                    key={hour}
+                    className="h-12 border-b border-border hover:bg-bg cursor-pointer"
+                    onDoubleClick={() =>
+                      isValidDate ? handleDoubleClick(day, hour) : null
+                    }
+                  ></div>
                 ))}
-            </div>
+                {events
+                  .filter((event) => {
+                    // Handle invalid dates in events gracefully
+                    if (!event.startTime || !isValidDate) return false;
+                    try {
+                      return isSameDay(event.startTime, day);
+                    } catch {
+                      return false;
+                    }
+                  })
+                  .map((event) => (
+                    <CalendarEvent
+                      key={event.id}
+                      event={event}
+                      onUpdate={handleUpdateEvent}
+                      onDelete={handleDeleteEvent}
+                    />
+                  ))}
+              </div>
             );
           })}
         </div>

@@ -1,4 +1,15 @@
-import { Clock, MapPin, DollarSign, Briefcase, FileText, Star, Phone, Mail, Coffee, User } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  DollarSign,
+  Briefcase,
+  FileText,
+  Star,
+  Phone,
+  Mail,
+  Coffee,
+  User,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { JobseekerAssignmentCard } from "./JobseekerAssignmentCard";
@@ -12,9 +23,14 @@ interface AssignmentDetailsModalProps {
   onStatusChange?: () => void; // Add callback for status changes
 }
 
-export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusChange }: AssignmentDetailsModalProps) => {
+export const AssignmentDetailsModal = ({
+  assignment,
+  isOpen,
+  onClose,
+  onStatusChange,
+}: AssignmentDetailsModalProps) => {
   const { updateAssignmentStatus } = useAssignments();
-  
+
   if (!assignment) return null;
 
   // Handler function for cancelling assignment
@@ -24,7 +40,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
       onStatusChange?.(); // Trigger refresh
       onClose(); // Close modal after successful cancellation
     } catch (error) {
-      console.error('Failed to cancel assignment:', error);
+      console.error("Failed to cancel assignment:", error);
       // You could show a toast notification here
     }
   };
@@ -33,14 +49,16 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
   const renderAssignmentDetails = () => (
     <div className="space-y-4">
       <div className="border-t border-t-border pt-4">
-        <h4 className="font-semibold text-primary-text mb-3">Assignment Details</h4>
-        
+        <h4 className="font-semibold text-primary-text mb-3">
+          Assignment Details
+        </h4>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-sm text-secondary-text">Status</label>
             <p className="font-medium capitalize">{assignment.status}</p>
           </div>
-          
+
           <div>
             <label className="text-sm text-secondary-text">Assignment ID</label>
             <p className="font-montserrat text-sm">{assignment.id}</p>
@@ -53,12 +71,14 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
   // Render contact details section
   const renderContactDetails = () => {
     if (!assignment.contactNumber && !assignment.contactEmail) return null;
-    
+
     return (
       <div className="space-y-4">
         <div className="border-t border-t-border pt-4">
-          <h4 className="font-semibold text-primary-text mb-3">Contact Information</h4>
-          
+          <h4 className="font-semibold text-primary-text mb-3">
+            Contact Information
+          </h4>
+
           <div className="space-y-3">
             {assignment.contactNumber && (
               <div className="flex items-center space-x-3">
@@ -69,7 +89,7 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
                 </div>
               </div>
             )}
-            
+
             {assignment.contactEmail && (
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-primary-blue" />
@@ -87,10 +107,10 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
 
   // Render cancel button for upcoming assignments
   const renderCancelButton = () => {
-    if (assignment.status === 'upcoming') {
+    if (assignment.status === "upcoming") {
       return (
         <div>
-          <Button 
+          <Button
             onClick={handleCancelAssignment}
             className="w-full bg-primary-blue text-white hover:bg-error/80"
             variant="destructive"
@@ -105,13 +125,16 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
 
   // Render employer feedback section
   const renderEmployerFeedback = () => {
-    if (assignment.status !== "completed" || !assignment.employerFeedback) return null;
-    
+    if (assignment.status !== "completed" || !assignment.employerFeedback)
+      return null;
+
     return (
       <div className="space-y-3 border-t border-t-border pt-4">
         <div className="flex items-center space-x-2">
           <Star className="w-4 h-4 text-primary-blue" />
-          <h4 className="text-base font-semibold text-primary-text">Employer Feedback</h4>
+          <h4 className="text-base font-semibold text-primary-text">
+            Employer Feedback
+          </h4>
         </div>
         {assignment.rating && (
           <div className="flex items-center space-x-2">
@@ -121,12 +144,16 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
                 <Star
                   key={i}
                   className={`w-4 h-4 ${
-                    i < assignment.rating! ? "fill-yellow-400 text-yellow-400" : "text-secondary-text"
+                    i < assignment.rating!
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-secondary-text"
                   }`}
                 />
               ))}
             </div>
-            <span className="text-sm text-secondary-text">({assignment.rating}/5)</span>
+            <span className="text-sm text-secondary-text">
+              ({assignment.rating}/5)
+            </span>
           </div>
         )}
         <p className="text-sm text-secondary-text leading-relaxed">
@@ -144,9 +171,13 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             {assignment.title}
           </DialogTitle>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-sm text-secondary-text">{assignment.company_name}</span>
+            <span className="text-sm text-secondary-text">
+              {assignment.company_name}
+            </span>
             {assignment.hourlyRate > 0 && (
-              <span className="text-base font-bold text-primary-text">${assignment.hourlyRate}/hr</span>
+              <span className="text-base font-bold text-primary-text">
+                ${assignment.hourlyRate}/hr
+              </span>
             )}
           </div>
         </DialogHeader>
@@ -156,7 +187,9 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
               <Clock className="w-6 h-6 text-primary-blue" />
               <div>
-                <p className="text-lg font-bold text-primary-text mb-1">Schedule</p>
+                <p className="text-lg font-bold text-primary-text mb-1">
+                  Schedule
+                </p>
                 <p className="text-sm text-secondary-text">{assignment.date}</p>
                 <p className="text-sm text-secondary-text">{assignment.time}</p>
               </div>
@@ -165,8 +198,12 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
               <MapPin className="w-6 h-6 text-primary-blue" />
               <div>
-                <p className="text-lg font-bold text-primary-text mb-1">Location</p>
-                <p className="text-sm text-secondary-text">{assignment.location}</p>
+                <p className="text-lg font-bold text-primary-text mb-1">
+                  Location
+                </p>
+                <p className="text-sm text-secondary-text">
+                  {assignment.location}
+                </p>
               </div>
             </div>
 
@@ -174,8 +211,12 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
               <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
                 <DollarSign className="w-6 h-6 text-primary-blue" />
                 <div>
-                  <p className="text-lg font-bold text-primary-text mb-1">Compensation</p>
-                  <p className="text-sm text-secondary-text">{assignment.hourlyRate}/h</p>
+                  <p className="text-lg font-bold text-primary-text mb-1">
+                    Compensation
+                  </p>
+                  <p className="text-sm text-secondary-text">
+                    {assignment.hourlyRate}/h
+                  </p>
                 </div>
               </div>
             )}
@@ -184,8 +225,12 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
               <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
                 <User className="w-6 h-6 text-primary-blue" />
                 <div>
-                  <p className="text-lg font-bold text-primary-text mb-1">Job Type</p>
-                  <p className="text-sm text-secondary-text">{assignment.jobType}</p>
+                  <p className="text-lg font-bold text-primary-text mb-1">
+                    Job Type
+                  </p>
+                  <p className="text-sm text-secondary-text">
+                    {assignment.jobType}
+                  </p>
                 </div>
               </div>
             )}
@@ -193,8 +238,12 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             <div className="flex items-center space-x-4 p-4 bg-card-color border border-border rounded-lg">
               <Coffee className="w-6 h-6 text-primary-blue" />
               <div>
-                <p className="text-lg font-bold text-primary-text mb-1">Break Time</p>
-                <p className="text-sm text-secondary-text">{assignment.breakHours ?? 0} hour(s) break included</p>
+                <p className="text-lg font-bold text-primary-text mb-1">
+                  Break Time
+                </p>
+                <p className="text-sm text-secondary-text">
+                  {assignment.breakHours ?? 0} hour(s) break included
+                </p>
               </div>
             </div>
           </div>
@@ -203,7 +252,9 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Briefcase className="w-4 h-4 text-primary-blue" />
-                <h4 className="text-base font-semibold text-primary-text">Job Description</h4>
+                <h4 className="text-base font-semibold text-primary-text">
+                  Job Description
+                </h4>
               </div>
               <p className="text-sm text-secondary-text leading-relaxed">
                 {assignment.description}
@@ -215,7 +266,9 @@ export const AssignmentDetailsModal = ({ assignment, isOpen, onClose, onStatusCh
             <div className="space-y-2 border-t border-t-border pt-4">
               <div className="flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-primary-blue" />
-                <h4 className="text-base font-semibold text-primary-text">Requirements</h4>
+                <h4 className="text-base font-semibold text-primary-text">
+                  Requirements
+                </h4>
               </div>
               <p className="text-sm text-secondary-text leading-relaxed">
                 {assignment.requirements}

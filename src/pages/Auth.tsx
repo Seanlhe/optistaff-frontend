@@ -32,8 +32,10 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [userType, setUserType] = useState<"jobseeker" | "employer">("jobseeker");
-  
+  const [userType, setUserType] = useState<"jobseeker" | "employer">(
+    "jobseeker",
+  );
+
   const [isSignup, setIsSignup] = useState(mode === "signup");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -60,14 +62,14 @@ const Auth = () => {
 
   // Check for signup success message from sessionStorage
   useEffect(() => {
-    const signupSuccess = sessionStorage.getItem('signup_success');
-    if (signupSuccess && mode === 'login') {
+    const signupSuccess = sessionStorage.getItem("signup_success");
+    if (signupSuccess && mode === "login") {
       // Display the success message
-      console.log('✅ Signup Success:', signupSuccess);
+      console.log("✅ Signup Success:", signupSuccess);
       setSuccessMessage(signupSuccess);
       // Clear the message so it doesn't show again
-      sessionStorage.removeItem('signup_success');
-      
+      sessionStorage.removeItem("signup_success");
+
       // Clear the success message after 10 seconds
       setTimeout(() => {
         setSuccessMessage("");
@@ -83,7 +85,7 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (isSignup) {
       // Debug logging to see what data we're passing to signup
       const signupData = {
@@ -100,9 +102,9 @@ const Auth = () => {
         companyName: userType === "employer" ? companyName : undefined,
         officeNumber: userType === "employer" ? officeNumber : undefined,
       };
-      
-      console.log('🔍 Auth Debug - Signup data being passed:', signupData);
-      
+
+      console.log("🔍 Auth Debug - Signup data being passed:", signupData);
+
       await signup(signupData);
     } else {
       await login(email, password);
@@ -159,10 +161,7 @@ const Auth = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignup && (
-              <UserTypeToggle
-                userType={userType}
-                setUserType={setUserType}
-              />
+              <UserTypeToggle userType={userType} setUserType={setUserType} />
             )}
 
             <AuthFormFields
@@ -172,25 +171,21 @@ const Auth = () => {
               setFormData={setFormData}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   {isSignup ? "Creating Account..." : "Signing In..."}
                 </>
+              ) : isSignup ? (
+                "Create Account"
               ) : (
-                isSignup ? "Create Account" : "Sign In"
+                "Sign In"
               )}
             </Button>
           </form>
 
-          <AuthFooter
-            isSignup={isSignup}
-          />
+          <AuthFooter isSignup={isSignup} />
         </CardContent>
       </Card>
     </div>

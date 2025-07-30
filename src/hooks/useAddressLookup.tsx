@@ -29,8 +29,6 @@ export const useAddressLookup = () => {
     error: null,
   });
 
-
-
   const lookupPostalCode = useCallback(async (address: string) => {
     // Clear postal code field at the start of each validation
     setResult((prev) => ({
@@ -80,12 +78,12 @@ export const useAddressLookup = () => {
           // For production, we'll need server-side geocoding or a paid proxy service
           // For now, throw an error with helpful message
           throw new Error(
-            "Address validation not available in production. Please enter postal code manually."
+            "Address validation not available in production. Please enter postal code manually.",
           );
         } else {
           // For development, use Vite proxy
           geocodeUrl = `/api/geocode/json?address=${encodeURIComponent(
-            address + ", Singapore"
+            address + ", Singapore",
           )}&key=${apiKey}`;
         }
 
@@ -100,7 +98,7 @@ export const useAddressLookup = () => {
 
         console.log(
           "🔍 Address Lookup Debug - Response status:",
-          response.status
+          response.status,
         );
 
         if (!response.ok) {
@@ -132,7 +130,7 @@ export const useAddressLookup = () => {
 
           // Extract postal code from address components
           const extractedPostalCode = geocodeResult.address_components.find(
-            (component) => component.types.includes("postal_code")
+            (component) => component.types.includes("postal_code"),
           )?.long_name;
 
           if (!extractedPostalCode) {
@@ -151,45 +149,59 @@ export const useAddressLookup = () => {
           };
 
           const normalizeRoadTypes = (addressStr: string): string => {
-            return addressStr
-              .toLowerCase()
-              .replace(/[^a-z0-9\s]/g, '')
-              .replace(/\s+/g, ' ')
-              .trim()
-              // Normalize all road type variations to full forms
-              .replace(/\b(rd|road)\b/g, 'road')
-              .replace(/\b(st|street)\b/g, 'street')
-              .replace(/\b(ave|avenue)\b/g, 'avenue')
-              .replace(/\b(ln|lane)\b/g, 'lane')
-              .replace(/\b(dr|drive)\b/g, 'drive')
-              .replace(/\b(cres|crescent)\b/g, 'crescent')
-              .replace(/\b(cl|close)\b/g, 'close')
-              .replace(/\b(pk|park)\b/g, 'park')
-              .replace(/\b(pl|place)\b/g, 'place')
-              .replace(/\b(gdn|garden)\b/g, 'garden')
-              .replace(/\b(gdns|gardens)\b/g, 'gardens')
-              .replace(/\b(hts|heights)\b/g, 'heights')
-              .replace(/\b(est|estate)\b/g, 'estate')
-              .replace(/\b(tce|terrace)\b/g, 'terrace')
-              .replace(/\b(wk|walk)\b/g, 'walk');
+            return (
+              addressStr
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, "")
+                .replace(/\s+/g, " ")
+                .trim()
+                // Normalize all road type variations to full forms
+                .replace(/\b(rd|road)\b/g, "road")
+                .replace(/\b(st|street)\b/g, "street")
+                .replace(/\b(ave|avenue)\b/g, "avenue")
+                .replace(/\b(ln|lane)\b/g, "lane")
+                .replace(/\b(dr|drive)\b/g, "drive")
+                .replace(/\b(cres|crescent)\b/g, "crescent")
+                .replace(/\b(cl|close)\b/g, "close")
+                .replace(/\b(pk|park)\b/g, "park")
+                .replace(/\b(pl|place)\b/g, "place")
+                .replace(/\b(gdn|garden)\b/g, "garden")
+                .replace(/\b(gdns|gardens)\b/g, "gardens")
+                .replace(/\b(hts|heights)\b/g, "heights")
+                .replace(/\b(est|estate)\b/g, "estate")
+                .replace(/\b(tce|terrace)\b/g, "terrace")
+                .replace(/\b(wk|walk)\b/g, "walk")
+            );
           };
 
           const extractStreetName = (addressStr: string): string => {
             // Remove block number first
-            let withoutBlock = addressStr.replace(/^(?:blk\s+)?\d+[a-z]?\s+/i, '');
-            
+            let withoutBlock = addressStr.replace(
+              /^(?:blk\s+)?\d+[a-z]?\s+/i,
+              "",
+            );
+
             // Remove postal code (6 digits) and any trailing location info
-            withoutBlock = withoutBlock.replace(/\s+\d{6}.*$/, '');
-            
+            withoutBlock = withoutBlock.replace(/\s+\d{6}.*$/, "");
+
             // Remove common Singapore location suffixes that might remain
-            withoutBlock = withoutBlock.replace(/\s+(singapore|downtown core|central|orchard|marina bay|bugis|chinatown|little india|kampong glam).*$/i, '');
-            
+            withoutBlock = withoutBlock.replace(
+              /\s+(singapore|downtown core|central|orchard|marina bay|bugis|chinatown|little india|kampong glam).*$/i,
+              "",
+            );
+
             // Then normalize road types
             return normalizeRoadTypes(withoutBlock);
           };
 
-          const inputNormalized = address.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
-          const returnedNormalized = formattedAddress.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+          const inputNormalized = address
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, "")
+            .trim();
+          const returnedNormalized = formattedAddress
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, "")
+            .trim();
 
           // Extract components from both addresses
           const inputBlockNumber = extractBlockNumber(inputNormalized);
@@ -197,24 +209,42 @@ export const useAddressLookup = () => {
           const inputStreetName = extractStreetName(inputNormalized);
           const returnedStreetName = extractStreetName(returnedNormalized);
 
-          console.log('🔍 Address Validation Debug:');
-          console.log('Input normalized:', inputNormalized);
-          console.log('Returned normalized:', returnedNormalized);
-          console.log('Input block:', inputBlockNumber, 'Returned block:', returnedBlockNumber);
-          console.log('Input street:', inputStreetName, 'Returned street:', returnedStreetName);
+          console.log("🔍 Address Validation Debug:");
+          console.log("Input normalized:", inputNormalized);
+          console.log("Returned normalized:", returnedNormalized);
+          console.log(
+            "Input block:",
+            inputBlockNumber,
+            "Returned block:",
+            returnedBlockNumber,
+          );
+          console.log(
+            "Input street:",
+            inputStreetName,
+            "Returned street:",
+            returnedStreetName,
+          );
 
           // Strict validation: Block number must match exactly if provided
-          if (inputBlockNumber && returnedBlockNumber && inputBlockNumber !== returnedBlockNumber) {
-            console.log('🔍 Address Lookup Debug - Block number mismatch');
-            throw new Error('Invalid address - Block number does not match');
+          if (
+            inputBlockNumber &&
+            returnedBlockNumber &&
+            inputBlockNumber !== returnedBlockNumber
+          ) {
+            console.log("🔍 Address Lookup Debug - Block number mismatch");
+            throw new Error("Invalid address - Block number does not match");
           }
 
           // Flexible validation: Street names should match after normalization
-          if (inputStreetName && returnedStreetName && inputStreetName !== returnedStreetName) {
-            console.log('🔍 Address Lookup Debug - Street name mismatch');
-            console.log('Input street (normalized):', inputStreetName);
-            console.log('Returned street (normalized):', returnedStreetName);
-            throw new Error('Invalid address - Street name does not match');
+          if (
+            inputStreetName &&
+            returnedStreetName &&
+            inputStreetName !== returnedStreetName
+          ) {
+            console.log("🔍 Address Lookup Debug - Street name mismatch");
+            console.log("Input street (normalized):", inputStreetName);
+            console.log("Returned street (normalized):", returnedStreetName);
+            throw new Error("Invalid address - Street name does not match");
           }
 
           // Only set the result if all validations pass

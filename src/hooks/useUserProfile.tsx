@@ -28,7 +28,7 @@ export const useUserProfile = () => {
   // Error states (separate for different operations)
   const [error, setError] = useState<string | null>(null);
   const [personalInfoError, setPersonalInfoError] = useState<string | null>(
-    null
+    null,
   );
   const [accountSettingsError, setAccountSettingsError] = useState<
     string | null
@@ -51,7 +51,7 @@ export const useUserProfile = () => {
     try {
       console.log(
         "Fetching profile using database function for user:",
-        user.id
+        user.id,
       );
 
       const { data, error } = await supabase.rpc("get_user_profile_data", {
@@ -69,12 +69,12 @@ export const useUserProfile = () => {
         (!profile.first_name || !profile.last_name)
       ) {
         throw new Error(
-          "Profile is incomplete. Please ensure your first name and last name are set."
+          "Profile is incomplete. Please ensure your first name and last name are set.",
         );
       }
       if (profile.user_role === "employer" && !profile.company_name) {
         throw new Error(
-          "Company profile is incomplete. Please ensure your company name is set."
+          "Company profile is incomplete. Please ensure your company name is set.",
         );
       }
 
@@ -118,7 +118,7 @@ export const useUserProfile = () => {
       ) {
         console.warn(
           "Invalid postal code format in database:",
-          result.personalInfo.postalCode
+          result.personalInfo.postalCode,
         );
       }
 
@@ -129,7 +129,7 @@ export const useUserProfile = () => {
       setError(
         err instanceof Error
           ? err.message
-          : "Unknown error occurred while loading profile"
+          : "Unknown error occurred while loading profile",
       );
       setProfileData(null);
     } finally {
@@ -139,7 +139,7 @@ export const useUserProfile = () => {
 
   // Update personal info with geocoding and database function
   const updatePersonalInfo = async (
-    formData: PersonalInfoFormData
+    formData: PersonalInfoFormData,
   ): Promise<boolean> => {
     if (!user || !profileData) {
       setPersonalInfoError("User not authenticated or profile not loaded");
@@ -173,7 +173,7 @@ export const useUserProfile = () => {
                 newCoordinates = `${coordinates[0]},${coordinates[1]}`;
                 console.log(
                   "Successfully geocoded to coordinates:",
-                  newCoordinates
+                  newCoordinates,
                 );
               }
             } catch (geocodeError) {
@@ -206,7 +206,7 @@ export const useUserProfile = () => {
       console.log(
         newCoordinates
           ? "Personal info and coordinates updated successfully"
-          : "Personal info updated successfully"
+          : "Personal info updated successfully",
       );
       return true;
     } catch (err) {
@@ -214,7 +214,7 @@ export const useUserProfile = () => {
       setPersonalInfoError(
         err instanceof Error
           ? err.message
-          : "Failed to update personal information"
+          : "Failed to update personal information",
       );
       return false;
     } finally {
@@ -224,7 +224,7 @@ export const useUserProfile = () => {
 
   // Update account settings (email and password)
   const updateAccountSettings = async (
-    formData: AccountSettingsFormData
+    formData: AccountSettingsFormData,
   ): Promise<boolean> => {
     if (!user) {
       setAccountSettingsError("User not authenticated");
@@ -282,7 +282,9 @@ export const useUserProfile = () => {
     } catch (err) {
       console.error("updateAccountSettings error:", err);
       setAccountSettingsError(
-        err instanceof Error ? err.message : "Failed to update account settings"
+        err instanceof Error
+          ? err.message
+          : "Failed to update account settings",
       );
       return false;
     } finally {

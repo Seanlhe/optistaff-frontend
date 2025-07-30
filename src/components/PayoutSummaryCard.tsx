@@ -1,41 +1,34 @@
-import { useEffect, useState } from 'react';
-import { DollarSign, RotateCcw } from 'lucide-react';
-import { usePayouts } from '../hooks/usePayouts';
-import StatsCard from './StatsCard';
+import { useEffect, useState } from "react";
+import { DollarSign, RotateCcw } from "lucide-react";
+import { useAssignments } from "../hooks/useAssignments";
+import StatsCard from "./StatsCard";
 
 interface PayoutSummaryCardProps {
   refreshTrigger?: number; // Timestamp or counter to trigger refresh
-  onRefresh?: () => void;   // Optional callback for manual refresh
+  onRefresh?: () => void; // Optional callback for manual refresh
 }
 
-const PayoutSummaryCard = ({ refreshTrigger, onRefresh }: PayoutSummaryCardProps) => {
-  const [weeklyEarnings, setWeeklyEarnings] = useState<number>(0);
-  const [weeklyLoading, setWeeklyLoading] = useState<boolean>(false);
+const PayoutSummaryCard = ({
+  refreshTrigger,
+  onRefresh,
+}: PayoutSummaryCardProps) => {
   const [refreshError, setRefreshError] = useState<string | null>(null);
-  const { getEstimatedWeeklyPay } = usePayouts();
+  const {
+    weeklyTotal,
+    loading: weeklyLoading,
+    error,
+    fetchWeeklyEarnings,
+  } = useAssignments();
 
   // Function to fetch earnings data
   const fetchEarnings = async () => {
-    setWeeklyLoading(true);
     setRefreshError(null);
     try {
-      const amount = await getEstimatedWeeklyPay();
-      // Ensure we always have a valid number
-      const validAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 0;
-      setWeeklyEarnings(validAmount);
+      await fetchWeeklyEarnings();
     } catch (error) {
-      setWeeklyEarnings(0);
-      setRefreshError('Failed to load earnings');
-      console.error('Error fetching weekly earnings:', error);
-    } finally {
-      setWeeklyLoading(false);
+      setRefreshError("Failed to load earnings");
     }
   };
-
-  // Initial fetch on component mount
-  useEffect(() => {
-    fetchEarnings();
-  }, [getEstimatedWeeklyPay]);
 
   // Reactive refresh when refreshTrigger changes
   useEffect(() => {
@@ -53,35 +46,41 @@ const PayoutSummaryCard = ({ refreshTrigger, onRefresh }: PayoutSummaryCardProps
     }
   };
 
-  // Prepare display value with additional safety checks
-  const displayValue = weeklyLoading 
-    ? "Loading..." 
-    : `$${(typeof weeklyEarnings === 'number' && !isNaN(weeklyEarnings) ? weeklyEarnings : 0).toFixed(2)}`;
+  // Prepare display value with safety checks
+  const displayValue = weeklyLoading
+    ? "Loading..."
+    : `$${(typeof weeklyTotal === "number" && !isNaN(weeklyTotal) ? weeklyTotal : 0).toFixed(2)}`;
 
   // Custom icon with refresh button
   const iconWithRefresh = (
     <div className="flex items-center gap-2">
       <DollarSign />
-      <button 
+      <button
         onClick={handleManualRefresh}
         disabled={weeklyLoading}
         className="p-1 text-secondary-text hover:text-primary-text transition-colors disabled:opacity-50"
         title="Refresh earnings"
       >
-        <RotateCcw className={`w-4 h-4 ${weeklyLoading ? 'animate-spin' : ''}`} />
+        <RotateCcw
+          className={`w-4 h-4 ${weeklyLoading ? "animate-spin" : ""}`}
+        />
       </button>
     </div>
   );
 
+  // Show error from useAssignments hook or local refresh error
+  const displayError = error || refreshError;
+
   return (
     <div>
       <StatsCard
-        title="Estimated Earning"
+        title="Weekly Earnings"
         value={displayValue}
         icon={iconWithRefresh}
       />
-      {refreshError && (
-        <div className="text-xs text-red-500 mt-1 px-2">{refreshError}</div>
+
+      {displayError && (
+        <div className="text-xs text-red-500 mt-1 px-2">{displayError}</div>
       )}
     </div>
   );

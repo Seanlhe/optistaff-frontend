@@ -3,10 +3,10 @@
  * @description Password input field with visibility toggle functionality
  */
 
-import { FC, useState } from 'react';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Eye, EyeOff } from 'lucide-react';
+import { FC, useState } from "react";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Eye, EyeOff } from "lucide-react";
 
 interface PasswordFieldProps {
   id: string;
@@ -39,20 +39,20 @@ export const PasswordField: FC<PasswordFieldProps> = ({
         {label}
         {required && <span className="text-red ml-1">*</span>}
       </Label>
-      
+
       <div className="relative">
         <Input
           id={id}
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
           minLength={minLength}
-          className={`pr-12 ${error ? 'border-red' : ''}`}
+          className={`pr-12 ${error ? "border-red" : ""}`}
           required={required}
         />
-        
+
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
@@ -67,11 +67,11 @@ export const PasswordField: FC<PasswordFieldProps> = ({
           )}
         </button>
       </div>
-      
+
       {error && (
         <p className="text-sm text-red mt-1 font-montserrat">{error}</p>
       )}
-      
+
       {minLength && (
         <p className="text-xs text-secondary-text mt-1 font-montserrat">
           Minimum {minLength} characters

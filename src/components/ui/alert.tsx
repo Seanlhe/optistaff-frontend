@@ -14,10 +14,12 @@ const Alert = React.forwardRef<
       "relative w-full rounded-lg border p-4 font-montserrat",
       {
         "bg-tertiary-bg border-red text-red-dark": variant === "destructive",
-        "bg-tertiary-bg border-primary-blue text-primary-blue": variant === "default",
-        "bg-tertiary-bg border-border text-secondary-text": variant === "warning",
+        "bg-tertiary-bg border-primary-blue text-primary-blue":
+          variant === "default",
+        "bg-tertiary-bg border-border text-secondary-text":
+          variant === "warning",
       },
-      className
+      className,
     )}
     {...props}
   />

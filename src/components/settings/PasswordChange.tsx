@@ -1,8 +1,8 @@
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Button } from '../ui/button';
-import { CheckCircle, AlertCircle } from 'lucide-react';
-import { PasswordData, PasswordChangeProps } from '../../types/components';
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
+import { CheckCircle, AlertCircle } from "lucide-react";
+import { PasswordData, PasswordChangeProps } from "../../types/components";
 
 const PasswordChangeModal = ({
   isOpen,
@@ -13,13 +13,19 @@ const PasswordChangeModal = ({
   onSubmit,
   isLoading,
 }: PasswordChangeProps) => {
-  const getPasswordStrength = (password: string): { strength: string; color: string } => {
-    if (password.length === 0) return { strength: 'No password', color: 'text-secondary-text' };
-    if (password.length < 6) return { strength: 'Weak', color: 'text-red-500' };
-    if (password.length < 8 || !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      return { strength: 'Medium', color: 'text-yellow-500' };
+  const getPasswordStrength = (
+    password: string,
+  ): { strength: string; color: string } => {
+    if (password.length === 0)
+      return { strength: "No password", color: "text-secondary-text" };
+    if (password.length < 6) return { strength: "Weak", color: "text-red-500" };
+    if (
+      password.length < 8 ||
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)
+    ) {
+      return { strength: "Medium", color: "text-yellow-500" };
     }
-    return { strength: 'Strong', color: 'text-green-500' };
+    return { strength: "Strong", color: "text-green-500" };
   };
 
   const passwordStrength = getPasswordStrength(passwordData.newPassword);
@@ -30,20 +36,27 @@ const PasswordChangeModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-card-color border border-border rounded-xl shadow-xl max-w-md w-full mx-4">
         <div className="p-6 border-b border-border">
-          <h3 className="text-lg font-bold text-primary-text">Change Password</h3>
+          <h3 className="text-lg font-bold text-primary-text">
+            Change Password
+          </h3>
         </div>
         <form onSubmit={onSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword" className="text-base font-semibold text-primary-text">
+            <Label
+              htmlFor="currentPassword"
+              className="text-base font-semibold text-primary-text"
+            >
               Current Password
             </Label>
             <Input
               id="currentPassword"
               type="password"
               value={passwordData.currentPassword}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onPasswordChange('currentPassword', e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onPasswordChange("currentPassword", e.target.value)
+              }
               placeholder="Enter current password"
-              className={`border ${passwordErrors.currentPassword ? 'border-red-500' : 'border-border'} bg-card-color text-primary-text rounded-lg`}
+              className={`border ${passwordErrors.currentPassword ? "border-red-500" : "border-border"} bg-card-color text-primary-text rounded-lg`}
             />
             {passwordErrors.currentPassword && (
               <p className="text-sm text-red-500 flex items-center gap-1">
@@ -54,16 +67,21 @@ const PasswordChangeModal = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword" className="text-base font-semibold text-primary-text">
+            <Label
+              htmlFor="newPassword"
+              className="text-base font-semibold text-primary-text"
+            >
               New Password
             </Label>
             <Input
               id="newPassword"
               type="password"
               value={passwordData.newPassword}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onPasswordChange('newPassword', e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onPasswordChange("newPassword", e.target.value)
+              }
               placeholder="Enter new password"
-              className={`border ${passwordErrors.newPassword ? 'border-red-500' : 'border-border'} bg-card-color text-primary-text rounded-lg`}
+              className={`border ${passwordErrors.newPassword ? "border-red-500" : "border-border"} bg-card-color text-primary-text rounded-lg`}
             />
             {passwordData.newPassword && (
               <div className="flex items-center gap-2">
@@ -82,29 +100,36 @@ const PasswordChangeModal = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-base font-semibold text-primary-text">
+            <Label
+              htmlFor="confirmPassword"
+              className="text-base font-semibold text-primary-text"
+            >
               Confirm New Password
             </Label>
             <Input
               id="confirmPassword"
               type="password"
               value={passwordData.confirmPassword}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onPasswordChange('confirmPassword', e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onPasswordChange("confirmPassword", e.target.value)
+              }
               placeholder="Confirm new password"
-              className={`border ${passwordErrors.confirmPassword ? 'border-red-500' : 'border-border'} bg-card-color text-primary-text rounded-lg`}
+              className={`border ${passwordErrors.confirmPassword ? "border-red-500" : "border-border"} bg-card-color text-primary-text rounded-lg`}
             />
-            {passwordData.confirmPassword && passwordData.confirmPassword === passwordData.newPassword && (
-              <p className="text-sm text-green-600 flex items-center gap-1">
-                <CheckCircle className="h-4 w-4" />
-                Passwords match
-              </p>
-            )}
-            {passwordData.confirmPassword && passwordData.confirmPassword !== passwordData.newPassword && (
-              <p className="text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle className="h-4 w-4" />
-                Passwords do not match
-              </p>
-            )}
+            {passwordData.confirmPassword &&
+              passwordData.confirmPassword === passwordData.newPassword && (
+                <p className="text-sm text-green-600 flex items-center gap-1">
+                  <CheckCircle className="h-4 w-4" />
+                  Passwords match
+                </p>
+              )}
+            {passwordData.confirmPassword &&
+              passwordData.confirmPassword !== passwordData.newPassword && (
+                <p className="text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle className="h-4 w-4" />
+                  Passwords do not match
+                </p>
+              )}
             {passwordErrors.confirmPassword && (
               <p className="text-sm text-red-500 flex items-center gap-1">
                 <AlertCircle className="h-4 w-4" />
@@ -114,25 +139,26 @@ const PasswordChangeModal = ({
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               className="flex-1 bg-secondary-bg text-primary-text hover:bg-secondary-bg/80 border border-border rounded-lg py-2 text-sm"
               onClick={onClose}
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="flex-1 bg-primary-blue text-white hover:bg-primary-blue/80 rounded-lg py-2 text-sm"
               disabled={
-                isLoading || 
-                Object.keys(passwordErrors).some(key => passwordErrors[key]) || 
+                isLoading ||
+                Object.keys(passwordErrors).some(
+                  (key) => passwordErrors[key],
+                ) ||
                 passwordData.newPassword !== passwordData.confirmPassword
               }
             >
-              {isLoading ? 'Updating...' : 'Update Password'}
+              {isLoading ? "Updating..." : "Update Password"}
             </Button>
-            
           </div>
         </form>
       </div>

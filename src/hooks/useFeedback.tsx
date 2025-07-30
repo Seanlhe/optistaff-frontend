@@ -3,11 +3,11 @@
  * @description Custom hook for feedback and review management
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { useAuth } from './useAuth';
-import { Feedback } from '../types/hooks';
-import { supabase } from '../integrations/supabase/client';
-import { set } from 'date-fns';
+import { useState, useCallback, useEffect } from "react";
+import { useAuth } from "./useAuth";
+import { Feedback } from "../types/hooks";
+import { supabase } from "../integrations/supabase/client";
+import { set } from "date-fns";
 
 export const useFeedback = () => {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
@@ -19,17 +19,17 @@ export const useFeedback = () => {
   const fetchFeedback = useCallback(async () => {
     if (!user) {
       setLoading(false);
-      setError('User not authenticated');
+      setError("User not authenticated");
       return;
     }
     setError(null);
-    try{
+    try {
       // Fetch feedback from the database
       const { data, error } = await supabase
-        .from('feedback')
-        .select('*')
-        .eq('reviewer_id', user.id);
-          console.log('Query all response:', { data, error });
+        .from("feedback")
+        .select("*")
+        .eq("reviewer_id", user.id);
+      console.log("Query all response:", { data, error });
 
       if (error) {
         setError(error.message);
@@ -37,7 +37,7 @@ export const useFeedback = () => {
         return;
       }
       setFeedback(data as Feedback[]);
-    } catch(err) {
+    } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
@@ -45,15 +45,15 @@ export const useFeedback = () => {
   }, [user]);
 
   useEffect(() => {
-  if (user) {
-    fetchFeedback();
-  }
-}, [user, fetchFeedback]);
+    if (user) {
+      fetchFeedback();
+    }
+  }, [user, fetchFeedback]);
 
   const submitFeedback = async (feedbackData: Partial<Feedback>) => {
     if (!user) {
       setLoading(false);
-      setError('User not authenticated');
+      setError("User not authenticated");
       return;
     }
 
@@ -64,7 +64,7 @@ export const useFeedback = () => {
     };
 
     const { error } = await supabase
-      .from('feedback')
+      .from("feedback")
       .insert([feedbackToInsert]);
 
     if (error) {
@@ -77,19 +77,21 @@ export const useFeedback = () => {
     setLoading(false);
   };
 
-  const updateFeedback = async (feedbackId: string, feedbackData: Partial<Feedback>) => {
+  const updateFeedback = async (
+    feedbackId: string,
+    feedbackData: Partial<Feedback>,
+  ) => {
     if (!user) {
       setLoading(false);
-      setError('User not authenticated');
+      setError("User not authenticated");
       return;
-    } 
+    }
 
     const { error } = await supabase
-      .from('feedback')   
+      .from("feedback")
       .update(feedbackData)
-      .eq('feedback_id', feedbackId);
+      .eq("feedback_id", feedbackId);
 
-      
     if (error) {
       setError(error.message);
       setLoading(false);
@@ -98,13 +100,12 @@ export const useFeedback = () => {
 
     await fetchFeedback();
     setLoading(false);
-
   };
 
   const deleteFeedback = async (feedbackId: string) => {
     if (!user) {
       setLoading(false);
-      setError('User not authenticated');
+      setError("User not authenticated");
       return;
     }
 
@@ -112,9 +113,9 @@ export const useFeedback = () => {
     setError(null);
 
     const { error } = await supabase
-      .from('feedback')
+      .from("feedback")
       .delete()
-      .eq('feedback_id', feedbackId);
+      .eq("feedback_id", feedbackId);
 
     if (error) {
       setError(error.message);
@@ -125,8 +126,6 @@ export const useFeedback = () => {
     await fetchFeedback();
     setLoading(false);
   };
-
-  
 
   return {
     feedback,

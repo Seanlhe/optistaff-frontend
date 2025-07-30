@@ -8,11 +8,7 @@
 import { useUserProfile } from "../hooks/useUserProfile";
 
 const ProfileDisplayCard = () => {
-  const { 
-    getDisplayData,
-    isJobSeeker,
-    isClient
-  } = useUserProfile();
+  const { getDisplayData, isJobSeeker, isClient } = useUserProfile();
 
   const displayData = getDisplayData();
 
@@ -23,73 +19,91 @@ const ProfileDisplayCard = () => {
   // Format account creation date
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('en-SG', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+      return new Date(dateString).toLocaleDateString("en-SG", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     } catch {
-      return 'Unknown';
+      return "Unknown";
     }
   };
 
   // Get status badge styling
   const getStatusBadgeStyle = (status?: string) => {
     switch (status) {
-      case 'ACTIVE':
-        return 'bg-green text-white border-green-dark';
-      case 'SUSPENDED':
-        return 'bg-red text-white border-red-dark';
-      case 'INACTIVE':
-        return 'bg-secondary-text text-white border-secondary-text';
+      case "ACTIVE":
+        return "bg-green text-white border-green-dark";
+      case "SUSPENDED":
+        return "bg-red text-white border-red-dark";
+      case "INACTIVE":
+        return "bg-secondary-text text-white border-secondary-text";
       default:
-        return 'bg-secondary-text text-white border-secondary-text';
+        return "bg-secondary-text text-white border-secondary-text";
     }
   };
 
   // Format rating display
   const formatRating = (rating?: number) => {
-    if (typeof rating !== 'number') return 'No rating';
+    if (typeof rating !== "number") return "No rating";
     return `${rating.toFixed(1)}/5.0`;
   };
 
   return (
     <div className="bg-card-color p-6 rounded-xl border border-border">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-primary-text">Profile Overview</h2>
-        
+        <h2 className="text-xl font-semibold text-primary-text">
+          Profile Overview
+        </h2>
+
         {/* Profile completion indicator for job seekers */}
         {isJobSeeker() && (
           <div className="flex items-center text-sm text-secondary-text">
-            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="h-4 w-4 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Profile Complete
           </div>
         )}
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Column */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-secondary-text mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-secondary-text mb-1">
+              Full Name
+            </label>
             <p className="text-lg font-medium text-primary-text">
-              {displayData.fullName || 'Name not set'}
+              {displayData.fullName || "Name not set"}
             </p>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-secondary-text mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-secondary-text mb-1">
+              Email Address
+            </label>
             <p className="text-primary-text font-montserrat text-sm bg-white px-3 py-2 rounded-md border border-border">
               {displayData.email}
             </p>
           </div>
-          
+
           {/* Company name for clients */}
           {isClient() && displayData.companyName && (
             <div>
-              <label className="block text-sm font-medium text-secondary-text mb-1">Company</label>
+              <label className="block text-sm font-medium text-secondary-text mb-1">
+                Company
+              </label>
               <p className="text-lg font-medium text-primary-text">
                 {displayData.companyName}
               </p>
@@ -102,7 +116,9 @@ const ProfileDisplayCard = () => {
           {/* Rating for job seekers */}
           {isJobSeeker() && (
             <div>
-              <label className="block text-sm font-medium text-secondary-text mb-1">Rating</label>
+              <label className="block text-sm font-medium text-secondary-text mb-1">
+                Rating
+              </label>
               <div className="flex items-center">
                 <div className="flex items-center mr-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -110,8 +126,8 @@ const ProfileDisplayCard = () => {
                       key={star}
                       className={`h-5 w-5 ${
                         star <= (displayData.rating || 0)
-                          ? 'text-yellow-400'
-                          : 'text-secondary-text'
+                          ? "text-yellow-400"
+                          : "text-secondary-text"
                       }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
@@ -130,19 +146,30 @@ const ProfileDisplayCard = () => {
           {/* Account status for job seekers */}
           {isJobSeeker() && displayData.accountStatus && (
             <div>
-              <label className="block text-sm font-medium text-secondary-text mb-1">Account Status</label>
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadgeStyle(displayData.accountStatus)}`}>
-                <div className={`w-2 h-2 rounded-full mr-2 ${
-                  displayData.accountStatus === 'ACTIVE' ? 'bg-green-dark' :
-                  displayData.accountStatus === 'SUSPENDED' ? 'bg-red-dark' : 'bg-secondary-text'
-                }`}></div>
+              <label className="block text-sm font-medium text-secondary-text mb-1">
+                Account Status
+              </label>
+              <span
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusBadgeStyle(displayData.accountStatus)}`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full mr-2 ${
+                    displayData.accountStatus === "ACTIVE"
+                      ? "bg-green-dark"
+                      : displayData.accountStatus === "SUSPENDED"
+                        ? "bg-red-dark"
+                        : "bg-secondary-text"
+                  }`}
+                ></div>
                 {displayData.accountStatus}
               </span>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-secondary-text mb-1">Member Since</label>
+            <label className="block text-sm font-medium text-secondary-text mb-1">
+              Member Since
+            </label>
             <p className="text-primary-text">
               {formatDate(displayData.accountCreated)}
             </p>
@@ -154,11 +181,9 @@ const ProfileDisplayCard = () => {
       <div className="mt-6 pt-6 border-t border-border">
         <div className="flex items-center justify-between text-sm text-secondary-text">
           <span>
-            {isJobSeeker() ? 'Job Seeker Account' : 'Employer Account'}
+            {isJobSeeker() ? "Job Seeker Account" : "Employer Account"}
           </span>
-          <span>
-            ID: {displayData.email.split('@')[0]}
-          </span>
+          <span>ID: {displayData.email.split("@")[0]}</span>
         </div>
       </div>
     </div>

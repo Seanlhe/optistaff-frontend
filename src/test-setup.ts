@@ -73,15 +73,16 @@ export const createTestJobSeeker = async (overrides = {}) => {
   // First create an auth user
   const testEmail = `test-${crypto.randomUUID()}@example.com`;
   const testPassword = "testpassword123";
-  
-  const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
-    email: testEmail,
-    password: testPassword,
-    email_confirm: true
-  });
+
+  const { data: authData, error: authError } =
+    await testSupabaseAdmin.auth.admin.createUser({
+      email: testEmail,
+      password: testPassword,
+      email_confirm: true,
+    });
 
   if (authError) throw authError;
-  
+
   const defaultData = {
     user_id: authData.user.id, // Use the auth user's ID
     first_name: "Test",
@@ -103,19 +104,25 @@ export const createTestJobSeeker = async (overrides = {}) => {
 };
 
 // Helper function to create job seeker with preferences
-export const createTestJobSeekerWithPreferences = async (jobSeekerOverrides = {}, preferencesOverrides = {}) => {
+export const createTestJobSeekerWithPreferences = async (
+  jobSeekerOverrides = {},
+  preferencesOverrides = {},
+) => {
   const jobSeeker = await createTestJobSeeker(jobSeekerOverrides);
-  
+
   // Create default preferences for the job seeker
-  const { data: preferences, error: prefError } = await testSupabase.rpc('create_default_preferences', {
-    p_user_id: jobSeeker.user_id
-  });
-  
+  const { data: preferences, error: prefError } = await testSupabase.rpc(
+    "create_default_preferences",
+    {
+      p_user_id: jobSeeker.user_id,
+    },
+  );
+
   if (prefError) throw prefError;
-  
+
   return {
     jobSeeker,
-    preferences: preferences[0]
+    preferences: preferences[0],
   };
 };
 
@@ -123,62 +130,72 @@ export const createTestJobSeekerWithPreferences = async (jobSeekerOverrides = {}
 export const ensureTestJobTypes = async () => {
   // First, get an existing category to use for test job types
   const { data: categories, error: categoryError } = await testSupabase
-    .from('job_categories')
-    .select('category_id, category_name, is_active')
+    .from("job_categories")
+    .select("category_id, category_name, is_active")
     .limit(1);
-  
+
   if (categoryError) {
-    console.error('Error fetching categories:', categoryError);
+    console.error("Error fetching categories:", categoryError);
     throw categoryError;
   }
-  
+
   let defaultCategoryId;
-  
+
   if (!categories || categories.length === 0) {
     // Create a default category if none exists
     const defaultCategory = {
       category_id: crypto.randomUUID(),
-      category_name: 'Test Category',
-      is_active: true
+      category_name: "Test Category",
+      is_active: true,
     };
-    
+
     const { error: insertError } = await testSupabase
-      .from('job_categories')
+      .from("job_categories")
       .insert(defaultCategory);
-    
+
     if (insertError) throw insertError;
-    
+
     defaultCategoryId = defaultCategory.category_id;
   } else {
     defaultCategoryId = categories[0].category_id;
   }
-  
+
   // Check if test job types exist
   const { data: existingTypes } = await testSupabase
-    .from('job_types')
-    .select('type_name')
-    .in('type_name', ['Waiter/Waitress', 'Kitchen Helper', 'Cashier', 'Cleaner']);
-  
-  const existingTypeNames = existingTypes?.map(t => t.type_name) || [];
-  const requiredTypes = ['Waiter/Waitress', 'Kitchen Helper', 'Cashier', 'Cleaner'];
-  const missingTypes = requiredTypes.filter(type => !existingTypeNames.includes(type));
-  
+    .from("job_types")
+    .select("type_name")
+    .in("type_name", [
+      "Waiter/Waitress",
+      "Kitchen Helper",
+      "Cashier",
+      "Cleaner",
+    ]);
+
+  const existingTypeNames = existingTypes?.map((t) => t.type_name) || [];
+  const requiredTypes = [
+    "Waiter/Waitress",
+    "Kitchen Helper",
+    "Cashier",
+    "Cleaner",
+  ];
+  const missingTypes = requiredTypes.filter(
+    (type) => !existingTypeNames.includes(type),
+  );
+
   // Create missing job types with proper category_id
   if (missingTypes.length > 0) {
-    const newTypes = missingTypes.map(typeName => ({
+    const newTypes = missingTypes.map((typeName) => ({
       job_type_id: crypto.randomUUID(),
       type_name: typeName,
       category_id: defaultCategoryId,
-      is_active: true
+      is_active: true,
     }));
-    
-    const { error } = await testSupabase
-      .from('job_types')
-      .insert(newTypes);
-    
+
+    const { error } = await testSupabase.from("job_types").insert(newTypes);
+
     if (error) throw error;
   }
-  
+
   return requiredTypes;
 };
 
@@ -226,7 +243,7 @@ export const createTestShift = async (clientId: string, overrides = {}) => {
 export const createTestAssignment = async (
   userId: string,
   shiftId: string,
-  overrides = {}
+  overrides = {},
 ) => {
   const defaultData = {
     user_id: userId,
@@ -254,7 +271,7 @@ beforeAll(async () => {
     .limit(1);
   if (error) {
     throw new Error(
-      "Local Supabase is not running. Run `supabase start` first."
+      "Local Supabase is not running. Run `supabase start` first.",
     );
   }
 });

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useFeedback } from "../../hooks/useFeedback";
 
-
 export default function Review() {
   const {
     feedback,
@@ -18,7 +17,6 @@ export default function Review() {
   const [ratingScore, setRatingScore] = useState(5);
   const [assignmentId, setAssignmentId] = useState("");
 
-
   // State for editing feedback
   const [editId, setEditId] = useState<string | null>(null);
   const [editComment, setEditComment] = useState("");
@@ -27,7 +25,7 @@ export default function Review() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await submitFeedback({
-      review_type:"CLIENT_TO_EMPLOYEE",
+      review_type: "CLIENT_TO_EMPLOYEE",
       created_at: new Date().toISOString(),
       assignment_id: assignmentId,
       reviewee_id: revieweeId,
@@ -62,12 +60,12 @@ export default function Review() {
     await deleteFeedback(id);
   };
 
-
-
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Feedback Review Test</h1>
-      {typeof error === "string" && <div className="text-red-500 mb-2">{error}</div>}
+      {typeof error === "string" && (
+        <div className="text-red-500 mb-2">{error}</div>
+      )}
       {loading && <div>Loading...</div>}
 
       <form onSubmit={handleSubmit} className="mb-6 space-y-2">
@@ -112,7 +110,6 @@ export default function Review() {
       <h2 className="text-xl font-semibold mb-2">Feedback List</h2>
       <ul>
         {(feedback ?? []).map((fb) => (
-          
           <li key={String(fb.feedback_id)} className="mb-4 border-b pb-2">
             {editId === fb.feedback_id ? (
               <form onSubmit={handleUpdate} className="space-x-2">
@@ -131,7 +128,10 @@ export default function Review() {
                   onChange={(e) => setEditRating(Number(e.target.value))}
                   required
                 />
-                <button className="bg-green-500 text-white px-2 py-1 rounded" type="submit">
+                <button
+                  className="bg-green-500 text-white px-2 py-1 rounded"
+                  type="submit"
+                >
                   Save
                 </button>
                 <button

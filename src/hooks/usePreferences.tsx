@@ -68,8 +68,8 @@ export const usePreferences = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase.rpc('create_default_preferences', {
-        p_user_id: user.id
+      const { data, error } = await supabase.rpc("create_default_preferences", {
+        p_user_id: user.id,
       });
 
       if (error) {
@@ -120,7 +120,7 @@ export const usePreferences = () => {
         setLoading(false);
       }
     },
-    [user, preferences]
+    [user, preferences],
   );
 
   // Reset preferences to defaults using database function
@@ -143,8 +143,8 @@ export const usePreferences = () => {
       }
 
       // Then create new default preferences
-      const { data, error } = await supabase.rpc('create_default_preferences', {
-        p_user_id: user.id
+      const { data, error } = await supabase.rpc("create_default_preferences", {
+        p_user_id: user.id,
       });
 
       if (error) {
@@ -171,7 +171,7 @@ export const usePreferences = () => {
     (jobTypeName: string): boolean => {
       return preferences?.desired_roles.includes(jobTypeName) || false;
     },
-    [preferences]
+    [preferences],
   );
 
   // Helper to get preferred job types
@@ -182,7 +182,12 @@ export const usePreferences = () => {
 
   // Save complete preferences using upsert database function with built-in validation
   const savePreferences = useCallback(
-    async (preferencesData: Omit<UserPreferences, 'preference_id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    async (
+      preferencesData: Omit<
+        UserPreferences,
+        "preference_id" | "user_id" | "created_at" | "updated_at"
+      >,
+    ) => {
       if (!user) {
         setError("User not authenticated");
         return false;
@@ -192,14 +197,14 @@ export const usePreferences = () => {
       setError(null);
 
       try {
-        const { data, error } = await supabase.rpc('upsert_user_preferences', {
+        const { data, error } = await supabase.rpc("upsert_user_preferences", {
           p_target_user_id: user.id,
           p_min_pay_rate: preferencesData.min_pay_rate,
           p_max_travel_km: preferencesData.max_travel_km,
           p_desired_roles: preferencesData.desired_roles,
           p_max_hours_per_week: preferencesData.max_hours_per_week,
           p_max_hours_per_shift: preferencesData.max_hours_per_shift,
-          p_consider_lower_rate: preferencesData.consider_lower_rate
+          p_consider_lower_rate: preferencesData.consider_lower_rate,
         });
 
         if (error) {
@@ -211,7 +216,7 @@ export const usePreferences = () => {
         if (result) {
           // Check for validation errors
           if (result.validation_errors && result.validation_errors.length > 0) {
-            setError(result.validation_errors.join(', '));
+            setError(result.validation_errors.join(", "));
             return false;
           }
 
@@ -227,7 +232,7 @@ export const usePreferences = () => {
         setLoading(false);
       }
     },
-    [user]
+    [user],
   );
 
   // Load preferences on mount or user change

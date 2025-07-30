@@ -7,7 +7,6 @@ import PreferencesPay from "./PreferencesPay";
 import { usePreferencesForm } from "../hooks/usePreferencesForm";
 import { PreferencesFormData } from "../types/hooks";
 
-
 const PreferencesForm = () => {
   const {
     savePreferences,
@@ -111,7 +110,9 @@ const PreferencesForm = () => {
                   <h3 className="text-sm font-montserrat-smb text-red-dark">
                     Error Loading Preferences
                   </h3>
-                  <p className="text-sm text-red-dark font-montserrat">{error}</p>
+                  <p className="text-sm text-red-dark font-montserrat">
+                    {error}
+                  </p>
                 </div>
               </div>
             </div>
@@ -125,7 +126,9 @@ const PreferencesForm = () => {
                   <h3 className="text-sm font-montserrat-smb text-red-dark">
                     Location Service Issue
                   </h3>
-                  <p className="text-sm text-red-dark font-montserrat">{mapError.message}</p>
+                  <p className="text-sm text-red-dark font-montserrat">
+                    {mapError.message}
+                  </p>
                   {mapError.canRetry && retryAttempts < 3 && (
                     <button
                       onClick={handleLocationRetry}
@@ -156,7 +159,11 @@ const PreferencesForm = () => {
           disabled={loading || validating}
           className="px-6 py-3 bg-primary-blue text-white rounded-lg font-montserrat-smb hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
         >
-          {validating ? "Validating..." : loading ? "Saving..." : "Save Preferences"}
+          {validating
+            ? "Validating..."
+            : loading
+              ? "Saving..."
+              : "Save Preferences"}
         </button>
       </div>
     </div>
