@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { addDays, subDays } from 'date-fns';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, useNavigate } from 'react-router-dom';
  import ClientDbContainer from '../../src/pages/employer/ClientDbContainer';
 
 
@@ -85,12 +85,14 @@ vi.mock('../../src/hooks/useShifts', () => ({
   useShifts: () => mockShiftsHook,
 }));
 
+vi.mock('react-router-dom', () => ({
+    useNavigate: vi.fn(),
+}));
+
 
 describe("ClientDbContainer dashboard test suite", ()=>{
-    beforeEach(()=>{
-        render(<ClientDbContainer/>)
-    })
     it("Upcoming renders shifts from current week", async ()=>{
+        render(<ClientDbContainer />);
         const upcoming = await screen.findByTestId("dashboard-upcoming");
         expect(upcoming).toBeTruthy();
         const header = await screen.findByText(/Software Engineer/i);
@@ -99,6 +101,7 @@ describe("ClientDbContainer dashboard test suite", ()=>{
     })
 
     it ("Upcoming does not render shift outside of current week", async ()=>{
+        render(<ClientDbContainer />);
         const upcoming = await screen.findByTestId("dashboard-upcoming");
         expect(upcoming).toBeTruthy();
         const title = await screen.queryByText(/Data Analyst/i);
@@ -106,6 +109,7 @@ describe("ClientDbContainer dashboard test suite", ()=>{
     }) 
 
     it ("In Progress only shows shifts where staff_assigned less than staff_needed", async() =>{
+        render(<ClientDbContainer />);
         const inProgress = await screen.findByTestId("dashboard-in-progress");
         expect(inProgress).toBeTruthy();
         const lessThan = await screen.queryByText(/Product Manager/i);
@@ -117,6 +121,7 @@ describe("ClientDbContainer dashboard test suite", ()=>{
     })
 
     it ("Filled count is displayed correctly ", async() =>{
+        render(<ClientDbContainer />);
         const positions = await screen.findByTestId("dashboard-positions");
         expect(positions).toBeTruthy();
         const filledText = await screen.findByText("8/10");
@@ -125,17 +130,28 @@ describe("ClientDbContainer dashboard test suite", ()=>{
         expect(percentText).toBeTruthy();
     })
 
-    it("navigates to the upload jobs page and updates the header", async () => {
-        const handleManageClick = vi.fn();
-        // Mock the navigate function to track navigation
-        const navigate = vi.fn();
-        // Find the 'Upload Jobs' button
+    it("navigates to the upload jobs page when the Upload Jobs button is clicked", async () => {
+        const navigate = vi.fn();  // Create a mock function for navigate
+        // Make sure useNavigate returns the mocked navigate function
+        const { useNavigate } = require('react-router-dom');
+        useNavigate.mockReturnValue(navigate);
+        // Render the component
+        render(<ClientDbContainer />);
+    
+        // Find the "Upload Jobs" button
         const uploadButton = await screen.findByRole('button', { name: "Upload Jobs" });
-        // Simulate a user click on the button
-        await fireEvent.click(uploadButton);
-        const header = await screen.findByText("Create listing");
+    
+        // Simulate a click on the "Upload Jobs" button
+        fireEvent.click(uploadButton);
+    
+        // Assert that the navigate function was called
+        expect(navigate).toHaveBeenCalled();  // Check if navigate was called
+    
+        // Optionally, check if navigate was called with the correct URL
+        expect(navigate).toHaveBeenCalledWith("/employer/uploadjobs");  // Check if navigate was called with the correct URL
     });
 })
+
 
 describe("ShiftCard Test Suite", async() =>{
     it ("Jobs with no staff assigned can have an edit button", async()=>{

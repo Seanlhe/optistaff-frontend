@@ -15,7 +15,7 @@ export default function ShiftCard({shift, handleManageClick}: {shift: Shift, han
         await deleteShift(shift.shift_id);
         console.log(error);
     };
-    return <div className="bg-white flex flex-row items-center justify-between rounded-2xl">
+    return <div data-testid="shift-card" className="bg-white flex flex-row items-center justify-between rounded-2xl">
         <div className="w-full bg-white flex flex-col gap-3 rounded-2xl p-3"> 
             <p className="text-sm font-montserrat-b text-primary-text">{shift.job_title}</p>
             <div className="flex flex-row gap-2 items-center">
