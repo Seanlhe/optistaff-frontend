@@ -15,6 +15,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { JobseekerAssignmentCard } from "./JobseekerAssignmentCard";
 import { useAssignments } from "../hooks/useAssignments";
 import { StatusEnum } from "../types/hooks";
+import { useFeedback } from "../hooks/useFeedback";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect, useState } from "react";
+import { Feedback } from "../types/hooks";
+
 
 interface AssignmentDetailsModalProps {
   assignment: JobseekerAssignmentCard | null;
@@ -30,6 +35,24 @@ export const AssignmentDetailsModal = ({
   onStatusChange,
 }: AssignmentDetailsModalProps) => {
   const { updateAssignmentStatus } = useAssignments();
+
+  const { fetchFeedbackReviewAssignID } = useFeedback();
+  const { user } = useAuth();
+  const [userFeedback, setUserFeedback] = useState<Feedback | null>(null);
+
+  useEffect(() => {
+    const fetchUserFeedback = async () => {
+      if (assignment && user) {
+        const result = await fetchFeedbackReviewAssignID(assignment.id, user.id);
+        setUserFeedback(result);
+      }
+    };
+
+    if (isOpen) {
+      fetchUserFeedback();
+    }
+  }, [assignment, user, isOpen, fetchFeedbackReviewAssignID]);
+
 
   if (!assignment) return null;
 
@@ -125,8 +148,7 @@ export const AssignmentDetailsModal = ({
 
   // Render employer feedback section
   const renderEmployerFeedback = () => {
-    if (assignment.status !== "completed" || !assignment.employerFeedback)
-      return null;
+    if (assignment.status !== "completed" || !userFeedback) return null;
 
     return (
       <div className="space-y-3 border-t border-t-border pt-4">
@@ -136,7 +158,7 @@ export const AssignmentDetailsModal = ({
             Employer Feedback
           </h4>
         </div>
-        {assignment.rating && (
+        {userFeedback.rating_score && (
           <div className="flex items-center space-x-2">
             <span className="text-sm font-medium">Rating:</span>
             <div className="flex">
@@ -144,7 +166,7 @@ export const AssignmentDetailsModal = ({
                 <Star
                   key={i}
                   className={`w-4 h-4 ${
-                    i < assignment.rating!
+                    i < userFeedback.rating_score!
                       ? "fill-yellow-400 text-yellow-400"
                       : "text-secondary-text"
                   }`}
@@ -152,12 +174,12 @@ export const AssignmentDetailsModal = ({
               ))}
             </div>
             <span className="text-sm text-secondary-text">
-              ({assignment.rating}/5)
+              ({userFeedback.rating_score}/5)
             </span>
           </div>
         )}
         <p className="text-sm text-secondary-text leading-relaxed">
-          {assignment.employerFeedback}
+          {userFeedback.comment || "No comment provided."}
         </p>
       </div>
     );
