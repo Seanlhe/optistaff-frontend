@@ -30,6 +30,8 @@ export interface InputFieldProps {
   valid?: boolean;
   error?: string | null;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  numericOnly?: boolean; // New prop to enable numeric-only input
+  maxLength?: number; // Optional max length for numeric fields
 }
 
 export interface SelectProps {

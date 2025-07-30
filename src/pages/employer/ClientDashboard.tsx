@@ -14,16 +14,6 @@ export default function ClientDashboard({
 }) {
   const navigate = useNavigate();
 
-  function calculateFilled(shiftCardData: Shift[]): number[] {
-    let filledStaffCount = 0;
-    let unfilledStaffCount = 0;
-    for (let i: number = 0; i < shiftCardData.length; i++) {
-      filledStaffCount += shiftCardData[i].staff_needed;
-      unfilledStaffCount += shiftCardData[i].staff_assigned;
-    }
-    return [filledStaffCount, unfilledStaffCount];
-  }
-
   function handleUploadClick() {
     navigate("/employer/uploadjobs");
   }
@@ -38,7 +28,9 @@ export default function ClientDashboard({
           <p className="text-md text-secondary-text font-montserrat-smb">
             Welcome Back,
           </p>
-          <p className="text-xl text-black font-montserrat-b">Marriot Plaza</p>
+          <p className="text-xl text-black font-montserrat-b">
+            Marriot Plaza
+          </p>
         </div>
         <div className="flex flex-row items-center gap-8">
           <IconButton
@@ -74,7 +66,7 @@ export default function ClientDashboard({
   );
 }
 
-function DashboardUpcoming({
+export function DashboardUpcoming({
   shifts,
   handleManageClick,
 }: {
@@ -82,10 +74,12 @@ function DashboardUpcoming({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
+    <div data-testid="dashboard-upcoming" className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
       <div className="flex flex-row gap-2 items-center">
         <img className="h-4 w-4" src="/icons/calendar.svg" />
-        <h1 className="text-lg text-black font-montserrat-b">This Week</h1>
+        <h1 className="text-lg text-black font-montserrat-b">
+          This Week
+        </h1>
       </div>
       {shifts && (
         <div className="overflow-auto max-h-[calc(100vh-240px)]">
@@ -98,7 +92,7 @@ function DashboardUpcoming({
                     handleManageClick={handleManageClick}
                   />
                 </li>
-              ) : null,
+              ) : null
             )}
           </ul>
         </div>
@@ -107,7 +101,7 @@ function DashboardUpcoming({
   );
 }
 
-function DashboardPositions({
+export function DashboardPositions({
   shifts,
   calculateFilled,
 }: {
@@ -115,11 +109,13 @@ function DashboardPositions({
   calculateFilled: Function;
 }) {
   return (
-    <div className="bg-secondary-bg flex flex-row p-5 gap-6 rounded-2xl justify-between items-center">
+    <div data-testid="dashboard-positions" className="bg-secondary-bg flex flex-row p-5 gap-6 rounded-2xl justify-between items-center">
       <div className="flex flex-col gap-3">
         <div className="flex flex-row gap-2 items-center">
           <img className="h-4 w-4" src="/public/icons/personicon.svg" />
-          <h1 className="text-lg text-black font-montserrat-b">Positions</h1>
+          <h1 className="text-lg text-black font-montserrat-b">
+            Positions
+          </h1>
         </div>
         <p className="text-xl font-montserrat-b text-black">
           {`${calculateFilled(shifts)[0]}/${
@@ -142,7 +138,7 @@ function DashboardPositions({
                     calculateFilled(shifts)[1] + calculateFilled(shifts)[0],
                   color: "var(--color-primary-blue)",
                 },
-                { id: 1, value: calculateFilled(shifts)[1], color: "#FFFFFF" },
+                { id: 1, value: calculateFilled(shifts)[1] - calculateFilled(shifts)[0], color: "#FFFFFF" },
               ],
             },
           ]}
@@ -151,15 +147,15 @@ function DashboardPositions({
         />
         <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-montserrat-b text-xl">{`${Math.floor(
           (calculateFilled(shifts)[0] /
-            (calculateFilled(shifts)[0] + calculateFilled(shifts)[1])) *
-            100,
+            (calculateFilled(shifts)[1])) *
+            100
         )}%`}</p>
       </div>
     </div>
   );
 }
 
-function DashboardInProgress({
+export function DashboardInProgress({
   shifts,
   handleManageClick,
 }: {
@@ -167,10 +163,12 @@ function DashboardInProgress({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
-      <div className="flex flex-row gap-2 items-center">
-        <img className="h-4 w-4" src="/icons/calendar.svg" />
-        <h1 className="text-lg text-black font-montserrat-b">In Progress</h1>
+    <div data-testid="dashboard-in-progress" className="bg-secondary-bg flex flex-col p-8 rounded-3xl gap-8">
+      <div className="flex flex-row gap-4 items-center">
+        <img className="h-5 w-5" src="/icons/warningicon.svg" />
+        <h1 className="text-xl text-secondary-text font-montserrat-b">
+          In Progress
+        </h1>
       </div>
       <div className="overflow-auto max-h-[calc(100vh-240px)]">
         <ul className="flex flex-col gap-4 animate-slidedown">
@@ -182,10 +180,20 @@ function DashboardInProgress({
                   shift={shift}
                 />
               </li>
-            ) : null,
+            ) : null
           )}
         </ul>
       </div>
     </div>
   );
+}
+
+export function calculateFilled(shiftCardData: Shift[]): number[] {
+  let filledStaffCount = 0;
+  let totalStaff = 0;
+  for (let i: number = 0; i < shiftCardData.length; i++) {
+    totalStaff += shiftCardData[i].staff_needed;
+    filledStaffCount += shiftCardData[i].staff_assigned;
+  }
+  return [filledStaffCount, totalStaff];
 }
