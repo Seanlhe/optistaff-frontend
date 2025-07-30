@@ -17,6 +17,7 @@ const Dashboard = () => {
 	// Fetch data using custom hooks
 	const { assignments, loading, fetchAssignments } = useAssignments();
 	const { profileData } = useUserProfile();
+	
 
 	// Status mapping using object mapping for cleaner code
 	const statusMap: Record<string, 'upcoming' | 'completed' | 'cancel_by_employer' | 'cancel_by_employee'> = {
@@ -139,6 +140,21 @@ const Dashboard = () => {
 		return `${startFormatted} – ${endFormatted}`;
 	};
 
+	const getRating = () => {
+      if (
+        !profileData ||
+        typeof profileData !== 'object' ||
+        !('display' in profileData) ||
+        typeof profileData.display !== 'object'
+      ) {
+        return "0.0";
+      }
+
+      const rating = (profileData.display as any).rating;
+      return rating ? Number(rating).toFixed(1) : "0.0";
+	};
+
+
 	return (
 		<div className="min-h-screen bg-bg p-8 pr-12">
 			{/* Header */}
@@ -190,9 +206,7 @@ const Dashboard = () => {
 							<PayoutSummaryCard />
 							<StatsCard
 								title="Rating"
-								value={typeof profileData === 'object' && profileData && 'rating' in profileData 
-									? Number(profileData.rating).toFixed(1) 
-									: "0.0"
+								value={getRating()
 								}
 								icon={<Star />}
 							/>

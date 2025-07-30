@@ -9,6 +9,9 @@ import { useAssignments } from "../../hooks/useAssignments";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useState,useMemo } from "react";
 import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { Star } from "lucide-react";
+import StatsCard from "../../components/StatsCard";
+import PayoutSummaryCard from "../../components/PayoutSummaryCard";
 
 
 export default function JSSchedule() {
@@ -113,6 +116,23 @@ export default function JSSchedule() {
         const lastName = (profileData as any).last_name || '';
         return firstName && lastName ? `${firstName} ${lastName}` : "Job Seeker";
       };
+
+      const getRating = () => {
+      if (
+        !profileData ||
+        typeof profileData !== 'object' ||
+        !('display' in profileData) ||
+        typeof profileData.display !== 'object'
+      ) {
+        return "0.0";
+      }
+
+      const rating = (profileData.display as any).rating;
+      return rating ? Number(rating).toFixed(1) : "0.0";
+};
+
+    
+
     
       const getDateRange = () => {
         const now = new Date();
@@ -160,8 +180,22 @@ export default function JSSchedule() {
 			{/* Upcoming Content */}
 			{!loading && (
 				<div>
+
+
 					{/* Assignments List */}
 					<div className="bg-card-color rounded-xl p-6 w-full md:order-1">
+
+             {/* Stats and Calendar */}
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 ">
+            <PayoutSummaryCard />
+            <StatsCard
+              title="Rating"
+              value={getRating()}
+              icon={<Star />}
+            />
+
+          </div>
+
 						{displayAssignments.length === 0 ? (
 							<div className="flex items-center justify-center h-32">
 								<div className="text-secondary-text text-sm">No upcoming assignments</div>
