@@ -14,16 +14,6 @@ export default function ClientDashboard({
 }) {
   const navigate = useNavigate();
 
-  function calculateFilled(shiftCardData: Shift[]): number[] {
-    let filledStaffCount = 0;
-    let totalStaff = 0;
-    for (let i: number = 0; i < shiftCardData.length; i++) {
-      totalStaff += shiftCardData[i].staff_needed;
-      filledStaffCount += shiftCardData[i].staff_assigned;
-    }
-    return [filledStaffCount, totalStaff];
-  }
-
   function handleUploadClick() {
     navigate("/employer/uploadjobs");
   }
@@ -76,7 +66,7 @@ export default function ClientDashboard({
   );
 }
 
-function DashboardUpcoming({
+export function DashboardUpcoming({
   shifts,
   handleManageClick,
 }: {
@@ -84,7 +74,7 @@ function DashboardUpcoming({
   handleManageClick: Function;
 }) {
   return (
-    <div className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
+    <div data-testid="dashboard-upcoming" className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
       <div className="flex flex-row gap-2 items-center">
         <img className="h-4 w-4" src="/icons/calendar.svg" />
         <h1 className="text-lg text-black font-montserrat-b">
@@ -111,7 +101,7 @@ function DashboardUpcoming({
   );
 }
 
-function DashboardPositions({
+export function DashboardPositions({
   shifts,
   calculateFilled,
 }: {
@@ -119,7 +109,7 @@ function DashboardPositions({
   calculateFilled: Function;
 }) {
   return (
-    <div className="bg-secondary-bg flex flex-row p-5 gap-6 rounded-2xl justify-between items-center">
+    <div data-testid="dashboard-positions" className="bg-secondary-bg flex flex-row p-5 gap-6 rounded-2xl justify-between items-center">
       <div className="flex flex-col gap-3">
         <div className="flex flex-row gap-2 items-center">
           <img className="h-4 w-4" src="/public/icons/personicon.svg" />
@@ -165,7 +155,7 @@ function DashboardPositions({
   );
 }
 
-function DashboardInProgress({
+export function DashboardInProgress({
   shifts,
   handleManageClick,
 }: {
@@ -196,4 +186,14 @@ function DashboardInProgress({
       </div>
     </div>
   );
+}
+
+export function calculateFilled(shiftCardData: Shift[]): number[] {
+  let filledStaffCount = 0;
+  let totalStaff = 0;
+  for (let i: number = 0; i < shiftCardData.length; i++) {
+    totalStaff += shiftCardData[i].staff_needed;
+    filledStaffCount += shiftCardData[i].staff_assigned;
+  }
+  return [filledStaffCount, totalStaff];
 }
