@@ -153,16 +153,31 @@ const Dashboard = () => {
     return firstName && lastName ? `${firstName} ${lastName}` : "Job Seeker";
   };
 
-  const getDateRange = () => {
-    const now = new Date();
-    const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday = 1
-    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+	const getDateRange = () => {
+		const now = new Date();
+		const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday = 1
+		const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+		
+		const startFormatted = format(weekStart, 'MMM d');
+		const endFormatted = format(weekEnd, 'MMM d');
+		
+		return `${startFormatted} – ${endFormatted}`;
+	};
 
-    const startFormatted = format(weekStart, "MMM d");
-    const endFormatted = format(weekEnd, "MMM d");
+	const getRating = () => {
+      if (
+        !profileData ||
+        typeof profileData !== 'object' ||
+        !('display' in profileData) ||
+        typeof profileData.display !== 'object'
+      ) {
+        return "0.0";
+      }
 
-    return `${startFormatted} – ${endFormatted}`;
-  };
+      const rating = (profileData.display as any).rating;
+      return rating ? Number(rating).toFixed(1) : "0.0";
+	};
+
 
   return (
     <div className="min-h-screen bg-bg pt-8 px-8 pr-12 pb-4">
@@ -228,12 +243,7 @@ const Dashboard = () => {
                 />
                 <StatsCard
                   title="Rating"
-                  value={
-                    typeof profileData === "object" &&
-                    profileData &&
-                    "rating" in profileData
-                      ? Number(profileData.rating).toFixed(1)
-                      : "0.0"
+                  value={getRating()
                   }
                   icon={<Star />}
                 />
