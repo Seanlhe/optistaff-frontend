@@ -4,7 +4,6 @@ import {
   DollarSign,
   Briefcase,
   FileText,
-  Star,
   Phone,
   Mail,
   Coffee,
@@ -121,46 +120,6 @@ export const AssignmentDetailsModal = ({
       );
     }
     return null;
-  };
-
-  // Render employer feedback section
-  const renderEmployerFeedback = () => {
-    if (assignment.status !== "completed" || !assignment.employerFeedback)
-      return null;
-
-    return (
-      <div className="space-y-3 border-t border-t-border pt-4">
-        <div className="flex items-center space-x-2">
-          <Star className="w-4 h-4 text-primary-blue" />
-          <h4 className="text-base font-semibold text-primary-text">
-            Employer Feedback
-          </h4>
-        </div>
-        {assignment.rating && (
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">Rating:</span>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < assignment.rating!
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-secondary-text"
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-secondary-text">
-              ({assignment.rating}/5)
-            </span>
-          </div>
-        )}
-        <p className="text-sm text-secondary-text leading-relaxed">
-          {assignment.employerFeedback}
-        </p>
-      </div>
-    );
   };
 
   return (
@@ -282,9 +241,6 @@ export const AssignmentDetailsModal = ({
           {/* Assignment Details Section */}
           {renderAssignmentDetails()}
           {renderCancelButton()}
-
-          {/* Employer Feedback Section */}
-          {renderEmployerFeedback()}
         </div>
       </DialogContent>
     </Dialog>

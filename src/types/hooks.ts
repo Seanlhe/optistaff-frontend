@@ -216,9 +216,9 @@ export interface Assignment {
   job_requirements: string | null;
   job_type: string;
   pay_rate: number;
-  start_time: Date;
-  end_time: Date;
-  break_hours: number;
+  start_time: string; // Changed to string to match database function return
+  end_time: string; // Changed to string to match database function return
+  break_hours: number | null; // Made nullable to match database schema
   contact_number: string;
   contact_email: string;
   check_in_time: string | null;

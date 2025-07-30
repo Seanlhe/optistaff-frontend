@@ -1,6 +1,3 @@
-import EmployeeShiftDetails from "../../components/EmployeeShiftDetails";
-import EmployeeCalendarDay from "../../components/EmployeeCalendarDay";
-import EmployeeCalendarHeader from "../../components/EmployeeCalendarHeader";
 import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
 import { JobseekerAssignmentCard } from "../../components/JobseekerAssignmentCard";
 import { EmployeeShiftProps } from "../../types/components";
@@ -152,23 +149,6 @@ export default function JSSchedule() {
     return `${startFormatted} – ${endFormatted}`;
   };
 
-  const days = [
-    { name: "Mon", date: "22 May 2025" },
-    { name: "Tue", date: "23 May 2025" },
-    { name: "Wed", date: "24 May 2025" },
-    { name: "Thu", date: "25 May 2025" },
-    { name: "Fri", date: "26 May 2025" },
-    { name: "Sat", date: "27 May 2025" },
-    { name: "Sun", date: "28 May 2025" },
-  ];
-
-  const handleShiftClick = (shift: EmployeeShiftProps) => {
-    setSelectedShift(shift);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedShift(null);
-  };
 
   return (
     <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-4">

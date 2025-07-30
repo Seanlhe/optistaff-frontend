@@ -24,14 +24,13 @@ export interface JobseekerAssignmentCard {
     | "completed"
     | "cancel_by_employer"
     | "cancel_by_employee";
-  employerFeedback?: string;
-  rating?: number;
   contactNumber?: string;
   contactEmail?: string;
   jobType?: string;
-  breakHours?: number;
-  startTime?: Date;
-  endTime?: Date;
+  breakHours?: number | null;
+  startTime?: string; // Changed to string for consistency
+  endTime?: string; // Changed to string for consistency
+  // Note: Each component will fetch its own feedback based on assignment ID
 }
 
 interface JobseekerAssignmentCardProps {
@@ -99,6 +98,7 @@ export const JobseekerAssignmentCard = ({
         }}
         className="w-full bg-white text-primary-text border border-border hover:bg-gray-50 text-sm"
         variant="outline"
+        aria-label={`View details for ${assignment.title}`}
       >
         View Details
       </Button>
