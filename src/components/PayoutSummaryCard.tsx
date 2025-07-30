@@ -24,7 +24,6 @@ const PayoutSummaryCard = ({ refreshTrigger, onRefresh }: PayoutSummaryCardProps
     } catch (error) {
       setWeeklyEarnings(0);
       setRefreshError('Failed to load earnings');
-      console.error('Error fetching weekly earnings:', error);
     } finally {
       setWeeklyLoading(false);
     }
@@ -56,26 +55,29 @@ const PayoutSummaryCard = ({ refreshTrigger, onRefresh }: PayoutSummaryCardProps
     ? "Loading..." 
     : `$${(typeof weeklyEarnings === 'number' && !isNaN(weeklyEarnings) ? weeklyEarnings : 0).toFixed(2)}`;
 
-
-  // Custom icon (no refresh button)
-  const icon = <DollarSign />;
+  // Custom icon with refresh button
+  const iconWithRefresh = (
+    <div className="flex items-center gap-2">
+      <DollarSign />
+      <button 
+        onClick={handleManualRefresh}
+        disabled={weeklyLoading}
+        className="p-1 text-secondary-text hover:text-primary-text transition-colors disabled:opacity-50"
+        title="Refresh earnings"
+      >
+        <RotateCcw className={`w-4 h-4 ${weeklyLoading ? 'animate-spin' : ''}`} />
+      </button>
+    </div>
+  );
 
   return (
-    <div className="relative">
+    <div>
       <StatsCard
         title="Weekly Earnings"
         value={displayValue}
-        icon={icon}
+        icon={iconWithRefresh}
       />
-      <button
-        onClick={handleManualRefresh}
-        disabled={weeklyLoading}
-        className="absolute top-1/2 right-4 -translate-y-1/2 p-1 text-secondary-text hover:text-primary-text transition-colors disabled:opacity-50"
-        title="Refresh earnings"
-        style={{ zIndex: 2 }}
-      >
-        <RotateCcw className={`w-5 h-5 ${weeklyLoading ? 'animate-spin' : ''}`} />
-      </button>
+      
       {refreshError && (
         <div className="text-xs text-red-500 mt-1 px-2">{refreshError}</div>
       )}

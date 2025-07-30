@@ -190,16 +190,16 @@ export interface JobTypesByCategory {
   [categoryName: string]: JobType[];
 }
 
-// usePayouts interfaces
-export interface Payout {
-  payout_id: string;
-  user_id: string;
-  amount: number;
-  start_period: string;
-  end_period: string;
-  created_at: string;
-  status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
-}
+// // usePayouts interfaces
+// export interface Payout {
+//   payout_id: string;
+//   user_id: string;
+//   amount: number;
+//   start_period: string;
+//   end_period: string;
+//   created_at: string;
+//   status?: 'pending' | 'processing' | 'completed' | 'failed'; // Additional status field for UI
+// }
 
 
 
@@ -278,4 +278,17 @@ export interface UsePreferencesReturn {
 }
 
 
-
+export interface WeeklyEarningSummary {
+  assignment_id: string;
+  shift_id: string;
+  shift_title: string;
+  shift_start_time: string;
+  shift_end_time: string;
+  break_hours: number;
+  pay_rate: number;
+  scheduled_hours: number;
+  calculated_pay: number;
+  shift_date: string;
+  assignment_status: string;
+  is_completed: boolean;
+}
