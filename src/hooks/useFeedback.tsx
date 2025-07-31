@@ -12,6 +12,7 @@ export const useFeedback = () => {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [singleFeedback, setSingleFeedback] = useState<Feedback | null>(null);
   const { user } = useAuth();
 
   // Fetch feedback where current user is the reviewer (giving feedback)
@@ -126,6 +127,76 @@ export const useFeedback = () => {
     setLoading(false);
   };
 
+  const fetchFeedbackAssignID = useCallback(async (AssignId: string) => {
+  if (!user) {
+    setLoading(false);
+    setError('User not authenticated');
+    return null;
+  }
+  setError(null);
+  try {
+    const { data, error } = await supabase
+      .from('feedback')
+      .select('*')
+      .eq('assignment_id', AssignId);
+
+    console.log('Query all response:', { data, error });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return null;
+    }
+
+   setFeedback(data); 
+      return data;
+    } catch (err) {
+      setError((err as Error).message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+}, [user]);
+
+
+
+  const fetchFeedbackReviewAssignID = useCallback(
+  async (AssignId: string, ReviewID: string) => {
+    if (!user) {
+      setLoading(false);
+      setError('User not authenticated');
+      return null;
+    }
+    setError(null);
+    try {
+      const { data, error } = await supabase
+        .from('feedback')
+        .select('*')
+        .eq('reviewee_id', ReviewID)
+        .eq('assignment_id', AssignId)
+        .single();
+
+      console.log('Query all response:', { data, error });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+        return null;
+      }
+
+      setSingleFeedback(data as Feedback);
+      return data as Feedback; 
+    } catch (err) {
+      setError((err as Error).message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  },
+  [user]
+);
+
+
   return {
     feedback,
     loading,
@@ -134,5 +205,7 @@ export const useFeedback = () => {
     submitFeedback,
     updateFeedback,
     deleteFeedback,
+    fetchFeedbackAssignID,
+    fetchFeedbackReviewAssignID,
   };
 };

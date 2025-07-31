@@ -8,12 +8,18 @@ import {
   Mail,
   Coffee,
   User,
+  Star,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { JobseekerAssignmentCard } from "./JobseekerAssignmentCard";
 import { useAssignments } from "../hooks/useAssignments";
 import { StatusEnum } from "../types/hooks";
+import { useFeedback } from "../hooks/useFeedback";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect, useState } from "react";
+import { Feedback } from "../types/hooks";
+
 
 interface AssignmentDetailsModalProps {
   assignment: JobseekerAssignmentCard | null;
@@ -29,6 +35,24 @@ export const AssignmentDetailsModal = ({
   onStatusChange,
 }: AssignmentDetailsModalProps) => {
   const { updateAssignmentStatus } = useAssignments();
+
+  const { fetchFeedbackReviewAssignID } = useFeedback();
+  const { user } = useAuth();
+  const [userFeedback, setUserFeedback] = useState<Feedback | null>(null);
+
+  useEffect(() => {
+    const fetchUserFeedback = async () => {
+      if (assignment && user) {
+        const result = await fetchFeedbackReviewAssignID(assignment.id, user.id);
+        setUserFeedback(result);
+      }
+    };
+
+    if (isOpen) {
+      fetchUserFeedback();
+    }
+  }, [assignment, user, isOpen, fetchFeedbackReviewAssignID]);
+
 
   if (!assignment) return null;
 
@@ -120,6 +144,45 @@ export const AssignmentDetailsModal = ({
       );
     }
     return null;
+  };
+
+  // Render employer feedback section
+  const renderEmployerFeedback = () => {
+    if (assignment.status !== "completed" || !userFeedback) return null;
+
+    return (
+      <div className="space-y-3 border-t border-t-border pt-4">
+        <div className="flex items-center space-x-2">
+          <Star className="w-4 h-4 text-primary-blue" />
+          <h4 className="text-base font-semibold text-primary-text">
+            Employer Feedback
+          </h4>
+        </div>
+        {userFeedback.rating_score && (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium">Rating:</span>
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-4 h-4 ${
+                    i < userFeedback.rating_score!
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-secondary-text"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-secondary-text">
+              ({userFeedback.rating_score}/5)
+            </span>
+          </div>
+        )}
+        <p className="text-sm text-secondary-text leading-relaxed">
+          {userFeedback.comment || "No comment provided."}
+        </p>
+      </div>
+    );
   };
 
   return (
