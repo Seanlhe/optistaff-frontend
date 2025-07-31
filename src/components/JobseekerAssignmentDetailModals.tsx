@@ -43,8 +43,13 @@ export const AssignmentDetailsModal = ({
   useEffect(() => {
     const fetchUserFeedback = async () => {
       if (assignment && user) {
-        const result = await fetchFeedbackReviewAssignID(assignment.id, user.id);
-        setUserFeedback(result);
+        try {
+          const result = await fetchFeedbackReviewAssignID(assignment.id, user.id);
+          setUserFeedback(result);
+        } catch (error) {
+          console.error("Failed to fetch feedback:", error);
+          setUserFeedback(null);
+        }
       }
     };
 

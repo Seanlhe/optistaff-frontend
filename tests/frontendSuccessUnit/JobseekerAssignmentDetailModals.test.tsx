@@ -14,6 +14,24 @@ vi.mock("../../src/hooks/useAssignments", () => ({
   useAssignments: () => mockUseAssignments,
 }));
 
+// Mock the useFeedback hook
+const mockUseFeedback = {
+  fetchFeedbackReviewAssignID: vi.fn(),
+};
+
+vi.mock("../../src/hooks/useFeedback", () => ({
+  useFeedback: () => mockUseFeedback,
+}));
+
+// Mock the useAuth hook
+const mockUseAuth = {
+  user: { id: "test-user-1", name: "Test User" },
+};
+
+vi.mock("../../src/hooks/useAuth", () => ({
+  useAuth: () => mockUseAuth,
+}));
+
 // Mock UI components
 vi.mock("../../src/components/ui/button", () => ({
   Button: ({ children, onClick, className, variant, ...props }: any) => (
@@ -49,6 +67,7 @@ vi.mock("lucide-react", () => ({
   Mail: () => <div data-testid="mail-icon" />,
   Coffee: () => <div data-testid="coffee-icon" />,
   User: () => <div data-testid="user-icon" />,
+  Star: () => <div data-testid="star-icon" />,
 }));
 
 // Mock StatusEnum
@@ -94,6 +113,7 @@ describe("AssignmentDetailsModal", () => {
     
     // Reset mock implementations
     mockUseAssignments.updateAssignmentStatus.mockResolvedValue(undefined);
+    mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValue(null);
   });
 
   afterEach(() => {
@@ -494,5 +514,210 @@ describe("AssignmentDetailsModal", () => {
 
     expect(screen.getByText("Updated Job Title")).toBeTruthy();
     expect(screen.getByText("Updated Company")).toBeTruthy();
+  });
+
+  // Tests for feedback functionality
+  describe("Feedback functionality", () => {
+    it("calls fetchFeedbackReviewAssignID when modal opens", async () => {
+      render(
+        <AssignmentDetailsModal
+          assignment={mockAssignment}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      await waitFor(() => {
+        expect(mockUseFeedback.fetchFeedbackReviewAssignID).toHaveBeenCalledWith(
+          "test-assignment-1",
+          "test-user-1"
+        );
+      });
+    });
+
+    it("does not call fetchFeedbackReviewAssignID when modal is closed", () => {
+      render(
+        <AssignmentDetailsModal
+          assignment={mockAssignment}
+          isOpen={false}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      expect(mockUseFeedback.fetchFeedbackReviewAssignID).not.toHaveBeenCalled();
+    });
+
+    it("does not call fetchFeedbackReviewAssignID when assignment is null", () => {
+      render(
+        <AssignmentDetailsModal
+          assignment={null}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      expect(mockUseFeedback.fetchFeedbackReviewAssignID).not.toHaveBeenCalled();
+    });
+
+    it("displays employer feedback for completed assignments with rating", async () => {
+      const completedAssignment = { ...mockAssignment, status: "completed" as const };
+      const mockFeedback = {
+        id: "feedback-1",
+        rating_score: 4,
+        comment: "Great work! Very reliable and professional.",
+        assignment_id: "test-assignment-1",
+        user_id: "test-user-1",
+      };
+
+      mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValueOnce(mockFeedback);
+
+      render(
+        <AssignmentDetailsModal
+          assignment={completedAssignment}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Employer Feedback")).toBeTruthy();
+        expect(screen.getByText("Great work! Very reliable and professional.")).toBeTruthy();
+        expect(screen.getByText("(4/5)")).toBeTruthy();
+      });
+    });
+
+    it("displays employer feedback without rating when rating_score is null", async () => {
+      const completedAssignment = { ...mockAssignment, status: "completed" as const };
+      const mockFeedback = {
+        id: "feedback-1",
+        rating_score: null,
+        comment: "Thank you for your service.",
+        assignment_id: "test-assignment-1",
+        user_id: "test-user-1",
+      };
+
+      mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValueOnce(mockFeedback);
+
+      render(
+        <AssignmentDetailsModal
+          assignment={completedAssignment}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Employer Feedback")).toBeTruthy();
+        expect(screen.getByText("Thank you for your service.")).toBeTruthy();
+        expect(screen.queryByText("Rating:")).toBeNull();
+      });
+    });
+
+    it("displays 'No comment provided.' when feedback comment is empty", async () => {
+      const completedAssignment = { ...mockAssignment, status: "completed" as const };
+      const mockFeedback = {
+        id: "feedback-1",
+        rating_score: 5,
+        comment: "",
+        assignment_id: "test-assignment-1",
+        user_id: "test-user-1",
+      };
+
+      mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValueOnce(mockFeedback);
+
+      render(
+        <AssignmentDetailsModal
+          assignment={completedAssignment}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("No comment provided.")).toBeTruthy();
+      });
+    });
+
+    it("does not display feedback section for upcoming assignments", async () => {
+      const mockFeedback = {
+        id: "feedback-1",
+        rating_score: 5,
+        comment: "Great work!",
+        assignment_id: "test-assignment-1",
+        user_id: "test-user-1",
+      };
+
+      mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValueOnce(mockFeedback);
+
+      render(
+        <AssignmentDetailsModal
+          assignment={mockAssignment} // status is "upcoming"
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      // Wait a bit to ensure any async operations complete
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      expect(screen.queryByText("Employer Feedback")).toBeNull();
+    });
+
+    it("does not display feedback section when no feedback is returned", async () => {
+      const completedAssignment = { ...mockAssignment, status: "completed" as const };
+      mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValueOnce(null);
+
+      render(
+        <AssignmentDetailsModal
+          assignment={completedAssignment}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      // Wait for any async operations
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      expect(screen.queryByText("Employer Feedback")).toBeNull();
+    });
+
+    it("handles fetchFeedbackReviewAssignID error gracefully", async () => {
+      const completedAssignment = { ...mockAssignment, status: "completed" as const };
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      
+      mockUseFeedback.fetchFeedbackReviewAssignID.mockRejectedValueOnce(
+        new Error("Network error")
+      );
+
+      render(
+        <AssignmentDetailsModal
+          assignment={completedAssignment}
+          isOpen={true}
+          onClose={mockOnClose}
+          onStatusChange={mockOnStatusChange}
+        />
+      );
+
+      // Wait for the async operation and any error handling
+      await waitFor(() => {
+        expect(mockUseFeedback.fetchFeedbackReviewAssignID).toHaveBeenCalledWith(
+          "test-assignment-1",
+          "test-user-1"
+        );
+      });
+
+      // Should not crash and feedback section should not appear
+      expect(screen.queryByText("Employer Feedback")).toBeNull();
+      
+      consoleErrorSpy.mockRestore();
+    });
   });
 });
