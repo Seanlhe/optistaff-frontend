@@ -300,7 +300,7 @@ export const AssignmentDetailsModal = ({
 
           {/* Contact Details Section */}
           {renderContactDetails()}
-
+          {renderEmployerFeedback()}
           {/* Assignment Details Section */}
           {renderAssignmentDetails()}
           {renderCancelButton()}
