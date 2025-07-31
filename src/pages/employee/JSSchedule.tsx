@@ -4,7 +4,7 @@ import { EmployeeShiftProps } from "../../types/components";
 import { Assignment } from "../../types/hooks";
 import { useAssignments } from "../../hooks/useAssignments";
 import { useUserProfile } from "../../hooks/useUserProfile";
-import { useState,useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 import { Star } from "lucide-react";
 import StatsCard from "../../components/StatsCard";
@@ -100,10 +100,20 @@ export default function JSSchedule() {
     return assignments.map(transformAssignmentToCard);
   }, [assignments, loading]);
 
+  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
+
   // Callback function to refresh assignments when status changes
-  const handleAssignmentChange = () => {
-    fetchAssignments();
-  };
+  const handleAssignmentChange = useCallback(() => {
+    // Clear existing timer
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+    }
+    
+    // Set new timer to avoid rapid refreshes
+    refreshTimer.current = setTimeout(() => {
+      fetchAssignments();
+    }, 300);
+  }, [fetchAssignments]);
 
   const handleViewDetails = (assignment: JobseekerAssignmentCard) => {
     setSelectedAssignment(assignment);

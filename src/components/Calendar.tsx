@@ -34,6 +34,7 @@ const Calendar = () => {
     useState(false);
   const [templateSaveLoading, setTemplateSaveLoading] = useState(false);
   const [templateLoadLoading, setTemplateLoadLoading] = useState(false);
+  const [templateRefreshTrigger, setTemplateRefreshTrigger] = useState(0);
 
   // Use the custom hook to manage availability data
   const {
@@ -155,7 +156,9 @@ const Calendar = () => {
         template_name: templateName,
         is_default: false, 
         timeblocks: events.map((event) => ({
-          ...event,
+          id: event.id,
+          startTime: event.startTime.toISOString(), // Convert Date to string
+          endTime: event.endTime.toISOString(), // Convert Date to string
           day_of_week: event.startTime.getDay() + 1 // 1 (Mon) to 7 (Sun)
         }))
       };
@@ -172,12 +175,14 @@ const Calendar = () => {
       console.error("Error saving template:", err);
     } finally {
       setTemplateSaveLoading(false);
-      setShowTemplateSelectDialog(false); 
-      setTimeout(() => {
-        setShowTemplateSelectDialog(true); // Reopen it after short delay
-      }, 50); // Short delay ensures re-render
-
+      // Refresh templates in background
       await fetchAllTemplates();
+      // Trigger refresh in dialog
+      setTemplateRefreshTrigger(Date.now());
+      // Only close name dialog on success
+      if (result) {
+        setShowTemplateNameDialog(false);
+      }
     }
   };
 
@@ -223,15 +228,20 @@ const Calendar = () => {
 
   const handleDeleteTemplate = async (templateId: string) => {
     try {
-      await deleteTemplate(templateId); // Your Supabase delete call
-      setShowTemplateSelectDialog(false); // Close it first
-      setTimeout(() => {
-        setShowTemplateSelectDialog(true); // Reopen it after short delay
-      }, 50); // Short delay ensures re-render
-      // Optionally: refresh template list
+      const success = await deleteTemplate(templateId);
+      if (!success) {
+        throw new Error("Delete operation failed");
+      }
+      // Refresh templates in background
       await fetchAllTemplates();
+      // Trigger refresh in dialog
+      setTemplateRefreshTrigger(Date.now());
     } catch (err) {
       console.error("Failed to delete template", err);
+      // Refresh templates to show current state
+      await fetchAllTemplates();
+      // Trigger refresh in dialog
+      setTemplateRefreshTrigger(Date.now());
     }
   };
 
@@ -399,6 +409,7 @@ const Calendar = () => {
         onSaveTemplate={() => setShowTemplateNameDialog(true)}
         timeblocks={events}
         loading={templateLoadLoading}
+        refreshTrigger={templateRefreshTrigger}
       />
 
       <TemplateNameDialog

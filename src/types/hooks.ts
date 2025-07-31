@@ -291,3 +291,19 @@ export interface WeeklyEarningSummary {
   assignment_status: string;
   is_completed: boolean;
 }
+
+// Template interfaces
+export interface AvailabilityTemplate {
+  template_id: string;
+  user_id: string;
+  template_name: string;
+  is_default: boolean;
+  timeblocks: {
+    id: string;
+    startTime: string; // ISO string for storage
+    endTime: string;   // ISO string for storage
+    day_of_week: number;
+  }[];
+  created_at: string;
+  updated_at: string;
+}

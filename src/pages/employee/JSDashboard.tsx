@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import StatsCard from "../../components/StatsCard";
 import PayoutSummaryCard from "../../components/PayoutWeeklySummaryCard";
 import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
@@ -121,15 +121,21 @@ const Dashboard = () => {
     return currentWeekAssignments.map(transformAssignmentToCard);
   }, [assignments, loading]); // Removed feedback dependency
 
-  // Callback function to refresh assignments when status changes
-  const handleAssignmentChange = () => {
-    fetchAssignments();
+  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
 
-    // Smart refresh: only trigger payout refresh if current week assignments change
-    // We'll check this after the assignments are fetched and displayAssignments is updated
-    // For now, always trigger refresh when assignments change
-    setPayoutRefreshTrigger(Date.now());
-  };
+  // Callback function to refresh assignments when status changes
+  const handleAssignmentChange = useCallback(() => {
+    // Clear existing timer
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+    }
+    
+    // Set new timer to avoid rapid refreshes
+    refreshTimer.current = setTimeout(() => {
+      fetchAssignments();
+      setPayoutRefreshTrigger(Date.now());
+    }, 300);
+  }, [fetchAssignments]);
 
   const handleViewDetails = (assignment: JobseekerAssignmentCard) => {
     setSelectedAssignment(assignment);
