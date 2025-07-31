@@ -153,8 +153,11 @@ const Calendar = () => {
     try {
       const newTemplate = {
         template_name: templateName,
-        is_default: false, // Or true, if applicable
-        timeblocks: events, // Pass your current events (UI_Event[])
+        is_default: false, 
+        timeblocks: events.map((event) => ({
+          ...event,
+          day_of_week: event.startTime.getDay() + 1 // 1 (Mon) to 7 (Sun)
+        }))
       };
 
       const result = await createTemplate(newTemplate);
@@ -169,7 +172,7 @@ const Calendar = () => {
       console.error("Error saving template:", err);
     } finally {
       setTemplateSaveLoading(false);
-      setShowTemplateSelectDialog(false); // Close it first
+      setShowTemplateSelectDialog(false); 
       setTimeout(() => {
         setShowTemplateSelectDialog(true); // Reopen it after short delay
       }, 50); // Short delay ensures re-render
@@ -187,27 +190,27 @@ const Calendar = () => {
       if (!template) throw new Error("Failed to load template");
 
       const templateEvents: UI_Event[] = template.timeblocks.map((block) => {
-        // Shift day_of_week backward by 1, wrapping 1 -> 7
-        const shiftedDay = block.day_of_week === 1 ? 7 : block.day_of_week - 1;
+      const blockStart = new Date(block.startTime);
+      const blockEnd = new Date(block.endTime);
 
-        const targetDay = weekDays[shiftedDay - 1]; // weekDays[0] = Monday
+      // Adjust to the same weekday in the current week
+      const templateDay = blockStart.getDay(); // 0 (Sun) to 6 (Sat)
+      const currentWeekDay = weekDays[templateDay === 0 ? 6 : templateDay - 1]; // shift Sun to end
 
-        const blockStart = new Date(block.startTime);
-        const blockEnd = new Date(block.endTime);
+    return {
+      id: block.id,
+      startTime: set(currentWeekDay, {
+        hours: blockStart.getHours(),
+        minutes: blockStart.getMinutes(),
+      }),
+      endTime: set(currentWeekDay, {
+        hours: blockEnd.getHours(),
+        minutes: blockEnd.getMinutes(),
+      }),
+      day_of_week: blockStart.getDay() + 1, // Correctly reflect JS day
+    };
+    });
 
-        return {
-          id: block.id,
-          day_of_week: shiftedDay,
-          startTime: set(targetDay, {
-            hours: blockStart.getHours(),
-            minutes: blockStart.getMinutes(),
-          }),
-          endTime: set(targetDay, {
-            hours: blockEnd.getHours(),
-            minutes: blockEnd.getMinutes(),
-          }),
-        };
-      });
 
       setEvents(templateEvents);
       setShowTemplateSelectDialog(false);
