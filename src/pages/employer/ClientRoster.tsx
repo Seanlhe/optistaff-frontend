@@ -18,7 +18,7 @@ export default function ClientRoster() {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const { shifts, loading, error, deleteShift } = useShifts();
+  const { shifts, loading, error, deleteShift, refetchShifts } = useShifts();
 
   const [selectedLocation, setSelectedLocation] =
     useState<string>("All Locations");
@@ -36,7 +36,7 @@ export default function ClientRoster() {
       // Only include shifts from current week onwards
       return shiftWeekStart >= currentWeekStart;
     });
-  }, [shifts]);
+  }, [shifts]); // Remove refreshTrigger dependency
 
   const locationFilteredShifts = useMemo(() => {
     if (!filteredShifts || filteredShifts.length === 0) return [];
@@ -137,6 +137,8 @@ export default function ClientRoster() {
   const handleCloseDetails = () => {
     setSelectedShift(null);
     setIsEditMode(false);
+    // Refresh data after editing to show updated information
+    refetchShifts();
   };
 
   const handleEditShift = (shift: Shift) => {
@@ -189,7 +191,12 @@ export default function ClientRoster() {
   }
 
   if (selectedShift && isEditMode) {
-    return <ClientEdit shift={selectedShift} onClose={handleCloseDetails} />;
+    return (
+      <ClientEdit 
+        shift={selectedShift} 
+        onClose={handleCloseDetails}
+      />
+    );
   }
 
   return (

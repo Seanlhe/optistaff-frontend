@@ -5,19 +5,34 @@ import { reviewError, validateReview } from "../../utils/review";
 import { useState, useEffect } from "react";
 import { useFeedback } from "../../hooks/useFeedback";
 import { useAssignments } from "../../hooks/useAssignments";
+
 export default function ClientHistory() {
   const { shifts } = useShifts();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const pastShifts = shifts.filter((shift) => {
     const shiftDate = new Date(shift.start_time);
     return shiftDate < today;
   });
+  
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const { fetchAssignmentsByShift } = useAssignments();
   const [selAssignment, setSelAssignment] = useState<Assignment>();
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  // Handle window focus to refresh data
+  useEffect(() => {
+    const handleFocus = () => {
+      setRefreshTrigger(prev => prev + 1);
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+  
   useEffect(() => {
     console.log("fetching data");
     console.log(selectedShift?.shift_id);
@@ -33,7 +48,7 @@ export default function ClientHistory() {
       }
     };
     fetchData();
-  }, [selectedShift]);
+  }, [selectedShift, refreshTrigger]); // Add refreshTrigger as dependency
 
   const handleSelectShift = (shift: Shift) => {
     setSelectedShift(shift);

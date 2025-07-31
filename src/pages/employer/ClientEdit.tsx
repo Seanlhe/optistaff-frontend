@@ -7,7 +7,7 @@ import { useShifts } from "../../hooks/useShifts";
 import { useAssignments } from "../../hooks/useAssignments";
 import { getDateForm, ShiftError, validateShift, createEmptyShiftError, jobRoleOptions } from "../../utils/uploadjobs";
 import { useEffect, useState } from "react";
-import {format, parse} from "date-fns";
+import {format} from "date-fns";
 import * as React from "react";
 
 export default function ClientEdit({shift, onClose}:{shift:Shift, onClose: Function}){
@@ -26,11 +26,20 @@ export default function ClientEdit({shift, onClose}:{shift:Shift, onClose: Funct
 function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
     const disabled = shift.staff_assigned > 0;
     console.log("Shift staff_assigned:", shift.staff_assigned, "Disabled:", disabled);
-    const {updateShift} = useShifts();
+    const {updateShift, loading} = useShifts();
     const [shiftError, setShiftError] = useState<ShiftError>(createEmptyShiftError());
     const [formData, setFormData] = useState<Shift>(shift);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Reset form data when shift prop changes
+    useEffect(() => {
+        setFormData(shift);
+        setSubmitSuccess(false);
+        setSubmitError(null);
+        setShiftError(createEmptyShiftError());
+    }, [shift]);
     
     const handleDataChange = (e:  React.ChangeEvent<HTMLInputElement>| React.ChangeEvent<HTMLTextAreaElement>|  React.ChangeEvent<HTMLSelectElement>) => {
         const name = e.target.name;
@@ -39,6 +48,11 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
         // Clear the error for this field if it has a value
         if (value.trim() !== "" && shiftError[name as keyof ShiftError]) {
             setShiftError(prev => ({ ...prev, [name]: null }));
+        }
+        
+        // Clear submit error when user starts editing
+        if (submitError) {
+            setSubmitError(null);
         }
         
         switch (name){
@@ -95,6 +109,7 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
         setShiftError(createEmptyShiftError());
         setSubmitSuccess(false);
         setSubmitError(null);
+        setIsSubmitting(true);
         
         console.log("old shift: ", shift);
         console.log(formData)
@@ -120,17 +135,20 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
                 });
                 setSubmitSuccess(true);
                 console.log("✅ Updated shift:", formData);
-                // Hide success message after 3 seconds, then close
+                // Auto-close after successful update with slight delay
                 setTimeout(() => {
                     setSubmitSuccess(false);
-                    onClose();
-                }, 3000);
+                    setIsSubmitting(false);
+                    onClose(); // This will trigger refresh in parent
+                }, 2000);
             } catch (error) {
                 setSubmitError("Failed to update job listing. Please try again.");
+                setIsSubmitting(false);
                 console.error("❌ Failed to update shift:", error);
             }
         } else {
             setSubmitError("Please fix the validation errors before submitting.");
+            setIsSubmitting(false);
         }
     }
 
@@ -185,8 +203,35 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
                 <CustomInputField disabled={disabled} className="col-span-6" placeholder="Eg. 10" name="staff_needed" title="No. Pax" type="number" value = {shift.staff_needed}  error = {shiftError.staff_needed} onChange={handleDataChange} numericOnly={true}/>
                 
                 <div id="upload-btns" className="col-span-12 flex flex-row gap-4 justify-end">
-                    {!disabled && <button type="button" className="hover:cursor-pointer hover:opacity-80 w-full p-3 bg-primary-blue font-montserrat-smb text-white text-base rounded-lg" onClick={()=>handleSubmit()}>Update Job</button>}
-                    <button type="button" className="hover:cursor-pointer hover:bg-gray-100 w-full p-3 border-2 bg-white border-secondary-text font-montserrat-smb text-secondary-text text-base rounded-lg" onClick={handleCancel}>Cancel</button>
+                    {!disabled && (
+                        <button 
+                            type="button" 
+                            className={`w-full p-3 font-montserrat-smb text-base rounded-lg ${
+                                isSubmitting || loading
+                                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                    : 'bg-primary-blue text-white hover:cursor-pointer hover:opacity-80'
+                            }`}
+                            onClick={() => handleSubmit()}
+                            disabled={isSubmitting || loading}
+                        >
+                            {isSubmitting || loading ? (
+                                <div className="flex items-center justify-center">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    Updating...
+                                </div>
+                            ) : (
+                                'Update Job'
+                            )}
+                        </button>
+                    )}
+                    <button 
+                        type="button" 
+                        className="hover:cursor-pointer hover:bg-gray-100 w-full p-3 border-2 bg-white border-secondary-text font-montserrat-smb text-secondary-text text-base rounded-lg"
+                        onClick={handleCancel}
+                        disabled={isSubmitting}
+                    >
+                        Cancel
+                    </button>
                 </div>
 
                 {/* Success Alert */}
@@ -204,9 +249,7 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
                                     clipRule="evenodd"
                                 />
                             </svg>
-                            <span className="text-sm font-medium">
-                                Job listing updated successfully!
-                            </span>
+                            <span className="font-medium">Job listing updated successfully! Returning to dashboard...</span>
                         </div>
                     </div>
                 )}
@@ -214,9 +257,9 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
                 {/* Error Alert */}
                 {submitError && (
                     <div className="col-span-12 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-                        <div className="flex items-start">
+                        <div className="flex items-center">
                             <svg
-                                className="h-5 w-5 text-red-400 mt-0.5 mr-3 flex-shrink-0"
+                                className="h-5 w-5 text-red-400 mr-3"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
                             >
@@ -226,12 +269,7 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
                                     clipRule="evenodd"
                                 />
                             </svg>
-                            <div>
-                                <h3 className="text-sm font-medium text-red-800">
-                                    Error Updating Job Listing
-                                </h3>
-                                <p className="text-sm text-red-700 mt-1">{submitError}</p>
-                            </div>
+                            <span className="font-medium">{submitError}</span>
                         </div>
                     </div>
                 )}
