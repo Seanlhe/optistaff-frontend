@@ -1,21 +1,42 @@
 import { Shift } from "../../types/hooks";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useShifts } from "../../hooks/useShifts";
 import ClientEdit from "./ClientEdit";
 import ClientDashboard from "./ClientDashboard";
-import { startOfWeek, endOfWeek, isWithinInterval, addDays, subDays } from "date-fns"; // Using date-fns for date manipulation
+import { startOfWeek, endOfWeek, isWithinInterval } from "date-fns"; // Using date-fns for date manipulation
 
 export default function ClientDbContainer() {
-  const { shifts } = useShifts();
+  const { shifts, deleteShift, refetchShifts } = useShifts();
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
 
   const handleManageClick = (shift: Shift) => {
     setSelectedShift(shift);
   };
 
-  const handleCloseEdit = () => {
-    setSelectedShift(null);
+  const handleDeleteShift = async (shiftId: string) => {
+    await deleteShift(shiftId);
+    // The deleteShift function in useShifts already calls fetchShifts()
+    // so no additional refresh needed
   };
+
+  const handleCloseEdit = useCallback(() => {
+    setSelectedShift(null);
+    // Refresh data after editing to show updated information
+    refetchShifts();
+  }, [refetchShifts]);
+
+  // Simple window focus refresh - only if data might be stale (5+ minutes)
+  useEffect(() => {
+    const handleFocus = () => {
+      const lastUpdate = localStorage.getItem('lastShiftUpdate');
+      if (!lastUpdate || Date.now() - parseInt(lastUpdate) > 300000) { // 5 minutes
+        refetchShifts();
+      }
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [refetchShifts]);
 
   const getShiftsThisWeek = (shifts: Shift[]) => {
     const now = new Date();
@@ -28,11 +49,19 @@ export default function ClientDbContainer() {
       return isWithinInterval(shiftStartTime, { start: startOfCurrentWeek, end: endOfCurrentWeek });
     });
   };
+  
   const shiftsThisWeek = getShiftsThisWeek(shifts);
 
   return selectedShift ? (
-    <ClientEdit shift={selectedShift} onClose={handleCloseEdit} />
+    <ClientEdit 
+      shift={selectedShift} 
+      onClose={handleCloseEdit}
+    />
   ) : (
-    <ClientDashboard shifts={shiftsThisWeek} handleManageClick={handleManageClick} />
+    <ClientDashboard 
+      shifts={shiftsThisWeek} 
+      handleManageClick={handleManageClick}
+      handleDeleteShift={handleDeleteShift}
+    />
   );
 }

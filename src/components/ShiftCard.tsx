@@ -1,19 +1,24 @@
 import {format} from "date-fns"
 import { Shift } from "../types/hooks";
-import { useShifts } from "../hooks/useShifts";
-export default function ShiftCard({shift, handleManageClick}: {shift: Shift, handleManageClick: Function}){
-    const {deleteShift, error} = useShifts();
 
+export default function ShiftCard({
+  shift, 
+  handleManageClick, 
+  handleDeleteShift
+}: {
+  shift: Shift, 
+  handleManageClick: Function,
+  handleDeleteShift?: (shiftId: string) => Promise<void>
+}){
     const handleDelete = async () => {
-        if (!deleteShift) return;
+        if (!handleDeleteShift) return;
         const confirmed = window.confirm(
         `Are you sure you want to delete "${shift.job_title}"?\n\nThis action cannot be undone.`
         );
         if (!confirmed) {
         return; // User cancelled, don't proceed with deletion
         }
-        await deleteShift(shift.shift_id);
-        console.log(error);
+        await handleDeleteShift(shift.shift_id);
     };
     return <div data-testid="shift-card" className="bg-white flex flex-row items-center justify-between rounded-2xl">
         <div className="w-full bg-white flex flex-col gap-3 rounded-2xl p-3"> 

@@ -8,9 +8,11 @@ import { PieChart } from "@mui/x-charts";
 export default function ClientDashboard({
   shifts,
   handleManageClick,
+  handleDeleteShift,
 }: {
   shifts: Shift[];
   handleManageClick: Function;
+  handleDeleteShift?: (shiftId: string) => Promise<void>;
 }) {
   const navigate = useNavigate();
 
@@ -49,6 +51,7 @@ export default function ClientDashboard({
       <div className="flex flex-row gap-6">
         <DashboardUpcoming
           handleManageClick={handleManageClick}
+          handleDeleteShift={handleDeleteShift}
           shifts={shifts}
         />
         <div className="grow flex flex-col gap-6">
@@ -59,6 +62,7 @@ export default function ClientDashboard({
           <DashboardInProgress
             shifts={shifts}
             handleManageClick={handleManageClick}
+            handleDeleteShift={handleDeleteShift}
           />
         </div>
       </div>
@@ -69,9 +73,11 @@ export default function ClientDashboard({
 export function DashboardUpcoming({
   shifts,
   handleManageClick,
+  handleDeleteShift,
 }: {
   shifts: Shift[];
   handleManageClick: Function;
+  handleDeleteShift?: (shiftId: string) => Promise<void>;
 }) {
   return (
     <div data-testid="dashboard-upcoming" className="bg-secondary-bg grow flex flex-col p-5 rounded-2xl gap-4">
@@ -90,6 +96,7 @@ export function DashboardUpcoming({
                   <ShiftCard
                     shift={shift}
                     handleManageClick={handleManageClick}
+                    handleDeleteShift={handleDeleteShift}
                   />
                 </li>
               ) : null
@@ -158,9 +165,11 @@ export function DashboardPositions({
 export function DashboardInProgress({
   shifts,
   handleManageClick,
+  handleDeleteShift,
 }: {
   shifts: Shift[];
   handleManageClick: Function;
+  handleDeleteShift?: (shiftId: string) => Promise<void>;
 }) {
   return (
     <div data-testid="dashboard-in-progress" className="bg-secondary-bg flex flex-col p-8 rounded-3xl gap-8">
@@ -177,6 +186,7 @@ export function DashboardInProgress({
               <li key={shift.shift_id}>
                 <ShiftCard
                   handleManageClick={() => handleManageClick(shift)}
+                  handleDeleteShift={handleDeleteShift}
                   shift={shift}
                 />
               </li>

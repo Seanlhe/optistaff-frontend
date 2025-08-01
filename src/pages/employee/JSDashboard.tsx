@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import StatsCard from "../../components/StatsCard";
 import PayoutSummaryCard from "../../components/PayoutWeeklySummaryCard";
 import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
@@ -55,13 +55,15 @@ const Dashboard = () => {
     };
 
     // Use real start_time and end_time from assignment
-    const formatRealTime = (startTime: Date, endTime: Date) => {
-      const formatTime = (date: Date) =>
-        date.toLocaleTimeString("en-US", {
+    const formatRealTime = (startTime: string, endTime: string) => {
+      const formatTime = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
           hour12: true,
         });
+      };
 
       return `${formatTime(startTime)} – ${formatTime(endTime)}`;
     };
@@ -69,16 +71,13 @@ const Dashboard = () => {
     return {
       id: assignment.assignment_id,
       title: assignment.job_title || "Assignment",
-      company_name: assignment.company_name || "Company", // Use employer_name instead of name
+      company_name: assignment.company_name || "Company",
       date: formatDate(assignmentDate),
-      time: formatRealTime(
-        new Date(assignment.start_time),
-        new Date(assignment.end_time),
-      ), // Use real times
-      location: assignment.job_location || "Location TBD", // Use real job location
-      hourlyRate: assignment.pay_rate || 0, // Use real pay rate
-      description: assignment.job_description || "No description provided", // Use real description
-      requirements: assignment.job_requirements || "No specific requirements", // Use real requirements
+      time: formatRealTime(assignment.start_time, assignment.end_time),
+      location: assignment.job_location || "Location TBD",
+      hourlyRate: assignment.pay_rate || 0,
+      description: assignment.job_description || "No description provided",
+      requirements: assignment.job_requirements || "No specific requirements",
       status: mapAssignmentStatusToCardStatus(assignment.status),
       // Additional fields for enhanced components
       contactNumber: assignment.contact_number,
@@ -87,6 +86,7 @@ const Dashboard = () => {
       breakHours: assignment.break_hours,
       startTime: assignment.start_time,
       endTime: assignment.end_time,
+      // Each component will fetch its own feedback based on assignment_id
     };
   };
 
@@ -119,22 +119,23 @@ const Dashboard = () => {
     });
 
     return currentWeekAssignments.map(transformAssignmentToCard);
-  }, [assignments, loading]);
+  }, [assignments, loading]); // Removed feedback dependency
+
+  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Callback function to refresh assignments when status changes
-  const handleAssignmentChange = () => {
-    fetchAssignments();
-
-    // Smart refresh: only trigger payout refresh if current week assignments change
-    // We'll check this after the assignments are fetched and displayAssignments is updated
-    // For now, always trigger refresh when assignments change
-    setPayoutRefreshTrigger(Date.now());
-  };
-
-  // Manual refresh handler for PayoutSummaryCard
-  const handlePayoutRefresh = () => {
-    setPayoutRefreshTrigger(Date.now());
-  };
+  const handleAssignmentChange = useCallback(() => {
+    // Clear existing timer
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+    }
+    
+    // Set new timer to avoid rapid refreshes
+    refreshTimer.current = setTimeout(() => {
+      fetchAssignments();
+      setPayoutRefreshTrigger(Date.now());
+    }, 300);
+  }, [fetchAssignments]);
 
   const handleViewDetails = (assignment: JobseekerAssignmentCard) => {
     setSelectedAssignment(assignment);
@@ -239,7 +240,6 @@ const Dashboard = () => {
               <div className="space-y-4">
                 <PayoutSummaryCard
                   refreshTrigger={payoutRefreshTrigger}
-                  onRefresh={handlePayoutRefresh}
                 />
                 <StatsCard
                   title="Rating"

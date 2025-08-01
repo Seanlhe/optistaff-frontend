@@ -165,10 +165,28 @@ export default function UploadJobs() {
         setValid(true);
         setSubmitSuccess(true);
         console.log("✅ Success state set to true");
-        // Hide success message after 3 seconds
+        
+        // Clear form data after successful submission
+        setFormData({
+          job_title: "",
+          job_description: "",
+          job_requirements: "",
+          job_type: "",
+          pay_rate: 0,
+          job_location: "",
+          postal_code: 0,
+          start_time: new Date(),
+          end_time: new Date(),
+          break_duration: 0,
+          staff_needed: 0,
+        });
+        setShiftError(createEmptyShiftError());
+        
+        // Hide success message and navigate after 3 seconds
         setTimeout(() => {
-          console.log("⏰ Hiding success message after 3 seconds");
+          console.log("⏰ Hiding success message and navigating to dashboard");
           setSubmitSuccess(false);
+          navigate("/employer/dashboard"); // Navigate back to dashboard to see the new shift
         }, 3000);
       } catch (error) {
         console.error("❌ Error in createShift:", error);

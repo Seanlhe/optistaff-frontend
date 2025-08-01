@@ -216,9 +216,9 @@ export interface Assignment {
   job_requirements: string | null;
   job_type: string;
   pay_rate: number;
-  start_time: Date;
-  end_time: Date;
-  break_hours: number;
+  start_time: string; // Changed to string to match database function return
+  end_time: string; // Changed to string to match database function return
+  break_hours: number | null; // Made nullable to match database schema
   contact_number: string;
   contact_email: string;
   check_in_time: string | null;
@@ -290,4 +290,20 @@ export interface WeeklyEarningSummary {
   shift_date: string;
   assignment_status: string;
   is_completed: boolean;
+}
+
+// Template interfaces
+export interface AvailabilityTemplate {
+  template_id: string;
+  user_id: string;
+  template_name: string;
+  is_default: boolean;
+  timeblocks: {
+    id: string;
+    startTime: string; // ISO string for storage
+    endTime: string;   // ISO string for storage
+    day_of_week: number;
+  }[];
+  created_at: string;
+  updated_at: string;
 }

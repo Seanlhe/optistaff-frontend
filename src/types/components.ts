@@ -189,9 +189,13 @@ export interface VerificationBadgeProps {
 }
 
 export interface Template {
-  id: string;
-  name: string;
+  template_id: string;
+  template_name: string;
   created_at: string;
+  updated_at?: string;
+  user_id?: string;
+  is_default?: boolean;
+  timeblocks?: UI_Event[];
 }
 
 export interface TemplateSelectDialogProps {
@@ -202,6 +206,7 @@ export interface TemplateSelectDialogProps {
   onSaveTemplate?: () => void;
   timeblocks: UI_Event[];
   loading?: boolean;
+  refreshTrigger?: number;
 }
 
 export interface TemplateNameDialogProps {

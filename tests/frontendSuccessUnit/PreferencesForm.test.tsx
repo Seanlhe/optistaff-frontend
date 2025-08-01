@@ -80,14 +80,14 @@ describe("PreferencesForm", () => {
     expect(screen.getByTestId("mock-prefs-pay")).toBeTruthy();
     expect(screen.getByTestId("mock-prefs-jobtype")).toBeTruthy();
     expect(screen.getByTestId("mock-map")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /submit/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /save preferences/i })).toBeTruthy();
   });
 
   it("handles successful form submission", async () => {
     mockSavePreferences.mockResolvedValue(true);
     render(<PreferencesForm />);
 
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const submitButton = screen.getByRole("button", { name: /save preferences/i });
     fireEvent.click(submitButton);
 
     expect(mockSavePreferences).toHaveBeenCalledWith(defaultMockData);
@@ -102,7 +102,7 @@ describe("PreferencesForm", () => {
     mockSavePreferences.mockResolvedValue(false);
     render(<PreferencesForm />);
 
-    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+    fireEvent.click(screen.getByRole("button", { name: /save preferences/i }));
 
     await waitFor(() => {
       expect(mockSavePreferences).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe("PreferencesForm", () => {
     expect(screen.queryByText(/preferences saved successfully!/i)).toBeNull();
 
     const submitButton = screen.getByRole("button", {
-      name: /submit/i,
+      name: /save preferences/i,
     }) as HTMLButtonElement;
     expect(submitButton.disabled).toBe(false);
   });

@@ -40,7 +40,8 @@ export const useAssignments = () => {
         setLoading(false);
         return;
       }
-      setAssignments(data as Assignment[]);
+      // Ensure the data is properly typed as Assignment[]
+      setAssignments((data as Assignment[]) || []);
     } catch (err) {
       setError((err as Error).message);
     } finally {

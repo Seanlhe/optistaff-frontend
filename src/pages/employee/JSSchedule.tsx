@@ -1,13 +1,10 @@
-import EmployeeShiftDetails from "../../components/EmployeeShiftDetails";
-import EmployeeCalendarDay from "../../components/EmployeeCalendarDay";
-import EmployeeCalendarHeader from "../../components/EmployeeCalendarHeader";
 import { AssignmentDetailsModal } from "../../components/JobseekerAssignmentDetailModals";
 import { JobseekerAssignmentCard } from "../../components/JobseekerAssignmentCard";
 import { EmployeeShiftProps } from "../../types/components";
 import { Assignment } from "../../types/hooks";
 import { useAssignments } from "../../hooks/useAssignments";
 import { useUserProfile } from "../../hooks/useUserProfile";
-import { useState,useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { startOfWeek, endOfWeek, format } from 'date-fns';
 import { Star } from "lucide-react";
 import StatsCard from "../../components/StatsCard";
@@ -103,10 +100,20 @@ export default function JSSchedule() {
     return assignments.map(transformAssignmentToCard);
   }, [assignments, loading]);
 
+  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
+
   // Callback function to refresh assignments when status changes
-  const handleAssignmentChange = () => {
-    fetchAssignments();
-  };
+  const handleAssignmentChange = useCallback(() => {
+    // Clear existing timer
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+    }
+    
+    // Set new timer to avoid rapid refreshes
+    refreshTimer.current = setTimeout(() => {
+      fetchAssignments();
+    }, 300);
+  }, [fetchAssignments]);
 
   const handleViewDetails = (assignment: JobseekerAssignmentCard) => {
     setSelectedAssignment(assignment);
@@ -152,23 +159,6 @@ export default function JSSchedule() {
     return `${startFormatted} – ${endFormatted}`;
   };
 
-  const days = [
-    { name: "Mon", date: "22 May 2025" },
-    { name: "Tue", date: "23 May 2025" },
-    { name: "Wed", date: "24 May 2025" },
-    { name: "Thu", date: "25 May 2025" },
-    { name: "Fri", date: "26 May 2025" },
-    { name: "Sat", date: "27 May 2025" },
-    { name: "Sun", date: "28 May 2025" },
-  ];
-
-  const handleShiftClick = (shift: EmployeeShiftProps) => {
-    setSelectedShift(shift);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedShift(null);
-  };
 
   return (
     <div className="bg-tertiary-bg min-h-full flex flex-col px-16 py-8 gap-4">

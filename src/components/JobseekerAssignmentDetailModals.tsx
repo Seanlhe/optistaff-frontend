@@ -4,11 +4,11 @@ import {
   DollarSign,
   Briefcase,
   FileText,
-  Star,
   Phone,
   Mail,
   Coffee,
   User,
+  Star,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -43,8 +43,13 @@ export const AssignmentDetailsModal = ({
   useEffect(() => {
     const fetchUserFeedback = async () => {
       if (assignment && user) {
-        const result = await fetchFeedbackReviewAssignID(assignment.id, user.id);
-        setUserFeedback(result);
+        try {
+          const result = await fetchFeedbackReviewAssignID(assignment.id, user.id);
+          setUserFeedback(result);
+        } catch (error) {
+          console.error("Failed to fetch feedback:", error);
+          setUserFeedback(null);
+        }
       }
     };
 
@@ -300,13 +305,10 @@ export const AssignmentDetailsModal = ({
 
           {/* Contact Details Section */}
           {renderContactDetails()}
-
+          {renderEmployerFeedback()}
           {/* Assignment Details Section */}
           {renderAssignmentDetails()}
           {renderCancelButton()}
-
-          {/* Employer Feedback Section */}
-          {renderEmployerFeedback()}
         </div>
       </DialogContent>
     </Dialog>

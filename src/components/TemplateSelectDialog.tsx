@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { X, Calendar } from "lucide-react";
-import { Template, TemplateSelectDialogProps } from "../types/components";
+import { TemplateSelectDialogProps } from "../types/components";
 import { useAvailabilityTemplate } from "../hooks/useAvailabilityTemplate";
 
 export const TemplateSelectDialog = ({
@@ -10,6 +10,7 @@ export const TemplateSelectDialog = ({
   onDelete,
   onSaveTemplate,
   loading = false,
+  refreshTrigger = 0,
 }: TemplateSelectDialogProps) => {
   const {
     templates,
@@ -17,11 +18,24 @@ export const TemplateSelectDialog = ({
     loading: templateLoading,
   } = useAvailabilityTemplate();
 
+  const lastFetchTime = useRef<number>(0);
+  const [buttonLoading, setButtonLoading] = useState<string | null>(null);
+
   useEffect(() => {
     if (isOpen) {
+      // Always fetch when dialog opens to ensure fresh data
       fetchAllTemplates();
+      lastFetchTime.current = Date.now();
     }
   }, [isOpen, fetchAllTemplates]);
+
+  // Refresh when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      fetchAllTemplates();
+      lastFetchTime.current = Date.now();
+    }
+  }, [refreshTrigger, fetchAllTemplates]);
 
   if (!isOpen) return null;
 
@@ -81,17 +95,36 @@ export const TemplateSelectDialog = ({
                 </div>
                 <div className="flex gap-2">
                   <button
-                    className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
-                    onClick={() => onDelete(template.template_id)}
+                    className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors disabled:opacity-50"
+                    onClick={async () => {
+                      setButtonLoading(`delete-${template.template_id}`);
+                      try {
+                        await onDelete(template.template_id);
+                        // Force refresh after delete
+                        await fetchAllTemplates();
+                        lastFetchTime.current = Date.now();
+                      } finally {
+                        setButtonLoading(null);
+                      }
+                    }}
+                    disabled={buttonLoading === `delete-${template.template_id}`}
                   >
-                    Delete
+                    {buttonLoading === `delete-${template.template_id}` ? "Deleting..." : "Delete"}
                   </button>
 
                   <button
-                    className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
-                    onClick={() => onSelect(template.template_id)}
+                    className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors disabled:opacity-50"
+                    onClick={async () => {
+                      setButtonLoading(`use-${template.template_id}`);
+                      try {
+                        await onSelect(template.template_id);
+                      } finally {
+                        setButtonLoading(null);
+                      }
+                    }}
+                    disabled={buttonLoading === `use-${template.template_id}`}
                   >
-                    Use
+                    {buttonLoading === `use-${template.template_id}` ? "Loading..." : "Use"}
                   </button>
                 </div>
               </div>

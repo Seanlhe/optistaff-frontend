@@ -12,6 +12,7 @@ export const useShifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { user } = useAuth();
 
   const fetchShifts = useCallback(async () => {
@@ -40,6 +41,10 @@ export const useShifts = () => {
         end_time: new Date(shift.end_time), // Convert end_time to a Date object (if needed)
       }));
       setShifts(shiftsWithDates as Shift[]);
+      
+      // Store timestamp for window focus refresh feature
+      localStorage.setItem('lastShiftUpdate', Date.now().toString());
+      
       return data as Shift[];
     } catch (err) {
       setError((err as Error).message);
@@ -48,9 +53,14 @@ export const useShifts = () => {
     }
   }, [user]);
 
+  // Function to manually trigger a refresh
+  const refetchShifts = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
   useEffect(() => {
     fetchShifts();
-  }, [fetchShifts]);
+  }, [fetchShifts, refreshTrigger]); // Add refreshTrigger as dependency
 
   const createShift = async (
     shift_data: Omit<
@@ -186,5 +196,6 @@ export const useShifts = () => {
     createShift,
     updateShift,
     deleteShift,
+    refetchShifts, // Add the refetch function
   };
 };

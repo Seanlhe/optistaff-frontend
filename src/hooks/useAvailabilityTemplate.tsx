@@ -82,7 +82,7 @@ export function useAvailabilityTemplate() {
 
   const fetchTemplate = useCallback(
     async (template_id: String) => {
-      if (authLoading || !user) return;
+      if (authLoading || !user) return null;
 
       setLoading(true);
       setError(null);
@@ -94,15 +94,15 @@ export function useAvailabilityTemplate() {
         .eq("template_id", template_id)
         .single(); // expect only one
 
+      setLoading(false); // Move BEFORE return statements
+
       if (error) {
         console.error("Error fetching template:", error.message);
         setError(error.message);
         return null;
-      } else {
-        return data as AvailabilityTemplate;
       }
-
-      setLoading(false);
+      
+      return data as AvailabilityTemplate;
     },
     [user, authLoading],
   );
@@ -158,25 +158,25 @@ export function useAvailabilityTemplate() {
 
   const deleteTemplate = useCallback(
     async (template_id: String) => {
-      if (authLoading || !user) return;
+      if (authLoading || !user) return false;
 
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("availability_templates")
         .delete()
         .eq("template_id", template_id);
 
-      if (error) {
-        console.error("Error deleteing template:", error.message);
-        setError(error.message);
-        return null;
-      } else {
-        return true;
-      }
+      setLoading(false); // Move BEFORE return statements
 
-      setLoading(false);
+      if (error) {
+        console.error("Error deleting template:", error.message);
+        setError(error.message);
+        return false;
+      }
+      
+      return true;
     },
     [user, authLoading],
   );

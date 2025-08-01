@@ -7,7 +7,6 @@ import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "./useAuth";
 import { Feedback } from "../types/hooks";
 import { supabase } from "../integrations/supabase/client";
-import { set } from "date-fns";
 
 export const useFeedback = () => {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
@@ -16,7 +15,7 @@ export const useFeedback = () => {
   const [singleFeedback, setSingleFeedback] = useState<Feedback | null>(null);
   const { user } = useAuth();
 
-  // TODO: Implement feedback management functions
+  // Fetch feedback where current user is the reviewer (giving feedback)
   const fetchFeedback = useCallback(async () => {
     if (!user) {
       setLoading(false);
@@ -25,12 +24,12 @@ export const useFeedback = () => {
     }
     setError(null);
     try {
-      // Fetch feedback from the database
+      // Fetch feedback from the database where user is reviewer
       const { data, error } = await supabase
         .from("feedback")
         .select("*")
         .eq("reviewer_id", user.id);
-      console.log("Query all response:", { data, error });
+      console.log("Query feedback as reviewer response:", { data, error });
 
       if (error) {
         setError(error.message);
