@@ -49,7 +49,7 @@ export default function ClientRoster() {
 
     // Filter by selected location
     return filteredShifts.filter(
-      (shift) => shift.job_location === selectedLocation,
+      (shift) => shift.job_location === selectedLocation
     );
   }, [filteredShifts, selectedLocation]);
 
@@ -61,7 +61,7 @@ export default function ClientRoster() {
           return new Date(current.start_time) < new Date(earliest.start_time)
             ? current
             : earliest;
-        },
+        }
       );
 
       // Get the week start of the earliest shift
@@ -78,7 +78,7 @@ export default function ClientRoster() {
       ) {
         console.log(
           "🗓️ Navigating to first shift week:",
-          format(earliestShiftWeek, "yyyy-MM-dd"),
+          format(earliestShiftWeek, "yyyy-MM-dd")
         );
         setCurrentWeek(earliestShiftWeek);
       }

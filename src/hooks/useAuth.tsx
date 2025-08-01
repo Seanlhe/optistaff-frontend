@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { AuthState, SignupData } from "../types/hooks";
+import { validateSignupForm, formatUserData } from "../utils/authentication";
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -29,15 +30,15 @@ export const useAuth = () => {
       // Add timeout protection for database queries
       const withTimeout = function <T>(
         promise: Promise<T>,
-        timeoutMs: number = 5000,
+        timeoutMs: number = 5000
       ): Promise<T> {
         return Promise.race([
           promise,
           new Promise<T>((_, reject) =>
             setTimeout(
               () => reject(new Error("Database query timeout")),
-              timeoutMs,
-            ),
+              timeoutMs
+            )
           ),
         ]);
       };
@@ -56,7 +57,7 @@ export const useAuth = () => {
           // Fallback: Check database tables to determine role (only if no cache)
           try {
             console.log(
-              "🔍 Auth Debug - No cached role found, checking database...",
+              "🔍 Auth Debug - No cached role found, checking database..."
             );
             // Use Promise.allSettled with timeout to check both tables simultaneously
             const [jobSeekerResult, clientResult] = await Promise.allSettled([
@@ -66,8 +67,8 @@ export const useAuth = () => {
                     .from("job_seekers")
                     .select("user_id")
                     .eq("user_id", user.id)
-                    .single(),
-                ),
+                    .single()
+                )
               ),
               withTimeout(
                 Promise.resolve(
@@ -75,8 +76,8 @@ export const useAuth = () => {
                     .from("clients")
                     .select("client_id")
                     .eq("client_id", user.id)
-                    .single(),
-                ),
+                    .single()
+                )
               ),
             ]);
 
@@ -93,7 +94,7 @@ export const useAuth = () => {
             } else {
               // If both queries fail or return no data, we need to handle this gracefully
               console.log(
-                "🔍 Auth Debug - No role found in database, user may need to complete registration",
+                "🔍 Auth Debug - No role found in database, user may need to complete registration"
               );
               role = "jobseeker"; // Default fallback
             }
@@ -105,7 +106,7 @@ export const useAuth = () => {
             }
           } catch (error) {
             console.log(
-              "🔍 Auth Debug - Database role check failed, using default fallback",
+              "🔍 Auth Debug - Database role check failed, using default fallback"
             );
             role = "jobseeker"; // Ensure we always have a role
           }
@@ -115,7 +116,7 @@ export const useAuth = () => {
       // Ensure we always have a role - this prevents infinite loading
       if (!role) {
         console.log(
-          "🔍 Auth Debug - WARNING: No role determined, using jobseeker as fallback",
+          "🔍 Auth Debug - WARNING: No role determined, using jobseeker as fallback"
         );
         role = "jobseeker"; // Fallback to prevent infinite loading
       }
@@ -140,7 +141,7 @@ export const useAuth = () => {
         navigate(targetRoute);
       }
     },
-    [navigate],
+    [navigate]
   );
 
   // Helper function to clear user state
@@ -219,6 +220,7 @@ export const useAuth = () => {
 
   const login = async (email: string, password: string) => {
     setAuthState((prev) => ({ ...prev, loading: true, error: null }));
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -268,37 +270,62 @@ export const useAuth = () => {
   const signup = async (signupData: SignupData) => {
     setAuthState((prev) => ({ ...prev, loading: true, error: null }));
 
-    // Validate required fields based on user type
-    if (signupData.userType === "employer" && !signupData.companyName?.trim()) {
+    // Use Utils layer for form validation (matches sequence diagram)
+    const validationErrors = validateSignupForm(signupData);
+
+    // If there are validation errors, show them and return
+    if (validationErrors.length > 0) {
       setAuthState((prev) => ({
         ...prev,
         loading: false,
-        error: "Company name is required for employers",
+        error: validationErrors.join(". "),
       }));
       return;
     }
 
-    // Validate password confirmation
-    if (signupData.password !== signupData.confirmPassword) {
-      setAuthState((prev) => ({
-        ...prev,
-        loading: false,
-        error: "Passwords do not match",
-      }));
-      return;
-    }
+    // Check if user already exists in our custom tables
+    console.log("🔍 Signup Debug - Checking if email already exists:", signupData.email);
+    
+    try {
+      // Check both job_seekers and clients tables for existing email
+      const [jobSeekerCheck, clientCheck] = await Promise.allSettled([
+        supabase
+          .from("job_seekers")
+          .select("email")
+          .eq("email", signupData.email)
+          .single(),
+        supabase
+          .from("clients")
+          .select("email")
+          .eq("email", signupData.email)
+          .single()
+      ]);
 
-    // Validate postal code format (Singapore 6-digit format)
-    if (signupData.postalCode && !/^[0-9]{6}$/.test(signupData.postalCode)) {
-      setAuthState((prev) => ({
-        ...prev,
-        loading: false,
-        error: "Postal code must be 6 digits",
-      }));
-      return;
+      const jobSeekerExists = jobSeekerCheck.status === "fulfilled" && jobSeekerCheck.value.data;
+      const clientExists = clientCheck.status === "fulfilled" && clientCheck.value.data;
+
+      if (jobSeekerExists || clientExists) {
+        console.log("🔍 Signup Debug - Email found in custom tables");
+        console.log("🔍 Signup Debug - Job seeker exists:", jobSeekerExists);
+        console.log("🔍 Signup Debug - Client exists:", clientExists);
+        
+        setAuthState((prev) => ({
+          ...prev,
+          loading: false,
+          error: "Email already registered. Try signing in instead.",
+        }));
+        return;
+      }
+      
+      console.log("🔍 Signup Debug - Email not found in custom tables, proceeding with signup");
+    } catch (checkError) {
+      console.log("🔍 Signup Debug - Error checking custom tables:", checkError);
+      // Continue with signup if we can't check
     }
 
     try {
+      console.log("🔍 Signup Debug - Attempting signup for email:", signupData.email);
+      
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
@@ -328,48 +355,93 @@ export const useAuth = () => {
         },
       });
 
+      console.log("🔍 Signup Debug - Supabase response data:", data);
+      console.log("🔍 Signup Debug - Supabase response error:", error);
+      console.log("🔍 Signup Debug - User object:", data?.user);
+      console.log("🔍 Signup Debug - Session object:", data?.session);
+
       if (error) throw error;
 
-      if (data.user) {
+      // Only proceed with success logic if there's no error and we have a user
+      if (data.user && !error) {
+        // Check if this is a truly new user or an existing unconfirmed user
+        const userCreatedAt = new Date(data.user.created_at);
+        const now = new Date();
+        const timeDiff = now.getTime() - userCreatedAt.getTime();
+        const isNewUser = timeDiff < 5000; // Created within last 5 seconds
+        
         console.log("🔍 Signup Debug - User created successfully");
+        console.log("🔍 Signup Debug - User created at:", data.user.created_at);
+        console.log("🔍 Signup Debug - Is new user:", isNewUser);
+        console.log("🔍 Signup Debug - Time difference (ms):", timeDiff);
         console.log(
           "🔍 Signup Debug - User metadata stored:",
-          data.user.user_metadata,
+          data.user.user_metadata
+        );
+        
+        // If this is not a new user (existing unconfirmed user), show appropriate message
+        if (!isNewUser) {
+          console.log("🔍 Signup Debug - Existing unconfirmed user detected");
+          setAuthState((prev) => ({
+            ...prev,
+            loading: false,
+            error: "Email already registered but not confirmed. Please check your email for the confirmation link, or try signing in.",
+          }));
+          return;
+        }
+
+        // Always redirect to login page after signup, regardless of session status
+        // Users must confirm their email before they can access the app
+        console.log(
+          "🔍 Signup Debug - Signup successful, redirecting to login for email confirmation"
+        );
+        
+        // Set a success message and navigate to login page
+        setAuthState({
+          user: null,
+          loading: false,
+          error: null, // No error - this is expected behavior
+        });
+
+        // Store success message for the login page to display
+        sessionStorage.setItem(
+          "signup_success",
+          "Account created successfully! Please check your email and confirm your account, then log in."
         );
 
-        // Check if the user needs email confirmation immediately
-        if (data.user && !data.session) {
-          console.log(
-            "🔍 Signup Debug - Email confirmation required, redirecting to login",
-          );
-          // User was created but needs to confirm email before they can log in
-          // Set a success message and navigate to login page immediately
-          setAuthState({
-            user: null,
-            loading: false,
-            error: null, // No error - this is expected behavior
-          });
-
-          // Store success message for the login page to display
-          sessionStorage.setItem(
-            "signup_success",
-            "Account created successfully! Please check your email and confirm your account, then log in.",
-          );
-
-          // Navigate to login page immediately
-          navigate("/auth?mode=login");
-          return;
-        }
-
-        // If we have a session (auto-login worked), proceed with navigation
-        if (data.session && data.user) {
-          await updateUserState(data.user, true);
-          return;
-        }
+        // Always navigate to login page after signup
+        navigate("/auth?mode=login");
+        return;
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Signup failed";
+      // Debug logging to see what Supabase error we're getting
+      console.log("🔍 Signup Error Debug - Full error object:", error);
+      console.log("🔍 Signup Error Debug - Error type:", typeof error);
+
+      let errorMessage = "Signup failed";
+
+      if (error instanceof Error) {
+        console.log("🔍 Signup Error Debug - Error message:", error.message);
+        console.log("🔍 Signup Error Debug - Error name:", error.name);
+
+        // Check for specific Supabase error codes for existing email
+        if (
+          error.message.includes("User already registered") ||
+          error.message.includes("already been registered") ||
+          error.message.includes("email address is already registered")
+        ) {
+          console.log("🔍 Signup Error Debug - Detected duplicate email error");
+          errorMessage = "Email already registered. Try signing in instead.";
+        } else {
+          console.log("🔍 Signup Error Debug - Using original error message");
+          errorMessage = error.message;
+        }
+      } else {
+        console.log("🔍 Signup Error Debug - Error is not an Error instance");
+      }
+
+      console.log("🔍 Signup Error Debug - Final error message:", errorMessage);
+
       setAuthState((prev) => ({
         ...prev,
         loading: false,

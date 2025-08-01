@@ -33,7 +33,7 @@ const Auth = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userType, setUserType] = useState<"jobseeker" | "employer">(
-    "jobseeker",
+    "jobseeker"
   );
 
   const [isSignup, setIsSignup] = useState(mode === "signup");
@@ -77,11 +77,14 @@ const Auth = () => {
     }
   }, [mode]);
 
-  // Clear errors when mode or userType changes
+  // Clear errors when userType changes, but NOT when switching to login mode
   useEffect(() => {
     clearError();
-    setSuccessMessage(""); // Also clear success message when switching modes
-  }, [isSignup, userType, clearError]);
+    // Only clear success message when switching user types, not when switching modes
+    if (isSignup) {
+      setSuccessMessage("");
+    }
+  }, [userType, clearError, isSignup]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,8 +157,11 @@ const Auth = () => {
           )}
 
           {successMessage && (
-            <Alert>
-              <AlertDescription>{successMessage}</AlertDescription>
+            <Alert className="border-green-200 bg-green-50 text-green-800">
+              <AlertDescription className="flex items-center gap-2">
+                <span className="text-green-600">✓</span>
+                {successMessage}
+              </AlertDescription>
             </Alert>
           )}
 
