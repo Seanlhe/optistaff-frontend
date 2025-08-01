@@ -9,8 +9,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test-setup-frontend.ts"], // Frontend tests need mocking setup
     include: [
-      "tests/frontendSuccessUnit/**/*.test.{ts,tsx}",
-      "tests/frontendFailUnit/**/*.test.{ts,tsx}",
+      "tests/frontendunit/**/*.test.{ts,tsx}",
     ],
     exclude: [
       "node_modules",

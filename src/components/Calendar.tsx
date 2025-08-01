@@ -151,6 +151,7 @@ const Calendar = () => {
   // Template functions
   const handleSaveTemplate = async (templateName: string) => {
     setTemplateSaveLoading(true);
+    let result = null; // Declare result outside try block
     try {
       const newTemplate = {
         template_name: templateName,
@@ -163,7 +164,7 @@ const Calendar = () => {
         }))
       };
 
-      const result = await createTemplate(newTemplate);
+      result = await createTemplate(newTemplate);
 
       if (result) {
         console.log("Template saved successfully:", result);
