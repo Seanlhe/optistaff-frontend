@@ -102,8 +102,10 @@ describe("TemplateSelectDialog", () => {
     });
 
     it("calls fetchAllTemplates when modal opens", async () => {
+      // UC4 Step 10: Calendar calls useAvailabilityTemplate.fetchAllTemplates()
       render(<TemplateSelectDialog {...defaultProps} />);
 
+      // UC4 Steps 11-13: Database queries for user templates and returns available_templates
       await waitFor(() => {
         expect(mockUseAvailabilityTemplate.fetchAllTemplates).toHaveBeenCalled();
       });
@@ -130,11 +132,13 @@ describe("TemplateSelectDialog", () => {
     });
 
     it("calls onSelect when Use button is clicked", () => {
+      // UC4 Step 15: Jobseeker selects template from available options
       mockUseAvailabilityTemplate.templates = mockTemplates;
       
       render(<TemplateSelectDialog {...defaultProps} />);
 
       const useButtons = screen.getAllByText("Use");
+      // UC4 Steps 16-21: Template data is fetched and applied to calendar, replacing existing slots
       fireEvent.click(useButtons[0]);
 
       expect(mockOnSelect).toHaveBeenCalledWith("template-1");
@@ -152,9 +156,11 @@ describe("TemplateSelectDialog", () => {
     });
 
     it("calls onSaveTemplate when Save as New Template button is clicked", () => {
+      // UC4 Step 25: Jobseeker clicks save_as_template button to save current schedule
       render(<TemplateSelectDialog {...defaultProps} />);
 
       const saveButton = screen.getByRole("button", { name: "Save as New Template" });
+      // UC4 Step 26: Calendar displays template_name_form
       fireEvent.click(saveButton);
 
       expect(mockOnSaveTemplate).toHaveBeenCalled();

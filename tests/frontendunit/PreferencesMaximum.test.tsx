@@ -20,6 +20,7 @@ describe("PreferencesMaximum", () => {
   });
 
   it("renders both input fields with correct labels", () => {
+    // UC3 Steps 12-14: PreferencesForm displays complete_form with all preference sections including maximum hours
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -84,6 +85,7 @@ describe("PreferencesMaximum", () => {
   });
 
   it("handles maximum hours per week change correctly", () => {
+    // UC3 Step 15: Jobseeker updates preferences including maximum hours per week constraint
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -101,6 +103,7 @@ describe("PreferencesMaximum", () => {
   });
 
   it("handles maximum hours per shift change correctly", () => {
+    // UC3 Step 15: Jobseeker updates preferences including maximum hours per shift constraint
     render(
       <PreferencesMaximum
         formData={defaultFormData}

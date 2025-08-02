@@ -72,8 +72,14 @@ describe("PreferencesForm", () => {
   });
 
   it("renders correctly and displays child components", () => {
+    // UC3 Step 2: JSPref renders PreferencesForm component
     render(<PreferencesForm />);
 
+    // UC3 Step 3: PreferencesForm calls usePreferencesForm.fetchPreferences()
+    // UC3 Steps 4-6: Database query and response for current preferences
+    // UC3 Step 7: PreferencesForm renders PreferencesJobType component
+    // UC3 Steps 8-11: PreferencesJobType fetches job types from database
+    // UC3 Steps 12-14: Complete form is displayed to jobseeker
     // getBy... queries throw an error if not found.
     // Asserting that the returned element is truthy confirms it was found.
     expect(screen.getByTestId("mock-prefs-max")).toBeTruthy();
@@ -84,14 +90,19 @@ describe("PreferencesForm", () => {
   });
 
   it("handles successful form submission", async () => {
+    // UC3 Step 15: Jobseeker updates preferences (min_pay_rate, max_travel_km, desired_roles)
     mockSavePreferences.mockResolvedValue(true);
     render(<PreferencesForm />);
 
     const submitButton = screen.getByRole("button", { name: /save preferences/i });
+    // UC3 Step 16: JSPref validates preferences
     fireEvent.click(submitButton);
 
+    // UC3 Step 17: PreferencesForm calls usePreferencesForm.savePreferences() with preferences_data
     expect(mockSavePreferences).toHaveBeenCalledWith(defaultMockData);
 
+    // UC3 Step 18: usePreferencesForm calls database upsert_user_preferences function
+    // UC3 Steps 19-22: Database saves preferences, returns success, and displays success message
     await waitFor(() => {
       // Check for the success message's presence.
       expect(screen.getByText(/preferences saved successfully!/i)).toBeTruthy();

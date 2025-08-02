@@ -55,12 +55,16 @@ describe("TemplateNameDialog", () => {
     });
 
     it("calls onSave with trimmed template name when form is submitted", () => {
+      // UC4 Step 26: Calendar displays template_name_form for user input
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name");
       const saveButton = screen.getByRole("button", { name: "Save Template" });
 
+      // UC4 Step 27: Jobseeker inputs template_name
       fireEvent.change(input, { target: { value: "  My Template  " } });
+      // UC4 Step 28: Calendar calls useAvailabilityTemplate.createTemplate() with template data
+      // UC4 Steps 29-32: Template is saved to database and success message is shown
       fireEvent.click(saveButton);
 
       expect(mockOnSave).toHaveBeenCalledWith("My Template");

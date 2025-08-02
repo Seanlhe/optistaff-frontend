@@ -61,6 +61,7 @@ describe("PreferenceJobType", () => {
   });
 
   it("renders correctly with job types grouped by category", () => {
+    // UC3 Step 7: PreferencesForm renders PreferencesJobType component for job_type_preferences
     render(
       <PreferenceJobType
         formData={defaultFormData}
@@ -68,6 +69,9 @@ describe("PreferenceJobType", () => {
       />,
     );
 
+    // UC3 Step 8: PreferencesJobType calls useJobTypes.fetchJobTypes()
+    // UC3 Steps 9-11: useJobTypes queries database for active job types and returns job_types_list
+    // UC3 Step 12: PreferencesJobType displays job_type_options to PreferencesForm
     expect(screen.getByText("Preferred Job Type")).toBeTruthy();
     expect(
       screen.getByText("Select all job types you're interested in"),
@@ -150,6 +154,7 @@ describe("PreferenceJobType", () => {
   });
 
   it("handles checkbox selection correctly", () => {
+    // UC3 Step 15: User selects desired job types as part of updating preferences
     render(
       <PreferenceJobType
         formData={defaultFormData}
@@ -158,6 +163,7 @@ describe("PreferenceJobType", () => {
     );
 
     const waiterCheckbox = screen.getByRole("checkbox", { name: /waiter/i });
+    // Job type selection updates form data for later submission
     fireEvent.click(waiterCheckbox);
 
     expect(mockSetFormData).toHaveBeenCalledWith({

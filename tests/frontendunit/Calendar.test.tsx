@@ -180,8 +180,10 @@ describe("Calendar", () => {
   });
 
   it("renders the calendar with current week", async () => {
+    // UC4 Step 3: JSPref renders Calendar component with availability interface
     render(<Calendar />);
 
+    // UC4 Step 4: Calendar calls useAvailability.getAvailability() to fetch current availability
     // Check if the header is rendered
     expect(screen.getByRole("heading")).toBeTruthy();
 
@@ -200,7 +202,8 @@ describe("Calendar", () => {
       expect(screen.getByText(day)).toBeTruthy();
     });
 
-    // Wait for availability data to load
+    // UC4 Step 5: useAvailability queries database for user's current availability data
+    // UC4 Step 6: Database returns availability data, Calendar displays interactive calendar
     await waitFor(() => {
       expect(mockGetAvailability).toHaveBeenCalledWith("PRIMARY");
     });
@@ -257,6 +260,7 @@ describe("Calendar", () => {
   });
 
   it("creates a new event when double-clicking on a time slot", async () => {
+    // UC4 Step 9: User manually creates/modifies time slots by double-clicking calendar cells
     render(<Calendar />);
 
     // Wait for initial load
@@ -271,6 +275,7 @@ describe("Calendar", () => {
       ?.parentElement?.querySelector(".hover\\:bg-bg");
 
     if (firstTimeSlot) {
+      // UC4 Step 10: Calendar creates new event/time slot in response to user interaction
       fireEvent.doubleClick(firstTimeSlot);
 
       // A new event should be created (we can't easily verify the exact position without complex DOM traversal)
@@ -280,6 +285,7 @@ describe("Calendar", () => {
   });
 
   it("saves availability when Save button is clicked", async () => {
+    // UC4 Step 15: User clicks "Save Availability" to finalize their schedule
     render(<Calendar />);
 
     await waitFor(() => {
@@ -287,8 +293,11 @@ describe("Calendar", () => {
     });
 
     const saveButton = screen.getByText("Save");
+    // UC4 Step 16: Calendar calls useAvailability.setAvailability() with time blocks
     fireEvent.click(saveButton);
 
+    // UC4 Step 17: useAvailability performs DELETE + INSERT operations on availability database
+    // UC4 Step 18: Database saves availability successfully and returns confirmation to user
     await waitFor(() => {
       expect(mockSetAvailability).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -320,22 +329,26 @@ describe("Calendar", () => {
   });
 
   it("opens template select dialog when Templates button is clicked", () => {
+    // UC4 Step 7 (Optional): User clicks templates button to load existing template
     render(<Calendar />);
 
     const templatesButton = screen.getByText("Templates");
+    // UC4 Step 8: Calendar displays template selection dialog with available templates
     fireEvent.click(templatesButton);
 
     expect(screen.getByTestId("template-select-dialog")).toBeTruthy();
   });
 
   it("handles template selection", async () => {
+    // UC4 Template Flow: User selects existing template to populate calendar
     render(<Calendar />);
 
     // Open template dialog
     const templatesButton = screen.getByText("Templates");
     fireEvent.click(templatesButton);
 
-    // Select a template
+    // UC4 Step 8 continued: User selects template, Calendar fetches template data
+    // UC4 Step 9: Template database returns template time blocks, Calendar applies template events (replaces existing slots)
     const selectTemplateButton = screen.getByTestId("select-template-button");
     fireEvent.click(selectTemplateButton);
 
