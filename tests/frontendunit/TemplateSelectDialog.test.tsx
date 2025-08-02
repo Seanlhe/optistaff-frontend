@@ -298,8 +298,8 @@ describe("TemplateSelectDialog", () => {
       const xButton = screen.getByTestId("x-icon").parentElement;
       const saveButton = screen.getByRole("button", { name: "Save as New Template" });
 
-      expect(xButton).toBeDisabled();
-      expect(saveButton).toBeDisabled();
+      expect(xButton).toHaveProperty('disabled', true);
+      expect(saveButton).toHaveProperty('disabled', true);
     });
 
     it("does not call onClose when X button is clicked during loading", () => {
@@ -543,7 +543,7 @@ describe("TemplateSelectDialog", () => {
       firstUseButton.focus();
       fireEvent.keyDown(firstUseButton, { key: "Enter", code: "Enter" });
       
-      expect(firstUseButton).toHaveFocus();
+      expect(document.activeElement).toBe(firstUseButton);
     });
 
     it("displays icons with correct test ids", () => {
@@ -591,7 +591,7 @@ describe("TemplateSelectDialog", () => {
 
       // Should still show templates but with disabled buttons
       expect(screen.getByText("Morning Shift")).toBeTruthy();
-      expect(screen.getByRole("button", { name: "Save as New Template" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Save as New Template" })).toHaveProperty('disabled', true);
     });
   });
 });
