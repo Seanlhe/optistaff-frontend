@@ -1,1 +1,0 @@
-      render(<ClientCalendarHeader {...defaultProps} />);
