@@ -4,23 +4,52 @@ import { useState } from "react";
 interface ClientShiftDetailsProps {
   shiftData: Shift;
   onClose?: () => void;
-  onDelete?: (shift_id: string) => Promise<void>;
+  // onDelete?: (shift_id: string) => Promise<void>;
   onEdit?: (shift: Shift) => void;
+  onCancel?: (shift_id: string) => Promise<void>;
 }
 
 export default function ClientShiftDetails({
   shiftData,
   onClose,
-  onDelete,
+  // onDelete,
   onEdit,
+  onCancel,
 }: ClientShiftDetailsProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
-  const handleDelete = async () => {
-    if (!onDelete) return;
+  // const handleDelete = async () => {
+  //   if (!onDelete) return;
+
+  //   const confirmed = window.confirm(
+  //     `Are you sure you want to delete this shift?\n\nThis action cannot be undone.`
+  //   );
+
+  //   if (!confirmed) {
+  //     return; // User cancelled, don't proceed with deletion
+  //   }
+
+  //   try {
+  //     setIsDeleting(true);
+  //     await onDelete(shiftData.shift_id);
+
+  //     if (onClose) {
+  //       onClose();
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to delete shift:", error);
+  //   } finally {
+  //     setIsDeleting(false);
+  //   }
+  // };
+
+  const isCancelled = shiftData.status === "cancel_by_employer";
+
+  const handleCancel = async () => {
+    if (!onCancel) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete this shift?\n\nThis action cannot be undone.`,
+      `Are you sure you want to cancel this shift?\n\nThis action cannot be undone.`
     );
 
     if (!confirmed) {
@@ -28,16 +57,16 @@ export default function ClientShiftDetails({
     }
 
     try {
-      setIsDeleting(true);
-      await onDelete(shiftData.shift_id);
+      setIsCancelling(true);
+      await onCancel(shiftData.shift_id);
 
       if (onClose) {
         onClose();
       }
     } catch (error) {
-      console.error("Failed to delete shift:", error);
+      console.error("Failed to cancel shift:", error);
     } finally {
-      setIsDeleting(false);
+      setIsCancelling(false);
     }
   };
 
@@ -111,12 +140,12 @@ export default function ClientShiftDetails({
         {shiftData.status !== "completed" && (
           <button
             className={`bg-red-dark text-white px-4 py-2 rounded-lg hover:bg-red transition-colors ${
-              isDeleting ? "opacity-50 cursor-not-allowed" : ""
+              isCancelling ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            onClick={handleDelete}
-            disabled={isDeleting}
+            onClick={handleCancel}
+            disabled={isCancelling}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isCancelling ? "Cancelling..." : "Cancel"}
           </button>
         )}
       </div>

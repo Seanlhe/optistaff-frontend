@@ -6,6 +6,7 @@ import { Shift } from "../../types/hooks";
 import { useShifts } from "../../hooks/useShifts";
 import { useEffect, useMemo, useState } from "react";
 import { format, startOfWeek, addDays } from "date-fns";
+import { StatusEnum } from "../../types/hooks";
 
 export default function ClientRoster() {
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
@@ -18,7 +19,14 @@ export default function ClientRoster() {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const { shifts, loading, error, deleteShift, refetchShifts } = useShifts();
+  const {
+    shifts,
+    loading,
+    error,
+    deleteShift,
+    updateShiftStatus,
+    refetchShifts,
+  } = useShifts();
 
   const [selectedLocation, setSelectedLocation] =
     useState<string>("All Locations");
@@ -43,7 +51,6 @@ export default function ClientRoster() {
 
     // If "All Locations" is selected, return all shifts
     if (selectedLocation === "All Locations") {
-      console.log("🔍 Showing all locations:", filteredShifts.length, "shifts");
       return filteredShifts;
     }
 
@@ -146,6 +153,14 @@ export default function ClientRoster() {
     setIsEditMode(true); // Switch to edit mode
   };
 
+  const handleCancelShift = async (shift_id: string) => {
+    try {
+      await updateShiftStatus(shift_id, StatusEnum.CancelByEmployer);
+    } catch (error) {
+      console.error("Failed to cancel shift:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
@@ -191,12 +206,7 @@ export default function ClientRoster() {
   }
 
   if (selectedShift && isEditMode) {
-    return (
-      <ClientEdit 
-        shift={selectedShift} 
-        onClose={handleCloseDetails}
-      />
-    );
+    return <ClientEdit shift={selectedShift} onClose={handleCloseDetails} />;
   }
 
   return (
@@ -248,8 +258,9 @@ export default function ClientRoster() {
             <ClientShiftDetails
               shiftData={selectedShift}
               onClose={handleCloseDetails}
-              onDelete={deleteShift}
+              // onDelete={deleteShift}
               onEdit={handleEditShift}
+              onCancel={handleCancelShift}
             />
           </div>
         </div>

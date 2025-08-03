@@ -1,4 +1,4 @@
-// ClientCalendarHeader.test.jsx
+// Unit tests for ClientCalendarHeader component
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import ClientCalendarHeader from "../../src/components/ClientCalendarHeader";
@@ -134,7 +134,7 @@ describe("ClientCalendarHeader", () => {
         .getByRole("button", { name: "Today" })
         .closest("div");
       const mainContainer = buttonContainer?.parentElement;
-      
+
       expect(mainContainer).toBeTruthy();
       expect(mainContainer?.className).toContain("p-4");
       expect(mainContainer?.className).toContain("flex");
