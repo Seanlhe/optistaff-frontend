@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe } from "node:test";
 import { beforeAll, expect, it, vi, beforeEach } from "vitest";
-import HistoryAssignedStaff from '../../src/components/HistoryAssignedStaff';
-import { Assignment } from '../../src/types/hooks';
+import HistoryAssignedStaff from '../../../src/components/HistoryAssignedStaff';
+import { Assignment } from '../../../src/types/hooks';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 
@@ -17,12 +17,6 @@ vi.mock('../../src/hooks/useFeedback', () => ({
   useFeedback: () => mockFeedbackHook,
 }));
 
-vi.mock("../../src/components/EmployeeCard", () => ({
-    default: vi.fn(() => (
-      <div data-testid="mock-employee-card">Employee Card</div>
-    )),
-}));
-
 const handleModalClick = vi.fn()
 const mockedAssignments: Assignment[] = []
 
@@ -33,7 +27,7 @@ describe("HistoryAssignedStaff test suite", ()=>{
 
     it('Empty Assignments Array', () => {
         render(<HistoryAssignedStaff assignments={mockedAssignments} handleModalClick={handleModalClick} />)
-        expect(screen.queryAllByTestId("mocked-employee-card").length).toBe(0)
+        expect(screen.queryAllByTestId("history-employee-card").length).toBe(0)
     });
     
     it("Assignment array with 1 assignment", async ()=>{
@@ -61,7 +55,11 @@ describe("HistoryAssignedStaff test suite", ()=>{
                 created_at: "2025-08-01T14:32:00+08:00"
         });
         render(<HistoryAssignedStaff assignments={mockedAssignments} handleModalClick={handleModalClick} />)
-        expect(screen.queryAllByTestId("mock-employee-card").length).toBe(1)
+        expect(screen.queryAllByTestId("history-employee-card").length).toBe(1)
+        expect(screen.findByText("John Tan")).toBeTruthy();
+        const rateBtn = await screen.findByRole("button", {name: "Review"});
+        fireEvent.click(rateBtn);
+        expect(handleModalClick).toBeCalledWith(mockedAssignments[0]);
     })
 
     it("Assignment array with multiple assignments", ()=>{
@@ -89,8 +87,14 @@ describe("HistoryAssignedStaff test suite", ()=>{
             created_at: "2025-08-02T10:45:00+08:00"
           })
             render(<HistoryAssignedStaff assignments={mockedAssignments} handleModalClick={handleModalClick} />)
-            const cards = screen.queryAllByTestId("mock-employee-card");
+            const cards = screen.queryAllByTestId("history-employee-card");
             expect(cards.length).toBe(2);
+            const reviewBtns = screen.queryAllByRole("button", {name: "Review"});
+            expect(cards.length).toBe(2);
+            fireEvent.click(reviewBtns[0]);
+            expect(handleModalClick).toHaveBeenCalledWith(mockedAssignments[0])
+            fireEvent.click(reviewBtns[1]);
+            expect(handleModalClick).toHaveBeenCalledWith(mockedAssignments[1])
     })
 })
 

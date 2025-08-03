@@ -75,8 +75,6 @@ const mockGetAvailability = vi.fn();
 const mockSetAvailability = vi.fn();
 
 
-
-
 const mockedUseNavigate = vi.fn();
 
 vi.mock('react-router-dom', () => ({

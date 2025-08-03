@@ -5,9 +5,6 @@ import {EmployeeCard} from "../../src/pages/employer/ClientHistory"
 import { Assignment } from '../../src/types/hooks';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-
-
-
 const mockedAssignment: Assignment = {
     assignment_id: "asg-654321",
     company_name: "BrightClean Services",

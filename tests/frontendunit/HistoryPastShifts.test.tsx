@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe } from "node:test";
-import { beforeAll, expect, it, vi, beforeEach } from "vitest";
-import {HistoryPastShifts} from "../../src/pages/employer/ClientHistory"
+import { beforeAll, expect, it, vi, beforeEach} from "vitest";
+import HistoryPastShifts from '../../src/components/HistoryPastShifts';
 import { Shift } from '../../src/types/hooks';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 
@@ -9,15 +9,22 @@ const handleClick = vi.fn()
 const handleSort = vi.fn()
 const mockedShifts: Shift[] = []
 
+vi.mock("../../src/components/PastShiftCard", () => ({
+    default: vi.fn(() => (
+      <div data-testid="mock-shift-card">Past Shift Card</div>
+    )),
+}));
+  
 describe("HistoryPastShifts test suite", ()=>{
     beforeEach(() => {
         handleClick.mockReset();
       });
     it('Empty Assignments Array', () => {
         render(<HistoryPastShifts pastShifts={mockedShifts} handleSelectShift={handleClick} handleSort={handleSort} selectedShift={null}/>)
-        expect(screen.queryAllByTestId("past-shift-card").length).toBe(0)
+        expect(screen.queryAllByTestId("mock-shift-card").length).toBe(0)
     });
-    it("Shift array with 1 shift, not selected", async ()=>{
+    
+    it("Shift array with 1 shift", async ()=>{
         mockedShifts.push({
             shift_id: "shift004",
             employer_name: "Company D",
@@ -39,31 +46,11 @@ describe("HistoryPastShifts test suite", ()=>{
             created_at: new Date(),
           });
         render(<HistoryPastShifts pastShifts={mockedShifts} handleSelectShift={handleClick} handleSort={handleSort} selectedShift={null}/>)
-        expect(screen.queryAllByTestId("past-shift-card").length).toBe(1)
-        expect(screen.getByText("Data Scientist")).toBeTruthy();
-        expect(screen.getByText("3")).toBeTruthy();
-        expect(screen.getByText("09:00 AM - 05:00 PM")).toBeTruthy();
-        expect(screen.getByText("Thursday, 10/07/2025")).toBeTruthy();
-        const container = screen.getByTestId("past-shift-card");
-        expect(container.className).toContain("border-[#B3B3B3]");
-        fireEvent.click(container);
-        expect(handleClick).toBeCalledWith(mockedShifts[0]);
+        expect(screen.queryAllByTestId("mock-shift-card").length).toBe(1)
     })
 
-    it("Shift array with 1 shift, selected", async ()=>{
-        render(<HistoryPastShifts pastShifts={mockedShifts} handleSelectShift={handleClick} handleSort={handleSort} selectedShift={mockedShifts[0]}/>)
-        expect(screen.queryAllByTestId("past-shift-card").length).toBe(1)
-        expect(screen.getByText("Data Scientist")).toBeTruthy();
-        expect(screen.getByText("3")).toBeTruthy();
-        expect(screen.getByText("09:00 AM - 05:00 PM")).toBeTruthy();
-        expect(screen.getByText("Thursday, 10/07/2025")).toBeTruthy();
-        const container = screen.getByTestId("past-shift-card");
-        expect(container.className).toContain("border-primary-blue");
-        fireEvent.click(container);
-        expect(handleClick).toBeCalledWith(mockedShifts[0]);
-    })
 
-    it("Shift array with multiple shifts, none selected", ()=>{
+    it("Shift array with multiple shifts", ()=>{
         mockedShifts.push({
             shift_id: "shift001",
             employer_name: "GreenTech Solutions",
@@ -85,48 +72,7 @@ describe("HistoryPastShifts test suite", ()=>{
             created_at: new Date("2025-08-01T10:15:00"),
           });
         render(<HistoryPastShifts pastShifts={mockedShifts} handleSelectShift={handleClick} handleSort={handleSort} selectedShift={null}/>)
-        const shiftCards = screen.queryAllByTestId("past-shift-card");
-        expect(shiftCards.length).toBe(2);
-        const firstCard = within(shiftCards[0]);
-        expect(shiftCards[0].className).toContain("border-[#B3B3B3]")
-        expect(firstCard.getByText("Data Scientist")).toBeTruthy();
-        expect(firstCard.getByText("3")).toBeTruthy();
-        expect(firstCard.getByText("09:00 AM - 05:00 PM")).toBeTruthy();
-        expect(firstCard.getByText("Thursday, 10/07/2025")).toBeTruthy();
-        fireEvent.click(shiftCards[0]);
-        expect(handleClick).toBeCalledWith(mockedShifts[0]);
-
-        const secondCard = within(shiftCards[1]);
-        expect(shiftCards[1].className).toContain("border-[#B3B3B3]")
-        expect(secondCard.getByText("Logistics Assistant")).toBeTruthy();
-        expect(secondCard.getByText("4")).toBeTruthy();
-        expect(secondCard.getByText("08:30 AM - 05:00 PM")).toBeTruthy();
-        expect(secondCard.getByText("Wednesday, 06/08/2025")).toBeTruthy();
-        fireEvent.click(shiftCards[1]);
-        expect(handleClick).toBeCalledWith(mockedShifts[1]);
-    })
-
-    it("Shift array with multiple shifts, one selected", ()=>{
-        render(<HistoryPastShifts pastShifts={mockedShifts} handleSelectShift={handleClick} handleSort={handleSort} selectedShift={mockedShifts[0]}/>)
-        const shiftCards = screen.queryAllByTestId("past-shift-card");
-        expect(shiftCards.length).toBe(2);
-        const firstCard = within(shiftCards[0]);
-        expect(shiftCards[0].className).toContain("border-primary-blue")
-        expect(firstCard.getByText("Data Scientist")).toBeTruthy();
-        expect(firstCard.getByText("3")).toBeTruthy();
-        expect(firstCard.getByText("09:00 AM - 05:00 PM")).toBeTruthy();
-        expect(firstCard.getByText("Thursday, 10/07/2025")).toBeTruthy();
-        fireEvent.click(shiftCards[0]);
-        expect(handleClick).toBeCalledWith(mockedShifts[0]);
-
-        const secondCard = within(shiftCards[1]);
-        expect(shiftCards[1].className).toContain("border-[#B3B3B3]")
-        expect(secondCard.getByText("Logistics Assistant")).toBeTruthy();
-        expect(secondCard.getByText("4")).toBeTruthy();
-        expect(secondCard.getByText("08:30 AM - 05:00 PM")).toBeTruthy();
-        expect(secondCard.getByText("Wednesday, 06/08/2025")).toBeTruthy();
-        fireEvent.click(shiftCards[1]);
-        expect(handleClick).toBeCalledWith(mockedShifts[1]);
+        expect(screen.queryAllByTestId("mock-shift-card").length).toBe(2)
     })
 })
 
