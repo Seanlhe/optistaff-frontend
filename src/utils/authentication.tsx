@@ -102,18 +102,29 @@ export const validateSignupForm = (signupData: SignupValidationData): string[] =
     validationErrors.push("Passwords do not match");
   }
 
+  // Enhanced name validation
   if (!signupData.firstName?.trim()) {
     validationErrors.push("First name is required");
+  } else if (signupData.firstName.length < 2) {
+    validationErrors.push("First name must be at least 2 characters long");
+  } else if (!/^[a-zA-Z\s]+$/.test(signupData.firstName)) {
+    validationErrors.push("First name can only contain letters and spaces");
   }
 
   if (!signupData.lastName?.trim()) {
     validationErrors.push("Last name is required");
+  } else if (signupData.lastName.length < 2) {
+    validationErrors.push("Last name must be at least 2 characters long");
+  } else if (!/^[a-zA-Z\s]+$/.test(signupData.lastName)) {
+    validationErrors.push("Last name can only contain letters and spaces");
   }
 
   // User type specific validation
   if (signupData.userType === "employer") {
     if (!signupData.companyName?.trim()) {
       validationErrors.push("Company name is required for employers");
+    } else if (signupData.companyName.length < 2) {
+      validationErrors.push("Company name must be at least 2 characters long");
     }
   } else if (signupData.userType === "jobseeker") {
     if (!signupData.dateOfBirth?.trim()) {
@@ -121,6 +132,8 @@ export const validateSignupForm = (signupData: SignupValidationData): string[] =
     }
     if (!signupData.phoneNumber?.trim()) {
       validationErrors.push("Mobile number is required for job seekers");
+    } else if (signupData.phoneNumber.length < 8) {
+      validationErrors.push("Phone number must be at least 8 characters long");
     }
     if (!signupData.address?.trim()) {
       validationErrors.push("Residential address is required for job seekers");

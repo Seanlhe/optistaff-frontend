@@ -28,8 +28,7 @@
     "test:backend:watch": "supabase start && vitest --watch --config vitest.backend.config.ts",
     "test:preferences": "supabase start && vitest run --config vitest.backend.config.ts tests/unit/preferences-validation.test.ts tests/integration/usePreferences-simple.test.tsx",
     "test:pure": "vitest run --config vitest.pure.config.ts tests/unit",
-    "test:pure:watch": "vitest --config vitest.pure.config.ts tests/unit",
-    "test:pure": "vitest run --config vitest.backend.config.ts tests/unit"
+    "test:pure:watch": "vitest --config vitest.pure.config.ts tests/unit"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
