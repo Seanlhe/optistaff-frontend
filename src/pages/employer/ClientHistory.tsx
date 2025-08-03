@@ -18,10 +18,9 @@ export default function ClientHistory() {
   });
   
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const { fetchAssignmentsByShift } = useAssignments();
-  const [selAssignment, setSelAssignment] = useState<Assignment>();
-  const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const {fetchAssignmentsByShift } = useAssignments();
+  const [selAssignment, setSelAssignment] = useState<Assignment|null>(null);
+  const [selectedShift, setSelectedShift] = useState<Shift|null>(null);
 
   // Handle window focus to refresh data
   useEffect(() => {
@@ -57,8 +56,11 @@ export default function ClientHistory() {
   };
   const handleModalClick = (a: Assignment) => {
     setSelAssignment(a);
-    setModalVisible(!modalVisible);
   };
+
+  const handleModalClose = ()=>{
+    setSelAssignment(null);
+  }
 
   const handleSort = () => {
     console.log("sorting");
@@ -76,69 +78,14 @@ export default function ClientHistory() {
         id="history-content"
         className="flex flex-row gap-6 h-[calc(100vh-150px)]"
       >
-        <div id="previous-jobs" className="grow flex flex-col gap-4">
-          <div className="flex flex-row justify-between mb-2">
-            <p className="font-montserrat-b text-lg text-primary-text">
-              Previous Jobs
-            </p>
-            <button
-              onClick={() => handleSort()}
-              className="hover:cursor-pointer hover:opacity-80 flex flex-col items-center justify-center bg-[#D9D9D9] rounded-full h-8 w-8"
-            >
-              <img className="w-3 h-3" src="/icons/sorticon.svg" />
-            </button>
-          </div>
-          <div
-            className="overflow-auto pr-2"
-            style={{ maxHeight: "calc(100vh - 200px)" }}
-          >
-            {pastShifts.length != 0 ? (
-              pastShifts.map((shift) => (
-                <div className="mb-4" key={shift.shift_id}>
-                  <PastShiftCard
-                    selectedShift={selectedShift}
-                    shift={shift}
-                    handleSelectShift={() => handleSelectShift(shift)}
-                  />
-                </div>
-              ))
-            ) : (
-              <p className="font-montserrat text-secondary-text text-sm">
-                No past shifts found. Click upload jobs to create new listings
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="w-96 flex flex-col gap-4 p-4 rounded-xl bg-secondary-bg">
-          <p className="font-montserrat-b text-lg text-primary-text mb-2">
-            Assigned Staff
-          </p>
-          <div
-            className="overflow-auto"
-            style={{ maxHeight: "calc(100vh - 200px)" }}
-          >
-            {selectedShift != null && assignments.length > 0 ? (
-              assignments.map((a) => (
-                <div className="mb-3" key={a.assignment_id}>
-                  <HistoryRateCard
-                    assignment={a}
-                    handleClick={() => handleModalClick(a)}
-                  />
-                </div>
-              ))
-            ) : (
-              <p className="self-center font-montserrat text-secondary-text text-sm">
-                Select a job. Display staff here.
-              </p>
-            )}
-          </div>
-        </div>
+        <HistoryPastShifts handleSort={handleSort} handleSelectShift={handleSelectShift} pastShifts={pastShifts} selectedShift={selectedShift}/>
+        <HistoryAssignedStaff handleModalClick={handleModalClick}  assignments={assignments}/>
       </div>
-      {modalVisible && selAssignment && (
+      {selAssignment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-80 backdrop-blur-sm">
           <RatingModal
             assignment={selAssignment}
-            handleClose={handleModalClick}
+            handleClose={handleModalClose}
           />
         </div>
       )}
@@ -171,6 +118,69 @@ function HistoryRateCard({
       </button>
     </div>
   );
+}
+
+export function HistoryPastShifts({handleSort, handleSelectShift, pastShifts, selectedShift}: {handleSort: Function; handleSelectShift: Function; pastShifts: Shift[]; selectedShift: Shift|null}){
+    return <div id="previous-jobs" className="grow flex flex-col gap-4">
+          <div className="flex flex-row justify-between mb-2">
+            <p className="font-montserrat-b text-lg text-primary-text">
+              Previous Jobs
+            </p>
+            <button
+              onClick={() => handleSort()}
+              className="hover:cursor-pointer hover:opacity-80 flex flex-col items-center justify-center bg-[#D9D9D9] rounded-full h-8 w-8"
+            >
+              <img className="w-3 h-3" src="/icons/sorticon.svg" />
+            </button>
+          </div>
+          <div
+            className="overflow-auto pr-2"
+            style={{ maxHeight: "calc(100vh - 200px)" }}
+          >
+            {pastShifts.length != 0 ? (
+              pastShifts.map((shift) => (
+                <div className="mb-4" key={shift.shift_id}>
+                  <PastShiftCard
+                    selectedShift={selectedShift}
+                    shift={shift}
+                    handleSelectShift={() => handleSelectShift(shift)}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="font-montserrat text-secondary-text text-sm">
+                No past shifts found. Click upload jobs to create new listings
+              </p>
+            )}
+          </div>
+        </div>
+}
+
+export function HistoryAssignedStaff({handleModalClick,  assignments}:{handleModalClick: Function; assignments: Assignment[]}){
+    return <div className="w-96 flex flex-col gap-4 p-4 rounded-xl bg-secondary-bg">
+          <p className="font-montserrat-b text-lg text-primary-text mb-2">
+            Assigned Staff
+          </p>
+          <div
+            className="overflow-auto"
+            style={{ maxHeight: "calc(100vh - 200px)" }}
+          >
+            {assignments.length > 0 ? (
+              assignments.map((a) => (
+                <div className="mb-3" key={a.assignment_id}>
+                  <HistoryRateCard
+                    assignment={a}
+                    handleClick={() => handleModalClick(a)}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="self-center font-montserrat text-secondary-text text-sm">
+                Select a job. Display staff here.
+              </p>
+            )}
+          </div>
+        </div>
 }
 
 function PastShiftCard({

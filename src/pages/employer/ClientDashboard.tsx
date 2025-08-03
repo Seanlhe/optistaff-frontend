@@ -126,7 +126,7 @@ export function DashboardPositions({
         </div>
         <p className="text-xl font-montserrat-b text-black">
           {`${calculateFilled(shifts)[0]}/${
-            calculateFilled(shifts)[0] + calculateFilled(shifts)[1]
+            calculateFilled(shifts)[1]
           } `}
           <span className="text-sm font-montserrat text-primary-text">
             Filled
@@ -142,19 +142,20 @@ export function DashboardPositions({
                 {
                   id: 0,
                   value:
-                    calculateFilled(shifts)[1] + calculateFilled(shifts)[0],
+                    calculateFilled(shifts)[0],
                   color: "var(--color-primary-blue)",
                 },
                 { id: 1, value: calculateFilled(shifts)[1] - calculateFilled(shifts)[0], color: "#FFFFFF" },
               ],
             },
           ]}
+          data-testid="dashboard-piechart"
           width={100}
           height={100}
         />
         <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-montserrat-b text-xl">{`${Math.floor(
           (calculateFilled(shifts)[0] /
-            (calculateFilled(shifts)[1])) *
+            (Math.max(calculateFilled(shifts)[1], 1))) *
             100
         )}%`}</p>
       </div>
