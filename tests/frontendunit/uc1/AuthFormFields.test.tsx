@@ -2,10 +2,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { AuthFormFields } from "../../src/components/auth/AuthFormFields";
+import { AuthFormFields } from "../../../src/components/auth/AuthFormFields";
 
 // Mock all child components
-vi.mock("../../src/components/auth/FormField", () => ({
+vi.mock("../../../src/components/auth/FormField", () => ({
   FormField: ({ id, label, value, onChange, required, placeholder, type }: any) => (
     <div data-testid={`form-field-${id}`}>
       <label htmlFor={id}>{label} {required && "*"}</label>
@@ -21,7 +21,7 @@ vi.mock("../../src/components/auth/FormField", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PasswordField", () => ({
+vi.mock("../../../src/components/PasswordField", () => ({
   PasswordField: ({ id, label, value, onChange, required, placeholder, minLength }: any) => (
     <div data-testid={`password-field-${id}`}>
       <label htmlFor={id}>{label} {required && "*"}</label>
@@ -38,7 +38,7 @@ vi.mock("../../src/components/PasswordField", () => ({
   ),
 }));
 
-vi.mock("../../src/components/DateInput", () => ({
+vi.mock("../../../src/components/DateInput", () => ({
   DateInput: ({ label, value, onChange, required, minDate, maxDate }: any) => (
     <div data-testid="date-input">
       <label>{label} {required && "*"}</label>
@@ -52,7 +52,7 @@ vi.mock("../../src/components/DateInput", () => ({
   ),
 }));
 
-vi.mock("../../src/components/AddressLookupField", () => ({
+vi.mock("../../../src/components/AddressLookupField", () => ({
   AddressLookupField: ({ 
     label, 
     placeholder, 
@@ -82,7 +82,7 @@ vi.mock("../../src/components/AddressLookupField", () => ({
   ),
 }));
 
-vi.mock("../../src/components/ConfirmPasswordField", () => ({
+vi.mock("../../../src/components/ConfirmPasswordField", () => ({
   ConfirmPasswordField: ({ password, confirmPassword, onConfirmPasswordChange }: any) => (
     <div data-testid="confirm-password-field">
       <label>Confirm Password *</label>

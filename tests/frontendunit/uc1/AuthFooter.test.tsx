@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import { AuthFooter } from "../../src/components/auth/AuthFooter";
+import { AuthFooter } from "../../../src/components/auth/AuthFooter";
 
 // Mock react-router-dom
 const mockNavigate = vi.fn();
