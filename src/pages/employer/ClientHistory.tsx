@@ -93,7 +93,7 @@ export default function ClientHistory() {
   );
 }
 
-function HistoryRateCard({
+export function EmployeeCard({
   handleClick,
   assignment,
 }: {
@@ -143,7 +143,7 @@ export function HistoryPastShifts({handleSort, handleSelectShift, pastShifts, se
                   <PastShiftCard
                     selectedShift={selectedShift}
                     shift={shift}
-                    handleSelectShift={() => handleSelectShift(shift)}
+                    handleSelectShift={handleSelectShift}
                   />
                 </div>
               ))
@@ -168,7 +168,7 @@ export function HistoryAssignedStaff({handleModalClick,  assignments}:{handleMod
             {assignments.length > 0 ? (
               assignments.map((a) => (
                 <div className="mb-3" key={a.assignment_id}>
-                  <HistoryRateCard
+                  <EmployeeCard
                     assignment={a}
                     handleClick={() => handleModalClick(a)}
                   />
@@ -183,7 +183,7 @@ export function HistoryAssignedStaff({handleModalClick,  assignments}:{handleMod
         </div>
 }
 
-function PastShiftCard({
+export function PastShiftCard({
   shift,
   selectedShift,
   handleSelectShift,
@@ -194,7 +194,8 @@ function PastShiftCard({
 }) {
   return (
     <div
-      onClick={() => handleSelectShift()}
+      data-testid="past-shift-card"
+      onClick={() => handleSelectShift(shift)}
       className={`${selectedShift == shift ? "border-primary-blue border" : "border-[#B3B3B3]"} hover:cursor-pointer border flex flex-row items-center justify-between rounded-lg`}
     >
       <div className="w-full flex flex-col gap-3 rounded-lg p-3">
@@ -204,7 +205,7 @@ function PastShiftCard({
         <div className="flex flex-row gap-2 items-center">
           <img className="w-4 h-4" src="/icons/map.svg" />
           <p className="text-xs font-montserrat text-secondary-text">
-            {shift.job_location}
+            {`${shift.job_location}, Singapore ${shift.postal_code}`}
           </p>
         </div>
         <div className="flex flex-row gap-2 items-center">
@@ -220,7 +221,7 @@ function PastShiftCard({
         <div className="flex flex-row gap-2 items-center">
           <img className="w-4 h-4" src="/icons/users.svg" />
           <p className="text-xs font-montserrat text-secondary-text">
-            {shift.staff_needed}
+            {shift.staff_assigned}
           </p>
         </div>
       </div>
@@ -228,7 +229,7 @@ function PastShiftCard({
   );
 }
 
-function RatingModal({
+export function RatingModal({
   handleClose,
   assignment,
 }: {
@@ -240,7 +241,6 @@ function RatingModal({
     rating_score: null,
     comment: null,
   });
-  const [displayError, setDisplayError] = useState<boolean>(false);
 
   const [feedbackData, setFeedbackData] = useState<Partial<Feedback>>({
     assignment_id: assignment.assignment_id,
@@ -249,7 +249,6 @@ function RatingModal({
     rating_score: 0,
   });
   async function handleSubmit() {
-    setDisplayError(true);
     setError({
       rating_score: null,
       comment: null,
@@ -258,10 +257,9 @@ function RatingModal({
     setError(newError);
     console.log(newError);
     const isValid = Object.values(newError).every((value) => value === null);
-    console.log(feedbackData, displayError);
+    console.log(feedbackData);
     if (isValid) {
       await submitFeedback(feedbackData);
-      setDisplayError(false);
     }
   }
 
@@ -299,7 +297,7 @@ function RatingModal({
               />
             ))}
         </div>
-        {displayError && error.rating_score ? (
+        {error.rating_score ? (
           <p className="self-center font-montserrat text-pink-500 text-xs">
             {error.rating_score}
           </p>
@@ -321,7 +319,7 @@ function RatingModal({
           id="feedback_comment"
           className="bg-[#F2F2F2] rounded-lg font-montserrat text-secondary-text h-40 p-3 text-sm"
         />
-        {displayError && error.comment ? (
+        {error.comment? (
           <p className="self-center font-montserrat text-pink-500 text-xs">
             {error.comment}
           </p>
