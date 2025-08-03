@@ -7,16 +7,17 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: ["./src/test-setup-frontend.ts"], // Use frontend setup for mocking
+    // No setupFiles - unit tests don't need Supabase
     include: [
-      "tests/backendunit/uc1/**/*.test.{ts,tsx}",
+      "tests/backendunit/*-validation*.test.{ts,tsx}", // Include validation tests
+      "tests/backendunit/uc1/**/*.test.{ts,tsx}", // Include UC1 tests
+      "tests/backendunit/uc2/**/*.test.{ts,tsx}", // Include UC2 tests
     ],
     exclude: [
       "node_modules",
       "dist",
     ],
-    testTimeout: 10000, // Longer timeout for async operations
-    hookTimeout: 10000,
+    testTimeout: 5000,
   },
   resolve: {
     alias: {
