@@ -47,7 +47,7 @@ describe("RatingModal test suite", ()=>{
     beforeEach(() => {
         mockedSubmitFeedback.mockReset();
       });
-    it('validates valid review', () => {
+    it('validates valid review', async () => {
         render(<RatingModal assignment={mockedAssignment} handleClose={handleClose}/>)
         const validFeedback = {
             assignment_id: "asg-123456",
