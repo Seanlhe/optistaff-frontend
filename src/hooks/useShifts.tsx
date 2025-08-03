@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { supabase } from "../integrations/supabase/client";
-import { Shift } from "../types/hooks";
+import { Shift, StatusEnum } from "../types/hooks";
 
 export const useShifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -189,6 +189,38 @@ export const useShifts = () => {
     setLoading(false);
   };
 
+  /**
+   * Update the status of a shift
+   * @param shift_id - The ID of the shift to update
+   * @param status - The new status to set for the shift from StatusEnum
+   * @return {Promise<{updated_count: number}>} - Returns a promise that resolves to the updated count
+   */
+  const updateShiftStatus = async (shift_id: string, status: StatusEnum) => {
+    setLoading(true);
+    setError(null);
+    if (!user) {
+      setError("User not authenticated");
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase.rpc("update_shift_status", {
+      p_shift_id: shift_id,
+      p_status_name: status,
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    await fetchShifts();
+    setLoading(false);
+
+    return data;
+  };
+
   return {
     shifts,
     loading,
@@ -197,5 +229,6 @@ export const useShifts = () => {
     updateShift,
     deleteShift,
     refetchShifts, // Add the refetch function
+    updateShiftStatus,
   };
 };
