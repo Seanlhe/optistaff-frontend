@@ -70,7 +70,7 @@ describe("Calendar Component Integration Tests", () => {
   // Calendar Rendering & Navigation Tests (2 tests)
   // ========================================
   describe("Calendar Rendering & Navigation", () => {
-    // UC: User can view calendar interface
+    // UC4 Step 1: Navigate to availability and load calendar - User can view calendar interface
     test("renders calendar with week view and navigation controls", async () => {
       render(<Calendar />);
 
@@ -99,7 +99,7 @@ describe("Calendar Component Integration Tests", () => {
       expect(screen.getByText("23:00")).toBeTruthy();
     });
 
-    // UC: User can navigate between weeks
+    // UC4 Step 2: Load existing availability data - User can navigate between weeks
     test("navigates between weeks when using navigation buttons", async () => {
       const user = userEvent.setup();
       render(<Calendar />);
@@ -132,7 +132,7 @@ describe("Calendar Component Integration Tests", () => {
   // Availability Slot Management Tests (2 tests)
   // ========================================
   describe("Availability Slot Management", () => {
-    // UC: User can create availability slots
+    // UC4 Step 3: Create/modify time slots - User can create availability slots
     test("creates availability slot on double-click", async () => {
       render(<Calendar />);
 
@@ -159,7 +159,7 @@ describe("Calendar Component Integration Tests", () => {
       });
     });
 
-    // UC: User can delete availability slots
+    // UC4 Step 3: Create/modify time slots - User can delete availability slots
     test("deletes availability slot on event double-click", async () => {
       render(<Calendar />);
 
@@ -197,7 +197,7 @@ describe("Calendar Component Integration Tests", () => {
   // Save Functionality Tests (2 tests)
   // ========================================
   describe("Save Functionality", () => {
-    // UC: User can save calendar data
+    // UC4 Step 4: Save availability to database - User can save calendar data
     test("saves availability data to Supabase on Save button click", async () => {
       const user = userEvent.setup();
       
@@ -232,7 +232,7 @@ describe("Calendar Component Integration Tests", () => {
       });
     });
 
-    // UC: System handles save errors gracefully
+    // UC4 Step 5: Display success confirmation - System handles save errors gracefully
     test("handles save errors gracefully", async () => {
       const user = userEvent.setup();
       

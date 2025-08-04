@@ -312,7 +312,7 @@ describe("JSDashboard Layout Integration Tests", () => {
   // Dashboard Loading and Initialization Tests (3 tests)
   // ========================================
   describe("Dashboard Loading and Initialization", () => {
-    // UC: User opens dashboard and sees loading state initially
+    // UC3 Step 1: Navigate to dashboard - User opens dashboard and sees loading state initially
     test("displays loading state initially", async () => {
       // Mock delayed response to capture loading state
       let resolveAssignments: any;
@@ -361,7 +361,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       });
     });
 
-    // UC: Dashboard loads successfully with both hooks integrated
+    // UC3 Step 2: Fetch profile and preferences data - Dashboard loads successfully with both hooks integrated
     test("integrates useAssignments and useUserProfile hooks successfully", async () => {
       render(<Dashboard />);
 
@@ -391,7 +391,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       );
     });
 
-    // UC: Dashboard handles hook errors gracefully
+    // UC3 Step 3: Handle data validation errors - Dashboard handles hook errors gracefully
     test("handles hook loading errors gracefully", async () => {
       // Mock assignment loading error but profile loading success
       mockSupabaseRpc.mockImplementation((functionName: string) => {
@@ -454,7 +454,7 @@ describe("JSDashboard Layout Integration Tests", () => {
   // Assignment Filtering and Current Week Logic Tests (3 tests)
   // ========================================
   describe("Assignment Filtering and Current Week Logic", () => {
-    // UC: Dashboard filters and displays only current week assignments
+    // UC4 Step 1: Navigate to availability and load calendar - Dashboard filters and displays only current week assignments
     test("filters and displays current week assignments only", async () => {
       render(<Dashboard />);
 
@@ -478,7 +478,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       expect(screen.getByText("Event Management Co.")).toBeTruthy();
     });
 
-    // UC: Dashboard displays correct current week date range
+    // UC4 Step 2: Load existing availability data - Dashboard displays correct current week date range
     test("displays correct current week date range", async () => {
       render(<Dashboard />);
 
@@ -500,7 +500,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       expect(screen.getByText("Upcoming Assignments")).toBeTruthy();
     });
 
-    // UC: Dashboard handles empty current week assignments
+    // UC4 Step 3: Create/modify time slots - Dashboard handles empty current week assignments
     test("handles empty current week assignments gracefully", async () => {
       // Mock empty assignments response
       mockSupabaseRpc.mockImplementation((functionName: string) => {
@@ -553,7 +553,7 @@ describe("JSDashboard Layout Integration Tests", () => {
   // User Greeting and Profile Integration Tests (2 tests)
   // ========================================
   describe("User Greeting and Profile Integration", () => {
-    // UC: Dashboard displays personalized greeting with user's real name
+    // UC3 Step 4: Display preferences form with current data - Dashboard displays personalized greeting with user's real name
     test("displays personalized greeting with user profile data", async () => {
       render(<Dashboard />);
 
@@ -575,7 +575,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       expect(statsValue.textContent).toBe("4.2");
     });
 
-    // UC: Dashboard handles incomplete profile data gracefully
+    // UC3 Step 5: Validate job types - Dashboard handles incomplete profile data gracefully
     test("handles incomplete profile data gracefully", async () => {
       // Mock incomplete profile data that will cause profile loading to fail
       mockSupabaseRpc.mockImplementation((functionName: string) => {
@@ -614,7 +614,7 @@ describe("JSDashboard Layout Integration Tests", () => {
   // Layout Rendering and Child Component Integration Tests (3 tests)
   // ========================================
   describe("Layout Rendering and Child Component Integration", () => {
-    // UC: Dashboard renders complete layout with all child components
+    // UC4 Step 4: Save current schedule as template - Dashboard renders complete layout with all child components
     test("renders complete dashboard layout with child components", async () => {
       render(<Dashboard />);
 
@@ -640,7 +640,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       expect(screen.getByTestId("star-icon")).toBeTruthy();
     });
 
-    // UC: User interacts with assignment cards and opens modal
+    // UC4 Step 5: Save availability to database - User interacts with assignment cards and opens modal
     test("handles assignment card interaction and modal integration", async () => {
       const user = userEvent.setup();
       
@@ -672,7 +672,7 @@ describe("JSDashboard Layout Integration Tests", () => {
       });
     });
 
-    // UC: Dashboard handles assignment status changes and refreshes data
+    // UC3 Step 6: Save preferences to database - Dashboard handles assignment status changes and refreshes data
     test("handles assignment status changes and triggers refresh", async () => {
       const user = userEvent.setup();
       let rpcCallCount = 0;

@@ -138,7 +138,7 @@ describe("PreferencesForm Integration Tests", () => {
   // Form Loading & Initialization Tests (2 tests)
   // ========================================
   describe("Form Loading & Initialization", () => {
-    // UC: Form loads with existing preferences data
+    // UC3 Step 1: Navigate to preferences - Form loads with existing preferences data
     test("loads and displays existing preferences data", async () => {
       render(<PreferencesForm />);
 
@@ -163,7 +163,7 @@ describe("PreferencesForm Integration Tests", () => {
       expect(saveButton).not.toHaveProperty("disabled", true);
     });
 
-    // UC: Form initializes with default values when no preferences exist
+    // UC3 Step 2: Fetch current preferences - Form initializes with default values when no preferences exist
     test("initializes with default values when no existing preferences", async () => {
       // Mock empty preferences response
       mockGetFormData.mockReturnValue(null);
@@ -186,7 +186,7 @@ describe("PreferencesForm Integration Tests", () => {
   // Form Validation Tests (2 tests)
   // ========================================
   describe("Form Validation", () => {
-    // UC: Form successfully saves when validation passes
+    // UC3 Step 3: Update preferences values - Form successfully saves when validation passes
     test("validates and saves form when data is valid", async () => {
       const user = userEvent.setup();
       
@@ -219,7 +219,7 @@ describe("PreferencesForm Integration Tests", () => {
       });
     });
 
-    // UC: Form shows error when validation fails
+    // UC3 Step 4: Validate job types - Form shows error when validation fails
     test("displays error message when save fails", async () => {
       const user = userEvent.setup();
       
@@ -251,7 +251,7 @@ describe("PreferencesForm Integration Tests", () => {
   // Save Operations Tests (2 tests)
   // ========================================
   describe("Save Operations", () => {
-    // UC: User successfully saves preferences with updated form data
+    // UC3 Step 5: Save preferences to database - User successfully saves preferences with updated form data
     test("successfully saves complete preferences form", async () => {
       const user = userEvent.setup();
       
@@ -294,7 +294,7 @@ describe("PreferencesForm Integration Tests", () => {
       });
     });
 
-    // UC: Form shows temporary success message that disappears
+    // UC3 Step 6: Display success message - Form shows temporary success message that disappears
     test("shows success message that automatically disappears", async () => {
       const user = userEvent.setup();
       
@@ -325,7 +325,7 @@ describe("PreferencesForm Integration Tests", () => {
   // Child Component Integration Tests (2 tests)
   // ========================================
   describe("Child Component Integration", () => {
-    // UC: Changes in child components update parent form state
+    // UC3 Step 3: Update form preferences data - Changes in child components update parent form state
     test("integrates child component changes with parent form state", async () => {
       const user = userEvent.setup();
       
@@ -356,7 +356,7 @@ describe("PreferencesForm Integration Tests", () => {
       });
     });
 
-    // UC: Form handles multiple child component interactions
+    // UC3 Step 4: Validate job types against database - Form handles multiple child component interactions
     test("handles multiple child component interactions", async () => {
       const user = userEvent.setup();
       

@@ -30,7 +30,7 @@ describe("JSPref Tab Navigation Tests", () => {
   // Tab Navigation Tests (3 tests)
   // ========================================
   describe("Tab Navigation", () => {
-    // UC: User sees PreferencesForm tab active by default
+    // UC3 Step 1: Navigate to preferences - User sees PreferencesForm tab active by default
     test("renders with PreferencesForm tab active by default", () => {
       render(<JSPref />);
 
@@ -52,7 +52,7 @@ describe("JSPref Tab Navigation Tests", () => {
       expect(screen.queryByTestId("availability-page")).toBeNull();
     });
 
-    // UC: User can switch to Availability tab
+    // UC4 Step 1: Click availability tab - User can switch to Availability tab
     test("switches to Availability tab when clicked", async () => {
       const user = userEvent.setup();
       render(<JSPref />);
@@ -73,7 +73,7 @@ describe("JSPref Tab Navigation Tests", () => {
       expect(screen.queryByTestId("preferences-page")).toBeNull();
     });
 
-    // UC: User can switch back to PreferencesForm tab
+    // UC3 Step 2: Navigate back to preferences - User can switch back to PreferencesForm tab
     test("switches back to PreferencesForm tab when clicked", async () => {
       const user = userEvent.setup();
       render(<JSPref />);
@@ -105,7 +105,7 @@ describe("JSPref Tab Navigation Tests", () => {
   // Error Handling Test (1 test)
   // ========================================
   describe("Error Handling", () => {
-    // UC: System handles tab switching errors gracefully
+    // UC3 & UC4 Error Handling: System handles tab switching errors gracefully
     test("handles tab switching errors gracefully", () => {
       render(<JSPref />);
 
