@@ -65,7 +65,7 @@ describe("RatingModal test suite", ()=>{
         expect(mockedSubmitFeedback).toHaveBeenCalledWith(validFeedback);
       });
     
-      it('rejects zero rating', () => {
+      it('rejects zero rating, UC7 Steps 17-18, 25-26', () => {
             render(<RatingModal assignment={mockedAssignment} handleClose={handleClose}/>)
             expect(screen.getByText("John Tan")).toBeTruthy();
             const comment = screen.getByRole("textbox");
