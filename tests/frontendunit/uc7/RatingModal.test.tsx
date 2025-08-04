@@ -1,9 +1,8 @@
 import React from 'react';
 import { describe } from "node:test";
-import { beforeAll, expect, it, vi, beforeEach } from "vitest";
+import { expect, it, vi, beforeEach } from "vitest";
 import RatingModal from "../../../src/components/RatingModal"
 import { Assignment } from '../../../src/types/hooks';
-import { validateReview } from '../../../src/utils/review';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 
@@ -14,7 +13,7 @@ const mockFeedbackHook = {
     submitFeedback: mockedSubmitFeedback
 };
 
-vi.mock('../../src/hooks/useFeedback', () => ({
+vi.mock('../../../src/hooks/useFeedback', () => ({
   useFeedback: () => mockFeedbackHook,
 }));
 

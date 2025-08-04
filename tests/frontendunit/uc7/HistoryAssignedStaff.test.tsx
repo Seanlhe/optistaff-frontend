@@ -1,23 +1,11 @@
 import React from 'react';
 import { describe } from "node:test";
-import { beforeAll, expect, it, vi, beforeEach } from "vitest";
+import {expect, it, vi, beforeEach } from "vitest";
 import HistoryAssignedStaff from '../../../src/components/HistoryAssignedStaff';
 import { Assignment } from '../../../src/types/hooks';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
-
-
-const mockedSubmitFeedback = vi.fn();
-
-const mockFeedbackHook = {
-    submitFeedback: mockedSubmitFeedback
-};
-
-vi.mock('../../src/hooks/useFeedback', () => ({
-  useFeedback: () => mockFeedbackHook,
-}));
-
-vi.mock("../../src/components/EmployeeCard", () => ({
+vi.mock("../../../src/components/EmployeeCard", () => ({
     default: vi.fn(() => (
       <div data-testid="mock-employee-card">Employee Card</div>
     )),
@@ -33,7 +21,7 @@ describe("HistoryAssignedStaff test suite", ()=>{
 
     it('Empty Assignments Array', () => {
         render(<HistoryAssignedStaff assignments={mockedAssignments} handleModalClick={handleModalClick} />)
-        expect(screen.queryAllByTestId("mocked-employee-card").length).toBe(0)
+        expect(screen.queryAllByTestId("mock-employee-card").length).toBe(0)
     });
     
     it("Assignment array with 1 assignment", async ()=>{
