@@ -9,7 +9,7 @@ const handleClick = vi.fn()
 const handleSort = vi.fn()
 const mockedShifts: Shift[] = []
 
-vi.mock("../../src/components/PastShiftCard", () => ({
+vi.mock("../../../src/components/PastShiftCard", () => ({
     default: vi.fn(() => (
       <div data-testid="mock-shift-card">Past Shift Card</div>
     )),

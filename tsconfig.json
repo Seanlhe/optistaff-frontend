@@ -1,14 +1,17 @@
-{
-  "compilerOptions": {
-    "types": ["vitest/globals"],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+{"compilerOptions": {
+  "types": ["vitest/globals"],
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["src/*"]
   },
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
-}
+  "module": "ESNext",
+  "target": "ES2020",
+  "moduleResolution": "Bundler",
+  "esModuleInterop": true,
+  "resolveJsonModule": true
+},
+"files": [],
+"references": [
+  { "path": "./tsconfig.app.json" },
+  { "path": "./tsconfig.node.json" }
+]}
