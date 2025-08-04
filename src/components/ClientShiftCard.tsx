@@ -14,14 +14,30 @@ export default function ClientShiftCard({
   isSelected = false,
 }: ClientShiftCardProps): JSX.Element {
   const isFilled = shiftData.staff_assigned >= shiftData.staff_needed;
-  const borderColor = isFilled ? "border-l-green-dark" : "border-l-red-dark";
-  const bgColor = isFilled ? "bg-green" : "bg-red";
+
+  const isCancelled = shiftData.status === "cancel_by_employer";
+
+  const borderColor = isCancelled
+    ? "border-l-gray-400"
+    : isFilled
+    ? "border-l-green-dark"
+    : "border-l-red-dark";
+
+  const bgColor = isCancelled
+    ? "bg-gray-100"
+    : isFilled
+    ? "bg-green"
+    : "bg-red";
 
   // Format times for display
   const startTimeFormatted = format(shiftData.start_time, "h:mm a");
   const endTimeFormatted = format(shiftData.end_time, "h:mm a");
 
   const handleClick = () => {
+    if (isCancelled) {
+      return;
+    }
+
     if (onShiftClick) {
       onShiftClick(shiftData);
     }
