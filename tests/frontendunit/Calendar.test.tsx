@@ -261,7 +261,7 @@ describe("Calendar", () => {
 
   it("creates a new event when double-clicking on a time slot", async () => {
     // UC4 Step 9: User manually creates/modifies time slots by double-clicking calendar cells
-    render(<Calendar />);
+    renderCalendar();
 
     // Wait for initial load
     await waitFor(() => {
@@ -286,7 +286,7 @@ describe("Calendar", () => {
 
   it("saves availability when Save button is clicked", async () => {
     // UC4 Step 15: User clicks "Save Availability" to finalize their schedule
-    render(<Calendar />);
+    renderCalendar();
 
     await waitFor(() => {
       expect(mockGetAvailability).toHaveBeenCalled();
@@ -313,7 +313,7 @@ describe("Calendar", () => {
   });
 
   it("refreshes availability when refresh button is clicked", async () => {
-    render(<Calendar />);
+    renderCalendar();
 
     // Wait for initial load
     await waitFor(() => {
@@ -330,7 +330,7 @@ describe("Calendar", () => {
 
   it("opens template select dialog when Templates button is clicked", () => {
     // UC4 Step 7 (Optional): User clicks templates button to load existing template
-    render(<Calendar />);
+    renderCalendar();
 
     const templatesButton = screen.getByText("Templates");
     // UC4 Step 8: Calendar displays template selection dialog with available templates
@@ -341,7 +341,7 @@ describe("Calendar", () => {
 
   it("handles template selection", async () => {
     // UC4 Template Flow: User selects existing template to populate calendar
-    render(<Calendar />);
+    renderCalendar();
 
     // Open template dialog
     const templatesButton = screen.getByText("Templates");
@@ -359,7 +359,7 @@ describe("Calendar", () => {
   });
 
   it("opens template name dialog when saving new template", () => {
-    render(<Calendar />);
+    renderCalendar();
 
     // Open template select dialog
     const templatesButton = screen.getByText("Templates");
@@ -375,7 +375,7 @@ describe("Calendar", () => {
   });
 
   it("handles template saving", async () => {
-    render(<Calendar />);
+    renderCalendar();
 
     // Open template select dialog
     const templatesButton = screen.getByText("Templates");
@@ -401,7 +401,7 @@ describe("Calendar", () => {
   });
 
   it("handles event updates", async () => {
-    render(<Calendar />);
+    renderCalendar();
 
     await waitFor(() => {
       expect(mockGetAvailability).toHaveBeenCalled();
@@ -418,7 +418,7 @@ describe("Calendar", () => {
   });
 
   it("handles event deletion", async () => {
-    render(<Calendar />);
+    renderCalendar();
 
     await waitFor(() => {
       expect(mockGetAvailability).toHaveBeenCalled();
@@ -440,7 +440,7 @@ describe("Calendar", () => {
     // Temporarily override the mock
     mockAvailabilityHook.error = "Failed to load availability data";
 
-    render(<Calendar />);
+    renderCalendar();
 
     expect(screen.getByText("Failed to load availability data")).toBeTruthy();
 
@@ -452,7 +452,7 @@ describe("Calendar", () => {
     // Temporarily override the mock
     mockAvailabilityHook.saveLoading = true;
 
-    render(<Calendar />);
+    renderCalendar();
 
     expect(screen.getByText("Saving...")).toBeTruthy();
 
@@ -461,7 +461,7 @@ describe("Calendar", () => {
   });
 
   it("renders all 24 hours in the time column", () => {
-    render(<Calendar />);
+    renderCalendar();
 
     // Check that hours 0-23 are displayed
     for (let hour = 0; hour < 24; hour++) {
@@ -474,7 +474,7 @@ describe("Calendar", () => {
   });
 
   it("renders 7 days in the calendar grid", () => {
-    render(<Calendar />);
+    renderCalendar();
 
     const currentWeek = new Date();
     const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
@@ -490,7 +490,7 @@ describe("Calendar", () => {
   it("handles API errors gracefully", async () => {
     mockGetAvailability.mockRejectedValueOnce(new Error("API Error"));
 
-    render(<Calendar />);
+    renderCalendar();
 
     await waitFor(() => {
       expect(mockGetAvailability).toHaveBeenCalled();

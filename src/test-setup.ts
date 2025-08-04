@@ -127,6 +127,38 @@ export const createTestJobSeekerWithPreferences = async (
 };
 
 // Helper function to ensure job types exist for testing
+export const ensureTestStatuses = async () => {
+  // Check if basic status records exist
+  const { data: existingStatuses } = await testSupabase
+    .from("status")
+    .select("status_id, name")
+    .in("status_id", [1, 2, 3, 4, 5]);
+
+  const existingStatusIds = existingStatuses?.map((s) => s.status_id) || [];
+  
+  const requiredStatuses = [
+    { status_id: 1, name: "OPEN" },
+    { status_id: 2, name: "IN_PROGRESS" },
+    { status_id: 3, name: "COMPLETED" },
+    { status_id: 4, name: "CANCELLED" },
+    { status_id: 5, name: "CONFIRMED" },
+  ];
+
+  const statusesToCreate = requiredStatuses.filter(
+    (status) => !existingStatusIds.includes(status.status_id)
+  );
+
+  if (statusesToCreate.length > 0) {
+    const { error } = await testSupabase
+      .from("status")
+      .insert(statusesToCreate);
+
+    if (error) throw error;
+  }
+
+  return requiredStatuses.map((s) => s.name);
+};
+
 export const ensureTestJobTypes = async () => {
   // First, get an existing category to use for test job types
   const { data: categories, error: categoryError } = await testSupabase
@@ -265,7 +297,7 @@ export const createTestAssignment = async (
 // Global test setup
 beforeAll(async () => {
   // Verify local Supabase is running
-  const { data, error } = await testSupabase
+  const { error } = await testSupabase
     .from("job_categories")
     .select("count")
     .limit(1);
@@ -274,6 +306,12 @@ beforeAll(async () => {
       "Local Supabase is not running. Run `supabase start` first.",
     );
   }
+  
+  // Ensure required status records exist
+  await ensureTestStatuses();
+  
+  // Ensure test job types exist
+  await ensureTestJobTypes();
 });
 
 beforeEach(async () => {

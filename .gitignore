@@ -41,3 +41,5 @@ sequence_diagram_instructions (1).md
 docs/FinalizedDiagram.md
 /testing_notes
 /testing_notes
+src/test-setup.ts
+testcommands.md
