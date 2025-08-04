@@ -43,7 +43,7 @@ export default function ClientShiftDetails({
   //   }
   // };
 
-  const isCancelled = shiftData.status === "cancel_by_employer";
+  // const isCancelled = shiftData.status === "cancel_by_employer";
 
   const handleCancel = async () => {
     if (!onCancel) return;

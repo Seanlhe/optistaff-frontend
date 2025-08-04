@@ -23,7 +23,7 @@ export default function ClientRoster() {
     shifts,
     loading,
     error,
-    deleteShift,
+    // deleteShift,
     updateShiftStatus,
     refetchShifts,
   } = useShifts();
