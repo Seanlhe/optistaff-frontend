@@ -358,10 +358,6 @@ npm run test:backend
 # Run specific test file while developing
 npm run test:frontend -- tests/frontendunit/MyComponent.test.tsx
 
-# Run specific unit test file
-npm run test:frontend:unit -- tests/frontendunit/MyComponent.test.tsx
-```
-
 ### Running Tests in CI/CD
 
 ```bash

@@ -1,5 +1,5 @@
 import { getShiftsThisWeek } from '../../src/pages/employer/ClientDbContainer'; // Adjust the import path
-import { Shift } from '../../types/hooks'; // Adjust the import path
+import { Shift } from '../../src/types/hooks'; // Adjust the import path
 import { vi, describe, it, expect } from 'vitest';
 
 // Mock the current date to ensure consistent testing
