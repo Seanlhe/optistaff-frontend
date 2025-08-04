@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe } from "node:test";
 import { beforeAll, expect, it, vi, beforeEach } from "vitest";
-import HistoryAssignedStaff from '../../src/components/HistoryAssignedStaff';
-import { Assignment } from '../../src/types/hooks';
+import HistoryAssignedStaff from '../../../src/components/HistoryAssignedStaff';
+import { Assignment } from '../../../src/types/hooks';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 

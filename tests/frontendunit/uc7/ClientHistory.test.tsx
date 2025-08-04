@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, mock } from "node:test";
 import { beforeAll, expect, it, vi, beforeEach } from "vitest";
-import ClientHistory from "../../src/pages/employer/ClientHistory"
-import { Shift, Assignment} from '../../src/types/hooks';
+import ClientHistory from "../../../src/pages/employer/ClientHistory"
+import { Shift, Assignment} from '../../../src/types/hooks';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 
 vi.mock("../../src/components/HistoryAssignedStaff", () => ({

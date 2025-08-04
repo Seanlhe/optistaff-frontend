@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, mock } from "node:test";
 import { beforeAll, expect, it, vi, beforeEach } from "vitest";
-import {PastShiftCard} from "../../src/pages/employer/ClientHistory"
-import { Shift } from '../../src/types/hooks';
+import PastShiftCard from "../../../src/components/PastShiftCard"
+import { Shift } from '../../../src/types/hooks';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 

@@ -2,7 +2,7 @@ import { Shift } from "../types/hooks";
 import PastShiftCard from "../components/PastShiftCard";
 
 export default function HistoryPastShifts({handleSort, handleSelectShift, pastShifts, selectedShift}: {handleSort: Function; handleSelectShift: Function; pastShifts: Shift[]; selectedShift: Shift|null}){
-    return <div id="previous-jobs" className="grow flex flex-col gap-4">
+    return <div data-testid="history-past-shifts" id="previous-jobs" className="grow flex flex-col gap-4">
           <div className="flex flex-row justify-between mb-2">
             <p className="font-montserrat-b text-lg text-primary-text">
               Previous Jobs

@@ -1,9 +1,9 @@
 import React from 'react';
 import { describe } from "node:test";
 import { beforeAll, expect, it, vi, beforeEach } from "vitest";
-import {RatingModal} from "../../src/pages/employer/ClientHistory"
-import { Assignment } from '../../src/types/hooks';
-import { validateReview } from '../../src/utils/review';
+import RatingModal from "../../../src/components/RatingModal"
+import { Assignment } from '../../../src/types/hooks';
+import { validateReview } from '../../../src/utils/review';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 
@@ -47,7 +47,7 @@ describe("RatingModal test suite", ()=>{
     beforeEach(() => {
         mockedSubmitFeedback.mockReset();
       });
-    it('validates valid review', async () => {
+    it('validates valid review, UC7 Steps 17-19', async () => {
         render(<RatingModal assignment={mockedAssignment} handleClose={handleClose}/>)
         const validFeedback = {
             assignment_id: "asg-123456",
@@ -77,7 +77,7 @@ describe("RatingModal test suite", ()=>{
             expect(screen.getByText('Please provide a valid rating.')).toBeTruthy();
       });
     
-      it('rejects empty comment', () => {
+      it('rejects empty comment, UC7 Steps 17-18, 25-26', () => {
             // const invalidFeedback = {
             // rating_score: 4,
             // comment: ''
@@ -94,7 +94,7 @@ describe("RatingModal test suite", ()=>{
             expect(screen.getByText('Please provide a valid comment.')).toBeTruthy();
       });
     
-      it('rejects whitespace-only comment', () => {
+      it('rejects whitespace-only comment, UC7 Steps 17-18, 25-26', () => {
             // const invalidFeedback = {
             // rating_score: 3,
             // comment: '   '
@@ -111,7 +111,7 @@ describe("RatingModal test suite", ()=>{
             expect(screen.getByText('Please provide a valid comment.')).toBeTruthy();
       });
     
-      it('handles multiple validation errors', () => {
+      it('handles multiple validation errors, UC7 Steps 17-18, 25-26', () => {
         const invalidFeedback = {
           rating_score: 0,
           comment: ''

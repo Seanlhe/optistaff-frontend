@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe } from "node:test";
 import { beforeAll, expect, it, vi, beforeEach} from "vitest";
-import HistoryPastShifts from '../../src/components/HistoryPastShifts';
-import { Shift } from '../../src/types/hooks';
+import HistoryPastShifts from '../../../src/components/HistoryPastShifts';
+import { Shift } from '../../../src/types/hooks';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 
 const handleClick = vi.fn()

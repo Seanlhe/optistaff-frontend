@@ -38,7 +38,7 @@ export default function RatingModal({
     }
   
     return (
-      <div className="relative w-100 flex flex-col bg-white rounded-lg gap-6 p-6 shadow">
+      <div data-testid="history-rating-modal" className="relative w-100 flex flex-col bg-white rounded-lg gap-6 p-6 shadow">
         <div className="flex flex-row gap-4 items-center">
           <img className="bg-[#D9D9D9] rounded-full w-14 h-14" src="" />
           <p className="font-montserrat-b text-lg text-primary-text">

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateReview } from '../../src/utils/review';
+import { validateReview } from '../../../src/utils/review';
 
 describe('Review Utils', () => {
   it('validates valid review', () => {
