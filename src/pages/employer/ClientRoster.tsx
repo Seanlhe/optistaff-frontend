@@ -158,6 +158,7 @@ export default function ClientRoster() {
       await updateShiftStatus(shift_id, StatusEnum.CancelByEmployer);
     } catch (error) {
       console.error("Failed to cancel shift:", error);
+      throw error;
     }
   };
 

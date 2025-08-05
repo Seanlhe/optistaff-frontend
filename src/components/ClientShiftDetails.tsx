@@ -17,6 +17,7 @@ export default function ClientShiftDetails({
   onCancel,
 }: ClientShiftDetailsProps) {
   const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   // const handleDelete = async () => {
   //   if (!onDelete) return;
@@ -48,14 +49,6 @@ export default function ClientShiftDetails({
   const handleCancel = async () => {
     if (!onCancel) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to cancel this shift?\n\nThis action cannot be undone.`
-    );
-
-    if (!confirmed) {
-      return; // User cancelled, don't proceed with deletion
-    }
-
     try {
       setIsCancelling(true);
       await onCancel(shiftData.shift_id);
@@ -65,6 +58,13 @@ export default function ClientShiftDetails({
       }
     } catch (error) {
       console.error("Failed to cancel shift:", error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to cancel shift. Please try again.";
+
+      setCancelError(errorMessage);
     } finally {
       setIsCancelling(false);
     }
@@ -126,6 +126,15 @@ export default function ClientShiftDetails({
           {shiftData.staff_assigned} / {shiftData.staff_needed}
         </p>
       </div>
+
+      {/* Error Message */}
+      {cancelError && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <p className="text-red-700 text-sm font-medium">{cancelError}</p>
+          </div>
+        </div>
+      )}
 
       {/* Edit and Delete Buttons */}
       <div className="mt-6 flex justify-end gap-4">
