@@ -170,10 +170,6 @@ export default function ShiftCard({
 }) {
   const handleDelete = async () => {
     if (!handleDeleteShift) return;
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${shift.job_title}"?\n\nThis action cannot be undone.`
-    );
-    if (!confirmed) return;
     
     await handleDeleteShift(shift.shift_id); // ✅ Uses parent's state
   };

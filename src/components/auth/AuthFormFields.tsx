@@ -58,6 +58,7 @@ export const AuthFormFields = ({
               value={formData.firstName}
               onChange={setFormData.setFirstName}
               placeholder="John"
+              enableRealTimeValidation={true}
             />
             <FormField
               id="lastName"
@@ -66,6 +67,7 @@ export const AuthFormFields = ({
               value={formData.lastName}
               onChange={setFormData.setLastName}
               placeholder="Tan"
+              enableRealTimeValidation={true}
             />
           </div>
 
@@ -90,6 +92,7 @@ export const AuthFormFields = ({
               value={formData.companyName}
               onChange={setFormData.setCompanyName}
               placeholder="ABC Restaurant"
+              enableRealTimeValidation={true}
             />
           )}
         </div>
@@ -110,6 +113,7 @@ export const AuthFormFields = ({
             value={formData.phoneNumber}
             onChange={setFormData.setPhoneNumber}
             placeholder="+65 9123 4567"
+            enableRealTimeValidation={true}
           />
 
           {/* Office Number for Employers */}

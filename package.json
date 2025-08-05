@@ -27,8 +27,9 @@
     "test:backend:coverage": "supabase start && vitest run --coverage --config vitest.backend.config.ts",
     "test:backend:watch": "supabase start && vitest --watch --config vitest.backend.config.ts",
     "test:preferences": "supabase start && vitest run --config vitest.backend.config.ts tests/unit/preferences-validation.test.ts tests/integration/usePreferences-simple.test.tsx",
-    "test:pure": "vitest run --config vitest.backend.config.ts tests/unit",
-    "test:pure:watch": "vitest --config vitest.pure.config.ts tests/unit"
+    "test:pure": "vitest run --config vitest.pure.config.ts tests/unit",
+    "test:pure:watch": "vitest --config vitest.pure.config.ts tests/unit",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -87,6 +88,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
+    "cypress": "^14.5.3",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
