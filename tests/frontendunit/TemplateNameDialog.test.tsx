@@ -55,12 +55,16 @@ describe("TemplateNameDialog", () => {
     });
 
     it("calls onSave with trimmed template name when form is submitted", () => {
+      // UC4 Step 26: Calendar displays template_name_form for user input
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name");
       const saveButton = screen.getByRole("button", { name: "Save Template" });
 
+      // UC4 Step 27: Jobseeker inputs template_name
       fireEvent.change(input, { target: { value: "  My Template  " } });
+      // UC4 Step 28: Calendar calls useAvailabilityTemplate.createTemplate() with template data
+      // UC4 Steps 29-32: Template is saved to database and success message is shown
       fireEvent.click(saveButton);
 
       expect(mockOnSave).toHaveBeenCalledWith("My Template");
@@ -114,7 +118,7 @@ describe("TemplateNameDialog", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name");
-      expect(input).toHaveFocus();
+      expect(document.activeElement).toBe(input);
     });
   });
 
@@ -223,28 +227,28 @@ describe("TemplateNameDialog", () => {
       render(<TemplateNameDialog {...defaultProps} loading={true} />);
 
       const input = screen.getByLabelText("Template Name");
-      expect(input).toBeDisabled();
+      expect(input).toHaveProperty('disabled', true);
     });
 
     it("disables save button when loading", () => {
       render(<TemplateNameDialog {...defaultProps} loading={true} />);
 
       const saveButton = screen.getByRole("button", { name: "Saving..." });
-      expect(saveButton).toBeDisabled();
+      expect(saveButton).toHaveProperty('disabled', true);
     });
 
     it("disables cancel button when loading", () => {
       render(<TemplateNameDialog {...defaultProps} loading={true} />);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
-      expect(cancelButton).toBeDisabled();
+      expect(cancelButton).toHaveProperty('disabled', true);
     });
 
     it("disables X button when loading", () => {
       render(<TemplateNameDialog {...defaultProps} loading={true} />);
 
       const xButton = screen.getByTestId("x-icon").parentElement;
-      expect(xButton).toBeDisabled();
+      expect(xButton).toHaveProperty('disabled', true);
     });
 
     it("does not call onClose when X button is clicked during loading", () => {
@@ -287,7 +291,7 @@ describe("TemplateNameDialog", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const saveButton = screen.getByRole("button", { name: "Save Template" });
-      expect(saveButton).toBeDisabled();
+      expect(saveButton).toHaveProperty('disabled', true);
     });
 
     it("save button is disabled when template name is only whitespace", () => {
@@ -297,7 +301,7 @@ describe("TemplateNameDialog", () => {
       const saveButton = screen.getByRole("button", { name: "Save Template" });
 
       fireEvent.change(input, { target: { value: "   " } });
-      expect(saveButton).toBeDisabled();
+      expect(saveButton).toHaveProperty('disabled', true);
     });
 
     it("save button is enabled when template name has valid content", () => {
@@ -307,7 +311,7 @@ describe("TemplateNameDialog", () => {
       const saveButton = screen.getByRole("button", { name: "Save Template" });
 
       fireEvent.change(input, { target: { value: "Valid Template" } });
-      expect(saveButton).not.toBeDisabled();
+      expect(saveButton).toHaveProperty('disabled', false);
     });
 
     it("save button is disabled when both loading and has valid content", () => {
@@ -317,7 +321,7 @@ describe("TemplateNameDialog", () => {
       const saveButton = screen.getByRole("button", { name: "Saving..." });
 
       fireEvent.change(input, { target: { value: "Valid Template" } });
-      expect(saveButton).toBeDisabled();
+      expect(saveButton).toHaveProperty('disabled', true);
     });
 
     it("displays correct CSS classes for disabled save button", () => {

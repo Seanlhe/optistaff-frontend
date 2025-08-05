@@ -24,13 +24,13 @@
   "include": [
     "src",
     "vitest.config.ts",
-    "tests/frontendSuccessUnit/Calendar.test.tsx",
-    "tests/frontendSuccessUnit/CalendarEvent.test.tsx",
-    "tests/frontendSuccessUnit/LocationAwareMap.test.tsx",
-    "tests/frontendSuccessUnit/PreferencesForm.test.tsx",
-    "tests/frontendSuccessUnit/PreferencesJobType.test.tsx",
-    "tests/frontendSuccessUnit/PreferencesMaximum.test.tsx",
-    "tests/frontendSuccessUnit/PreferencesPay.test.tsx",
-    "tests/frontendSuccessUnit/JSPref.test.tsx"
+    "tests/frontend/Calendar.test.tsx",
+    "tests/frontend/CalendarEvent.test.tsx",
+    "tests/frontend/LocationAwareMap.test.tsx",
+    "tests/frontend/PreferencesForm.test.tsx",
+    "tests/frontend/PreferencesJobType.test.tsx",
+    "tests/frontend/PreferencesMaximum.test.tsx",
+    "tests/frontend/PreferencesPay.test.tsx",
+    "tests/frontend/JSPref.test.tsx"
   ]
 }

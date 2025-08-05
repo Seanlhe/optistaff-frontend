@@ -20,6 +20,7 @@ describe("PreferencesPay", () => {
   });
 
   it("renders correctly with all elements", () => {
+    // UC3 Steps 12-14: PreferencesForm displays complete_form with all preference sections including pay rate settings
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -75,6 +76,7 @@ describe("PreferencesPay", () => {
   });
 
   it("handles pay rate change correctly", () => {
+    // UC3 Step 15: Jobseeker updates preferences including desired pay rate
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -167,6 +169,7 @@ describe("PreferencesPay", () => {
   });
 
   it("handles checkbox change correctly when checking", () => {
+    // UC3 Step 15: Jobseeker updates preferences including willingness to consider lower pay rates
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -184,6 +187,7 @@ describe("PreferencesPay", () => {
   });
 
   it("handles checkbox change correctly when unchecking", () => {
+    // UC3 Step 15: Jobseeker updates preferences including changing lower pay rate consideration
     const formDataWithLowerRate: PreferencesFormData = {
       ...defaultFormData,
       considerLowerRate: true,

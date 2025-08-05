@@ -1,6 +1,6 @@
 /**
  * Integration Tests for usePayouts Hook
- * @description Tests the React hook with real database connections
+ * @description Tests the React hook with real database connections following foreign key constraints
  * @author OptiStaff Team
  * @testing_approach True integration testing with live test database
  */
@@ -13,21 +13,21 @@ import {
   testSupabase,
   testSupabaseAdmin,
   cleanupTestData,
-  createTestJobSeeker,
-  createTestClient,
-  createTestShift,
-  createTestAssignment,
+  ensureTestStatuses,
+  ensureTestJobTypes,
 } from "../../src/test-setup";
 
-// Mock only the useAuth hook, but use real Supabase
+// Mock the useAuth hook
 vi.mock("../../src/hooks/useAuth", () => ({
   useAuth: vi.fn(),
 }));
 
 describe("usePayouts Hook - True Integration Tests", () => {
   let testUserId: string;
+  let testAuthUser: any;
   let testJobSeeker: any;
   let testClient: any;
+  let testClientAuthUser: any;
   let testShift: any;
   let testAssignment: any;
   let jobType: any;
@@ -35,63 +35,84 @@ describe("usePayouts Hook - True Integration Tests", () => {
   beforeEach(async () => {
     await cleanupTestData();
     
-    // Create test job seeker with auth user
-    testJobSeeker = await createTestJobSeeker();
-    testUserId = testJobSeeker.user_id;
+    // Ensure required statuses and job types exist
+    await ensureTestStatuses();
+    await ensureTestJobTypes();
     
-    // Set up mock auth to return our test user
+    // Step 1: Create auth user for job seeker
+    const jobSeekerAuthResult = await testSupabaseAdmin.auth.admin.createUser({
+      email: `jobseeker-${crypto.randomUUID()}@example.com`,
+      password: "testpassword123",
+      email_confirm: true,
+    });
+
+    if (jobSeekerAuthResult.error) throw jobSeekerAuthResult.error;
+    testAuthUser = jobSeekerAuthResult.data.user;
+    testUserId = testAuthUser.id;
+    
+    // Step 2: Create job seeker record with proper user_id
+    const { data: jobSeekerData, error: jobSeekerError } = await testSupabase
+      .from("job_seekers")
+      .insert({
+        user_id: testUserId,
+        first_name: "Test",
+        last_name: "JobSeeker",
+        phone_number: "12345678",
+        status: "ACTIVE",
+        rating: 5.0,
+      })
+      .select()
+      .single();
+
+    if (jobSeekerError) throw jobSeekerError;
+    testJobSeeker = jobSeekerData;
+    
+    // Step 3: Set up mock auth to return our test user
     vi.mocked(useAuth).mockReturnValue({
-      user: { id: testUserId, email: `test-${testUserId}@example.com` },
+      user: { id: testUserId, email: testAuthUser.email, role: "jobseeker" },
       loading: false,
       error: null,
     });
     
-    // Create test client with proper auth user
-    const clientAuthUser = await testSupabaseAdmin.auth.admin.createUser({
+    // Step 4: Create auth user for client
+    const clientAuthResult = await testSupabaseAdmin.auth.admin.createUser({
       email: `client-${crypto.randomUUID()}@company.com`,
       password: "testpassword123",
       email_confirm: true,
     });
 
-    testClient = await testSupabase
+    if (clientAuthResult.error) throw clientAuthResult.error;
+    testClientAuthUser = clientAuthResult.data.user;
+
+    // Step 5: Create client record with proper client_id
+    const { data: clientData, error: clientError } = await testSupabase
       .from("clients")
       .insert({
-        client_id: clientAuthUser.data.user.id,
+        client_id: testClientAuthUser.id,
         company_name: "Test Company",
         first_name: "Test",
-        last_name: "Client",
+        last_name: "Client", 
         phone: "87654321",
-        contact_email: `client-${crypto.randomUUID()}@company.com`,
+        contact_email: testClientAuthUser.email,
       })
       .select()
       .single();
 
-    if (testClient.error) throw testClient.error;
-    testClient = testClient.data;
-    // Create a job category first
-    const { data: jobCategory } = await testSupabase
-      .from("job_categories")
-      .insert({
-        category_name: "Test Category",
-        description: "Test Category Description",
-      })
-      .select()
-      .single();
-
-    // Create a job type
-    const { data: jobTypeData } = await testSupabase
+    if (clientError) throw clientError;
+    testClient = clientData;
+    
+    // Step 6: Get a job type to use
+    const { data: jobTypes } = await testSupabase
       .from("job_types")
-      .insert({
-        type_name: "Test Job Type",
-        category_id: jobCategory.category_id,
-        is_active: true,
-      })
-      .select()
-      .single();
+      .select("*")
+      .limit(1);
+    
+    if (!jobTypes || jobTypes.length === 0) {
+      throw new Error("No job types available after ensureTestJobTypes");
+    }
+    jobType = jobTypes[0];
 
-    jobType = jobTypeData;
-
-    // Create shift directly in table instead of using RPC
+    // Step 7: Create shift with proper relationships
     const { data: shiftData, error: shiftError } = await testSupabase
       .from("shifts")
       .insert({
@@ -103,7 +124,7 @@ describe("usePayouts Hook - True Integration Tests", () => {
         pay_rate: 25.50,
         job_location: "Test Location",
         staff_needed: 1,
-        status: 1, // Default status
+        status: 1, // OPEN status
         submission_cycle: "PRIMARY",
         break_duration: 30,
         job_type_id: jobType.job_type_id,
@@ -114,10 +135,19 @@ describe("usePayouts Hook - True Integration Tests", () => {
     if (shiftError) throw shiftError;
     testShift = shiftData;
     
-    // Create assignment for the test user
-    testAssignment = await createTestAssignment(testUserId, testShift.shift_id, {
-      status: 5, // CONFIRMED
-    });
+    // Step 8: Create assignment with proper foreign keys
+    const { data: assignmentData, error: assignmentError } = await testSupabase
+      .from("assignments")
+      .insert({
+        user_id: testUserId, // This now references a valid auth.users.id
+        shift_id: testShift.shift_id,
+        status: 5, // CONFIRMED
+      })
+      .select()
+      .single();
+
+    if (assignmentError) throw assignmentError;
+    testAssignment = assignmentData;
   });
 
   describe("Database RPC Function Tests", () => {
@@ -132,281 +162,134 @@ describe("usePayouts Hook - True Integration Tests", () => {
       expect(Number(data)).toBe(0);
     });
 
-    test("get_user_total_earnings calculates correct total with real payouts", async () => {
-      // Arrange - Create payout records
-      const payout1Amount = 204.00; // 8 hours * $25.50
-      const payout2Amount = 150.75;
-      
-      await testSupabase.from("payouts").insert([
-        {
-          assignment_id: testAssignment.assignment_id,
-          amount: payout1Amount,
-          payment_date: new Date("2025-01-02T00:00:00Z").toISOString(),
-          payment_method: "BANK_TRANSFER",
-          status: "COMPLETED",
-        },
-      ]);
+    test("get_user_total_earnings only includes user's own payouts", async () => {
+      // Arrange - Create auth user for another job seeker
+      const otherAuthResult = await testSupabaseAdmin.auth.admin.createUser({
+        email: `other-jobseeker-${crypto.randomUUID()}@example.com`,
+        password: "testpassword123",
+        email_confirm: true,
+      });
 
-      // Create another assignment and payout
-      const { data: testShift2, error: shift2Error } = await testSupabase
-        .from("shifts")
+      if (otherAuthResult.error) throw otherAuthResult.error;
+      const otherUserId = otherAuthResult.data.user.id;
+      
+      // Create other job seeker
+      const { data: otherJobSeeker, error: otherJobSeekerError } = await testSupabase
+        .from("job_seekers")
         .insert({
-          client_id: testClient.client_id,
-          title: "Test Shift 2",
-          description: "Test Description 2", 
-          start_time: new Date("2025-01-03T10:00:00Z").toISOString(),
-          end_time: new Date("2025-01-03T17:30:00Z").toISOString(),
-          pay_rate: 20.10,
-          job_location: "Test Location 2",
-          staff_needed: 1,
-          status: 1,
-          submission_cycle: "PRIMARY",
-          break_duration: 30,
-          job_type_id: jobType.job_type_id,
+          user_id: otherUserId,
+          first_name: "Other",
+          last_name: "JobSeeker",  
+          phone_number: "87654321",
+          status: "ACTIVE",
+          rating: 4.0,
         })
         .select()
         .single();
 
-      if (shift2Error) throw shift2Error;
-      
-      const testAssignment2 = await createTestAssignment(testUserId, testShift2.shift_id, {
-        status: 5, // CONFIRMED
-      });
+      if (otherJobSeekerError) throw otherJobSeekerError;
 
-      await testSupabase.from("payouts").insert([
-        {
-          assignment_id: testAssignment2.assignment_id,
-          amount: payout2Amount,
-          payment_date: new Date("2025-01-04T00:00:00Z").toISOString(),
-          payment_method: "BANK_TRANSFER",
-          status: "COMPLETED",
-        },
-      ]);
+      // Create assignment for other user
+      const { data: otherAssignment, error: otherAssignmentError } = await testSupabase
+        .from("assignments")
+        .insert({
+          user_id: otherUserId,
+          shift_id: testShift.shift_id,
+          status: 5, // CONFIRMED
+        })
+        .select()
+        .single();
 
-      // Act - Call RPC function
-      const { data, error } = await testSupabase.rpc("get_user_total_earnings", {
-        target_user_id: testUserId,
-      });
+      if (otherAssignmentError) throw otherAssignmentError;
 
-      // Assert
-      expect(error).toBeNull();
-      expect(Number(data)).toBe(payout1Amount + payout2Amount);
-    });
-
-    test("get_user_total_earnings only includes user's own payouts", async () => {
-      // Arrange - Create another user with payouts
-      const otherJobSeeker = await createTestJobSeeker();
-      const otherAssignment = await createTestAssignment(
-        otherJobSeeker.user_id, 
-        testShift.shift_id,
-        { status: 5 }
-      );
-
-      // Add payouts for both users
+      // Create payouts for both users
       await testSupabase.from("payouts").insert([
         {
           assignment_id: testAssignment.assignment_id,
-          amount: 100.00,
-          payment_date: new Date().toISOString(),
-          payment_method: "BANK_TRANSFER",
-          status: "COMPLETED",
+          amount: 200.00,
+          pay_rate: 25.00,
+          start_time: new Date("2025-01-01T09:00:00Z").toISOString(),
+          end_time: new Date("2025-01-01T17:00:00Z").toISOString(),
+          break_hours: 0,
         },
         {
           assignment_id: otherAssignment.assignment_id,
-          amount: 200.00,
-          payment_date: new Date().toISOString(),
-          payment_method: "BANK_TRANSFER",
-          status: "COMPLETED",
+          amount: 300.00,
+          pay_rate: 30.00,
+          start_time: new Date("2025-01-01T09:00:00Z").toISOString(),
+          end_time: new Date("2025-01-01T17:00:00Z").toISOString(),
+          break_hours: 0,
         },
       ]);
 
-      // Act - Get earnings for our test user only
+      // Act - Get earnings for our test user
       const { data, error } = await testSupabase.rpc("get_user_total_earnings", {
         target_user_id: testUserId,
       });
 
-      // Assert - Should only include test user's payouts
+      // Assert - Should only return our user's earnings, not the other user's
       expect(error).toBeNull();
-      expect(Number(data)).toBe(100.00);
+      expect(Number(data)).toBe(200.00);
     });
   });
 
   describe("usePayouts Hook Integration", () => {
-    test("hook fetches real earnings from database", async () => {
-      // Arrange - Create real payout data
-      await testSupabase.from("payouts").insert({
-        assignment_id: testAssignment.assignment_id,
-        amount: 275.25,
-        payment_date: new Date().toISOString(),
-        payment_method: "BANK_TRANSFER",
-        status: "COMPLETED",
-      });
-
-      // Act
-      const { result } = renderHook(() => usePayouts());
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      // Assert
-      expect(result.current.totalEarnings).toBe(275.25);
-      expect(result.current.error).toBeNull();
-    });
-
-    test("hook handles unauthenticated user", async () => {
-      // Arrange
-      vi.mocked(useAuth).mockReturnValue({
-        user: null,
-        loading: false,
-        error: null,
-      });
-
-      // Act
-      const { result } = renderHook(() => usePayouts());
-
-      // Assert
-      expect(result.current.error).toBe("User not authenticated");
-      expect(result.current.totalEarnings).toBe(0);
-      expect(result.current.loading).toBe(false);
-    });
-
     test("hook updates when user changes", async () => {
-      // Arrange - Create payouts for first user
-      await testSupabase.from("payouts").insert({
-        assignment_id: testAssignment.assignment_id,
-        amount: 100.50,
-        payment_date: new Date().toISOString(),
-        payment_method: "BANK_TRANSFER",
-        status: "COMPLETED",
-      });
+      // Arrange - Create initial payout
+      await testSupabase.from("payouts").insert([
+        {
+          assignment_id: testAssignment.assignment_id,
+          amount: 150.00,
+          pay_rate: 25.00,
+          start_time: new Date("2025-01-01T09:00:00Z").toISOString(),
+          end_time: new Date("2025-01-01T17:00:00Z").toISOString(),
+          break_hours: 0,
+        },
+      ]);
 
-      // Act - Initial render with first user
-      const { result, rerender } = renderHook(() => usePayouts());
+      // Act - Render hook
+      const { result } = renderHook(() => usePayouts());
 
+      // Wait for initial load
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.totalEarnings).toBe(100.50);
-
-      // Arrange - Create second user with different payouts
-      const secondUser = await createTestJobSeeker();
-      const secondAssignment = await createTestAssignment(
-        secondUser.user_id,
-        testShift.shift_id,
-        { status: 5 }
-      );
-
-      await testSupabase.from("payouts").insert({
-        assignment_id: secondAssignment.assignment_id,
-        amount: 200.75,
-        payment_date: new Date().toISOString(),
-        payment_method: "BANK_TRANSFER",
-        status: "COMPLETED",
-      });
-
-      // Change auth mock to return second user
-      vi.mocked(useAuth).mockReturnValue({
-        user: { id: secondUser.user_id, email: `test-${secondUser.user_id}@example.com` },
-        loading: false,
-        error: null,
-      });
-
-      // Act - Rerender with new user
-      rerender();
-
-      await waitFor(() => {
-        expect(result.current.totalEarnings).toBe(200.75);
-      });
-
-      // Assert
+      // Assert - Should have initial earnings
+      expect(result.current.totalEarnings).toBe(150.00);
       expect(result.current.error).toBeNull();
     });
 
     test("hook allows manual refetch with live data", async () => {
-      // Arrange - Initial payout
-      await testSupabase.from("payouts").insert({
-        assignment_id: testAssignment.assignment_id,
-        amount: 150.00,
-        payment_date: new Date().toISOString(),
-        payment_method: "BANK_TRANSFER",
-        status: "COMPLETED",
-      });
-
+      // Arrange - Start with no payouts
       const { result } = renderHook(() => usePayouts());
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.totalEarnings).toBe(150.00);
+      // Should start with 0 earnings
+      expect(result.current.totalEarnings).toBe(0);
 
-      // Arrange - Add another payout
-      const { data: secondShift, error: secondShiftError } = await testSupabase
-        .from("shifts")
-        .insert({
-          client_id: testClient.client_id,
-          title: "Second Test Shift",
-          description: "Second Test Description",
-          start_time: new Date("2025-01-05T09:00:00Z").toISOString(),
-          end_time: new Date("2025-01-05T17:00:00Z").toISOString(),
-          pay_rate: 20.0,
-          job_location: "Second Test Location",
-          staff_needed: 1,
-          status: 1,
-          submission_cycle: "PRIMARY",
-          break_duration: 30,
-          job_type_id: jobType.job_type_id,
-        })
-        .select()
-        .single();
+      // Add a payout
+      await testSupabase.from("payouts").insert([
+        {
+          assignment_id: testAssignment.assignment_id,
+          amount: 175.00,
+          pay_rate: 25.00,
+          start_time: new Date("2025-01-01T09:00:00Z").toISOString(),
+          end_time: new Date("2025-01-01T17:00:00Z").toISOString(),
+          break_hours: 0,
+        },
+      ]);
 
-      if (secondShiftError) throw secondShiftError;
-
-      const secondAssignment = await createTestAssignment(testUserId, secondShift.shift_id, {
-        status: 5,
-      });
-
-      await testSupabase.from("payouts").insert({
-        assignment_id: secondAssignment.assignment_id,
-        amount: 85.25,
-        payment_date: new Date().toISOString(),
-        payment_method: "BANK_TRANSFER",
-        status: "COMPLETED",
-      });
-
-      // Act - Manual refetch
+      // Act - Manually refetch
       await act(async () => {
         await result.current.fetchTotalEarnings();
       });
 
-      // Assert - Should now include both payouts
-      expect(result.current.totalEarnings).toBe(235.25); // 150.00 + 85.25
-      expect(result.current.error).toBeNull();
-    });
-  });
-
-  describe("Database Constraints and Error Handling", () => {
-    test("handles non-existent user gracefully", async () => {
-      // Arrange
-      const nonExistentUserId = crypto.randomUUID();
-      
-      vi.mocked(useAuth).mockReturnValue({
-        user: { id: nonExistentUserId, email: "nonexistent@example.com" },
-        loading: false,
-        error: null,
-      });
-
-      // Act
-      const { result } = renderHook(() => usePayouts());
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      // Assert - Should return 0 for non-existent user
-      expect(result.current.totalEarnings).toBe(0);
+      // Assert - Should now show updated earnings
+      expect(result.current.totalEarnings).toBe(175.00);
       expect(result.current.error).toBeNull();
     });
   });

@@ -64,9 +64,12 @@ export const AssignmentDetailsModal = ({
   // Handler function for cancelling assignment
   const handleCancelAssignment = async () => {
     try {
-      await updateAssignmentStatus(assignment.id, StatusEnum.CancelByEmployee);
-      onStatusChange?.(); // Trigger refresh
-      onClose(); // Close modal after successful cancellation
+      const result = await updateAssignmentStatus(assignment.id, StatusEnum.CancelByEmployee);
+      if (result) { // Only proceed if operation succeeded
+        onStatusChange?.(); // Trigger refresh
+        onClose(); // Close modal after successful cancellation
+      }
+      // If result is undefined/falsy, do nothing - user will see error in hook state
     } catch (error) {
       console.error("Failed to cancel assignment:", error);
       // You could show a toast notification here

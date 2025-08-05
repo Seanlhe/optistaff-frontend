@@ -25,8 +25,10 @@ describe("Preferences (JSPref)", () => {
   });
 
   it("renders correctly with default tab selected", () => {
+    // UC3 Step 1: Jobseeker navigates to "/employee/jspref"
     render(<Preferences />);
 
+    // UC3 Step 2: JSPref renders PreferencesForm component
     // Check that both tab buttons are rendered
     expect(screen.getByRole("button", { name: "Preferences" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Availability" })).toBeTruthy();
@@ -58,13 +60,14 @@ describe("Preferences (JSPref)", () => {
   });
 
   it("switches to Availability tab when clicked", () => {
+    // UC4 Step 1: Navigate to availability tab in JSPref page
     render(<Preferences />);
 
     const availabilityButton = screen.getByRole("button", {
       name: "Availability",
     });
 
-    // Click the Availability tab
+    // UC4 Step 2: User clicks availability tab, JSPref switches to Calendar component  
     fireEvent.click(availabilityButton);
 
     // Check that Availability component is now rendered
