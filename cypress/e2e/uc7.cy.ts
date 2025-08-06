@@ -1,3 +1,4 @@
+/// <reference types="cypress"/>
 describe("UC7 Create Feedback E2E test suite", ()=>{
   beforeEach(()=>{
       cy.visit("localhost:5173");
@@ -8,7 +9,7 @@ describe("UC7 Create Feedback E2E test suite", ()=>{
   const setupLoginEmployer = ()=>{
     cy.get("a[href='/auth?mode=login']").should("be.visible").click();
     cy.get("input[id='email']").should("be.visible").click().type("employer@gmail.com");
-    cy.get("input[id='password']").should("be.visible").click().type("testuser");
+    cy.get("input[id='password']").should("be.visible").click().type("Testuser");
     cy.get("button[type='submit']").should("be.visible").click();
     
   }
@@ -76,33 +77,18 @@ describe("UC7 Create Feedback E2E test suite", ()=>{
   it("Submitting an invalid feedback with white-space only comment, UC7 Steps 17-18, 25-26", ()=>{
     cy.get("div[data-testid='past-shift-card']").first().click();
     cy.contains("button", "Review").first().click();
-  
-    // Confirm modal loaded
     cy.get("p[class*='font-montserrat-b']").contains("Khu John").should("be.visible");
-  
-    // Give valid rating
     cy.get("img[alt='Star 4']").click();
-  
-    // Type whitespace-only comment
     cy.get("textarea[name='comment']").click().type("   ");
-  
-    // Submit
     cy.contains("button", "Rate").click();
-  
-    // Assert validation
     cy.contains("Please provide a valid comment.").should("be.visible");
   });
+  
   it("Submitting an invalid feedback with multiple validation errors, UC7 Steps 17-18, 25-26", ()=>{
     cy.get("div[data-testid='past-shift-card']").first().click();
     cy.contains("button", "Review").first().click();
-  
-    // Confirm modal loaded
     cy.get("p[class*='font-montserrat-b']").contains("Khu John").should("be.visible");
-  
-    // Leave rating and comment blank
     cy.contains("button", "Rate").click();
-  
-    // Assert both errors
     cy.contains("Please provide a valid rating.").should("be.visible");
     cy.contains("Please provide a valid comment.").should("be.visible");
   });
@@ -110,15 +96,10 @@ describe("UC7 Create Feedback E2E test suite", ()=>{
   it("Submitting an invalid feedback with empty comment, UC7 Steps 17-18, 25-26", ()=>{
     cy.get("div[data-testid='past-shift-card']").first().click();
     cy.contains("button", "Review").first().click();
-    // Confirm modal loaded
     cy.get("p[class*='font-montserrat-b']").contains("Khu John").should("be.visible");
-    // Give valid rating
     cy.get("img[alt='Star 4']").click();
-    // Leave comment empty
     cy.get("textarea[name='comment']").clear();
-    // Submit
     cy.contains("button", "Rate").click();
-    // Assert validation
     cy.contains("Please provide a valid comment.").should("be.visible");
   });
 })
