@@ -43,3 +43,4 @@ docs/FinalizedDiagram.md
 /testing_notes
 src/test-setup.ts
 testcommands.md
+supabase/migrations/*

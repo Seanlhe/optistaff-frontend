@@ -1,6 +1,7 @@
 // Test setup for local Supabase testing
 import { createClient } from "@supabase/supabase-js";
 import { beforeAll, afterAll, beforeEach, afterEach } from "vitest";
+import { StatusEnum } from "./types/hooks";
 
 // Local Supabase configuration
 const supabaseUrl = "http://127.0.0.1:54321";
@@ -126,6 +127,36 @@ export const createTestJobSeekerWithPreferences = async (
   };
 };
 
+// Helper function to seed requried data
+export const seedRequiredData = async () => {
+  // Ensure job types exist
+  await ensureTestJobTypes();
+  await ensureStatusTypes();
+};
+
+export const ensureStatusTypes = async () => {
+  const { data: existingStatuses } = await testSupabase
+    .from("status")
+    .select("name")
+    .in("name", [...Object.values(StatusEnum)]);
+  const existingStatusNames = existingStatuses?.map((s) => s.name) || [];
+  const requiredStatuses = [...Object.values(StatusEnum)];
+  const missingStatuses = requiredStatuses.filter(
+    (status) => !existingStatusNames.includes(status),
+  );
+  if (missingStatuses.length > 0) {
+    const newStatuses = missingStatuses.map((statusName) => ({
+      name: statusName,
+    }));
+
+    const { error } = await testSupabase
+      .from("status")
+      .insert(newStatuses);
+
+    if (error) throw error;
+  }
+}
+
 // Helper function to ensure job types exist for testing
 export const ensureTestStatuses = async () => {
   // Check if basic status records exist
@@ -232,8 +263,21 @@ export const ensureTestJobTypes = async () => {
 };
 
 export const createTestClient = async (overrides = {}) => {
+  const testEmail = `test-${crypto.randomUUID()}@example.com`;
+  const testPassword = "testpassword123";
+
+  const { data: authData, error: authError } =
+    await testSupabaseAdmin.auth.admin.createUser({
+      email: testEmail,
+      password: testPassword,
+      email_confirm: true,
+    });
+
+  if (authError) throw authError;
+
+
   const defaultData = {
-    client_id: crypto.randomUUID(),
+    client_id: authData.user.id,
     company_name: "Test Company",
     first_name: "Test",
     last_name: "Client",
@@ -252,24 +296,28 @@ export const createTestClient = async (overrides = {}) => {
   return data;
 };
 
-export const createTestShift = async (clientId: string, overrides = {}) => {
+export const createTestShift = async (clientId: string) => {
   const defaultData = {
-    client_id: clientId,
-    title: "Test Shift",
-    description: "Test Description",
-    start_time: new Date().toISOString(),
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours later
-    pay_rate: 20.0,
+    p_employer_id: clientId,
+    job_title: "Test Shift",
     job_location: "Test Location",
+    postal_code: 123456,
+    job_description: "Test Description",
+    job_requirements: "Test Requirements",
+    job_type: "Waiter/Waitress", // Use a valid job type
+    pay_rate: 20.0,
+    break_duration: 1,
     staff_needed: 1,
-    submission_cycle: "PRIMARY",
-    break_duration: 30,
-    ...overrides,
+    p_start_time: new Date().toISOString(),
+    p_end_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours later
   };
 
-  const { data, error } = await testSupabase.rpc("create_shift", defaultData);
+  const { data, error } = await testSupabase.rpc("create_shift", {
+    ...defaultData
+  });
   if (error) throw error;
-  return { shift_id: data };
+  const { created_shift_id } = data[0];
+  return { shift_id: created_shift_id };
 };
 
 export const createTestAssignment = async (
@@ -280,15 +328,29 @@ export const createTestAssignment = async (
   const defaultData = {
     user_id: userId,
     shift_id: shiftId,
-    status: 5, // CONFIRMED
+    break_hours: 0.5,
     ...overrides,
   };
 
+  // 1) fetch the status_id from the status table
+  const { data: statusRow, error: statusErr } = await testSupabase
+    .from('status')
+    .select('status_id')
+    .eq('name', StatusEnum.Upcoming)
+    .single()
+  if (statusErr) throw statusErr
+
+  // 2) insert into assignments, using that status_id
   const { data, error } = await testSupabase
-    .from("assignments")
-    .insert(defaultData)
+    .from('assignments')
+    .insert(
+      {
+        ...defaultData,
+        status: statusRow.status_id, // Use the fetched status_id
+      }
+    )
     .select()
-    .single();
+    .single()
 
   if (error) throw error;
   return data;
