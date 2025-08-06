@@ -15,57 +15,70 @@ export const testSupabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 // Test data cleanup utilities
 export const cleanupTestData = async () => {
-  // Clean up in reverse dependency order
-  await testSupabase
-    .from("feedback")
-    .delete()
-    .neq("feedback_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("assignments")
-    .delete()
-    .neq("assignment_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("shifts")
-    .delete()
-    .neq("shift_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("availability")
-    .delete()
-    .neq("availability_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("preferences")
-    .delete()
-    .neq("preference_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("job_types")
-    .delete()
-    .neq("job_type_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("job_categories")
-    .delete()
-    .neq("category_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("job_seekers")
-    .delete()
-    .neq("user_id", "00000000-0000-0000-0000-000000000000");
-  await testSupabase
-    .from("clients")
-    .delete()
-    .neq("client_id", "00000000-0000-0000-0000-000000000000");
-
-  // Clean up auth users (use service role key for admin operations)
   try {
+    // First clean up auth users to trigger cascade deletions
     const { data: users } = await testSupabaseAdmin.auth.admin.listUsers();
     if (users?.users) {
       for (const user of users.users) {
-        if (user.email?.includes("test")) {
+        // Delete test users (broader pattern to catch all test emails)
+        if (user.email?.includes("test") || 
+            user.email?.includes("@test.com") || 
+            user.email?.includes("@company.com") ||
+            user.email?.includes("@example.com") ||
+            user.email?.includes("minimal@") ||
+            user.email?.includes("invaliddate@") ||
+            user.email?.includes("unknown@") ||
+            user.email?.includes("cascade@") ||
+            user.email?.includes("jobseeker@") ||
+            user.email?.includes("employer@")) {
           await testSupabaseAdmin.auth.admin.deleteUser(user.id);
         }
       }
     }
+
+    // Wait a moment for cascades to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Clean up remaining records in dependency order (just in case cascade didn't work)
+    await testSupabase
+      .from("feedback")
+      .delete()
+      .neq("feedback_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("assignments")
+      .delete()
+      .neq("assignment_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("shifts")
+      .delete()
+      .neq("shift_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("availability")
+      .delete()
+      .neq("availability_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("preferences")
+      .delete()
+      .neq("preference_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("job_types")
+      .delete()
+      .neq("job_type_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("job_categories")
+      .delete()
+      .neq("category_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("job_seekers")
+      .delete()
+      .neq("user_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("clients")
+      .delete()
+      .neq("client_id", "00000000-0000-0000-0000-000000000000");
   } catch (error) {
-    // Ignore cleanup errors
-    console.warn("Auth cleanup error:", error);
+    console.warn("Cleanup error:", error);
+    // Continue with test execution even if cleanup fails
   }
 };
 
