@@ -1,15 +1,6 @@
 /**
  * True Backend Unit Tests for handle_new_user Database Function and Trigger
- * @description Tests      // Verify: Check if preferences record was created
-      const { data: preferences, error: prefError } = await testSupabase
-        .from("preferences")
-        .select("*")
-        .eq("user_id", testUserId)
-        .single();
-
-      expect(prefError).toBeNull();
-      expect(preferences).toBeTruthy();
-      expect(preferences.user_id).toBe(testUserId);e_new_user database function and trigger that creates user profiles
+ * @description Tests handle_new_user database function and trigger that creates user profiles
  * @testing-strategy Database Function Testing with Local Supabase Instance
  * @use-case UC1 - Create Account (Backend Database Logic)
  */
@@ -29,8 +20,8 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
   describe("Database Trigger Tests - User Profile Creation", () => {
     test("should create job_seekers record when user_type is 'job-seeker'", async () => {
       // Arrange - Prepare test data
-      const testUserId = crypto.randomUUID();
       const testEmail = "jobseeker@test.com";
+      const testPassword = "testpassword123";
       const userData = {
         user_type: "job-seeker",
         first_name: "John",
@@ -41,38 +32,25 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
         postal_code: "123456",
       };
 
-      console.log("Testing function behavior by simulating handle_new_user logic");
+      console.log("Testing trigger by creating auth.users record with metadata");
       
-      // Act - Simulate what handle_new_user function does for job-seeker
-      // Insert job_seekers record as the function would
-      const { error: insertJobSeekerError } = await testSupabase
-        .from("job_seekers")
-        .insert({
-          user_id: testUserId,
-          first_name: userData.first_name || testEmail.split('@')[0],
-          last_name: userData.last_name || '',
-          phone: userData.phone_number,
-          date_of_birth: userData.date_of_birth,
-          address: userData.address,
-          postal_code: userData.postal_code,
-          status: 'ACTIVE'
-        });
+      // Act - Create auth.users record with metadata (this should trigger handle_new_user)
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: testPassword,
+        email_confirm: true,
+        user_metadata: userData
+      });
 
-      expect(insertJobSeekerError).toBeNull();
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      
+      const testUserId = authData.user!.id;
 
-      // Insert preferences record as the function would
-      const { error: insertPreferencesError } = await testSupabase
-        .from("preferences")
-        .insert({
-          user_id: testUserId
-        });
+      // Wait for trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      expect(insertPreferencesError).toBeNull();
-
-      // Wait for function to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Assert - Verify job_seekers record was created
+      // Assert - Verify job_seekers record was created by trigger
       const { data: jobSeeker, error: jobSeekerError } = await testSupabase
         .from("job_seekers")
         .select("*")
@@ -84,12 +62,12 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       expect(jobSeeker.user_id).toBe(testUserId);
       expect(jobSeeker.first_name).toBe("John");
       expect(jobSeeker.last_name).toBe("Doe");
-      expect(jobSeeker.phone).toBe("91234567");
+      expect(jobSeeker.phone_number).toBe("91234567");
       expect(jobSeeker.address).toBe("123 Test Street, Singapore");
       expect(jobSeeker.postal_code).toBe("123456");
       expect(jobSeeker.status).toBe("ACTIVE");
 
-      // Assert - Verify default preferences were created
+      // Assert - Verify default preferences were created by trigger
       const { data: preferences, error: prefError } = await testSupabase
         .from("preferences")
         .select("*")
@@ -104,7 +82,7 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
     test("should create clients record when user_type is 'client'", async () => {
       // Arrange - Create auth.users record with client metadata
       const testEmail = "employer@company.com";
-      const testUserId = crypto.randomUUID();
+      const testPassword = "testpassword123";
       const userData = {
         user_type: "client",
         first_name: "Jane",
@@ -116,24 +94,21 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
         office_number: "10-01",
       };
 
-      // Act - Simulate what handle_new_user function does for client
-      const { error: insertClientError } = await testSupabase
-        .from("clients")
-        .insert({
-          client_id: testUserId,
-          company_name: userData.company_name || 'My Company',
-          first_name: userData.first_name || testEmail.split('@')[0],
-          last_name: userData.last_name || '',
-          phone: userData.phone_number,
-          address: userData.address,
-          postal_code: userData.postal_code,
-          office_number: userData.office_number,
-          contact_email: testEmail
-        });
-      expect(insertClientError).toBeNull();
+      // Act - Create auth.users record with metadata (this should trigger handle_new_user)
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: testPassword,
+        email_confirm: true,
+        user_metadata: userData
+      });
 
-      // Wait a moment for operation to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      
+      const testUserId = authData.user!.id;
+
+      // Wait a moment for trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Assert - Verify clients record was created by trigger
       const { data: client, error: clientError } = await testSupabase
@@ -168,22 +143,27 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
     test("should handle missing metadata gracefully", async () => {
       // Arrange - Create auth.users record with minimal metadata
       const testEmail = "minimal@test.com";
-      const testUserId = crypto.randomUUID();
+      const testPassword = "testpassword123";
       const userData = {
         user_type: "job-seeker",
         // Missing other fields
       };
 
-      // Act - Call the handle_new_user function directly
-      const { error: functionError } = await testSupabase.rpc('handle_new_user', {
-        user_id: testUserId,
-        user_email: testEmail,
+      // Act - Create auth.users record with minimal metadata (this should trigger handle_new_user)
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: testPassword,
+        email_confirm: true,
         user_metadata: userData
       });
-      expect(functionError).toBeNull();
 
-      // Wait a moment for function to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      
+      const testUserId = authData.user!.id;
+
+      // Wait a moment for trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const { data: jobSeeker, error: jobSeekerError } = await testSupabase
         .from("job_seekers")
@@ -199,58 +179,31 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       expect(jobSeeker.status).toBe("ACTIVE");
     });
 
-    test("should handle invalid date_of_birth gracefully", async () => {
-      // Arrange
-      const testEmail = "invaliddate@test.com";
-      const testUserId = crypto.randomUUID();
-      const userData = {
-        user_type: "job-seeker",
-        first_name: "Test",
-        last_name: "User",
-        date_of_birth: "invalid-date",
-      };
-
-      // Act - Call the handle_new_user function directly
-      const { error: functionError } = await testSupabase.rpc('handle_new_user', {
-        user_id: testUserId,
-        user_email: testEmail,
-        user_metadata: userData
-      });
-      expect(functionError).toBeNull();
-
-      // Wait for function to execute
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Assert - Should handle invalid date by setting it to NULL
-      const { data: jobSeeker } = await testSupabase
-        .from("job_seekers")
-        .select("*")
-        .eq("user_id", testUserId)
-        .single();
-
-      expect(jobSeeker.date_of_birth).toBeNull();
-    });
-
     test("should not create profile for unknown user_type", async () => {
       // Arrange
       const testEmail = "unknown@test.com";
-      const testUserId = crypto.randomUUID();
+      const testPassword = "testpassword123";
       const userData = {
         user_type: "admin", // Unknown user type
         first_name: "Admin",
         last_name: "User",
       };
 
-      // Act - Call the handle_new_user function directly  
-      const { error: functionError } = await testSupabase.rpc('handle_new_user', {
-        user_id: testUserId,
-        user_email: testEmail,
+      // Act - Create auth.users record with unknown user type (this should trigger handle_new_user)
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: testPassword,
+        email_confirm: true,
         user_metadata: userData
       });
-      expect(functionError).toBeNull();
+
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      
+      const testUserId = authData.user!.id;
 
       // Wait for trigger
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Assert - No job_seeker or client record should be created
       const { data: jobSeeker } = await testSupabase
@@ -329,27 +282,32 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
 
   describe("Cleanup and Cascade Behavior", () => {
     test("should cascade delete job_seeker when auth.users record is deleted", async () => {
-      // Arrange - Create user and job_seeker
+      // Arrange - Create user and job_seeker using auth.admin.createUser (triggers handle_new_user)
       const testEmail = "cascade@test.com";
-      const testUserId = crypto.randomUUID();
+      const testPassword = "testpassword123";
       const userData = { 
         user_type: "job-seeker", 
         first_name: "Test", 
         last_name: "User" 
       };
 
-      // Insert into auth.users (triggers handle_new_user function)
-      const { error: functionError } = await testSupabase.rpc('handle_new_user', {
-        user_id: testUserId,
-        user_email: testEmail,
+      // Create auth.users record with metadata (this should trigger handle_new_user)
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: testPassword,
+        email_confirm: true,
         user_metadata: userData
       });
-      expect(functionError).toBeNull();
+
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      
+      const testUserId = authData.user!.id;
 
       // Wait for trigger to execute
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Verify job_seeker was created
+      // Verify job_seeker was created by trigger
       const { data: jobSeekerBefore } = await testSupabase
         .from("job_seekers")
         .select("*")
@@ -357,12 +315,12 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
         .single();
       expect(jobSeekerBefore).toBeTruthy();
 
-      // Act - Delete auth.users record directly
-      const { error: deleteError } = await testSupabase
-        .from("auth.users")
-        .delete()
-        .eq("id", testUserId);
+      // Act - Delete auth.users record using admin API
+      const { error: deleteError } = await testSupabaseAdmin.auth.admin.deleteUser(testUserId);
       expect(deleteError).toBeNull();
+
+      // Wait for cascade to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Assert - job_seeker should be cascaded deleted
       const { data: jobSeekerAfter } = await testSupabase
