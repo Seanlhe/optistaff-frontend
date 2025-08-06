@@ -36,15 +36,18 @@ sequenceDiagram
 
         %% Authentication with Supabase
         Controller->>+AuthUsers: auth.signUp(credentials, metadata)
-
-        %% Profile creation based on user type
+        
+        %% Database trigger automatically fired
+        Note over AuthUsers: handle_new_user() trigger AUTOMATICALLY executed
+        
+        %% Profile creation based on user type (via trigger)
         alt user_type === "job-seeker"
-            AuthUsers->>+JobSeekers: INSERT INTO job_seekers
+            AuthUsers->>+JobSeekers: INSERT INTO job_seekers (via trigger)
             JobSeekers-->>-AuthUsers: job_seeker_created
-            AuthUsers->>+Preferences: INSERT INTO preferences
+            AuthUsers->>+Preferences: INSERT INTO preferences (via trigger)
             Preferences-->>-AuthUsers: default_preferences_created
         else user_type === "employer"
-            AuthUsers->>+Clients: INSERT INTO clients
+            AuthUsers->>+Clients: INSERT INTO clients (via trigger)
             Clients-->>-AuthUsers: client_created
         end
 
@@ -98,9 +101,11 @@ sequenceDiagram
 
 ## Database Triggers and Functions
 
-- **handle_new_user()**: Automatically creates appropriate profile records based on user_type metadata
+- **handle_new_user()**: Database trigger that automatically executes when a new user is inserted into `auth.users` table via `supabase.auth.signUp()`
+- Automatically creates appropriate profile records based on user_type metadata
 - Ensures data consistency across related tables
 - Sets up default preferences for job seekers
+- **Trigger Timing**: Executes immediately after `auth.users` INSERT, before `auth.signUp()` returns response
 
 ## Use Case Compliance Verification
 

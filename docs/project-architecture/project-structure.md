@@ -190,8 +190,6 @@ optistaff-main/
 
 - **`LandingPage.tsx`**: Homepage with company showcase
 - **`Auth.tsx`**: Unified authentication page
-- **`Login.tsx`**: Dedicated login page
-- **`Signup.tsx`**: User registration page
 
 #### Layout Components
 

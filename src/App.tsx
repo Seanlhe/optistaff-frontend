@@ -2,8 +2,6 @@ import "./App.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LandingPage from "./pages/LandingPage";
-import Login from "./pages/Login";
-import SignUp from "./pages/Signup";
 import Auth from "./pages/Auth";
 import ClientLayout from "./pages/ClientLayout";
 import UploadJobs from "./pages/employer/UploadJobs";
@@ -36,8 +34,6 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
         <Route
           path="/employer"
           element={
