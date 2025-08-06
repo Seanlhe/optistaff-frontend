@@ -1,8 +1,8 @@
 // Unit tests for ClientShiftDetails component
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import ClientShiftDetails from "../../src/components/ClientShiftDetails";
-import { Shift } from "../../src/types/hooks";
+import ClientShiftDetails from "../../../src/components/ClientShiftDetails";
+import { Shift } from "../../../src/types/hooks";
 
 // Mock the dialog/modal functionality
 Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
@@ -87,7 +87,7 @@ describe("ClientShiftDetails", () => {
       expect(jobTitle).toBeTruthy();
     });
 
-    it("displays all shift information", () => {
+    it("displays all shift information, UC5 Step 2-3", () => {
       render(<ClientShiftDetails {...defaultProps} />);
 
       // Check for various pieces of shift information
@@ -146,68 +146,52 @@ describe("ClientShiftDetails", () => {
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it("shows confirmation dialog when Cancel button is clicked", () => {
-      // Mock window.confirm
-      const mockConfirm = vi.spyOn(window, "confirm").mockReturnValue(false);
-
-      render(<ClientShiftDetails {...defaultProps} />);
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      // Should call window.confirm
-      expect(mockConfirm).toHaveBeenCalledWith(
-        expect.stringContaining("Are you sure you want to cancel")
-      );
-
-      mockConfirm.mockRestore();
-    });
-
-    it("calls onCancel when cancellation is confirmed", async () => {
-      // Mock window.confirm to return true (confirmed)
-      const mockConfirm = vi.spyOn(window, "confirm").mockReturnValue(true);
-
+    it("calls onCancel when Cancel button is clicked, UC5 Step 5", async () => {
       render(<ClientShiftDetails {...defaultProps} />);
 
       const cancelButton = screen.getByText("Cancel");
       fireEvent.click(cancelButton);
 
       await waitFor(() => {
-        expect(mockOnCancel).toHaveBeenCalledTimes(1);
-        expect(mockOnCancel).toHaveBeenCalledWith(mockShift.shift_id);
+        expect(mockOnCancel).toHaveBeenCalledWith("shift-123");
+      });
+    });
+
+    it("does not call onCancel when onCancel prop is not provided", () => {
+      const propsWithoutCancel = {
+        ...defaultProps,
+        onCancel: undefined,
+      };
+
+      render(<ClientShiftDetails {...propsWithoutCancel} />);
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Should not call anything since onCancel is undefined
+      expect(mockOnCancel).not.toHaveBeenCalled();
+    });
+
+    it("shows cancelling state when cancel is in progress", async () => {
+      // Mock a delayed cancel function
+      mockOnCancel.mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 100))
+      );
+
+      render(<ClientShiftDetails {...defaultProps} />);
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Should show "Cancelling..." state
+      await waitFor(() => {
+        expect(screen.getByText("Cancelling...")).toBeTruthy();
       });
 
-      mockConfirm.mockRestore();
-    });
-
-    it("does not call onCancel when cancellation is declined", () => {
-      // Mock window.confirm to return false (declined)
-      const mockConfirm = vi.spyOn(window, "confirm").mockReturnValue(false);
-
-      render(<ClientShiftDetails {...defaultProps} />);
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      expect(mockOnCancel).not.toHaveBeenCalled();
-
-      mockConfirm.mockRestore();
-    });
-
-    it("closes confirmation dialog when declined", () => {
-      // Mock window.confirm to return false (declined)
-      const mockConfirm = vi.spyOn(window, "confirm").mockReturnValue(false);
-
-      render(<ClientShiftDetails {...defaultProps} />);
-
-      const cancelButton = screen.getByText("Cancel");
-      fireEvent.click(cancelButton);
-
-      // Confirm that window.confirm was called and returned false
-      expect(mockConfirm).toHaveBeenCalled();
-      expect(mockOnCancel).not.toHaveBeenCalled();
-
-      mockConfirm.mockRestore();
+      // Wait for cancel to complete
+      await waitFor(() => {
+        expect(screen.getByText("Cancel")).toBeTruthy();
+      });
     });
   });
 

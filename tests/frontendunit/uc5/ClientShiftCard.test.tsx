@@ -1,8 +1,8 @@
 // Unit tests for ClientShiftCard component
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import ClientShiftCard from "../../src/components/ClientShiftCard";
-import { Shift } from "../../src/types/hooks";
+import ClientShiftCard from "../../../src/components/ClientShiftCard";
+import { Shift } from "../../../src/types/hooks";
 
 // Mock date-fns to control date formatting in tests
 vi.mock("date-fns", () => ({

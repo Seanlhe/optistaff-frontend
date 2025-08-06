@@ -1,11 +1,11 @@
 // Unit tests for ClientCalendarDay component
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import ClientCalendarDay from "../../src/components/ClientCalendarDay";
-import { Shift } from "../../src/types/hooks";
+import ClientCalendarDay from "../../../src/components/ClientCalendarDay";
+import { Shift } from "../../../src/types/hooks";
 
 // Mock the ClientShiftCard component
-vi.mock("../../src/components/ClientShiftCard", () => ({
+vi.mock("../../../src/components/ClientShiftCard", () => ({
   default: ({ shiftData, onShiftClick, isSelected }: any) => (
     <div
       data-testid={`shift-card-${shiftData.shift_id}`}

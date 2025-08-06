@@ -1,37 +1,28 @@
-# UC5
-
+```mermaid
 sequenceDiagram
-actor Jobseeker as Jobseeker
-participant Dashboard as JSDashboard.tsx
-participant AssignmentCard as JobseekerAssignmentCard.tsx
-participant DetailModal as JobseekerAssignmentDetailModals.tsx
-participant useAssignments as useAssignments Hook
-participant Assignments as assignments
-participant JobSeekers as job_seekers
+    autonumber
+    actor Employer as Employer
+    participant ClientRoster.tsx
+    participant ClientShiftDetails.tsx
+    participant useShifts Hook
+    participant Shifts
+    participant Employee as Employee
 
-    %% View assignments
-    Jobseeker->>+Dashboard: navigate("/employee/dashboard")
-    Dashboard->>+useAssignments: fetchAssignments()
-    useAssignments->>+Assignments: get_assignments_by_jobseeker(user_id)
-    Assignments-->>-useAssignments: all_assignment_list
-    useAssignments-->>-Dashboard: assignments_data
+    Employer ->>+ ClientRoster.tsx: click on the job desired to cancel
+    ClientRoster.tsx ->>+ ClientShiftDetails.tsx: render ClientShiftDetails(shift)
 
-    Dashboard->>+AssignmentCard: render(assignment_cards)
-    AssignmentCard-->>-Dashboard: display(view_details_buttons)
-    Dashboard-->>-Jobseeker: display(dashboard_with_assignments)
+    ClientShiftDetails.tsx -->>- Employer: Display Shift Details
+    Employer ->>+ ClientShiftDetails.tsx: click(cancel_button)
+    ClientShiftDetails.tsx ->>+ useShifts Hook: updateShiftStatus(shiftId, status)
 
-    %% View assignment details first to access cancel
-    Jobseeker->>+Dashboard: click(view_details_button)
-    Dashboard->>+DetailModal: open(assignment_details_modal)
-    DetailModal-->>-Dashboard: display(assignment_details_with_cancel_button)
-    Dashboard-->>-Jobseeker: show(assignment_info_and_cancel_option)
+    useShifts Hook ->>+ Shifts: updateShiftStatus(shiftId, status)
 
-    %% Direct cancellation
-    Jobseeker->>+Dashboard: click(cancel_assignment_button)
-    Dashboard->>+DetailModal: handleCancelAssignment()
-    DetailModal->>+useAssignments: updateAssignmentStatus(assignment_id, "CancelByEmployee")
-    useAssignments->>+Assignments: update_assignment_status(assignment_id, "CancelByEmployee")
-    Assignments-->>-useAssignments: cancellation_success
-    useAssignments-->>-DetailModal: assignment_cancelled
-    DetailModal->>Dashboard: onClose() modal
-    Dashboard-->>-Jobseeker: display(updated_assignment_list)
+    Shifts -->>- useShifts Hook: response(updated_count)
+    useShifts Hook -->>- ClientShiftDetails.tsx: response(updated_count)
+    alt shift is successfully cancelled (updated count is not 0)
+    ClientShiftDetails.tsx -->> ClientRoster.tsx: Display Updated Shifts
+    ClientRoster.tsx -->>- Employer:Ï Display Updated Shifts
+    else shift is not successfully cancelled (updated count is 0)
+    ClientShiftDetails.tsx -->>- Employer: Show Error
+end
+```
