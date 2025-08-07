@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
-import PayoutWeeklySummaryCard from "../../src/components/PayoutWeeklySummaryCard";
+import PayoutWeeklySummaryCard from "../../../src/components/PayoutWeeklySummaryCard";
 
 // Mock the useAssignments hook
 const mockUseAssignments = {

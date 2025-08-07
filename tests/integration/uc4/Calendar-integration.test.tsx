@@ -11,10 +11,10 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 
 // Import component to test
-import Calendar from "../../src/components/Calendar";
+import Calendar from "../../../src/components/Calendar";
 
 // Import types
-import { UI_Event } from "../../src/types/hooks";
+import { UI_Event } from "../../../src/types/hooks";
 
 // Mock Supabase client - support chaining for availability operations
 vi.mock("../../src/integrations/supabase/client", () => {
@@ -197,7 +197,7 @@ describe("Calendar Component Integration Tests", () => {
   // Save Functionality Tests (2 tests)
   // ========================================
   describe("Save Functionality", () => {
-    // UC4 Step 4: Save availability to database - User can save calendar data
+    // UC4 Step 4: setting to database - User can save calendar data
     test("saves availability data to Supabase on Save button click", async () => {
       const user = userEvent.setup();
       

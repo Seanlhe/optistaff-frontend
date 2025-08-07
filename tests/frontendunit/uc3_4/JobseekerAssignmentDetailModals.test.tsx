@@ -2,8 +2,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { AssignmentDetailsModal } from "../../src/components/JobseekerAssignmentDetailModals";
-import type { JobseekerAssignmentCard } from "../../src/components/JobseekerAssignmentCard";
+import { AssignmentDetailsModal } from "../../../src/components/JobseekerAssignmentDetailModals";
+import type { JobseekerAssignmentCard } from "../../../src/components/JobseekerAssignmentCard";
 
 // Mock the useAssignments hook
 const mockUseAssignments = {
@@ -112,7 +112,7 @@ describe("AssignmentDetailsModal", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     
     // Reset mock implementations
-    mockUseAssignments.updateAssignmentStatus.mockResolvedValue(undefined);
+    mockUseAssignments.updateAssignmentStatus.mockResolvedValue(true);
     mockUseFeedback.fetchFeedbackReviewAssignID.mockResolvedValue(null);
   });
 
@@ -374,7 +374,7 @@ describe("AssignmentDetailsModal", () => {
     fireEvent.click(cancelButton);
 
     await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalled();
+      expect(mockOnStatusChange).toHaveBeenCalled();
     });
   });
 

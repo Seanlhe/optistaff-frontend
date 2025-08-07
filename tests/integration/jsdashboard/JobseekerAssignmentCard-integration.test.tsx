@@ -14,8 +14,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import component to test
-import { JobseekerAssignmentCard } from "../../src/components/JobseekerAssignmentCard";
-import type { JobseekerAssignmentCard as AssignmentCardType } from "../../src/components/JobseekerAssignmentCard";
+import { JobseekerAssignmentCard } from "../../../src/components/JobseekerAssignmentCard";
+import type { JobseekerAssignmentCard as AssignmentCardType } from "../../../src/components/JobseekerAssignmentCard";
 
 // Mock UI components to simplify rendering but keep behavior
 vi.mock("../../src/components/ui/button", () => ({

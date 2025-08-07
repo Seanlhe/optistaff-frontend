@@ -11,12 +11,12 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 
 // Import components to test
-import PreferencesMaximum from "../../src/components/PreferencesMaximum";
-import PreferencesPay from "../../src/components/PreferencesPay";
-import PreferencesJobType from "../../src/components/PreferencesJobType";
+import PreferencesMaximum from "../../../src/components/PreferencesMaximum";
+import PreferencesPay from "../../../src/components/PreferencesPay";
+import PreferencesJobType from "../../../src/components/PreferencesJobType";
 
 // Import types
-import { PreferencesFormData } from "../../src/types/hooks";
+import { PreferencesFormData } from "../../../src/types/hooks";
 
 // Mock only Supabase for useJobTypes hook - need to support chaining
 vi.mock("../../src/integrations/supabase/client", () => {

@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { PreferenceJobType } from "../../src/components/PreferencesJobType";
-import { useJobTypes } from "../../src/hooks/useJobTypes";
-import { PreferencesFormData, JobTypesByCategory } from "../../src/types/hooks";
+import { PreferenceJobType } from "../../../src/components/PreferencesJobType";
+import { useJobTypes } from "../../../src/hooks/useJobTypes";
+import { PreferencesFormData, JobTypesByCategory } from "../../../src/types/hooks";
 
 vi.mock("../../src/hooks/useJobTypes");
 

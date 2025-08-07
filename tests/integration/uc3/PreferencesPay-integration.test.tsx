@@ -14,10 +14,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import component to test
-import PreferencesPay from "../../src/components/PreferencesPay";
+import PreferencesPay from "../../../src/components/PreferencesPay";
 
 // Import types
-import { PreferencesFormData } from "../../src/types/hooks";
+import { PreferencesFormData } from "../../../src/types/hooks";
 
 describe("PreferencesPay Integration Tests", () => {
   let mockFormData: PreferencesFormData;

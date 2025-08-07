@@ -14,7 +14,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import component to test
-import PreferencesForm from "../../src/components/PreferencesForm";
+import PreferencesForm from "../../../src/components/PreferencesForm";
 
 // Simple mock setup to avoid infinite loops
 const mockSavePreferences = vi.fn();

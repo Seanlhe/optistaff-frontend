@@ -14,10 +14,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import component to test
-import PreferencesJobType from "../../src/components/PreferencesJobType";
+import PreferencesJobType from "../../../src/components/PreferencesJobType";
 
 // Import types
-import { PreferencesFormData } from "../../src/types/hooks";
+import { PreferencesFormData } from "../../../src/types/hooks";
 
 // Mock only Supabase client with method chaining for job types data
 vi.mock("../../src/integrations/supabase/client", () => {

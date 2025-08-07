@@ -2,9 +2,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { TemplateSelectDialog } from "../../src/components/TemplateSelectDialog";
-import type { TemplateSelectDialogProps } from "../../src/types/components";
-import type { UI_Event } from "../../src/types/hooks";
+import { TemplateSelectDialog } from "../../../src/components/TemplateSelectDialog";
+import type { TemplateSelectDialogProps } from "../../../src/types/components";
+import type { UI_Event } from "../../../src/types/hooks";
 
 // Mock the useAvailabilityTemplate hook
 const mockUseAvailabilityTemplate = {
