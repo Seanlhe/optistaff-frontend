@@ -93,7 +93,7 @@ describe("TemplateSelectDialog", () => {
 
   // Happy Path Scenarios
   describe("Happy Path Scenarios", () => {
-    it("renders modal when isOpen is true", () => {
+    it("TC-UC4-U10: renders modal when isOpen is true", () => {
       render(<TemplateSelectDialog {...defaultProps} />);
 
       expect(screen.getByRole("heading", { name: "Templates" })).toBeTruthy();
@@ -101,7 +101,7 @@ describe("TemplateSelectDialog", () => {
       expect(screen.getByTestId("x-icon")).toBeTruthy();
     });
 
-    it("calls fetchAllTemplates when modal opens", async () => {
+    it("TC-UC4-U10: calls fetchAllTemplates when modal opens", async () => {
       // UC4 Step 10: Calendar calls useAvailabilityTemplate.fetchAllTemplates()
       render(<TemplateSelectDialog {...defaultProps} />);
 
@@ -111,7 +111,7 @@ describe("TemplateSelectDialog", () => {
       });
     });
 
-    it("displays templates when available", () => {
+    it("TC-UC4-U10: displays templates when available", () => {
       mockUseAvailabilityTemplate.templates = mockTemplates;
       
       render(<TemplateSelectDialog {...defaultProps} />);
@@ -121,7 +121,7 @@ describe("TemplateSelectDialog", () => {
       expect(screen.getByText("Weekend Template")).toBeTruthy();
     });
 
-    it("displays formatted creation dates", () => {
+    it("TC-UC4-U10: displays formatted creation dates", () => {
       mockUseAvailabilityTemplate.templates = mockTemplates;
       
       render(<TemplateSelectDialog {...defaultProps} />);
@@ -131,7 +131,7 @@ describe("TemplateSelectDialog", () => {
       expect(screen.getByText(/Created: 1\/2\/2024|Created: 01\/02\/2024/)).toBeTruthy();
     });
 
-    it("calls onSelect when Use button is clicked", () => {
+    it("TC-UC4-U15: calls onSelect when Use button is clicked", () => {
       // UC4 Step 15: Jobseeker selects template from available options
       mockUseAvailabilityTemplate.templates = mockTemplates;
       
@@ -144,7 +144,7 @@ describe("TemplateSelectDialog", () => {
       expect(mockOnSelect).toHaveBeenCalledWith("template-1");
     });
 
-    it("calls onDelete when Delete button is clicked", () => {
+    it("TC-UC4-U10: calls onDelete when Delete button is clicked", () => {
       mockUseAvailabilityTemplate.templates = mockTemplates;
       
       render(<TemplateSelectDialog {...defaultProps} />);
@@ -155,7 +155,7 @@ describe("TemplateSelectDialog", () => {
       expect(mockOnDelete).toHaveBeenCalledWith("template-2");
     });
 
-    it("calls onSaveTemplate when Save as New Template button is clicked", () => {
+    it("TC-UC4-U25: calls onSaveTemplate when Save as New Template button is clicked", () => {
       // UC4 Step 25: Jobseeker clicks save_as_template button to save current schedule
       render(<TemplateSelectDialog {...defaultProps} />);
 
@@ -166,7 +166,7 @@ describe("TemplateSelectDialog", () => {
       expect(mockOnSaveTemplate).toHaveBeenCalled();
     });
 
-    it("calls onClose when X button is clicked", () => {
+    it("TC-UC4-U10: calls onClose when X button is clicked", () => {
       render(<TemplateSelectDialog {...defaultProps} />);
 
       const xButton = screen.getByTestId("x-icon").parentElement;

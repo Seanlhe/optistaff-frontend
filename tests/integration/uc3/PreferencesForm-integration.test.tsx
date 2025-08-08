@@ -138,8 +138,8 @@ describe("PreferencesForm Integration Tests", () => {
   // Form Loading & Initialization Tests (2 tests)
   // ========================================
   describe("Form Loading & Initialization", () => {
-    // UC3 Step 1: Navigate to preferences - Form loads with existing preferences data
-    test("loads and displays existing preferences data", async () => {
+    // TC-UC3-I1-14: Navigate to preferences - Form loads with existing preferences data
+    test("TC-UC3-I1-14: loads and displays existing preferences data", async () => {
       render(<PreferencesForm />);
 
       // Wait for form to initialize and load data
@@ -163,8 +163,8 @@ describe("PreferencesForm Integration Tests", () => {
       expect(saveButton).not.toHaveProperty("disabled", true);
     });
 
-    // UC3 Step 2: Fetch current preferences - Form initializes with default values when no preferences exist
-    test("initializes with default values when no existing preferences", async () => {
+    // TC-UC3-I3-6: Fetch current preferences - Form initializes with default values when no preferences exist
+    test("TC-UC3-I3-6: initializes with default values when no existing preferences", async () => {
       // Mock empty preferences response
       mockGetFormData.mockReturnValue(null);
 
@@ -186,8 +186,8 @@ describe("PreferencesForm Integration Tests", () => {
   // Form Validation Tests (2 tests)
   // ========================================
   describe("Form Validation", () => {
-    // UC3 Step 3: Update preferences values - Form successfully saves when validation passes
-    test("validates and saves form when data is valid", async () => {
+    // TC-UC3-I15-18: Update preferences values - Form successfully saves when validation passes
+    test("TC-UC3-I15-18: validates and saves form when data is valid", async () => {
       const user = userEvent.setup();
       
       render(<PreferencesForm />);
@@ -219,8 +219,8 @@ describe("PreferencesForm Integration Tests", () => {
       });
     });
 
-    // UC3 Step 4: Validate job types - Form shows error when validation fails
-    test("displays error message when save fails", async () => {
+    // TC-UC3-I16-17: Validate job types - Form shows error when validation fails
+    test("TC-UC3-I16-17: displays error message when save fails", async () => {
       const user = userEvent.setup();
       
       // Mock save failure
@@ -251,8 +251,8 @@ describe("PreferencesForm Integration Tests", () => {
   // Save Operations Tests (2 tests)
   // ========================================
   describe("Save Operations", () => {
-    // UC3 Step 5: Save preferences to database - User successfully saves preferences with updated form data
-    test("successfully saves complete preferences form", async () => {
+    // TC-UC3-I15-18: Save preferences to database - User successfully saves preferences with updated form data
+    test("TC-UC3-I15-18: successfully saves complete preferences form", async () => {
       const user = userEvent.setup();
       
       render(<PreferencesForm />);
@@ -294,8 +294,8 @@ describe("PreferencesForm Integration Tests", () => {
       });
     });
 
-    // UC3 Step 6: Display success message - Form shows temporary success message that disappears
-    test("shows success message that automatically disappears", async () => {
+    // TC-UC3-I18: Display success message - Form shows temporary success message that disappears
+    test("TC-UC3-I18: shows success message that automatically disappears", async () => {
       const user = userEvent.setup();
       
       render(<PreferencesForm />);
@@ -325,8 +325,8 @@ describe("PreferencesForm Integration Tests", () => {
   // Child Component Integration Tests (2 tests)
   // ========================================
   describe("Child Component Integration", () => {
-    // UC3 Step 3: Update form preferences data - Changes in child components update parent form state
-    test("integrates child component changes with parent form state", async () => {
+    // TC-UC3-I15-16: Update form preferences data - Changes in child components update parent form state
+    test("TC-UC3-I15-16: integrates child component changes with parent form state", async () => {
       const user = userEvent.setup();
       
       render(<PreferencesForm />);
@@ -356,8 +356,8 @@ describe("PreferencesForm Integration Tests", () => {
       });
     });
 
-    // UC3 Step 4: Validate job types against database - Form handles multiple child component interactions
-    test("handles multiple child component interactions", async () => {
+    // TC-UC3-I8-11,15-16: Validate job types against database - Form handles multiple child component interactions
+    test("TC-UC3-I8-11,15-16: handles multiple child component interactions", async () => {
       const user = userEvent.setup();
       
       render(<PreferencesForm />);

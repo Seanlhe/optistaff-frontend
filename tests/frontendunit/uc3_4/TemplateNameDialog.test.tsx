@@ -35,7 +35,7 @@ describe("TemplateNameDialog", () => {
 
   // Happy Path Scenarios
   describe("Happy Path Scenarios", () => {
-    it("renders modal when isOpen is true", () => {
+    it("TC-UC4-U26: renders modal when isOpen is true", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       expect(screen.getByRole("heading", { name: "Save Template" })).toBeTruthy();
@@ -45,7 +45,7 @@ describe("TemplateNameDialog", () => {
       expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
     });
 
-    it("allows user to enter template name", () => {
+    it("TC-UC4-U26: allows user to enter template name", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name") as HTMLInputElement;
@@ -54,7 +54,7 @@ describe("TemplateNameDialog", () => {
       expect(input.value).toBe("My Template");
     });
 
-    it("calls onSave with trimmed template name when form is submitted", () => {
+    it("TC-UC4-U27: calls onSave with trimmed template name when form is submitted", () => {
       // UC4 Step 26: Calendar displays template_name_form for user input
       render(<TemplateNameDialog {...defaultProps} />);
 
@@ -70,7 +70,7 @@ describe("TemplateNameDialog", () => {
       expect(mockOnSave).toHaveBeenCalledWith("My Template");
     });
 
-    it("calls onSave when form is submitted via Enter key", () => {
+    it("TC-UC4-U27: calls onSave when form is submitted via Enter key", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name");
@@ -83,7 +83,7 @@ describe("TemplateNameDialog", () => {
       expect(mockOnSave).toHaveBeenCalledWith("Test Template");
     });
 
-    it("clears input field after successful save", () => {
+    it("TC-UC4-U27: clears input field after successful save", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name") as HTMLInputElement;
@@ -96,7 +96,7 @@ describe("TemplateNameDialog", () => {
       expect(input.value).toBe("");
     });
 
-    it("calls onClose when Cancel button is clicked", () => {
+    it("TC-UC4-U26: calls onClose when Cancel button is clicked", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
@@ -105,7 +105,7 @@ describe("TemplateNameDialog", () => {
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it("calls onClose when X button is clicked", () => {
+    it("TC-UC4-U26: calls onClose when X button is clicked", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const xButton = screen.getByTestId("x-icon").parentElement;
@@ -114,7 +114,7 @@ describe("TemplateNameDialog", () => {
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    it("focuses on input field when modal opens", () => {
+    it("TC-UC4-U26: focuses on input field when modal opens", () => {
       render(<TemplateNameDialog {...defaultProps} />);
 
       const input = screen.getByLabelText("Template Name");

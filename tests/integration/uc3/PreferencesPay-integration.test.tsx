@@ -44,8 +44,8 @@ describe("PreferencesPay Integration Tests", () => {
   // Component Rendering & Initialization Tests (1 test)
   // ========================================
   describe("Component Rendering & Initialization", () => {
-    // UC: Component displays current pay settings from form data
-    test("renders with correct initial values from form data", () => {
+    // TC-UC3-I6,13: Component displays current pay settings from form data
+    test("TC-UC3-I6,13: renders with correct initial values from form data", () => {
       render(
         <PreferencesPay 
           formData={mockFormData} 
@@ -80,8 +80,8 @@ describe("PreferencesPay Integration Tests", () => {
   // Pay Rate Slider Interaction Tests (2 tests)
   // ========================================
   describe("Pay Rate Slider Interaction", () => {
-    // UC: User adjusts pay rate using slider and form data is updated
-    test("updates pay rate when slider value changes", () => {
+    // TC-UC3-I15: User adjusts pay rate using slider and form data is updated
+    test("TC-UC3-I15: updates pay rate when slider value changes", () => {
       render(
         <PreferencesPay 
           formData={mockFormData} 
@@ -106,8 +106,8 @@ describe("PreferencesPay Integration Tests", () => {
       expect(mockSetFormData).toHaveBeenCalledTimes(1);
     });
 
-    // UC: User sets minimum pay rate boundary value
-    test("handles minimum and maximum pay rate values correctly", () => {
+    // TC-UC3-I15: User sets minimum pay rate boundary value
+    test("TC-UC3-I15: handles minimum and maximum pay rate values correctly", () => {
       render(
         <PreferencesPay 
           formData={mockFormData} 
@@ -140,8 +140,8 @@ describe("PreferencesPay Integration Tests", () => {
   // Consider Lower Rate Checkbox Tests (2 tests)
   // ========================================
   describe("Consider Lower Rate Checkbox", () => {
-    // UC: User toggles "consider lower rate" checkbox and form data is updated
-    test("updates consider lower rate when checkbox is clicked", async () => {
+    // TC-UC3-I15: User toggles "consider lower rate" checkbox and form data is updated
+    test("TC-UC3-I15: updates consider lower rate when checkbox is clicked", async () => {
       const user = userEvent.setup();
       
       render(
@@ -169,8 +169,8 @@ describe("PreferencesPay Integration Tests", () => {
       expect(mockSetFormData).toHaveBeenCalledTimes(1);
     });
 
-    // UC: User can uncheck "consider lower rate" if it was previously enabled
-    test("can toggle consider lower rate off when initially checked", async () => {
+    // TC-UC3-I15: User can uncheck "consider lower rate" if it was previously enabled
+    test("TC-UC3-I15: can toggle consider lower rate off when initially checked", async () => {
       const user = userEvent.setup();
       
       // Setup form data with consider lower rate already enabled
@@ -207,8 +207,8 @@ describe("PreferencesPay Integration Tests", () => {
   // Integration State Management Tests (1 test)
   // ========================================
   describe("Integration State Management", () => {
-    // UC: User makes multiple changes and each updates form data correctly
-    test("handles multiple sequential changes correctly", async () => {
+    // TC-UC3-I15: User makes multiple changes and each updates form data correctly
+    test("TC-UC3-I15: handles multiple sequential changes correctly", async () => {
       const user = userEvent.setup();
       
       render(

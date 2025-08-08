@@ -1,0 +1,56 @@
+{
+  "emptyPreferences": {
+    "data": null,
+    "success": true
+  },
+  "existingPreferences": {
+    "data": {
+      "id": "test-pref-id",
+      "user_id": "test-user-id",
+      "payRate": 25,
+      "considerLowerRate": true,
+      "maxHoursPerWeek": 40,
+      "maxHoursPerShift": 8,
+      "maxTravelKm": 15,
+      "selectedJobNames": ["Cashier", "Server"],
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    },
+    "success": true
+  },
+  "jobTypes": {
+    "data": [
+      {
+        "id": 1,
+        "name": "Cashier",
+        "category": "Retail",
+        "description": "Handle customer transactions"
+      },
+      {
+        "id": 2,
+        "name": "Server",
+        "category": "Food Service",
+        "description": "Serve customers in restaurant"
+      },
+      {
+        "id": 3,
+        "name": "Stock Clerk",
+        "category": "Retail",
+        "description": "Manage inventory and stock"
+      },
+      {
+        "id": 4,
+        "name": "Barista",
+        "category": "Food Service",
+        "description": "Prepare coffee and beverages"
+      },
+      {
+        "id": 5,
+        "name": "Sales Associate",
+        "category": "Retail",
+        "description": "Assist customers with purchases"
+      }
+    ],
+    "success": true
+  }
+}

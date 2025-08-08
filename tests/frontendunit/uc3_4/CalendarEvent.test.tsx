@@ -44,7 +44,7 @@ describe("CalendarEvent", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders correctly with event time display", () => {
+  it("TC-UC4-U22: renders correctly with event time display", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -57,7 +57,7 @@ describe("CalendarEvent", () => {
     expect(screen.getByText("10:00 - 12:00")).toBeTruthy();
   });
 
-  it("calculates correct positioning and height based on event times", () => {
+  it("TC-UC4-U22: calculates correct positioning and height based on event times", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -75,7 +75,7 @@ describe("CalendarEvent", () => {
     expect(eventElement?.style.height).toBe("96px");
   });
 
-  it("applies correct CSS classes for unselected state", () => {
+  it("TC-UC4-U22: applies correct CSS classes for unselected state", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -92,7 +92,7 @@ describe("CalendarEvent", () => {
     expect(eventElement?.className).toContain("cursor-grab");
   });
 
-  it("toggles selection state when clicked", () => {
+  it("TC-UC4-U22: toggles selection state when clicked", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -116,7 +116,7 @@ describe("CalendarEvent", () => {
     expect(eventElement.className).not.toContain("bg-primary-blue/40");
   });
 
-  it("handles focus and blur events correctly", () => {
+  it("TC-UC4-U22: handles focus and blur events correctly", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -137,7 +137,7 @@ describe("CalendarEvent", () => {
     expect(eventElement.className).toContain("bg-primary-blue/40");
   });
 
-  it("deletes event on double-click", () => {
+  it("TC-UC4-U22: deletes event on double-click", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -154,7 +154,7 @@ describe("CalendarEvent", () => {
     expect(mockOnDelete).toHaveBeenCalledWith("test-event-1");
   });
 
-  it("deletes event on keyboard Delete key when selected", async () => {
+  it("TC-UC4-U22: deletes event on keyboard Delete key when selected", async () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -175,7 +175,7 @@ describe("CalendarEvent", () => {
     expect(mockOnDelete).toHaveBeenCalledWith("test-event-1");
   });
 
-  it("deletes event on keyboard Backspace key when selected", async () => {
+  it("TC-UC4-U22: deletes event on keyboard Backspace key when selected", async () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -196,7 +196,7 @@ describe("CalendarEvent", () => {
     expect(mockOnDelete).toHaveBeenCalledWith("test-event-1");
   });
 
-  it("does not delete on keyboard press when not selected", () => {
+  it("TC-UC4-U22: does not delete on keyboard press when not selected", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -211,7 +211,7 @@ describe("CalendarEvent", () => {
     expect(mockOnDelete).not.toHaveBeenCalled();
   });
 
-  it("shows resize handle on hover", () => {
+  it("TC-UC4-U22: shows resize handle on hover", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -229,7 +229,7 @@ describe("CalendarEvent", () => {
     expect(resizeHandle?.className).toContain("hover:opacity-100");
   });
 
-  it("initiates dragging state when mouse down", () => {
+  it("TC-UC4-U22: initiates dragging state when mouse down", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -248,7 +248,7 @@ describe("CalendarEvent", () => {
     expect(eventElement.className).toContain("cursor-grabbing");
   });
 
-  it("handles dragging with mouse move events", () => {
+  it("TC-UC4-U22: handles dragging with mouse move events", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -276,7 +276,7 @@ describe("CalendarEvent", () => {
     expect(eventElement.className).not.toContain("opacity-50");
   });
 
-  it("handles horizontal dragging to move between days", () => {
+  it("TC-UC4-U22: handles horizontal dragging to move between days", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -300,7 +300,7 @@ describe("CalendarEvent", () => {
     fireEvent.mouseUp(document);
   });
 
-  it("handles resize functionality", () => {
+  it("TC-UC4-U22: handles resize functionality", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -328,7 +328,7 @@ describe("CalendarEvent", () => {
     fireEvent.mouseUp(document);
   });
 
-  it("prevents event propagation on resize handle click", () => {
+  it("TC-UC4-U22: prevents event propagation on resize handle click", () => {
     render(
       <CalendarEvent
         event={mockEvent}
@@ -355,7 +355,7 @@ describe("CalendarEvent", () => {
     expect(eventElement.className).not.toContain("opacity-50");
   });
 
-  it("handles events with different durations correctly", () => {
+  it("TC-UC4-U22: handles events with different durations correctly", () => {
     const shortEvent = createMockEvent({
       startTime: new Date("2024-01-15T10:00:00"),
       endTime: new Date("2024-01-15T10:30:00"), // 30 minutes
@@ -375,7 +375,7 @@ describe("CalendarEvent", () => {
     expect(eventElement?.style.height).toBe("24px");
   });
 
-  it("handles events at different times of day correctly", () => {
+  it("TC-UC4-U22: handles events at different times of day correctly", () => {
     const eveningEvent = createMockEvent({
       startTime: new Date("2024-01-15T18:00:00"),
       endTime: new Date("2024-01-15T20:00:00"),
@@ -395,7 +395,7 @@ describe("CalendarEvent", () => {
     expect(eventElement?.style.top).toBe("864px");
   });
 
-  it("handles events that span minutes correctly", () => {
+  it("TC-UC4-U22: handles events that span minutes correctly", () => {
     const preciseEvent = createMockEvent({
       startTime: new Date("2024-01-15T10:15:00"),
       endTime: new Date("2024-01-15T11:45:00"),
@@ -418,7 +418,7 @@ describe("CalendarEvent", () => {
     expect(eventElement?.style.height).toBe("72px");
   });
 
-  it("sets correct z-index when dragging", () => {
+  it("TC-UC4-U22: sets correct z-index when dragging", () => {
     render(
       <CalendarEvent
         event={mockEvent}

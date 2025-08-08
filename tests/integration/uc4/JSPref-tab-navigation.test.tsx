@@ -30,8 +30,8 @@ describe("JSPref Tab Navigation Tests", () => {
   // Tab Navigation Tests (3 tests)
   // ========================================
   describe("Tab Navigation", () => {
-    // UC3 Step 1: Navigate to preferences - User sees PreferencesForm tab active by default
-    test("renders with PreferencesForm tab active by default", () => {
+    // TC-UC3-I1: Navigate to preferences - User sees PreferencesForm tab active by default
+    test("TC-UC3-I1: renders with PreferencesForm tab active by default", () => {
       render(<JSPref />);
 
       // Verify both tab buttons are present
@@ -52,8 +52,8 @@ describe("JSPref Tab Navigation Tests", () => {
       expect(screen.queryByTestId("availability-page")).toBeNull();
     });
 
-    // UC4 Step 1: Click availability tab - User can switch to Availability tab
-    test("switches to Availability tab when clicked", async () => {
+    // TC-UC4-I1: Click availability tab - User can switch to Availability tab
+    test("TC-UC4-I1: switches to Availability tab when clicked", async () => {
       const user = userEvent.setup();
       render(<JSPref />);
 
@@ -73,8 +73,8 @@ describe("JSPref Tab Navigation Tests", () => {
       expect(screen.queryByTestId("preferences-page")).toBeNull();
     });
 
-    // UC3 Step 2: Navigate back to preferences - User can switch back to PreferencesForm tab
-    test("switches back to PreferencesForm tab when clicked", async () => {
+    // TC-UC3-I1: Navigate back to preferences - User can switch back to PreferencesForm tab
+    test("TC-UC3-I1: switches back to PreferencesForm tab when clicked", async () => {
       const user = userEvent.setup();
       render(<JSPref />);
 
@@ -105,8 +105,8 @@ describe("JSPref Tab Navigation Tests", () => {
   // Error Handling Test (1 test)
   // ========================================
   describe("Error Handling", () => {
-    // UC3 & UC4 Error Handling: System handles tab switching errors gracefully
-    test("handles tab switching errors gracefully", () => {
+    // TC-UC3-I1,UC4-I1: Error Handling - System handles tab switching errors gracefully
+    test("TC-UC3-I1,UC4-I1: handles tab switching errors gracefully", () => {
       render(<JSPref />);
 
       // Verify component renders without crashing
