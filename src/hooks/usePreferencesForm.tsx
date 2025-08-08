@@ -52,6 +52,56 @@ export const usePreferencesForm = () => {
     }
   }, [fetchPreferences]);
 
+  // Helper function to convert UUIDs to job names if needed
+  const convertUuidsToNames = useCallback(
+    async (jobIdentifiers: string[]): Promise<string[]> => {
+      if (!jobIdentifiers || jobIdentifiers.length === 0) {
+        return [];
+      }
+
+      // Check if any of the identifiers are UUIDs (contains hyphens and is 36 chars)
+      const hasUuids = jobIdentifiers.some(
+        (id) => id.includes("-") && id.length === 36
+      );
+
+      if (!hasUuids) {
+        // Already job names, return as is
+        return jobIdentifiers;
+      }
+
+      try {
+        // Convert UUIDs to job names
+        const { data, error } = await supabase
+          .from("job_types")
+          .select("job_type_id, type_name")
+          .in("job_type_id", jobIdentifiers)
+          .eq("is_active", true);
+
+        if (error) {
+          console.warn("Failed to convert UUIDs to names:", error.message);
+          return jobIdentifiers; // Return original if conversion fails
+        }
+
+        // Create a map of UUID -> name
+        const uuidToNameMap = new Map(
+          data.map((item) => [item.job_type_id, item.type_name])
+        );
+
+        // Convert identifiers, keeping names as-is and converting UUIDs
+        return jobIdentifiers.map((id) => {
+          if (id.includes("-") && id.length === 36) {
+            return uuidToNameMap.get(id) || id; // Convert UUID to name, fallback to original
+          }
+          return id; // Keep job names as-is
+        });
+      } catch (err) {
+        console.warn("Error converting UUIDs to names:", err);
+        return jobIdentifiers; // Return original if conversion fails
+      }
+    },
+    []
+  );
+
   // Helper function for batch job name validation using database function
   const validateJobNames = useCallback(
     async (
@@ -63,9 +113,12 @@ export const usePreferencesForm = () => {
 
       setValidating(true);
       try {
+        // Convert UUIDs to names if needed before validation
+        const convertedJobNames = await convertUuidsToNames(jobNames);
+        
         const { data: isValid, error } = await supabase.rpc(
           "validate_job_names",
-          { job_names: jobNames },
+          { job_names: convertedJobNames },
         );
 
         if (error) {
@@ -79,13 +132,16 @@ export const usePreferencesForm = () => {
         setValidating(false);
       }
     },
-    [],
+    [convertUuidsToNames],
   );
 
   // Helper function for saving preferences with database function and fallback
   const savePreferencesWithFallback = useCallback(
     async (formData: PreferencesFormData): Promise<UserPreferences | null> => {
       const USE_DATABASE_FUNCTION = true; // Feature flag
+
+      // Convert UUIDs to names before saving
+      const convertedJobNames = await convertUuidsToNames(formData.selectedJobNames);
 
       // Try database function first
       if (USE_DATABASE_FUNCTION) {
@@ -97,7 +153,7 @@ export const usePreferencesForm = () => {
               p_target_user_id: user?.id,
               p_min_pay_rate: formData.payRate,
               p_max_travel_km: formData.maxTravelKm,
-              p_desired_roles: formData.selectedJobNames,
+              p_desired_roles: convertedJobNames, // Use converted names
               p_max_hours_per_week: formData.maxHoursPerWeek,
               p_max_hours_per_shift: formData.maxHoursPerShift,
               p_consider_lower_rate: formData.considerLowerRate,
@@ -136,7 +192,7 @@ export const usePreferencesForm = () => {
         user_id: user?.id || "",
         min_pay_rate: formData.payRate,
         max_travel_km: formData.maxTravelKm,
-        desired_roles: formData.selectedJobNames,
+        desired_roles: convertedJobNames, // Use converted names
         max_hours_per_week: formData.maxHoursPerWeek,
         max_hours_per_shift: formData.maxHoursPerShift,
         consider_lower_rate: formData.considerLowerRate,
@@ -157,12 +213,15 @@ export const usePreferencesForm = () => {
       console.log("✅ Direct upsert succeeded");
       return data;
     },
-    [user?.id, revertOptimisticUpdate],
+    [user?.id, revertOptimisticUpdate, convertUuidsToNames],
   );
 
   // Convert preferences to form data for frontend
-  const getFormData = useCallback((): PreferencesFormData | null => {
+  const getFormData = useCallback(async (): Promise<PreferencesFormData | null> => {
     if (!preferences) return null;
+
+    // Convert UUIDs to names if needed for display
+    const convertedJobNames = await convertUuidsToNames(preferences.desired_roles);
 
     return {
       payRate: preferences.min_pay_rate,
@@ -170,12 +229,12 @@ export const usePreferencesForm = () => {
       maxHoursPerWeek: preferences.max_hours_per_week,
       maxHoursPerShift: preferences.max_hours_per_shift,
       maxTravelKm: preferences.max_travel_km,
-      selectedJobNames: preferences.desired_roles,
+      selectedJobNames: convertedJobNames, // Use converted names
       // Include location data for map display
       homeLocation: homeLocation || undefined,
       homeAddress: homeAddress || undefined,
     };
-  }, [preferences, homeLocation, homeAddress]);
+  }, [preferences, homeLocation, homeAddress, convertUuidsToNames]);
 
   // Save preferences with optimistic updates and form-specific logic
   const savePreferences = useCallback(
@@ -185,12 +244,15 @@ export const usePreferencesForm = () => {
         return false;
       }
 
-      // Validate preferences before saving
+      // Convert UUIDs to names first
+      const convertedJobNames = await convertUuidsToNames(formData.selectedJobNames);
+
+      // Validate preferences before saving (using converted names)
       const tempPreferences: UserPreferences = {
         user_id: user?.id || "",
         min_pay_rate: formData.payRate,
         max_travel_km: formData.maxTravelKm,
-        desired_roles: formData.selectedJobNames,
+        desired_roles: convertedJobNames, // Use converted names
         max_hours_per_week: formData.maxHoursPerWeek,
         max_hours_per_shift: formData.maxHoursPerShift,
         consider_lower_rate: formData.considerLowerRate,
@@ -219,10 +281,8 @@ export const usePreferencesForm = () => {
 
       try {
         // Optimization 1: Batch Validation using database function
-        console.log("🔍 Validating job names:", formData.selectedJobNames);
-        const validationResult = await validateJobNames(
-          formData.selectedJobNames,
-        );
+        console.log("🔍 Validating job names:", convertedJobNames);
+        const validationResult = await validateJobNames(convertedJobNames);
         if (!validationResult.isValid) {
           console.log("❌ Validation failed, reverting optimistic update");
           // Revert optimistic update
@@ -238,7 +298,13 @@ export const usePreferencesForm = () => {
         // Optimization 2: Enhanced upsert with reliable fallback
         console.log("💾 Saving preferences");
 
-        const result = await savePreferencesWithFallback(formData);
+        // Create updated form data with converted names
+        const updatedFormData = {
+          ...formData,
+          selectedJobNames: convertedJobNames,
+        };
+
+        const result = await savePreferencesWithFallback(updatedFormData);
         if (!result) return false;
 
         // The result is already the updated preferences from the database
@@ -257,10 +323,12 @@ export const usePreferencesForm = () => {
     },
     [
       preferences,
+      user?.id,
       updatePreferences,
       validateJobNames,
       savePreferencesWithFallback,
       revertOptimisticUpdate,
+      convertUuidsToNames,
     ],
   );
 
@@ -282,6 +350,7 @@ export const usePreferencesForm = () => {
     savePreferences,
     getFormData,
     validateJobNames,
+    convertUuidsToNames,
 
     // Location data (passed through)
     homeLocation,

@@ -33,10 +33,14 @@ const PreferencesForm = () => {
 
   // Load existing preferences into form
   useEffect(() => {
-    const existingFormData = getFormData();
-    if (existingFormData) {
-      setFormData(existingFormData);
-    }
+    const loadFormData = async () => {
+      const existingFormData = await getFormData();
+      if (existingFormData) {
+        setFormData(existingFormData);
+      }
+    };
+    
+    loadFormData();
   }, [getFormData]);
 
   // Location geocoding is now handled by the form hook
