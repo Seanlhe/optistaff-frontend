@@ -2,6 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { AvailabilityTemplate } from "../types/hooks";
+import {
+  isUserReady,
+  prepareTemplateForInsert,
+  handleSupabaseError,
+} from "../utils/templateUtils";
+
 
 export function useAvailabilityTemplate() {
   const [templates, setTemplates] = useState<AvailabilityTemplate[]>([]);
@@ -57,8 +63,9 @@ export function useAvailabilityTemplate() {
   //     fetchTemplates();
   //   }, [fetchTemplates]);
 
+  
   const fetchAllTemplates = useCallback(async () => {
-    if (authLoading || !user) return;
+    if (!isUserReady(user, authLoading)) return;
 
     setLoading(true);
     setError(null);
@@ -70,8 +77,7 @@ export function useAvailabilityTemplate() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching all templates:", error.message);
-      setError(error.message);
+      setError(handleSupabaseError(error));
       setTemplates([]);
     } else {
       setTemplates(data as AvailabilityTemplate[]);
@@ -81,8 +87,8 @@ export function useAvailabilityTemplate() {
   }, [user, authLoading]);
 
   const fetchTemplate = useCallback(
-    async (template_id: String) => {
-      if (authLoading || !user) return null;
+    async (template_id: string) => {
+      if (!isUserReady(user, authLoading)) return null;
 
       setLoading(true);
       setError(null);
@@ -92,60 +98,50 @@ export function useAvailabilityTemplate() {
         .select("*")
         .eq("user_id", user.id)
         .eq("template_id", template_id)
-        .single(); // expect only one
+        .single();
 
-      setLoading(false); // Move BEFORE return statements
+      setLoading(false);
 
       if (error) {
-        console.error("Error fetching template:", error.message);
-        setError(error.message);
+        setError(handleSupabaseError(error));
         return null;
       }
-      
+
       return data as AvailabilityTemplate;
     },
-    [user, authLoading],
+    [user, authLoading]
   );
 
+
+  // Create a new availability template
   // Create a new availability template
   const createTemplate = useCallback(
     async (
       template: Omit<
         AvailabilityTemplate,
         "template_id" | "created_at" | "updated_at" | "user_id"
-      >,
+      >
     ) => {
       setSaveLoading(true);
       setError(null);
 
-      if (authLoading) {
-        console.warn("Auth is still loading");
+      if (!isUserReady(user, authLoading)) {
         setSaveLoading(false);
+        setError("User not authenticated or still loading");
         return null;
       }
 
-      if (!user) {
-        console.error("User not authenticated");
-        setSaveLoading(false);
-        setError("User not authenticated");
-        return null;
-      }
-
-      console.log("Attempting to create template with:", template);
-
+      const insertPayload = prepareTemplateForInsert(template, user.id);
       const { data, error: supaError } = await supabase
         .from("availability_templates")
-        .insert([{ ...template, user_id: user.id }])
+        .insert([insertPayload])
         .select()
         .single();
-
-      console.log("Supabase response:", data, supaError);
 
       setSaveLoading(false);
 
       if (supaError) {
-        console.error("Supabase insert error:", supaError);
-        setError(supaError.message);
+        setError(handleSupabaseError(supaError));
         return null;
       }
 
@@ -153,8 +149,13 @@ export function useAvailabilityTemplate() {
 
       return data as AvailabilityTemplate;
     },
-    [user, authLoading, fetchAllTemplates],
+    [user, authLoading, fetchAllTemplates]
   );
+
+
+
+
+
 
   const deleteTemplate = useCallback(
     async (template_id: String) => {
@@ -193,3 +194,4 @@ export function useAvailabilityTemplate() {
     fetchAllTemplates,
   };
 }
+
