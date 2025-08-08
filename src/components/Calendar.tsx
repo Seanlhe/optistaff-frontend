@@ -164,6 +164,9 @@ const Calendar = () => {
         }))
       };
 
+      // console.log("Template before create:", newTemplate);
+
+      console.log("Saving template:", newTemplate);
       result = await createTemplate(newTemplate);
 
       if (result) {

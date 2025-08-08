@@ -120,7 +120,7 @@ export const useAvailability = () => {
         };
       });
 
-      // ✅ Only insert new time blocks if not empty
+      // Only insert new time blocks if not empty
       if (timeBlocks.length > 0) {
         const { error: insertError } = await supabase
           .from("availability")
