@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import Dashboard from "../../src/pages/employee/JSDashboard";
+import Dashboard from "../../../src/pages/employee/JSDashboard";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 
 // Mock the hooks used in JSDashboard
@@ -257,7 +257,9 @@ describe("JSDashboard", () => {
     fireEvent.click(statusChangeButton);
 
     // Check that fetchAssignments was called
-    expect(mockUseAssignments.fetchAssignments).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockUseAssignments.fetchAssignments).toHaveBeenCalled();
+    });
   });
 
   it("displays user rating in stats card", () => {
@@ -272,7 +274,7 @@ describe("JSDashboard", () => {
     mockUseUserProfile.profileData = {
       first_name: "John",
       last_name: "Doe",
-      display: {}
+      display: { rating: undefined }
     };
     
     render(<Dashboard />);
@@ -309,10 +311,20 @@ describe("JSDashboard", () => {
   it("handles missing assignment data gracefully", () => {
     const incompleteAssignment = {
       assignment_id: "incomplete",
-      status: "confirmed",
-      created_at: new Date().toISOString(),
+      job_title: "Basic Job",
+      company_name: "Basic Company",
       start_time: new Date().toISOString(),
       end_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+      job_location: "Unknown Location",
+      pay_rate: 0,
+      job_description: "",
+      job_requirements: "",
+      status: "confirmed",
+      contact_number: "",
+      contact_email: "",
+      job_type: "",
+      break_hours: 0,
+      created_at: new Date().toISOString(),
     };
     
     mockUseAssignments.assignments = [incompleteAssignment];
@@ -345,8 +357,8 @@ describe("JSDashboard", () => {
   it("handles profile data with missing display property", () => {
     mockUseUserProfile.profileData = {
       first_name: "Jane",
-      last_name: "Smith"
-      // missing display property
+      last_name: "Smith",
+      display: { rating: 0 }
     };
     
     render(<Dashboard />);

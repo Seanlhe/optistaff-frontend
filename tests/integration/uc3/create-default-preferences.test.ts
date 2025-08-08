@@ -11,7 +11,7 @@ import {
   createTestJobSeeker,
   cleanupTestData,
   ensureTestJobTypes,
-} from "../../src/test-setup";
+} from "../../../src/test-setup";
 
 describe("create_default_preferences - Database Function Unit Tests", () => {
   beforeEach(async () => {

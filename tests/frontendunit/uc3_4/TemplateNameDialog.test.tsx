@@ -2,8 +2,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { TemplateNameDialog } from "../../src/components/TemplateNameDialog";
-import type { TemplateNameDialogProps } from "../../src/types/components";
+import { TemplateNameDialog } from "../../../src/components/TemplateNameDialog";
+import type { TemplateNameDialogProps } from "../../../src/types/components";
 
 // Mock Lucide React icons
 vi.mock("lucide-react", () => ({

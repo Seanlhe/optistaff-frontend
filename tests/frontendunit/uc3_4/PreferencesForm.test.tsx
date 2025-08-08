@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import PreferencesForm from "../../src/components/PreferencesForm";
-import { usePreferencesForm } from "../../src/hooks/usePreferencesForm";
-import { PreferencesFormData } from "../../src/types/hooks";
+import PreferencesForm from "../../../src/components/PreferencesForm";
+import { usePreferencesForm } from "../../../src/hooks/usePreferencesForm";
+import { PreferencesFormData } from "../../../src/types/hooks";
 
 // --- Mocks ---
 

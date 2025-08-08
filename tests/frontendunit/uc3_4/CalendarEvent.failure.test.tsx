@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { CalendarEvent } from "../../src/components/CalendarEvent";
-import { UI_Event } from "../../src/types/hooks";
+import { CalendarEvent } from "../../../src/components/CalendarEvent";
+import { UI_Event } from "../../../src/types/hooks";
 
 // Mock date-fns functions used by CalendarEvent
 vi.mock("date-fns", () => ({

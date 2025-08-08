@@ -14,9 +14,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import component to test
-import { AssignmentDetailsModal } from "../../src/components/JobseekerAssignmentDetailModals";
-import type { JobseekerAssignmentCard } from "../../src/components/JobseekerAssignmentCard";
-import type { Feedback } from "../../src/types/hooks";
+import { AssignmentDetailsModal } from "../../../src/components/JobseekerAssignmentDetailModals";
+import type { JobseekerAssignmentCard } from "../../../src/components/JobseekerAssignmentCard";
+import type { Feedback } from "../../../src/types/hooks";
 
 // Mock data for testing
 const mockUser = {
@@ -125,7 +125,7 @@ describe("AssignmentDetailsModal Integration Tests", () => {
     vi.clearAllMocks();
     
     // Import the mocked supabase client to access the mock functions
-    const { supabase } = await import("../../src/integrations/supabase/client");
+    const { supabase } = await import("../../../src/integrations/supabase/client");
     mockSupabaseRpc = supabase.rpc;
     mockSupabaseFrom = supabase.from;
     

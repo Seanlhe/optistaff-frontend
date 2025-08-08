@@ -15,8 +15,8 @@ import userEvent from "@testing-library/user-event";
 import { format, startOfWeek, endOfWeek, addDays } from "date-fns";
 
 // Import component to test
-import Dashboard from "../../src/pages/employee/JSDashboard";
-import type { Assignment } from "../../src/types/hooks";
+import Dashboard from "../../../src/pages/employee/JSDashboard";
+import type { Assignment } from "../../../src/types/hooks";
 
 // Mock data for testing
 const mockUser = {
@@ -234,7 +234,7 @@ describe("JSDashboard Layout Integration Tests", () => {
     vi.clearAllMocks();
     
     // Import the mocked supabase client to access the mock functions
-    const { supabase } = await import("../../src/integrations/supabase/client");
+    const { supabase } = await import("../../../src/integrations/supabase/client");
     mockSupabaseRpc = supabase.rpc;
     mockSupabaseFrom = supabase.from;
     

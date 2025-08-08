@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import JSPref from "../../src/pages/employee/JSPref";
+import JSPref from "../../../src/pages/employee/JSPref";
 
 // Mock child components with working defaults
 vi.mock("../../src/components/PreferencesForm", () => ({

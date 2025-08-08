@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { Star } from "lucide-react";
-import StatsCard from "../../src/components/StatsCard";
+import StatsCard from "../../../src/components/StatsCard";
 
 describe("StatsCard - Essential Tests", () => {
   it("renders title and value correctly", () => {

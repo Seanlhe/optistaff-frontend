@@ -10,7 +10,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import component to test
-import JSPref from "../../src/pages/employee/JSPref";
+import JSPref from "../../../src/pages/employee/JSPref";
 
 // Mock child components to avoid complex dependencies
 vi.mock("../../src/components/PreferencesForm", () => ({

@@ -2,8 +2,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { JobseekerAssignmentCard } from "../../src/components/JobseekerAssignmentCard";
-import type { JobseekerAssignmentCard as AssignmentCardType } from "../../src/components/JobseekerAssignmentCard";
+import { JobseekerAssignmentCard } from "../../../src/components/JobseekerAssignmentCard";
+import type { JobseekerAssignmentCard as AssignmentCardType } from "../../../src/components/JobseekerAssignmentCard";
 
 // Mock UI components
 vi.mock("../../src/components/ui/button", () => ({
