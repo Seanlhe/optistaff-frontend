@@ -1,7 +1,7 @@
 // Unit tests for ClientCalendarHeader component
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import ClientCalendarHeader from "../../src/components/ClientCalendarHeader";
+import ClientCalendarHeader from "../../../src/components/ClientCalendarHeader";
 
 describe("ClientCalendarHeader", () => {
   const defaultProps = {
