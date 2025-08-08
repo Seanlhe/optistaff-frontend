@@ -23,7 +23,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
   // Equivalence Class Testing (ECT)
   // ========================================
   describe("Valid Input Equivalence Classes", () => {
-    test("creates default preferences for new user (valid UUID)", async () => {
+    test("TC-UC3-I18: creates default preferences for new user (valid UUID)", async () => {
       // Arrange
       const jobSeeker = await createTestJobSeeker();
 
@@ -54,7 +54,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       expect(preferences.updated_at).toBeTruthy();
     });
 
-    test("handles duplicate creation gracefully (idempotent operation)", async () => {
+    test("TC-UC3-I18: handles duplicate creation gracefully (idempotent operation)", async () => {
       // Arrange
       const jobSeeker = await createTestJobSeeker();
 
@@ -89,7 +89,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       expect(allPreferences?.length).toBe(1);
     });
 
-    test("creates preferences with correct default values structure", async () => {
+    test("TC-UC3-I18: creates preferences with correct default values structure", async () => {
       // Arrange
       const jobSeeker = await createTestJobSeeker();
 
@@ -130,7 +130,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
   });
 
   describe("Invalid Input Equivalence Classes", () => {
-    test("handles null user_id gracefully", async () => {
+    test("TC-UC3-I18: handles null user_id gracefully", async () => {
       // Act
       const { data, error } = await testSupabase.rpc(
         "create_default_preferences",
@@ -143,7 +143,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       expect(error).not.toBeNull();
     });
 
-    test("handles invalid UUID format", async () => {
+    test("TC-UC3-I18: handles invalid UUID format", async () => {
       // Act
       const { data, error } = await testSupabase.rpc(
         "create_default_preferences",
@@ -156,7 +156,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       expect(error).not.toBeNull();
     });
 
-    test("handles non-existent user_id", async () => {
+    test("TC-UC3-I18: handles non-existent user_id", async () => {
       // Arrange - Use valid UUID format but non-existent user
       const nonExistentUserId = "00000000-0000-0000-0000-000000000001";
 
@@ -176,7 +176,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       expect(data).toBeNull();
     });
 
-    test("handles empty string user_id", async () => {
+    test("TC-UC3-I18: handles empty string user_id", async () => {
       // Act
       const { data, error } = await testSupabase.rpc(
         "create_default_preferences",
@@ -191,7 +191,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
   });
 
   describe("Edge Cases and Boundary Conditions", () => {
-    test("verifies created preferences can be retrieved via direct query", async () => {
+    test("TC-UC3-I18: verifies created preferences can be retrieved via direct query", async () => {
       // Arrange
       const jobSeeker = await createTestJobSeeker();
 
@@ -218,7 +218,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       expect(rpcData?.[0]?.desired_roles).toEqual(directData?.desired_roles);
     });
 
-    test("handles concurrent creation attempts", async () => {
+    test("TC-UC3-I18: handles concurrent creation attempts", async () => {
       // Arrange
       const jobSeeker = await createTestJobSeeker();
 

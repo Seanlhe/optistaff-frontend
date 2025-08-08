@@ -60,7 +60,7 @@ describe("PreferenceJobType", () => {
     });
   });
 
-  it("renders correctly with job types grouped by category", () => {
+  it("TC-UC3-U7: renders correctly with job types grouped by category", () => {
     // UC3 Step 7: PreferencesForm renders PreferencesJobType component for job_type_preferences
     render(
       <PreferenceJobType
@@ -83,7 +83,7 @@ describe("PreferenceJobType", () => {
     expect(screen.getByText("Sales Associate")).toBeTruthy();
   });
 
-  it("shows loading state when job types are loading", () => {
+  it("TC-UC3-U8: shows loading state when job types are loading", () => {
     mockUseJobTypes.mockReturnValue({
       jobTypesByCategory: {},
       loading: true,
@@ -105,7 +105,7 @@ describe("PreferenceJobType", () => {
     ).toBeTruthy();
   });
 
-  it("shows error state when there is an error loading job types", () => {
+  it("TC-UC3-U8: shows error state when there is an error loading job types", () => {
     const errorMessage = "Failed to load job types";
     mockUseJobTypes.mockReturnValue({
       jobTypesByCategory: {},
@@ -125,7 +125,7 @@ describe("PreferenceJobType", () => {
     expect(screen.getByText(errorMessage)).toBeTruthy();
   });
 
-  it("loads existing selected job names from form data", () => {
+  it("TC-UC3-U7: loads existing selected job names from form data", () => {
     const formDataWithSelections: PreferencesFormData = {
       ...defaultFormData,
       selectedJobNames: ["Waiter", "Chef"],
@@ -153,7 +153,7 @@ describe("PreferenceJobType", () => {
     expect(salesCheckbox.checked).toBe(false);
   });
 
-  it("handles checkbox selection correctly", () => {
+  it("TC-UC3-U15: handles checkbox selection correctly", () => {
     // UC3 Step 15: User selects desired job types as part of updating preferences
     render(
       <PreferenceJobType
@@ -172,7 +172,7 @@ describe("PreferenceJobType", () => {
     });
   });
 
-  it("handles checkbox deselection correctly", () => {
+  it("TC-UC3-U15: handles checkbox deselection correctly", () => {
     const formDataWithSelections: PreferencesFormData = {
       ...defaultFormData,
       selectedJobNames: ["Waiter", "Chef"],
@@ -194,7 +194,7 @@ describe("PreferenceJobType", () => {
     });
   });
 
-  it("handles multiple selections correctly", () => {
+  it("TC-UC3-U15: handles multiple selections correctly", () => {
     render(
       <PreferenceJobType
         formData={defaultFormData}
@@ -219,7 +219,7 @@ describe("PreferenceJobType", () => {
     });
   });
 
-  it("applies correct styling for selected and unselected job types", () => {
+  it("TC-UC3-U7: applies correct styling for selected and unselected job types", () => {
     const formDataWithSelections: PreferencesFormData = {
       ...defaultFormData,
       selectedJobNames: ["Waiter"],
@@ -241,7 +241,7 @@ describe("PreferenceJobType", () => {
     expect(chefLabel?.className).toContain("text-secondary-text");
   });
 
-  it("renders all checkboxes with correct attributes", () => {
+  it("TC-UC3-U7: renders all checkboxes with correct attributes", () => {
     render(
       <PreferenceJobType
         formData={defaultFormData}

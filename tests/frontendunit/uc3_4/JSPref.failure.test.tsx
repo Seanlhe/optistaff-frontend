@@ -16,7 +16,7 @@ describe("JSPref - Failure Scenarios", () => {
     vi.clearAllMocks();
   });
 
-  it("should handle invalid activeTab state gracefully", () => {
+  it("TC-UC3-U1: should handle invalid activeTab state gracefully", () => {
     // Component should render even with edge case activeTab values
     render(<JSPref />);
 
@@ -26,7 +26,7 @@ describe("JSPref - Failure Scenarios", () => {
     expect(screen.getByText("Availability")).toBeTruthy();
   });
 
-  it("should handle rapid tab switching gracefully", () => {
+  it("TC-UC4-U1: should handle rapid tab switching gracefully", () => {
     render(<JSPref />);
 
     const preferencesTab = screen.getByText("Preferences");
@@ -43,7 +43,7 @@ describe("JSPref - Failure Scenarios", () => {
     expect(preferencesTab.getAttribute("class")).toContain("bg-white");
   });
 
-  it("should handle missing child components gracefully", () => {
+  it("TC-UC3-U2: should handle missing child components gracefully", () => {
     render(<JSPref />);
 
     // Tab structure should always render regardless of child component state

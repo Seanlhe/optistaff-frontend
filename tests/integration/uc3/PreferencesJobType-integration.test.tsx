@@ -127,8 +127,8 @@ describe("PreferencesJobType Integration Tests", () => {
   // Loading State Integration Test (1 test)
   // ========================================
   describe("Loading State Integration", () => {
-    // UC: User sees loading state while job types are being fetched
-    test("displays loading skeleton while useJobTypes hook fetches data", async () => {
+    // TC-UC3-I7-8: User sees loading state while job types are being fetched
+    test("TC-UC3-I7-8: displays loading skeleton while useJobTypes hook fetches data", async () => {
       render(
         <PreferencesJobType 
           formData={mockFormData} 
@@ -155,8 +155,8 @@ describe("PreferencesJobType Integration Tests", () => {
   // Data Loading & Category Display Tests (1 test)  
   // ========================================
   describe("Data Loading & Category Display", () => {
-    // UC: User sees job types grouped by category after successful data fetch
-    test("loads job types from useJobTypes hook and displays them grouped by category", async () => {
+    // TC-UC3-I8-12: User sees job types grouped by category after successful data fetch
+    test("TC-UC3-I8-12: loads job types from useJobTypes hook and displays them grouped by category", async () => {
       render(
         <PreferencesJobType 
           formData={mockFormData} 
@@ -190,8 +190,8 @@ describe("PreferencesJobType Integration Tests", () => {
   // Checkbox Selection Integration Tests (1 test)
   // ========================================
   describe("Checkbox Selection Integration", () => {
-    // UC: User selects job types and form data is updated through component state
-    test("updates form data when user selects/deselects job type checkboxes", async () => {
+    // TC-UC3-I15-16: User selects job types and form data is updated through component state
+    test("TC-UC3-I15-16: updates form data when user selects/deselects job type checkboxes", async () => {
       const user = userEvent.setup();
       
       render(
@@ -245,8 +245,8 @@ describe("PreferencesJobType Integration Tests", () => {
   // Existing Preferences Loading Test (1 test)
   // ========================================
   describe("Existing Preferences Loading", () => {
-    // UC: Component initializes with pre-selected job types from form data
-    test("loads component with existing job type selections from form data", async () => {
+    // TC-UC3-I6,11-12: Component initializes with pre-selected job types from form data
+    test("TC-UC3-I6,11-12: loads component with existing job type selections from form data", async () => {
       // Setup form data with multiple pre-selected job types
       const formDataWithSelections: PreferencesFormData = {
         ...mockFormData,

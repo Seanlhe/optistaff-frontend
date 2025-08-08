@@ -24,7 +24,7 @@ describe("Preferences (JSPref)", () => {
     vi.clearAllMocks();
   });
 
-  it("renders correctly with default tab selected", () => {
+  it("TC-UC3-U1: renders correctly with default tab selected", () => {
     // UC3 Step 1: Jobseeker navigates to "/employee/jspref"
     render(<Preferences />);
 
@@ -40,7 +40,7 @@ describe("Preferences (JSPref)", () => {
     expect(screen.queryByTestId("mock-availability")).toBeNull();
   });
 
-  it("applies correct CSS classes to active tab", () => {
+  it("TC-UC3-U1: applies correct CSS classes to active tab", () => {
     render(<Preferences />);
 
     const preferencesButton = screen.getByRole("button", {
@@ -59,7 +59,7 @@ describe("Preferences (JSPref)", () => {
     expect(availabilityButton.className).not.toContain("bg-white ");
   });
 
-  it("switches to Availability tab when clicked", () => {
+  it("TC-UC4-U1: switches to Availability tab when clicked", () => {
     // UC4 Step 1: Navigate to availability tab in JSPref page
     render(<Preferences />);
 
@@ -77,7 +77,7 @@ describe("Preferences (JSPref)", () => {
     expect(screen.queryByTestId("mock-preferences-form")).toBeNull();
   });
 
-  it("switches back to Preferences tab when clicked", () => {
+  it("TC-UC3-U1: switches back to Preferences tab when clicked", () => {
     render(<Preferences />);
 
     const preferencesButton = screen.getByRole("button", {
@@ -101,7 +101,7 @@ describe("Preferences (JSPref)", () => {
     expect(screen.queryByTestId("mock-availability")).toBeNull();
   });
 
-  it("updates CSS classes when switching tabs", () => {
+  it("TC-UC4-U1: updates CSS classes when switching tabs", () => {
     render(<Preferences />);
 
     const preferencesButton = screen.getByRole("button", {
@@ -125,7 +125,7 @@ describe("Preferences (JSPref)", () => {
     expect(preferencesButton.className).toContain("hover:bg-white/60");
   });
 
-  it("renders with correct container structure and styling", () => {
+  it("TC-UC3-U1: renders with correct container structure and styling", () => {
     render(<Preferences />);
 
     // Check for main container with correct classes
@@ -144,7 +144,7 @@ describe("Preferences (JSPref)", () => {
     expect(maxWidthContainer?.className).toContain("mx-auto");
   });
 
-  it("renders tab buttons with correct styling structure", () => {
+  it("TC-UC3-U1: renders tab buttons with correct styling structure", () => {
     render(<Preferences />);
 
     const preferencesButton = screen.getByRole("button", {
@@ -171,7 +171,7 @@ describe("Preferences (JSPref)", () => {
     expect(buttonContainer?.className).toContain("gap-1");
   });
 
-  it("maintains tab state across multiple clicks", () => {
+  it("TC-UC4-U1: maintains tab state across multiple clicks", () => {
     render(<Preferences />);
 
     const preferencesButton = screen.getByRole("button", {
@@ -198,7 +198,7 @@ describe("Preferences (JSPref)", () => {
     expect(screen.queryByTestId("mock-availability")).toBeNull();
   });
 
-  it("only renders one component at a time", () => {
+  it("TC-UC3-U1: only renders one component at a time", () => {
     render(<Preferences />);
 
     // Initially should only show PreferencesForm

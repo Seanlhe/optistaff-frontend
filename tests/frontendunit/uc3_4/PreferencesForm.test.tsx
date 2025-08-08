@@ -71,7 +71,7 @@ describe("PreferencesForm", () => {
     });
   });
 
-  it("renders correctly and displays child components", () => {
+  it("TC-UC3-U2: renders correctly and displays child components", () => {
     // UC3 Step 2: JSPref renders PreferencesForm component
     render(<PreferencesForm />);
 
@@ -89,7 +89,7 @@ describe("PreferencesForm", () => {
     expect(screen.getByRole("button", { name: /save preferences/i })).toBeTruthy();
   });
 
-  it("handles successful form submission", async () => {
+  it("TC-UC3-U15: handles successful form submission", async () => {
     // UC3 Step 15: Jobseeker updates preferences (min_pay_rate, max_travel_km, desired_roles)
     mockSavePreferences.mockResolvedValue(true);
     render(<PreferencesForm />);
@@ -109,7 +109,7 @@ describe("PreferencesForm", () => {
     });
   });
 
-  it("handles failed form submission", async () => {
+  it("TC-UC3-U18: handles failed form submission", async () => {
     mockSavePreferences.mockResolvedValue(false);
     render(<PreferencesForm />);
 
@@ -128,7 +128,7 @@ describe("PreferencesForm", () => {
     expect(submitButton.disabled).toBe(false);
   });
 
-  it("displays a general error message from the hook", () => {
+  it("TC-UC3-U2: displays a general error message from the hook", () => {
     (
       usePreferencesForm as vi.MockedFunction<typeof usePreferencesForm>
     ).mockReturnValue({
@@ -146,7 +146,7 @@ describe("PreferencesForm", () => {
     expect(screen.getByText("Failed to connect to the server.")).toBeTruthy();
   });
 
-  it("displays and handles a location-specific error", async () => {
+  it("TC-UC3-U13: displays and handles a location-specific error", async () => {
     render(<PreferencesForm />);
 
     fireEvent.click(

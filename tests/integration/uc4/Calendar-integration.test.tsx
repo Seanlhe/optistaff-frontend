@@ -70,8 +70,8 @@ describe("Calendar Component Integration Tests", () => {
   // Calendar Rendering & Navigation Tests (2 tests)
   // ========================================
   describe("Calendar Rendering & Navigation", () => {
-    // UC4 Step 1: Navigate to availability and load calendar - User can view calendar interface
-    test("renders calendar with week view and navigation controls", async () => {
+    // TC-UC4-I1-2,7-8: Navigate to availability and load calendar - User can view calendar interface
+    test("TC-UC4-I1-2,7-8: renders calendar with week view and navigation controls", async () => {
       render(<Calendar />);
 
       // Verify main calendar elements are present
@@ -99,8 +99,8 @@ describe("Calendar Component Integration Tests", () => {
       expect(screen.getByText("23:00")).toBeTruthy();
     });
 
-    // UC4 Step 2: Load existing availability data - User can navigate between weeks
-    test("navigates between weeks when using navigation buttons", async () => {
+    // TC-UC4-I7-8: Load existing availability data - User can navigate between weeks
+    test("TC-UC4-I7-8: navigates between weeks when using navigation buttons", async () => {
       const user = userEvent.setup();
       render(<Calendar />);
 
@@ -132,8 +132,8 @@ describe("Calendar Component Integration Tests", () => {
   // Availability Slot Management Tests (2 tests)
   // ========================================
   describe("Availability Slot Management", () => {
-    // UC4 Step 3: Create/modify time slots - User can create availability slots
-    test("creates availability slot on double-click", async () => {
+    // TC-UC4-I22-24: Create/modify time slots - User can create availability slots
+    test("TC-UC4-I22-24: creates availability slot on double-click", async () => {
       render(<Calendar />);
 
       // Wait for component to fully load
@@ -159,8 +159,8 @@ describe("Calendar Component Integration Tests", () => {
       });
     });
 
-    // UC4 Step 3: Create/modify time slots - User can delete availability slots
-    test("deletes availability slot on event double-click", async () => {
+    // TC-UC4-I22-24: Create/modify time slots - User can delete availability slots
+    test("TC-UC4-I22-24: deletes availability slot on event double-click", async () => {
       render(<Calendar />);
 
       // Wait for component to load
@@ -197,8 +197,8 @@ describe("Calendar Component Integration Tests", () => {
   // Save Functionality Tests (2 tests)
   // ========================================
   describe("Save Functionality", () => {
-    // UC4 Step 4: setting to database - User can save calendar data
-    test("saves availability data to Supabase on Save button click", async () => {
+    // TC-UC4-I3-6: Save availability to database - User can save calendar data
+    test("TC-UC4-I3-6: saves availability data to Supabase on Save button click", async () => {
       const user = userEvent.setup();
       
       render(<Calendar />);
@@ -232,8 +232,8 @@ describe("Calendar Component Integration Tests", () => {
       });
     });
 
-    // UC4 Step 5: Display success confirmation - System handles save errors gracefully
-    test("handles save errors gracefully", async () => {
+    // TC-UC4-I3-6: Display success confirmation - System handles save errors gracefully
+    test("TC-UC4-I3-6: handles save errors gracefully", async () => {
       const user = userEvent.setup();
       
       render(<Calendar />);
