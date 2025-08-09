@@ -3,7 +3,6 @@
  * @description Integration test for JSPref page with PreferencesForm and mocked hooks
  * @testing_approach: Mock hooks (usePreferencesForm) and lightweight child components for stable UI tests
  * - Consistent with uc5/uc7 patterns that mock hooks directly
- * - Do not modify existing UC3 integration tests; add complementary coverage from the page level
  */
 
 import React from "react";
