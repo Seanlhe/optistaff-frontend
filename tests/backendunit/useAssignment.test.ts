@@ -36,6 +36,7 @@ describe('Unit Tests for useAssignments', () => {
   })
 
   it('Fetching assignment by Shift ID', async () => {
+    
     // then create assignment
     const assignment = await testSupabase.rpc('')
     expect(assignment).toHaveProperty('assignment_id')
