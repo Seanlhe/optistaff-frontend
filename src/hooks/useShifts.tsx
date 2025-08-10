@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { supabase } from "../integrations/supabase/client";
 import { Shift, StatusEnum } from "../types/hooks";
+import { set } from "date-fns";
 
 export const useShifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -41,10 +42,8 @@ export const useShifts = () => {
         end_time: new Date(shift.end_time), // Convert end_time to a Date object (if needed)
       }));
       setShifts(shiftsWithDates as Shift[]);
-      
       // Store timestamp for window focus refresh feature
       localStorage.setItem('lastShiftUpdate', Date.now().toString());
-      
       return data as Shift[];
     } catch (err) {
       setError((err as Error).message);
