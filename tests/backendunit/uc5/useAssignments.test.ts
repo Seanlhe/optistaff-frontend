@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, afterAll, describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import {
   createTestJobSeeker,
   createTestClient,
@@ -9,8 +9,6 @@ import {
   testSupabase,
 } from '../../../src/test-setup.ts'
 import { StatusEnum } from '../../../src/types/hooks.ts';
-import { useAssignments } from '../../../src/hooks/useAssignments.tsx'
-
 
 const setup = await (async () => {
   await seedRequiredData();
@@ -29,7 +27,8 @@ describe.runIf(Boolean(setup.client && setup.jobSeeker && setup.shift && setup.a
 
   afterAll(async () => {
     await cleanupTestData();
-  })
+  });
+
   it('Fetching Assignment By Jobseeker', async () => {
     const { data: fetchedAssignments, error } = await testSupabase.rpc('get_assignments_by_jobseeker', { p_user_id: jobSeeker.user_id });
     if (error) throw error;
@@ -45,6 +44,7 @@ describe.runIf(Boolean(setup.client && setup.jobSeeker && setup.shift && setup.a
     if (updateError) throw updateError;
     expect(data).toHaveProperty('updated_count', 1);
     expect(data).toHaveProperty('payout_created', false);
+
     const { data: fetchedAssignments, error: fetchError } = await testSupabase.rpc('get_assignments_by_jobseeker', { p_user_id: jobSeeker.user_id });
     if (fetchError) throw fetchError;
     expect(fetchedAssignments[0].status).toBe(StatusEnum.CancelByEmployee);
