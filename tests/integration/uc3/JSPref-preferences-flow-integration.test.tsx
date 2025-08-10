@@ -34,13 +34,17 @@ vi.mock("../../src/components/PreferencesMaximum", () => ({
       <input
         type="number"
         value={formData.maxHoursPerWeek}
-        onChange={(e) => setFormData({ ...formData, maxHoursPerWeek: Number(e.target.value) })}
+        onChange={(e) =>
+          setFormData({ ...formData, maxHoursPerWeek: Number(e.target.value) })
+        }
         data-testid="max-hours-week"
       />
       <input
         type="number"
         value={formData.maxHoursPerShift}
-        onChange={(e) => setFormData({ ...formData, maxHoursPerShift: Number(e.target.value) })}
+        onChange={(e) =>
+          setFormData({ ...formData, maxHoursPerShift: Number(e.target.value) })
+        }
         data-testid="max-hours-shift"
       />
     </div>
@@ -56,13 +60,17 @@ vi.mock("../../src/components/PreferencesPay", () => ({
         min="5"
         max="30"
         value={formData.payRate}
-        onChange={(e) => setFormData({ ...formData, payRate: Number(e.target.value) })}
+        onChange={(e) =>
+          setFormData({ ...formData, payRate: Number(e.target.value) })
+        }
         data-testid="pay-rate-slider"
       />
       <input
         type="checkbox"
         checked={formData.considerLowerRate}
-        onChange={(e) => setFormData({ ...formData, considerLowerRate: e.target.checked })}
+        onChange={(e) =>
+          setFormData({ ...formData, considerLowerRate: e.target.checked })
+        }
         data-testid="consider-lower-checkbox"
       />
     </div>
@@ -78,7 +86,9 @@ vi.mock("../../src/components/PreferencesJobType", () => ({
         onChange={(e) => {
           const newSelectedJobs = e.target.checked
             ? [...formData.selectedJobNames, "Waiter"]
-            : formData.selectedJobNames.filter((job: string) => job !== "Waiter");
+            : formData.selectedJobNames.filter(
+                (job: string) => job !== "Waiter"
+              );
           setFormData({ ...formData, selectedJobNames: newSelectedJobs });
         }}
         data-testid="waiter-checkbox"
@@ -92,13 +102,20 @@ vi.mock("../../src/components/LocationAwareMap", () => ({
   LocationAwareMap: ({ onRadiusChange, travelRadius }: any) => (
     <div data-testid="location-aware-map">
       <span>Travel Radius: {travelRadius}km</span>
-      <button onClick={() => onRadiusChange(25)} data-testid="change-radius-btn">Change Radius</button>
+      <button
+        onClick={() => onRadiusChange(25)}
+        data-testid="change-radius-btn"
+      >
+        Change Radius
+      </button>
     </div>
   ),
 }));
 
 vi.mock("../../src/components/LocationErrorBoundary", () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 describe("UC3 - JSPref Preferences Flow Integration", () => {
@@ -145,7 +162,9 @@ describe("UC3 - JSPref Preferences Flow Integration", () => {
     await user.click(considerLower);
 
     // Save
-    const saveButton = screen.getByRole("button", { name: /save preferences/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save preferences/i,
+    });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -168,10 +187,14 @@ describe("UC3 - JSPref Preferences Flow Integration", () => {
     render(<JSPref />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /save preferences/i })).toBeTruthy();
+      expect(
+        screen.getByRole("button", { name: /save preferences/i })
+      ).toBeTruthy();
     });
 
-    const saveButton = screen.getByRole("button", { name: /save preferences/i });
+    const saveButton = screen.getByRole("button", {
+      name: /save preferences/i,
+    });
     await user.click(saveButton);
 
     await waitFor(() => {
@@ -181,4 +204,3 @@ describe("UC3 - JSPref Preferences Flow Integration", () => {
     expect(screen.queryByText(/preferences saved successfully/i)).toBeFalsy();
   });
 });
-

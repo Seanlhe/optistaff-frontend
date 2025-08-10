@@ -87,7 +87,7 @@ describe("ClientShiftDetails", () => {
       expect(jobTitle).toBeTruthy();
     });
 
-    it("displays all shift information, UC5 Step 2-3", () => {
+    it("displays all shift information, UC8 Step 2-3", () => {
       render(<ClientShiftDetails {...defaultProps} />);
 
       // Check for various pieces of shift information
@@ -146,7 +146,7 @@ describe("ClientShiftDetails", () => {
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it("calls onCancel when Cancel button is clicked, UC5 Step 5", async () => {
+    it("calls onCancel when Cancel button is clicked, UC8 Step 5", async () => {
       render(<ClientShiftDetails {...defaultProps} />);
 
       const cancelButton = screen.getByText("Cancel");
@@ -194,7 +194,7 @@ describe("ClientShiftDetails", () => {
       });
     });
 
-    it("displays error message when cancellation fails with updated_count = 0, UC5 Step 8", async () => {
+    it("displays error message when cancellation fails with updated_count = 0, UC8 Step 8", async () => {
       // Mock failed cancellation (updated_count = 0)
       mockOnCancel.mockResolvedValue({ updated_count: 0 });
 

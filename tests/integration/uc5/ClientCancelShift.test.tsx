@@ -128,27 +128,27 @@ vi.mock("date-fns", async () => {
   };
 });
 
-describe("UC5 Shift Cancellation Integration Test Suite", () => {
+describe("UC8 Shift Cancellation Integration Test Suite", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset mock return values for successful cancellation by default
     mockUpdateShiftStatus.mockResolvedValue({ updated_count: 1 });
   });
 
-  it("Renders ClientRoster with shifts and allows shift selection, UC5 Steps 1-3", async () => {
+  it("Renders ClientRoster with shifts and allows shift selection, UC8 Steps 1-3", async () => {
     render(<ClientRoster />);
 
-    // UC5 Step 1: Employer navigates to roster page
+    // UC8 Step 1: Employer navigates to roster page
     expect(screen.getByText("August 2025")).toBeTruthy(); // Calendar header
 
-    // UC5 Step 2: System displays shifts
+    // UC8 Step 2: System displays shifts
     // Wait for shifts to be rendered in calendar days
     await waitFor(() => {
       expect(screen.getByText("Software Engineer")).toBeTruthy();
       expect(screen.getByText("Data Analyst")).toBeTruthy();
     });
 
-    // UC5 Step 3: Employer clicks on desired job to cancel
+    // UC8 Step 3: Employer clicks on desired job to cancel
     const softwareEngineerShift = screen.getAllByText("Software Engineer")[0]; // Click on the shift card, not modal
     fireEvent.click(softwareEngineerShift);
 
@@ -161,7 +161,7 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
     });
   });
 
-  it("Displays shift details and handles successful cancellation, UC5 Steps 4-7", async () => {
+  it("Displays shift details and handles successful cancellation, UC8 Steps 4-7", async () => {
     render(<ClientRoster />);
 
     // Wait for shifts to load and select a shift
@@ -172,7 +172,7 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
     const softwareEngineerShift = screen.getAllByText("Software Engineer")[0];
     fireEvent.click(softwareEngineerShift);
 
-    // UC5 Step 4: ClientShiftDetails displays shift information
+    // UC8 Step 4: ClientShiftDetails displays shift information
     await waitFor(() => {
       expect(screen.getAllByText("Software Engineer")).toHaveLength(2); // One in card, one in modal
       expect(screen.getAllByText("Downtown Office")).toHaveLength(2); // One in dropdown, one in modal
@@ -180,23 +180,23 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
       expect(screen.getByText("2 / 3")).toBeTruthy(); // Staff ratio
     });
 
-    // UC5 Step 5: Employer clicks cancel button
+    // UC8 Step 5: Employer clicks cancel button
     const cancelButton = screen.getByText("Cancel");
     fireEvent.click(cancelButton);
 
-    // UC5 Step 6: useShifts hook calls updateShiftStatus
+    // UC8 Step 6: useShifts hook calls updateShiftStatus
     expect(mockUpdateShiftStatus).toHaveBeenCalledWith(
       "shift-001",
       "cancel_by_employer"
     );
 
-    // UC5 Step 7: Successful response (updated_count = 1)
+    // UC8 Step 7: Successful response (updated_count = 1)
     await waitFor(() => {
       expect(mockRefetchShifts).toHaveBeenCalled();
     });
   });
 
-  it("Handles failed cancellation when updated count is 0, UC5 Steps 4-5, 8", async () => {
+  it("Handles failed cancellation when updated count is 0, UC8 Steps 4-5, 8", async () => {
     // Mock failed cancellation
     mockUpdateShiftStatus.mockResolvedValue({ updated_count: 0 });
 
@@ -210,13 +210,13 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
     const dataAnalystShift = screen.getAllByText("Data Analyst")[0];
     fireEvent.click(dataAnalystShift);
 
-    // UC5 Step 4: Display shift details
+    // UC8 Step 4: Display shift details
     await waitFor(() => {
       expect(screen.getAllByText("Data Analyst")).toHaveLength(2); // One in card, one in modal
       expect(screen.getAllByText("Uptown Branch")).toHaveLength(2); // One in dropdown, one in modal
     });
 
-    // UC5 Step 5: Click cancel button
+    // UC8 Step 5: Click cancel button
     const cancelButton = screen.getByText("Cancel");
     fireEvent.click(cancelButton);
 
@@ -226,7 +226,7 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
       "cancel_by_employer"
     );
 
-    // UC5 Step 8: Error handling when updated_count is 0
+    // UC8 Step 8: Error handling when updated_count is 0
     // The component should handle this gracefully without crashing
     await waitFor(() => {
       // Verify the component is still functional
@@ -391,13 +391,13 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
     );
   });
 
-  it("Verifies complete UC5 workflow end-to-end", async () => {
+  it("Verifies complete UC8 workflow end-to-end", async () => {
     render(<ClientRoster />);
 
-    // UC5 Step 1: Load roster page
+    // UC8 Step 1: Load roster page
     expect(screen.getByText("August 2025")).toBeTruthy();
 
-    // UC5 Steps 2-3: Display shifts and click desired job
+    // UC8 Steps 2-3: Display shifts and click desired job
     await waitFor(() => {
       expect(screen.getAllByText("Software Engineer")).toHaveLength(1);
     });
@@ -405,7 +405,7 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
     const shiftToCancel = screen.getAllByText("Software Engineer")[0];
     fireEvent.click(shiftToCancel);
 
-    // UC5 Step 4: ClientShiftDetails renders shift information
+    // UC8 Step 4: ClientShiftDetails renders shift information
     await waitFor(() => {
       expect(screen.getAllByText("Software Engineer")).toHaveLength(2); // One in card, one in modal
       expect(screen.getAllByText("Downtown Office")).toHaveLength(2); // One in dropdown, one in modal
@@ -416,18 +416,18 @@ describe("UC5 Shift Cancellation Integration Test Suite", () => {
       expect(screen.getByText("2 / 3")).toBeTruthy();
     });
 
-    // UC5 Step 5: Click cancel button
+    // UC8 Step 5: Click cancel button
     const cancelButton = screen.getByText("Cancel");
     expect(cancelButton).toBeTruthy();
     fireEvent.click(cancelButton);
 
-    // UC5 Step 6: useShifts hook updateShiftStatus called
+    // UC8 Step 6: useShifts hook updateShiftStatus called
     expect(mockUpdateShiftStatus).toHaveBeenCalledWith(
       "shift-001",
       "cancel_by_employer"
     );
 
-    // UC5 Step 7: Successful response triggers refetch
+    // UC8 Step 7: Successful response triggers refetch
     await waitFor(() => {
       expect(mockRefetchShifts).toHaveBeenCalled();
     });
