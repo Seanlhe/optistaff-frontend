@@ -6,7 +6,7 @@ interface ClientShiftDetailsProps {
   onClose?: () => void;
   // onDelete?: (shift_id: string) => Promise<void>;
   onEdit?: (shift: Shift) => void;
-  onCancel?: (shift_id: string) => Promise<void>;
+  onCancel?: (shift_id: string) => Promise<{ updated_count: number }>;
 }
 
 export default function ClientShiftDetails({
@@ -51,7 +51,12 @@ export default function ClientShiftDetails({
 
     try {
       setIsCancelling(true);
-      await onCancel(shiftData.shift_id);
+      const result = await onCancel(shiftData.shift_id);
+
+      if (result.updated_count === 0) {
+        setCancelError("Failed to cancel shift. Please try again.");
+        return;
+      }
 
       if (onClose) {
         onClose();

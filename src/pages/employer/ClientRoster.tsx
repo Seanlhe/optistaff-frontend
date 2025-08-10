@@ -153,9 +153,15 @@ export default function ClientRoster() {
     setIsEditMode(true); // Switch to edit mode
   };
 
-  const handleCancelShift = async (shift_id: string) => {
+  const handleCancelShift = async (
+    shift_id: string
+  ): Promise<{ updated_count: number }> => {
     try {
-      await updateShiftStatus(shift_id, StatusEnum.CancelByEmployer);
+      const result = await updateShiftStatus(
+        shift_id,
+        StatusEnum.CancelByEmployer
+      );
+      return result;
     } catch (error) {
       console.error("Failed to cancel shift:", error);
       throw error;

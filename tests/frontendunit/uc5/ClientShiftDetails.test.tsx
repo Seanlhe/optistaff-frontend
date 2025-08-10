@@ -193,6 +193,121 @@ describe("ClientShiftDetails", () => {
         expect(screen.getByText("Cancel")).toBeTruthy();
       });
     });
+
+    it("displays error message when cancellation fails with updated_count = 0, UC5 Step 8", async () => {
+      // Mock failed cancellation (updated_count = 0)
+      mockOnCancel.mockResolvedValue({ updated_count: 0 });
+
+      render(<ClientShiftDetails {...defaultProps} />);
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Verify onCancel was called
+      await waitFor(() => {
+        expect(mockOnCancel).toHaveBeenCalledWith("shift-123");
+      });
+
+      // Should display error message when updated_count is 0
+      await waitFor(() => {
+        expect(
+          screen.getByText("Failed to cancel shift. Please try again.")
+        ).toBeTruthy();
+      });
+
+      // Verify error message styling
+      const errorElement = screen.getByText(
+        "Failed to cancel shift. Please try again."
+      );
+      // Get the outer container div with the styling classes
+      const outerContainer = errorElement.closest(".bg-red-50");
+      expect(outerContainer).toBeTruthy();
+      expect(outerContainer?.className).toContain("border-red-200");
+    });
+
+    it("displays error message when cancellation throws an exception", async () => {
+      // Mock API error
+      const errorMessage = "Network connection failed";
+      mockOnCancel.mockRejectedValue(new Error(errorMessage));
+
+      render(<ClientShiftDetails {...defaultProps} />);
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Verify onCancel was called
+      await waitFor(() => {
+        expect(mockOnCancel).toHaveBeenCalledWith("shift-123");
+      });
+
+      // Should display custom error message
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeTruthy();
+      });
+
+      // Verify error styling is applied
+      const errorElement = screen.getByText(errorMessage);
+      // Get the outer container div with the styling classes
+      const outerContainer = errorElement.closest(".bg-red-50");
+      expect(outerContainer).toBeTruthy();
+      expect(outerContainer?.className).toContain("border-red-200");
+      expect(outerContainer?.className).toContain("rounded-lg");
+    });
+
+    it("displays generic error message for non-Error exceptions", async () => {
+      // Mock non-Error exception
+      mockOnCancel.mockRejectedValue("String error");
+
+      render(<ClientShiftDetails {...defaultProps} />);
+
+      const cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Should display generic error message
+      await waitFor(() => {
+        expect(
+          screen.getByText("Failed to cancel shift. Please try again.")
+        ).toBeTruthy();
+      });
+    });
+
+    it("clears error message on successful cancellation", async () => {
+      // First, simulate a failed cancellation
+      mockOnCancel.mockResolvedValueOnce({ updated_count: 0 });
+
+      render(<ClientShiftDetails {...defaultProps} />);
+
+      let cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Wait for error message to appear
+      await waitFor(() => {
+        expect(
+          screen.getByText("Failed to cancel shift. Please try again.")
+        ).toBeTruthy();
+      });
+
+      // Now simulate successful cancellation
+      mockOnCancel.mockResolvedValueOnce({ updated_count: 1 });
+
+      cancelButton = screen.getByText("Cancel");
+      fireEvent.click(cancelButton);
+
+      // Error message should be cleared and modal should close (onClose called)
+      await waitFor(() => {
+        expect(mockOnClose).toHaveBeenCalled();
+      });
+    });
+
+    it("does not display error message initially", () => {
+      render(<ClientShiftDetails {...defaultProps} />);
+
+      // Should not show any error messages on initial render
+      expect(
+        screen.queryByText("Failed to cancel shift. Please try again.")
+      ).toBeNull();
+      expect(screen.queryByText("Network connection failed")).toBeNull();
+    });
   });
 
   // Section 3: Component Behavior Tests
