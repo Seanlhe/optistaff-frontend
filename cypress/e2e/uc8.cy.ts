@@ -1,6 +1,6 @@
 /// <reference types="cypress"/>
 
-describe("UC5 Shift Cancellation E2E test suite", () => {
+describe("UC8 Shift Cancellation E2E test suite", () => {
   
   beforeEach(() => {
     cy.visit("localhost:5173");
@@ -31,7 +31,7 @@ describe("UC5 Shift Cancellation E2E test suite", () => {
   })
 
   it("Step 1: Employer clicks on job desired to cancel", () => {
-    // UC5 Sequence Step 1: Employer -> ClientRoster.tsx: click on the job desired to cancel
+    // UC8 Sequence Step 1: Employer -> ClientRoster.tsx: click on the job desired to cancel
     // Click on the first available shift (Test Shift)
     cy.contains("Test Shift").should("be.visible").click();
     
@@ -41,8 +41,8 @@ describe("UC5 Shift Cancellation E2E test suite", () => {
   })
 
   it("Steps 2-3: ClientRoster renders ClientShiftDetails and displays shift details", () => {
-    // UC5 Sequence Step 2: ClientRoster.tsx -> ClientShiftDetails.tsx: render ClientShiftDetails(shift)
-    // UC5 Sequence Step 3: ClientShiftDetails.tsx -> Employer: Display Shift Details
+    // UC8 Sequence Step 2: ClientRoster.tsx -> ClientShiftDetails.tsx: render ClientShiftDetails(shift)
+    // UC8 Sequence Step 3: ClientShiftDetails.tsx -> Employer: Display Shift Details
     cy.contains("Test Shift").click();
     
     // Verify ClientShiftDetails modal is rendered and displays shift details
@@ -59,11 +59,11 @@ describe("UC5 Shift Cancellation E2E test suite", () => {
   })
 
   it("Steps 4-8: Complete cancellation workflow (Success Path)", () => {
-    // UC5 Sequence Step 4: Employer -> ClientShiftDetails.tsx: click(cancel_button)
-    // UC5 Sequence Step 5: ClientShiftDetails.tsx -> useShifts Hook: updateShiftStatus(shiftId, status)
-    // UC5 Sequence Step 6: useShifts Hook -> Shifts: updateShiftStatus(shiftId, status)
-    // UC5 Sequence Step 7: Shifts -> useShifts Hook: response(updated_count)
-    // UC5 Sequence Step 8: useShifts Hook -> ClientShiftDetails.tsx: response(updated_count)
+    // UC8 Sequence Step 4: Employer -> ClientShiftDetails.tsx: click(cancel_button)
+    // UC8 Sequence Step 5: ClientShiftDetails.tsx -> useShifts Hook: updateShiftStatus(shiftId, status)
+    // UC8 Sequence Step 6: useShifts Hook -> Shifts: updateShiftStatus(shiftId, status)
+    // UC8 Sequence Step 7: Shifts -> useShifts Hook: response(updated_count)
+    // UC8 Sequence Step 8: useShifts Hook -> ClientShiftDetails.tsx: response(updated_count)
     // Success Alt: shift is successfully cancelled (updated count is not 0)
     
     cy.contains("Test Shift").click();
@@ -91,7 +91,7 @@ describe("UC5 Shift Cancellation E2E test suite", () => {
     
 
   it("Unable to Cancel Completed Shifts", () => {
-    // UC5 Sequence Steps 4-8: Attempt cancellation of a completed shift
+    // U85 Sequence Steps 4-8: Attempt cancellation of a completed shift
     cy.contains("Friday Dinner Rush Support").click();
     cy.get(".fixed.inset-0").should("be.visible");
 
@@ -100,19 +100,19 @@ describe("UC5 Shift Cancellation E2E test suite", () => {
     });
   })
 
-  it("Complete UC5 end-to-end workflow verification", () => {
+  it("Complete UC8 end-to-end workflow verification", () => {
     // This test verifies the complete sequence diagram flow end-to-end
     cy.contains("Weekly Roster").should("be.visible");
     
-    // UC5 Sequence Steps 1-3: Navigation, rendering, and display
+    // UC8 Sequence Steps 1-3: Navigation, rendering, and display
     cy.contains("New Status Test").click();
     cy.get(".fixed.inset-0").should("be.visible");
     
-    // UC5 Sequence Steps 4-8: Complete cancellation workflow
+    // UC8 Sequence Steps 4-8: Complete cancellation workflow
     cy.get(".fixed.inset-0").within(() => {
       cy.contains("Cancel", { matchCase: false }).should("be.visible").click();
       cy.wait(2000);
-      cy.log("✅ Complete UC5 sequence diagram workflow executed");
+      cy.log("✅ Complete UC8 sequence diagram workflow executed");
 
     });
 
