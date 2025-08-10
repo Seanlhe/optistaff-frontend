@@ -11,7 +11,13 @@ import {
   createTestJobSeeker,
   cleanupTestData,
   ensureTestJobTypes,
-} from "../../src/test-setup";
+} from "../../../src/test-setup";
+
+
+// UC3 Mapping:
+// - UC3 Step 2: "fetchPreferences() -> SELECT FROM preferences WHERE user_id" (no rows triggers default creation in app layer)
+// - UC3 Step 5: "savePreferences() -> CALL upsert_user_preferences(...)" (this file focuses on defaults via create_default_preferences)
+// - Note: These tests validate DB defaults and idempotency used by the UC3 flow when preferences are missing.
 
 describe("create_default_preferences - Database Function Unit Tests", () => {
   beforeEach(async () => {
@@ -132,7 +138,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
   describe("Invalid Input Equivalence Classes", () => {
     test("handles null user_id gracefully", async () => {
       // Act
-      const { data, error } = await testSupabase.rpc(
+      const { error } = await testSupabase.rpc(
         "create_default_preferences",
         {
           p_user_id: null,
@@ -145,7 +151,7 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
 
     test("handles invalid UUID format", async () => {
       // Act
-      const { data, error } = await testSupabase.rpc(
+      const { error } = await testSupabase.rpc(
         "create_default_preferences",
         {
           p_user_id: "invalid-uuid-format",
@@ -171,14 +177,14 @@ describe("create_default_preferences - Database Function Unit Tests", () => {
       // Assert - Should fail due to foreign key constraint
       // (preferences table enforces FK to job_seekers)
       expect(error).not.toBeNull();
-      expect(error.code).toBe("23503"); // Foreign key violation
-      expect(error.message).toContain("violates foreign key constraint");
+      expect(error?.code).toBe("23503"); // Foreign key violation
+      expect(error?.message).toContain("violates foreign key constraint");
       expect(data).toBeNull();
     });
 
     test("handles empty string user_id", async () => {
       // Act
-      const { data, error } = await testSupabase.rpc(
+      const { error } = await testSupabase.rpc(
         "create_default_preferences",
         {
           p_user_id: "",
