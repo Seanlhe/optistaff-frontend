@@ -94,7 +94,6 @@ export const useAvailability = () => {
         return false;
       }
 
-      // ✅ Always delete existing availability for this user + cycle
       const { error: deleteError } = await supabase
         .from("availability")
         .delete()
