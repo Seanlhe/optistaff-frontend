@@ -411,7 +411,7 @@ describe("ClientRoster Page", () => {
 
   // Section 5: Shift Selection and Details
   describe("Shift Selection and Details", () => {
-    it("opens shift details when shift is clicked, UC5 Step 1-2", async () => {
+    it("opens shift details when shift is clicked, UC5 Step 1-3", async () => {
       render(<ClientRoster />);
 
       const shiftButton = screen.getByTestId("shift-shift-1");
@@ -556,7 +556,7 @@ describe("ClientRoster Page", () => {
 
   // Section 7: Shift Cancellation
   describe("Shift Cancellation", () => {
-    it("cancels shift when cancel button clicked, UC5 Step 5", async () => {
+    it("cancels shift when cancel button clicked, UC5 Step 4", async () => {
       render(<ClientRoster />);
 
       // Open shift details
