@@ -49,17 +49,22 @@ export default function ClientShiftDetails({
   const handleCancel = async () => {
     if (!onCancel) return;
 
+    // Clear any previous error messages
+    setCancelError(null);
+
     try {
       setIsCancelling(true);
       const result = await onCancel(shiftData.shift_id);
 
-      if (result.updated_count === 0) {
+      // Handle case where result is undefined (auth error, etc.)
+      if (!result || result.updated_count === 0) {
         setCancelError("Failed to cancel shift. Please try again.");
-        return;
-      }
-
-      if (onClose) {
-        onClose();
+        // Don't return here - let the finally block execute
+      } else {
+        // Only close modal on successful cancellation
+        if (onClose) {
+          onClose();
+        }
       }
     } catch (error) {
       console.error("Failed to cancel shift:", error);
