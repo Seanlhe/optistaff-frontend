@@ -161,6 +161,12 @@ export default function ClientRoster() {
         shift_id,
         StatusEnum.CancelByEmployer
       );
+      // Only close modal if cancellation succeeded
+      if (result && result.updated_count > 0) {
+        setSelectedShift(null);
+        refetchShifts();
+      }
+      // If failed, do NOT change selectedShift -- let error message show
       return result;
     } catch (error) {
       console.error("Failed to cancel shift:", error);
