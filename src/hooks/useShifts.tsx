@@ -7,7 +7,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { supabase } from "../integrations/supabase/client";
 import { Shift, StatusEnum } from "../types/hooks";
-import { set } from "date-fns";
 
 export const useShifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
