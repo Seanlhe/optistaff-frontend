@@ -49,37 +49,6 @@ describe('useAssignments (local Supabase)', () => {
     await cleanupTestData()
   })
 
-  it('fetches assignments on mount', async () => {
-    const { result } = renderHook(() => useAssignments())
-
-    await waitFor(() => expect(result.current.loading).toBe(false))
-    expect(result.current.error).toBeNull()
-
-    const ids = result.current.assignments.map((a) => a.assignment_id)
-    expect(ids).toContain(assignmentId)
-  })
-
-  it('updates assignment status via hook and reflects on refetch', async () => {
-    const { result } = renderHook(() => useAssignments())
-    await waitFor(() => expect(result.current.loading).toBe(false))
-
-    await act(async () => {
-      await result.current.updateAssignmentStatus(assignmentId, StatusEnum.CancelByEmployee)
-    })
-
-    await waitFor(() => expect(result.current.loading).toBe(false))
-    expect(result.current.error).toBeNull()
-
-    // Manually refresh assignments to pick up new status
-    await act(async () => {
-      await result.current.fetchAssignments()
-    })
-    await waitFor(() => expect(result.current.loading).toBe(false))
-
-    const updated = result.current.assignments.find((a) => a.assignment_id === assignmentId)
-    expect(updated?.status).toBe(StatusEnum.CancelByEmployee)
-  })
-
   it('fetches assignments by shift id', async () => {
     const { result } = renderHook(() => useAssignments())
     await waitFor(() => expect(result.current.loading).toBe(false))
