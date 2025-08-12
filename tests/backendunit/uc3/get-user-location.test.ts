@@ -11,7 +11,12 @@ import {
   createTestJobSeeker,
   cleanupTestData,
   ensureTestJobTypes,
-} from "../../src/test-setup";
+} from "../../../src/test-setup";
+
+
+// UC3 Mapping:
+// - UC3 Location: "get_user_location() -> location data for map display" (implementation addition supporting UC3 map/radius UI)
+// - UC3 Step 2: Location displayed with preferences page; data is sourced via DB RPC get_user_location
 
 describe("get_user_location - Database Function Unit Tests (Optimized)", () => {
   beforeEach(async () => {
@@ -134,7 +139,7 @@ describe("get_user_location - Database Function Unit Tests (Optimized)", () => {
     });
 
     test("handles invalid UUID format", async () => {
-      const { data, error } = await testSupabase.rpc("get_user_location", {
+      const { error } = await testSupabase.rpc("get_user_location", {
         p_user_id: "invalid-uuid",
       });
 

@@ -1,6 +1,5 @@
 // Test setup for local Supabase testing
 import { createClient } from "@supabase/supabase-js";
-import { beforeAll, afterAll, beforeEach, afterEach } from "vitest";
 import { StatusEnum } from "./types/hooks";
 
 // Local Supabase configuration
@@ -20,50 +19,33 @@ export const cleanupTestData = async () => {
     const { data: users } = await testSupabaseAdmin.auth.admin.listUsers();
     if (users?.users) {
       for (const user of users.users) {
-        // Delete test users (broader pattern to catch all test emails)
-        if (user.email?.includes("test") || 
-            user.email?.includes("@test.com") || 
-            user.email?.includes("@company.com") ||
-            user.email?.includes("@example.com") ||
-            user.email?.includes("minimal@") ||
-            user.email?.includes("invaliddate@") ||
-            user.email?.includes("unknown@") ||
-            user.email?.includes("cascade@") ||
-            user.email?.includes("jobseeker@") ||
-            user.email?.includes("employer@")) {
-          await testSupabaseAdmin.auth.admin.deleteUser(user.id);
-        }
+        await testSupabaseAdmin.auth.admin.deleteUser(user.id);
       }
     }
 
     // Wait a moment for cascades to complete
     await new Promise(resolve => setTimeout(resolve, 100));
-    
     // Clean up remaining records in dependency order (just in case cascade didn't work)
-    await testSupabase
-      .from("feedback")
-      .delete()
-      .neq("feedback_id", "00000000-0000-0000-0000-000000000000");
     await testSupabase
       .from("assignments")
       .delete()
       .neq("assignment_id", "00000000-0000-0000-0000-000000000000");
     await testSupabase
-      .from("shifts")
-      .delete()
-      .neq("shift_id", "00000000-0000-0000-0000-000000000000");
-    await testSupabase
       .from("availability")
       .delete()
       .neq("availability_id", "00000000-0000-0000-0000-000000000000");
     await testSupabase
-      .from("preferences")
+      .from("availability_templates")
       .delete()
-      .neq("preference_id", "00000000-0000-0000-0000-000000000000");
+      .neq("template_id", "00000000-0000-0000-0000-000000000000");
     await testSupabase
-      .from("job_types")
+      .from("clients")
       .delete()
-      .neq("job_type_id", "00000000-0000-0000-0000-000000000000");
+      .neq("client_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("feedback")
+      .delete()
+      .neq("feedback_id", "00000000-0000-0000-0000-000000000000");
     await testSupabase
       .from("job_categories")
       .delete()
@@ -73,12 +55,27 @@ export const cleanupTestData = async () => {
       .delete()
       .neq("user_id", "00000000-0000-0000-0000-000000000000");
     await testSupabase
-      .from("clients")
+      .from("job_types")
       .delete()
-      .neq("client_id", "00000000-0000-0000-0000-000000000000");
+      .neq("job_type_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("payouts")
+      .delete()
+      .neq("payout_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("preferences")
+      .delete()
+      .neq("preference_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("shifts")
+      .delete()
+      .neq("shift_id", "00000000-0000-0000-0000-000000000000");
+    await testSupabase
+      .from("status")
+      .delete()
+      .neq("status_id", "00000000-0000-0000-0000-000000000000");
   } catch (error) {
     console.warn("Cleanup error:", error);
-    // Continue with test execution even if cleanup fails
   }
 };
 
@@ -147,7 +144,7 @@ export const seedRequiredData = async () => {
   await ensureStatusTypes();
 };
 
-export const ensureStatusTypes = async () => {
+const ensureStatusTypes = async () => {
   const { data: existingStatuses } = await testSupabase
     .from("status")
     .select("name")
@@ -179,7 +176,7 @@ export const ensureTestStatuses = async () => {
     .in("status_id", [1, 2, 3, 4, 5]);
 
   const existingStatusIds = existingStatuses?.map((s) => s.status_id) || [];
-  
+
   const requiredStatuses = [
     { status_id: 1, name: "OPEN" },
     { status_id: 2, name: "IN_PROGRESS" },
@@ -203,7 +200,7 @@ export const ensureTestStatuses = async () => {
   return requiredStatuses.map((s) => s.name);
 };
 
-export const ensureTestJobTypes = async () => {
+const ensureTestJobTypes = async () => {
   // First, get an existing category to use for test job types
   const { data: categories, error: categoryError } = await testSupabase
     .from("job_categories")
@@ -368,33 +365,3 @@ export const createTestAssignment = async (
   if (error) throw error;
   return data;
 };
-
-// Global test setup
-beforeAll(async () => {
-  // Verify local Supabase is running
-  const { error } = await testSupabase
-    .from("job_categories")
-    .select("count")
-    .limit(1);
-  if (error) {
-    throw new Error(
-      "Local Supabase is not running. Run `supabase start` first.",
-    );
-  }
-  
-  // Ensure required status records exist
-  await ensureTestStatuses();
-  
-  // Ensure test job types exist
-  await ensureTestJobTypes();
-});
-
-beforeEach(async () => {
-  // Clean database before each test
-  await cleanupTestData();
-});
-
-afterEach(async () => {
-  // Clean database after each test
-  await cleanupTestData();
-});

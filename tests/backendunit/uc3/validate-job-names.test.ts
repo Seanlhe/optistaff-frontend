@@ -10,7 +10,12 @@ import {
   testSupabase,
   cleanupTestData,
   ensureTestJobTypes,
-} from "../../src/test-setup";
+} from "../../../src/test-setup";
+
+
+// UC3 Mapping:
+// - UC3 Step 3: "fetchJobTypes() -> SELECT FROM job_types WHERE is_active" (data source for validation)
+// - UC3 Step 4: "validate_preferences() -> validate job names and constraints" (validate_job_names RPC)
 
 describe("validate_job_names - Database Function Unit Tests (Optimized)", () => {
   beforeEach(async () => {
@@ -54,7 +59,7 @@ describe("validate_job_names - Database Function Unit Tests (Optimized)", () => 
         .select()
         .single();
 
-      const jobNames = [];
+      const jobNames: string[] = [];
       for (let i = 1; i <= 10; i++) {
         const jobName = `Job${i}`;
         await testSupabase.from("job_types").insert({
@@ -63,7 +68,7 @@ describe("validate_job_names - Database Function Unit Tests (Optimized)", () => 
           description: `Job ${i} description`,
           is_active: true,
         });
-        jobNames.push(jobName);
+        jobNames.push(jobName as string);
       }
 
       const { data, error } = await testSupabase.rpc("validate_job_names", {

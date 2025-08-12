@@ -52,8 +52,6 @@ sequenceDiagram
         end
 
         AuthUsers-->>Controller: signup_success(user_data)
-        Controller->>+Utils: formatUserData(user_data)
-        Utils-->>-Controller: formatted_user_data
         Controller-->>View: account_created_success
         View-->>User: "Account created! Verification email sent"
 
@@ -82,7 +80,6 @@ sequenceDiagram
 ### Utils Layer
 
 - **validateSignupForm()**: Validates email format, password strength, required fields
-- **formatUserData()**: Formats user data for consistent storage
 - Handles client-side validation before API calls
 
 ### Controller Layer (useAuth)

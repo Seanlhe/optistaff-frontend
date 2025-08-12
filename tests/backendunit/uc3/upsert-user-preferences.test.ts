@@ -11,7 +11,12 @@ import {
   createTestJobSeeker,
   cleanupTestData,
   ensureTestJobTypes,
-} from "../../src/test-setup";
+} from "../../../src/test-setup";
+
+
+// UC3 Mapping:
+// - UC3 Step 4: "validate_preferences() -> validate job names and constraints" (via DB validation in function plus separate validate_job_names)
+// - UC3 Step 5: "savePreferences() -> CALL upsert_user_preferences(...)" (primary save path)
 
 describe("upsert_user_preferences - Database Function Unit Tests", () => {
   beforeEach(async () => {
@@ -149,7 +154,7 @@ describe("upsert_user_preferences - Database Function Unit Tests", () => {
   describe("Edge Cases", () => {
     test("handles invalid UUID format", async () => {
       // Act
-      const { data, error } = await testSupabase.rpc(
+      const { error } = await testSupabase.rpc(
         "upsert_user_preferences",
         {
           p_target_user_id: "invalid-uuid",

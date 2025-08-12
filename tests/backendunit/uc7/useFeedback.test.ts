@@ -1,73 +1,56 @@
-import { describe, test, expect, beforeAll, afterAll } from "vitest";
+import { describe, test, expect, beforeEach, afterAll } from "vitest";
 import {
   testSupabase,
-  testSupabaseAdmin,
   cleanupTestData,
   createTestJobSeeker,
   createTestAssignment,
   createTestShift,
+  createTestClient,
+  seedRequiredData,
 } from "../../../src/test-setup";
 
 let clientId: string;
 let jobSeekerId: string;
 let assignmentId: string;
 
-// Re-implement createTestClientWithAuth here if not exported:
-const createTestClientWithAuth = async (overrides = {}) => {
-  const testEmail = `test-client-${crypto.randomUUID()}@example.com`;
-  const testPassword = "testpassword123";
-
-  // Create user in auth system
-  const { data: authData, error: authError } =
-    await testSupabaseAdmin.auth.admin.createUser({
-      email: testEmail,
-      password: testPassword,
-      email_confirm: true,
-    });
-  if (authError) throw authError;
-
-  // Insert client profile linked to auth user id
-  const defaultData = {
-    client_id: authData.user.id,
-    company_name: "Test Company",
-    first_name: "Test",
-    last_name: "Client",
-    phone: "87654321",
-    contact_email: testEmail,
-    ...overrides,
-  };
-
-  const { data, error } = await testSupabase
-    .from("clients")
-    .insert(defaultData)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-};
-
-beforeAll(async () => {
-  await cleanupTestData();
-
-  const client = await createTestClientWithAuth();
-  clientId = client.client_id;
-
-  const jobSeeker = await createTestJobSeeker();
-  jobSeekerId = jobSeeker.user_id;
-
-  // Create a valid shift before assignment (to satisfy FK constraint)
-  const shift = await createTestShift(clientId);
-
-  const assignment = await createTestAssignment(jobSeekerId, shift.shift_id);
-  assignmentId = assignment.assignment_id;
-});
-
-afterAll(async () => {
-  await cleanupTestData();
-});
-
 describe("feedback integration tests", () => {
+  beforeEach(async () => {
+    // Clean up and seed required data before each test
+    await cleanupTestData();
+    await seedRequiredData();
+
+    // Create fresh test data
+    const client = await createTestClient();
+    clientId = client.client_id;
+
+    const jobSeeker = await createTestJobSeeker();
+    jobSeekerId = jobSeeker.user_id;
+
+    const shift = await createTestShift(clientId);
+    
+    const assignment = await createTestAssignment(jobSeekerId, shift.shift_id);
+    assignmentId = assignment.assignment_id;
+
+    // Verify assignment exists and has proper relationships
+    const { data, error } = await testSupabase
+      .from('assignments')
+      .select(`
+        *,
+        shifts!inner (*),
+        job_seekers!inner (*)
+      `)
+      .eq('assignment_id', assignmentId)
+      .single();
+    
+    if (error || !data) {
+      throw new Error(`Failed to verify assignment setup: ${error?.message || 'No data found'}`);
+    }
+  });
+
+  afterAll(async () => {
+    await cleanupTestData();
+  });
+
   test("inserts valid feedback record", async () => {
     const feedback = {
       assignment_id: assignmentId,

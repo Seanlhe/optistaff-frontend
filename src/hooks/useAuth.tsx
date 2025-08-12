@@ -233,12 +233,33 @@ export const useAuth = () => {
         await updateUserState(data.user, true); // Navigate after successful login
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Login failed";
+      // Extract a raw error message from different possible error shapes
+      const rawMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object" && error && (error as any).message
+          ? String((error as any).message)
+          : "";
+
+      // Map Supabase auth error messages to UC2 user-friendly messages
+      const mapAuthErrorMessage = (errorMessage: string): string => {
+        const msg = (errorMessage || "").toLowerCase();
+        if (msg.includes("invalid login credentials")) {
+          return "Invalid credentials";
+        }
+        if (msg.includes("email not confirmed")) {
+          return "Please verify your email";
+        }
+        // Default to original message if available, otherwise a generic fallback
+        return errorMessage || "Login failed";
+      };
+
+      const friendlyMessage = mapAuthErrorMessage(rawMessage);
+
       setAuthState((prev) => ({
         ...prev,
         loading: false,
-        error: errorMessage,
+        error: friendlyMessage,
       }));
     }
   };
