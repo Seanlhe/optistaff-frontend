@@ -1114,3 +1114,116 @@
 | Input | Enter template name, click Save |
 | Expected Output | Input field value becomes empty string |
 | Test Type | Unit Test |
+
+---
+
+**UC4: Indicate Availability — Integration Tests**
+
+Below are the integration tests for UC4 documented using the established two-column table format. Test IDs follow TC-UC4-I\[step\].\[subtest\], where \[step\] maps to the UC4 sequence diagram steps (1–27) from CompiledUC.md.
+
+---
+
+File: tests/integration/uc4/JSPref-tab-navigation.test.tsx
+
+| Test Case ID | TC-UC4-I1.1 |
+| :---- | :---- |
+| Feature | Tab navigation to availability |
+| Component | JSPref page + tab switching |
+| Test Description | Navigate to availability tab and verify component switching |
+| Input | Render JSPref, click Availability tab |
+| Expected Output | Availability tab active, Availability component visible, Preferences component hidden |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I1.2 |
+| :---- | :---- |
+| Feature | Tab state persistence |
+| Component | JSPref page |
+| Test Description | Tab state maintains across multiple clicks |
+| Input | Click same tab multiple times |
+| Expected Output | Tab state remains consistent, correct component always visible |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I1.3 |
+| :---- | :---- |
+| Feature | Tab switching error handling |
+| Component | JSPref page |
+| Test Description | System handles tab switching errors gracefully |
+| Input | Rapid tab switching between Preferences and Availability |
+| Expected Output | Component remains functional, no crashes, correct tab state maintained |
+| Test Type | Integration |
+
+---
+
+File: tests/integration/uc4/Calendar-integration.test.tsx
+
+| Test Case ID | TC-UC4-I1.1 |
+| :---- | :---- |
+| Feature | Calendar rendering and navigation |
+| Component | Calendar + useAvailability hook |
+| Test Description | Navigate to availability and load calendar - renders calendar with week view and navigation controls |
+| Input | Render Calendar component |
+| Expected Output | Today/Save/Templates buttons visible, week days displayed, time slots rendered |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I2.1 |
+| :---- | :---- |
+| Feature | Calendar interface display |
+| Component | Calendar + date navigation |
+| Test Description | Render calendar with availability interface - user can navigate between weeks |
+| Input | Click previous/next week buttons |
+| Expected Output | Calendar updates week display, month heading changes, no crashes |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I3.1 |
+| :---- | :---- |
+| Feature | Load existing availability data |
+| Component | Calendar + useAvailability hook |
+| Test Description | Get availability data from database - calendar loads and displays existing availability |
+| Input | Component mount with authenticated user |
+| Expected Output | getAvailability called, existing events displayed on calendar |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I7.1 |
+| :---- | :---- |
+| Feature | Show availability interface |
+| Component | Calendar + UI components |
+| Test Description | Display interactive calendar - calendar displays complete interface with time slots and controls |
+| Input | Render Calendar after data load |
+| Expected Output | Week view displayed, time slots clickable, navigation functional |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I17.1 |
+| :---- | :---- |
+| Feature | Save availability to database |
+| Component | Calendar + useAvailability hook |
+| Test Description | Save availability - save button triggers availability data save to Supabase |
+| Input | Create availability slots, click Save button |
+| Expected Output | setAvailability called, save completes without errors |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I17.2 |
+| :---- | :---- |
+| Feature | Save error handling |
+| Component | Calendar + error handling |
+| Test Description | Handle save errors gracefully - system handles save errors gracefully |
+| Input | Create slots, click Save (with potential errors) |
+| Expected Output | Component remains functional, no crashes, error handled gracefully |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I22.1 |
+| :---- | :---- |
+| Feature | Create availability slot |
+| Component | Calendar + event creation |
+| Test Description | Manual time slot creation - user can create availability slots by double-clicking time slots |
+| Input | Double-click on calendar time slot |
+| Expected Output | New CalendarEvent created and displayed on calendar |
+| Test Type | Integration |
+
+| Test Case ID | TC-UC4-I22.2 |
+| :---- | :---- |
+| Feature | Delete availability slot |
+| Component | Calendar + event deletion |
+| Test Description | Manual time slot modification - user can delete availability slots by double-clicking events |
+| Input | Create event, then double-click the created event |
+| Expected Output | Event removed from calendar display |
+| Test Type | Integration |
