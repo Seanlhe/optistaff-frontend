@@ -25,6 +25,7 @@ const Preferences = () => {
         <div className="py-8">
           <div className="inline-flex p-1 bg-secondary-bg rounded-lg gap-1">
             <button
+              data-testid="preferences-tab"
               onClick={() => handleTabChange("PreferencesForm")}
               className={`px-3 py-2 rounded-lg text-sm ${
                 activeTab === "PreferencesForm"
@@ -36,6 +37,7 @@ const Preferences = () => {
             </button>
 
             <button
+              data-testid="availability-tab"
               onClick={() => handleTabChange("Availability")}
               className={`px-3 py-2 rounded-lg text-sm ${
                 activeTab === "Availability"

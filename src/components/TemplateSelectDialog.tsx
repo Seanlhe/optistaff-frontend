@@ -40,7 +40,7 @@ export const TemplateSelectDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-secondary-text/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-secondary-text/50 flex items-center justify-center z-50" data-testid="template-select-modal">
       <div className="bg-card-color rounded-lg shadow-xl p-6 w-full max-w-md mx-4 border border-border">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-bold text-primary-text">Templates</h2>
@@ -48,6 +48,7 @@ export const TemplateSelectDialog = ({
             onClick={onClose}
             className="p-1 hover:bg-bg rounded transition-colors"
             disabled={loading}
+            data-testid="template-modal-close-button"
           >
             <X className="h-5 w-5 text-secondary-text" />
           </button>
@@ -59,6 +60,7 @@ export const TemplateSelectDialog = ({
             onClick={() => onSaveTemplate && onSaveTemplate()}
             className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors disabled:opacity-50"
             disabled={loading}
+            data-testid="save-new-template-button"
           >
             Save as New Template
           </button>
@@ -108,6 +110,7 @@ export const TemplateSelectDialog = ({
                       }
                     }}
                     disabled={buttonLoading === `delete-${template.template_id}`}
+                    data-testid="template-delete-button"
                   >
                     {buttonLoading === `delete-${template.template_id}` ? "Deleting..." : "Delete"}
                   </button>
@@ -123,6 +126,7 @@ export const TemplateSelectDialog = ({
                       }
                     }}
                     disabled={buttonLoading === `use-${template.template_id}`}
+                    data-testid="template-use-button"
                   >
                     {buttonLoading === `use-${template.template_id}` ? "Loading..." : "Use"}
                   </button>

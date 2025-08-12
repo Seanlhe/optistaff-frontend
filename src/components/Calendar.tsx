@@ -257,10 +257,11 @@ const Calendar = () => {
   };
 
   return (
-    <div>
-      <header className="flex items-center justify-between p-4 border-b border-border bg-card-color">
+    <div data-testid="availability-calendar">
+      <header data-testid="calendar-header" className="flex items-center justify-between p-4 border-b border-border bg-card-color">
         <div className="flex items-center">
           <button
+            data-testid="prev-week-button"
             className="p-2 rounded-md hover:bg-bg transition-colors"
             onClick={() => navigateWeek("prev")}
           >
@@ -268,6 +269,7 @@ const Calendar = () => {
           </button>
 
           <button
+            data-testid="next-week-button"
             className="p-2 rounded-md hover:bg-bg transition-colors"
             onClick={() => navigateWeek("next")}
           >
@@ -281,6 +283,7 @@ const Calendar = () => {
 
         <div className="flex items-center gap-2">
           <button
+            data-testid="today-button"
             className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors"
             onClick={() => setCurrentWeek(new Date())}
           >
@@ -288,6 +291,7 @@ const Calendar = () => {
           </button>
 
           <button
+            data-testid="templates-button"
             className="px-4 py-2 text-sm text-secondary-text border border-border rounded-md hover:bg-bg transition-colors flex items-center gap-2"
             onClick={() => setShowTemplateSelectDialog(true)}
           >
@@ -296,6 +300,7 @@ const Calendar = () => {
           </button>
 
           <button
+            data-testid="save-availability-button"
             className="px-4 py-2 text-sm bg-primary-blue text-white rounded-md hover:bg-primary-blue/80 flex items-center gap-2"
             onClick={handleSaveAvailability}
             disabled={saveLoading}
@@ -309,6 +314,7 @@ const Calendar = () => {
             onClick={handleRefreshAvailability}
             disabled={fetchLoading}
             title="Refresh"
+            data-testid="refresh-availability-button"
           >
             <RefreshCw
               className={`h-4 w-4 ${fetchLoading ? "animate-spin" : ""}`}
@@ -323,9 +329,9 @@ const Calendar = () => {
         </div>
       )}
 
-      <div className="flex flex-1 overflow-auto">
+      <div data-testid="calendar-grid" className="flex flex-1 overflow-auto">
         {/* Time Column (Left Side) */}
-        <div className="w-16 border-r border-border bg-secondary-text/5">
+        <div data-testid="time-column" className="w-16 border-r border-border bg-secondary-text/5">
           <div className="h-12 border-b border-border"></div>
 
           {HOURS.map((hour) => (
@@ -374,6 +380,7 @@ const Calendar = () => {
                 {HOURS.map((hour) => (
                   <div
                     key={hour}
+                    data-testid={`time-slot-${DAYS_OF_WEEK[index].toLowerCase()}-${hour}`}
                     className="h-12 border-b border-border hover:bg-bg cursor-pointer"
                     onDoubleClick={() =>
                       isValidDate ? handleDoubleClick(day, hour) : null
