@@ -4,7 +4,7 @@ import { PreferenceJobType } from "../../../src/components/PreferencesJobType";
 import { useJobTypes } from "../../../src/hooks/useJobTypes";
 import { PreferencesFormData, JobTypesByCategory } from "../../../src/types/hooks";
 
-vi.mock("../../src/hooks/useJobTypes");
+vi.mock("../../../src/hooks/useJobTypes");
 
 describe("PreferenceJobType", () => {
   const mockSetFormData = vi.fn();

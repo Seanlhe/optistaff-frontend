@@ -7,10 +7,10 @@ import { PreferencesFormData } from "../../../src/types/hooks";
 // --- Mocks ---
 
 // Mock the custom hook to isolate the component.
-vi.mock("../../src/hooks/usePreferencesForm");
+vi.mock("../../../src/hooks/usePreferencesForm");
 
 // Mock child components to simplify the test.
-vi.mock("../../src/components/LocationAwareMap", () => ({
+vi.mock("../../../src/components/LocationAwareMap", () => ({
   LocationAwareMap: vi.fn(({ onLocationError, onRadiusChange }) => (
     <div data-testid="mock-map">
       <button onClick={() => onRadiusChange(25)}>Change Radius</button>
@@ -28,16 +28,16 @@ vi.mock("../../src/components/LocationAwareMap", () => ({
     </div>
   )),
 }));
-vi.mock("../../src/components/PreferencesMaximum", () => ({
+vi.mock("../../../src/components/PreferencesMaximum", () => ({
   default: vi.fn(() => <div data-testid="mock-prefs-max"></div>),
 }));
-vi.mock("../../src/components/PreferencesPay", () => ({
+vi.mock("../../../src/components/PreferencesPay", () => ({
   default: vi.fn(() => <div data-testid="mock-prefs-pay"></div>),
 }));
-vi.mock("../../src/components/PreferencesJobType", () => ({
+vi.mock("../../../src/components/PreferencesJobType", () => ({
   default: vi.fn(() => <div data-testid="mock-prefs-jobtype"></div>),
 }));
-vi.mock("../../src/components/LocationErrorBoundary", () => ({
+vi.mock("../../../src/components/LocationErrorBoundary", () => ({
   default: vi.fn(({ children }) => <>{children}</>),
 }));
 

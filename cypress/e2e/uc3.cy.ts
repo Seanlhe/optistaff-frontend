@@ -116,12 +116,14 @@ describe('UC3 Set Preferences E2E test suite', () => {
 
     // Test input modification by changing to different values
     cy.get('[data-testid="max-hours-week-input"]')
-      .clear({ force: true })
-      .type('35', { force: true })
+      .clear()
+      .should('have.value', '')
+      .type('35')
 
     cy.get('[data-testid="max-hours-shift-input"]')
-      .clear({ force: true })
-      .type('7', { force: true })
+      .clear()
+      .should('have.value', '')
+      .type('7')
 
     // Verify values were changed successfully
     cy.get('[data-testid="max-hours-week-input"]').should('have.value', '35')

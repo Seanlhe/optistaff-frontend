@@ -12,12 +12,12 @@ const mockUseAssignments = {
   fetchWeeklyEarnings: vi.fn(),
 };
 
-vi.mock("../../src/hooks/useAssignments", () => ({
+vi.mock("../../../src/hooks/useAssignments", () => ({
   useAssignments: () => mockUseAssignments,
 }));
 
 // Mock StatsCard component
-vi.mock("../../src/components/StatsCard", () => ({
+vi.mock("../../../src/components/StatsCard", () => ({
   default: ({ title, value, icon }: { title: string; value: string; icon?: React.ReactNode }) => (
     <div data-testid="stats-card">
       <span data-testid="stats-title">{title}</span>
@@ -30,6 +30,15 @@ vi.mock("../../src/components/StatsCard", () => ({
 // Mock Lucide React icons
 vi.mock("lucide-react", () => ({
   DollarSign: () => <div data-testid="dollar-sign-icon" />,
+  X: () => <div data-testid="x-icon" />,
+  XIcon: () => <div data-testid="x-icon" />,
+  Calendar: () => <div data-testid="calendar-icon" />,
+  Star: () => <div data-testid="star-icon" />,
+  Clock: () => <div data-testid="clock-icon" />,
+  MapPin: () => <div data-testid="map-pin-icon" />,
+  Phone: () => <div data-testid="phone-icon" />,
+  Mail: () => <div data-testid="mail-icon" />,
+  Briefcase: () => <div data-testid="briefcase-icon" />,
 }));
 
 describe("PayoutWeeklySummaryCard", () => {

@@ -8,6 +8,15 @@ import type { TemplateNameDialogProps } from "../../../src/types/components";
 // Mock Lucide React icons
 vi.mock("lucide-react", () => ({
   X: () => <div data-testid="x-icon" />,
+  XIcon: () => <div data-testid="x-icon" />,
+  Calendar: () => <div data-testid="calendar-icon" />,
+  Star: () => <div data-testid="star-icon" />,
+  DollarSign: () => <div data-testid="dollar-sign-icon" />,
+  Clock: () => <div data-testid="clock-icon" />,
+  MapPin: () => <div data-testid="map-pin-icon" />,
+  Phone: () => <div data-testid="phone-icon" />,
+  Mail: () => <div data-testid="mail-icon" />,
+  Briefcase: () => <div data-testid="briefcase-icon" />,
 }));
 
 describe("TemplateNameDialog", () => {

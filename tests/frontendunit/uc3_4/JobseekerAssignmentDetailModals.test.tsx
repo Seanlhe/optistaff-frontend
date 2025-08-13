@@ -68,6 +68,9 @@ vi.mock("lucide-react", () => ({
   Coffee: () => <div data-testid="coffee-icon" />,
   User: () => <div data-testid="user-icon" />,
   Star: () => <div data-testid="star-icon" />,
+  XIcon: () => <div data-testid="x-icon" />,
+  X: () => <div data-testid="x-icon" />,
+  Calendar: () => <div data-testid="calendar-icon" />,
 }));
 
 // Mock StatusEnum
