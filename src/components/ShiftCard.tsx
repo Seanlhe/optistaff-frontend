@@ -70,14 +70,12 @@ export default function ShiftCard({
         >
           Manage
         </button>
-        {shift.status !== "completed" && (
-          <button
-            className="hover:cursor-pointer hover:bg-red bg-red-dark text-white px-3 py-2 rounded-md text-sm mt-0.5"
-            onClick={() => handleDelete()}
-          >
+        <button
+          className="hover:cursor-pointer hover:bg-red bg-red-dark text-white px-3 py-2 rounded-md text-sm mt-0.5"
+          onClick={() => handleDelete()}
+        >
             Delete
-          </button>
-        )}
+        </button>
       </div>
     </div>
   );
