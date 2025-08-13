@@ -200,7 +200,7 @@ export const ensureTestStatuses = async () => {
   return requiredStatuses.map((s) => s.name);
 };
 
-const ensureTestJobTypes = async () => {
+export const ensureTestJobTypes = async () => {
   // First, get an existing category to use for test job types
   const { data: categories, error: categoryError } = await testSupabase
     .from("job_categories")

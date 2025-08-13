@@ -1,5 +1,17 @@
 /**
- * Field-level validation utilities for real-time input validation
+ * Field-level validation u  // Check name validity in real-time
+  name: (value: string): { isValid: boolean; message?: string } => {
+    if (!value.trim()) {
+      return { isValid: false, message: "Must be at least 2 characters long" };
+    }
+    if (value.length < 2) {
+      return { isValid: false, message: "Must be at least 2 characters long" };
+    }
+    if (!/^[a-zA-Z\s]+$/.test(value)) {
+      return { isValid: false, message: "Can only contain letters and spaces" };
+    }
+    return { isValid: true };
+  },real-time input validation
  * These complement the business logic validation in authentication.tsx
  */
 
@@ -12,12 +24,13 @@ export const formatters = {
 
   // Only allow numeric characters for phone numbers
   phoneNumber: (value: string): string => {
-    return value.replace(/[^\d+\-\s()]/g, '');
+    return value.replace(/[^\d+\-\s()]/g, '').replace(/-+/g, '-');
   },
 
-  // Only allow numeric characters for postal codes
+  // Only allow numeric characters for postal codes and limit to 6 digits
   postalCode: (value: string): string => {
-    return value.replace(/[^\d]/g, '');
+    const digitsOnly = value.replace(/[^\d]/g, '');
+    return digitsOnly.substring(0, 6); // Limit to 6 digits
   },
 
   // Email formatting (basic cleanup)
@@ -31,13 +44,13 @@ export const fieldValidators = {
   // Check if name field has valid characters and length
   name: (value: string): { isValid: boolean; message?: string } => {
     if (!value.trim()) {
-      return { isValid: false, message: "This field is required" };
+      return { isValid: false, message: "Must be at least 2 characters long" };
     }
     if (value.length < 2) {
-      return { isValid: false, message: "Must be at least 2 characters" };
+      return { isValid: false, message: "Must be at least 2 characters long" };
     }
     if (!/^[a-zA-Z\s]+$/.test(value)) {
-      return { isValid: false, message: "Only letters and spaces allowed" };
+      return { isValid: false, message: "Can only contain letters and spaces" };
     }
     return { isValid: true };
   },
@@ -45,13 +58,13 @@ export const fieldValidators = {
   // Check phone number format as user types
   phoneNumber: (value: string): { isValid: boolean; message?: string } => {
     if (!value.trim()) {
-      return { isValid: false, message: "Phone number is required" };
+      return { isValid: false, message: "Must be at least 8 characters long" };
     }
     if (value.length < 8) {
-      return { isValid: false, message: "Phone number too short" };
+      return { isValid: false, message: "Must be at least 8 characters long" };
     }
     if (!/^[+]?[\d\s\-()]+$/.test(value)) {
-      return { isValid: false, message: "Invalid phone number format" };
+      return { isValid: false, message: "Can only contain numbers, spaces, dashes, parentheses, and plus sign" };
     }
     return { isValid: true };
   },
@@ -59,10 +72,10 @@ export const fieldValidators = {
   // Check postal code format
   postalCode: (value: string): { isValid: boolean; message?: string } => {
     if (!value.trim()) {
-      return { isValid: false, message: "Postal code is required" };
+      return { isValid: false, message: "Must be exactly 6 digits" };
     }
     if (!/^[0-9]{6}$/.test(value)) {
-      return { isValid: false, message: "Must be 6 digits" };
+      return { isValid: false, message: "Must be exactly 6 digits" };
     }
     return { isValid: true };
   },
@@ -70,10 +83,10 @@ export const fieldValidators = {
   // Company name validation
   companyName: (value: string): { isValid: boolean; message?: string } => {
     if (!value.trim()) {
-      return { isValid: false, message: "Company name is required" };
+      return { isValid: false, message: "Must be at least 2 characters long" };
     }
     if (value.length < 2) {
-      return { isValid: false, message: "Company name too short" };
+      return { isValid: false, message: "Must be at least 2 characters long" };
     }
     return { isValid: true };
   }
@@ -101,7 +114,7 @@ export const inputConstraints: Record<string, FieldConstraint> = {
     validator: fieldValidators.name
   },
   phoneNumber: {
-    maxLength: 15,
+    maxLength: 20,
     pattern: "[\\d+\\-\\s()]*",
     formatter: formatters.phoneNumber,
     validator: fieldValidators.phoneNumber
