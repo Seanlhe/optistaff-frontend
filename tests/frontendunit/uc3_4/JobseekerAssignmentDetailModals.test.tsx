@@ -10,7 +10,7 @@ const mockUseAssignments = {
   updateAssignmentStatus: vi.fn(),
 };
 
-vi.mock("../../src/hooks/useAssignments", () => ({
+vi.mock("../../../src/hooks/useAssignments", () => ({
   useAssignments: () => mockUseAssignments,
 }));
 
@@ -19,7 +19,7 @@ const mockUseFeedback = {
   fetchFeedbackReviewAssignID: vi.fn(),
 };
 
-vi.mock("../../src/hooks/useFeedback", () => ({
+vi.mock("../../../src/hooks/useFeedback", () => ({
   useFeedback: () => mockUseFeedback,
 }));
 
@@ -28,12 +28,12 @@ const mockUseAuth = {
   user: { id: "test-user-1", name: "Test User" },
 };
 
-vi.mock("../../src/hooks/useAuth", () => ({
+vi.mock("../../../src/hooks/useAuth", () => ({
   useAuth: () => mockUseAuth,
 }));
 
 // Mock UI components
-vi.mock("../../src/components/ui/button", () => ({
+vi.mock("../../../src/components/ui/button", () => ({
   Button: ({ children, onClick, className, variant, ...props }: any) => (
     <button 
       onClick={onClick} 
@@ -46,7 +46,7 @@ vi.mock("../../src/components/ui/button", () => ({
   ),
 }));
 
-vi.mock("../../src/components/ui/dialog", () => ({
+vi.mock("../../../src/components/ui/dialog", () => ({
   Dialog: ({ children, open, ...props }: any) => 
     open ? <div data-testid="dialog-container" {...props}>{children}</div> : null,
   DialogContent: ({ children, className, ...props }: any) => (
@@ -74,7 +74,7 @@ vi.mock("lucide-react", () => ({
 }));
 
 // Mock StatusEnum
-vi.mock("../../src/types/hooks", () => ({
+vi.mock("../../../src/types/hooks", () => ({
   StatusEnum: {
     CancelByEmployee: "cancel_by_employee",
     CancelByEmployer: "cancel_by_employer",
