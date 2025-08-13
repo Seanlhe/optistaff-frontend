@@ -6,7 +6,7 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 
@@ -17,7 +17,7 @@ import Calendar from "../../../src/components/Calendar";
 import { UI_Event } from "../../../src/types/hooks";
 
 // Mock Supabase client - support chaining for availability operations
-vi.mock("../../src/integrations/supabase/client", () => {
+vi.mock("../../../src/integrations/supabase/client", () => {
   const createMockChain = () => {
     let eqCallCount = 0;
     
@@ -53,7 +53,7 @@ vi.mock("../../src/integrations/supabase/client", () => {
 });
 
 // Mock useAuth hook - provide authenticated user
-vi.mock("../../src/hooks/useAuth", () => ({
+vi.mock("../../../src/hooks/useAuth", () => ({
   useAuth: vi.fn(() => ({
     user: { id: "test-user-id", email: "test@example.com", role: "jobseeker" },
     loading: false,
@@ -72,7 +72,9 @@ describe("Calendar Component Integration Tests", () => {
   describe("Calendar Rendering & Navigation", () => {
     // TC-UC4-I1-2,7-8: Navigate to availability and load calendar - User can view calendar interface
     test("TC-UC4-I1-2,7-8: renders calendar with week view and navigation controls", async () => {
-      render(<Calendar />);
+      await act(async () => {
+        render(<Calendar />);
+      });
 
       // Verify main calendar elements are present
       const todayButton = screen.getByRole("button", { name: /today/i });
@@ -94,15 +96,19 @@ describe("Calendar Component Integration Tests", () => {
       });
 
       // Verify time slots are rendered (check for at least some hour markers)
-      expect(screen.getByText("0:00")).toBeTruthy();
-      expect(screen.getByText("12:00")).toBeTruthy();
-      expect(screen.getByText("23:00")).toBeTruthy();
+      await waitFor(() => {
+        expect(screen.getByText("0:00")).toBeTruthy();
+        expect(screen.getByText("12:00")).toBeTruthy();
+        expect(screen.getByText("23:00")).toBeTruthy();
+      });
     });
 
     // TC-UC4-I7-8: Load existing availability data - User can navigate between weeks
     test("TC-UC4-I7-8: navigates between weeks when using navigation buttons", async () => {
       const user = userEvent.setup();
-      render(<Calendar />);
+      await act(async () => {
+        render(<Calendar />);
+      });
 
       // Get initial month/year display
       const monthDisplay = screen.getByRole("heading", { level: 1 });
@@ -114,13 +120,17 @@ describe("Calendar Component Integration Tests", () => {
       const nextWeekButton = allButtons[1]; // Second button should be next week
       
       // Click next week button - should not crash
-      await user.click(nextWeekButton);
+      await act(async () => {
+        await user.click(nextWeekButton);
+      });
 
       // Month display should still exist 
       expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
       
       // Click previous week button - should not crash
-      await user.click(prevWeekButton);
+      await act(async () => {
+        await user.click(prevWeekButton);
+      });
 
       // Calendar should still be functional
       expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
@@ -134,7 +144,9 @@ describe("Calendar Component Integration Tests", () => {
   describe("Availability Slot Management", () => {
     // TC-UC4-I22-24: Create/modify time slots - User can create availability slots
     test("TC-UC4-I22-24: creates availability slot on double-click", async () => {
-      render(<Calendar />);
+      await act(async () => {
+        render(<Calendar />);
+      });
 
       // Wait for component to fully load
       await waitFor(() => {
@@ -148,7 +160,9 @@ describe("Calendar Component Integration Tests", () => {
 
       // Double-click on the first available time slot
       const firstTimeSlot = timeSlots[0];
-      fireEvent.doubleClick(firstTimeSlot);
+      await act(async () => {
+        fireEvent.doubleClick(firstTimeSlot);
+      });
 
       // After double-click, a new event should be created
       // We can verify this by checking if a CalendarEvent component is rendered
@@ -161,7 +175,9 @@ describe("Calendar Component Integration Tests", () => {
 
     // TC-UC4-I22-24: Create/modify time slots - User can delete availability slots
     test("TC-UC4-I22-24: deletes availability slot on event double-click", async () => {
-      render(<Calendar />);
+      await act(async () => {
+        render(<Calendar />);
+      });
 
       // Wait for component to load
       await waitFor(() => {
@@ -171,7 +187,9 @@ describe("Calendar Component Integration Tests", () => {
       // First create an event by double-clicking a time slot
       const timeSlots = document.querySelectorAll(".h-12.border-b.border-border.hover\\:bg-bg.cursor-pointer");
       const firstTimeSlot = timeSlots[0];
-      fireEvent.doubleClick(firstTimeSlot);
+      await act(async () => {
+        fireEvent.doubleClick(firstTimeSlot);
+      });
 
       // Wait for event to be created
       await waitFor(() => {
@@ -183,7 +201,9 @@ describe("Calendar Component Integration Tests", () => {
       const calendarEvent = document.querySelector(".absolute.left-1.right-1.rounded.border.p-1.cursor-grab.select-none");
       expect(calendarEvent).toBeTruthy();
       
-      fireEvent.doubleClick(calendarEvent!);
+      await act(async () => {
+        fireEvent.doubleClick(calendarEvent!);
+      });
 
       // Event should be deleted
       await waitFor(() => {
@@ -201,7 +221,9 @@ describe("Calendar Component Integration Tests", () => {
     test("TC-UC4-I3-6: saves availability data to Supabase on Save button click", async () => {
       const user = userEvent.setup();
       
-      render(<Calendar />);
+      await act(async () => {
+        render(<Calendar />);
+      });
 
       // Wait for component to load
       await waitFor(() => {
@@ -211,7 +233,9 @@ describe("Calendar Component Integration Tests", () => {
       // Create an availability slot first
       const timeSlots = document.querySelectorAll(".h-12.border-b.border-border.hover\\:bg-bg.cursor-pointer");
       const firstTimeSlot = timeSlots[0];
-      fireEvent.doubleClick(firstTimeSlot);
+      await act(async () => {
+        fireEvent.doubleClick(firstTimeSlot);
+      });
 
       // Wait for event to be created
       await waitFor(() => {
@@ -221,7 +245,9 @@ describe("Calendar Component Integration Tests", () => {
 
       // Click Save button
       const saveButton = screen.getByRole("button", { name: /save/i });
-      await user.click(saveButton);
+      await act(async () => {
+        await user.click(saveButton);
+      });
 
       // Verify save operation completes without errors
       await waitFor(() => {
@@ -236,7 +262,9 @@ describe("Calendar Component Integration Tests", () => {
     test("TC-UC4-I3-6: handles save errors gracefully", async () => {
       const user = userEvent.setup();
       
-      render(<Calendar />);
+      await act(async () => {
+        render(<Calendar />);
+      });
 
       // Wait for component to load
       await waitFor(() => {
@@ -246,11 +274,15 @@ describe("Calendar Component Integration Tests", () => {
       // Create an availability slot
       const timeSlots = document.querySelectorAll(".h-12.border-b.border-border.hover\\:bg-bg.cursor-pointer");
       const firstTimeSlot = timeSlots[0];
-      fireEvent.doubleClick(firstTimeSlot);
+      await act(async () => {
+        fireEvent.doubleClick(firstTimeSlot);
+      });
 
       // Click Save button
       const saveButton = screen.getByRole("button", { name: /save/i });
-      await user.click(saveButton);
+      await act(async () => {
+        await user.click(saveButton);
+      });
 
       // Verify component handles errors gracefully and doesn't crash
       await waitFor(() => {

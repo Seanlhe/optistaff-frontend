@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import Dashboard from "../../../src/pages/employee/JSDashboard";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 
@@ -11,9 +12,13 @@ const mockAssignments = [
     assignment_id: "1",
     job_title: "Warehouse Helper",
     company_name: "ABC Logistics",
+    employee_name: "John Doe",
+    employer_name: "ABC Logistics Manager",
+    employee_id: "emp-1",
     start_time: new Date().toISOString(),
     end_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
     job_location: "123 Main St",
+    postal_code: "123456",
     pay_rate: 25,
     job_description: "General warehouse duties",
     job_requirements: "Must be able to lift 20kg",
@@ -22,15 +27,21 @@ const mockAssignments = [
     contact_email: "contact@abc.com",
     job_type: "warehouse",
     break_hours: 1,
+    check_in_time: null,
+    check_out_time: null,
     created_at: new Date().toISOString(),
   },
   {
     assignment_id: "2",
     job_title: "Retail Assistant",
     company_name: "XYZ Store",
+    employee_name: "John Doe",
+    employer_name: "XYZ Store Manager",
+    employee_id: "emp-1",
     start_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     end_time: new Date(Date.now() + 32 * 60 * 60 * 1000).toISOString(),
     job_location: "456 Store Ave",
+    postal_code: "654321",
     pay_rate: 20,
     job_description: "Customer service duties",
     job_requirements: "Good communication skills",
@@ -39,6 +50,8 @@ const mockAssignments = [
     contact_email: "hr@xyz.com",
     job_type: "retail",
     break_hours: 0.5,
+    check_in_time: null,
+    check_out_time: null,
     created_at: new Date().toISOString(),
   }
 ];
@@ -61,7 +74,7 @@ const mockUseAssignments = {
   fetchWeeklyEarnings: vi.fn(),
 };
 
-vi.mock("../../src/hooks/useAssignments", () => ({
+vi.mock("../../../src/hooks/useAssignments", () => ({
   useAssignments: () => mockUseAssignments,
 }));
 
@@ -72,12 +85,12 @@ const mockUseUserProfile = {
   error: null,
 };
 
-vi.mock("../../src/hooks/useUserProfile", () => ({
+vi.mock("../../../src/hooks/useUserProfile", () => ({
   useUserProfile: () => mockUseUserProfile,
 }));
 
 // Mock child components to focus on JSDashboard logic
-vi.mock("../../src/components/StatsCard", () => ({
+vi.mock("../../../src/components/StatsCard", () => ({
   default: ({ title, value, icon }: { title: string; value: string; icon?: React.ReactNode }) => (
     <div data-testid="stats-card">
       <span data-testid="stats-title">{title}</span>
@@ -87,7 +100,7 @@ vi.mock("../../src/components/StatsCard", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PayoutWeeklySummaryCard", () => ({
+vi.mock("../../../src/components/PayoutWeeklySummaryCard", () => ({
   default: ({ refreshTrigger }: { refreshTrigger?: number }) => (
     <div data-testid="payout-summary-card">
       <span data-testid="refresh-trigger">{refreshTrigger || 0}</span>
@@ -95,14 +108,14 @@ vi.mock("../../src/components/PayoutWeeklySummaryCard", () => ({
   ),
 }));
 
-vi.mock("../../src/components/JobseekerAssignmentCard", () => ({
+vi.mock("../../../src/components/JobseekerAssignmentCard", () => ({
   JobseekerAssignmentCard: ({ assignment, onViewDetails }: any) => (
-    <div data-testid={`assignment-card-${assignment.id}`}>
-      <span data-testid="assignment-title">{assignment.title}</span>
+    <div data-testid={`assignment-card-${assignment.id || assignment.assignment_id}`}>
+      <span data-testid="assignment-title">{assignment.title || assignment.job_title}</span>
       <span data-testid="assignment-company">{assignment.company_name}</span>
       <span data-testid="assignment-status">{assignment.status}</span>
       <button
-        data-testid={`view-details-${assignment.id}`}
+        data-testid={`view-details-${assignment.id || assignment.assignment_id}`}
         onClick={() => onViewDetails(assignment)}
       >
         View Details
@@ -111,25 +124,65 @@ vi.mock("../../src/components/JobseekerAssignmentCard", () => ({
   ),
 }));
 
-vi.mock("../../src/components/JobseekerAssignmentDetailModals", () => ({
+vi.mock("../../../src/components/JobseekerAssignmentDetailModals", () => ({
   AssignmentDetailsModal: ({ assignment, isOpen, onClose, onStatusChange }: any) =>
     isOpen ? (
       <div data-testid="assignment-modal">
-        <span data-testid="modal-assignment-title">{assignment?.title}</span>
+        <span data-testid="modal-assignment-title">{assignment?.title || assignment?.job_title}</span>
         <button data-testid="close-modal" onClick={onClose}>Close</button>
         <button data-testid="status-change" onClick={onStatusChange}>Change Status</button>
       </div>
     ) : null,
 }));
 
-vi.mock("../../src/components/MonthlyCalendar", () => ({
+vi.mock("../../../src/components/MonthlyCalendar", () => ({
   default: () => <div data-testid="monthly-calendar">Calendar</div>,
 }));
 
 // Mock Lucide React icons
 vi.mock("lucide-react", () => ({
   Star: () => <div data-testid="star-icon" />,
+  DollarSign: () => <div data-testid="dollar-sign-icon" />,
+  Clock: () => <div data-testid="clock-icon" />,
+  MapPin: () => <div data-testid="map-pin-icon" />,
+  Phone: () => <div data-testid="phone-icon" />,
+  Mail: () => <div data-testid="mail-icon" />,
+  Briefcase: () => <div data-testid="briefcase-icon" />,
+  XIcon: () => <div data-testid="x-icon" />,
+  X: () => <div data-testid="x-icon" />,
+  Calendar: () => <div data-testid="calendar-icon" />,
+  ChevronLeft: () => <div data-testid="chevron-left-icon" />,
+  ChevronRight: () => <div data-testid="chevron-right-icon" />,
 }));
+
+// Mock Supabase client to prevent auth errors
+vi.mock("../../../src/integrations/supabase/client", () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      onAuthStateChange: vi.fn().mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } }),
+      signUp: vi.fn(),
+      signInWithPassword: vi.fn(),
+      signOut: vi.fn(),
+    },
+  },
+}));
+
+// Router wrapper for testing
+const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
+  <MemoryRouter initialEntries={["/employee/dashboard"]}>
+    {children}
+  </MemoryRouter>
+);
+
+// Helper function to render Dashboard with Router context
+const renderDashboard = () => {
+  return render(
+    <RouterWrapper>
+      <Dashboard />
+    </RouterWrapper>
+  );
+};
 
 describe("JSDashboard", () => {
   beforeEach(() => {
@@ -149,7 +202,7 @@ describe("JSDashboard", () => {
   });
 
   it("renders dashboard with welcome message using user's name", () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     // Check welcome message with user name
     expect(screen.getByText("Welcome Back,")).toBeTruthy();
@@ -157,9 +210,9 @@ describe("JSDashboard", () => {
   });
 
   it("displays default welcome message when user profile is unavailable", () => {
-    mockUseUserProfile.profileData = null;
+    (mockUseUserProfile as any).profileData = null;
     
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByText("Welcome Back,")).toBeTruthy();
     expect(screen.getByText("Job Seeker")).toBeTruthy();
@@ -168,13 +221,13 @@ describe("JSDashboard", () => {
   it("shows loading state when assignments are loading", () => {
     mockUseAssignments.loading = true;
     
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByText("Loading assignments...")).toBeTruthy();
   });
 
   it("displays current week date range in assignments header", () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     const now = new Date();
     const weekStart = startOfWeek(now, { weekStartsOn: 1 });
@@ -188,7 +241,7 @@ describe("JSDashboard", () => {
   });
 
   it("displays assignment cards when assignments are available", () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     // Check that assignment cards are rendered
     expect(screen.getByTestId("assignment-card-1")).toBeTruthy();
@@ -204,13 +257,13 @@ describe("JSDashboard", () => {
   it("shows 'no assignments' message when no assignments available", () => {
     mockUseAssignments.assignments = [];
     
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByText("No upcoming assignments")).toBeTruthy();
   });
 
   it("opens assignment details modal when view details is clicked", async () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     const viewDetailsButton = screen.getByTestId("view-details-1");
     fireEvent.click(viewDetailsButton);
@@ -222,7 +275,7 @@ describe("JSDashboard", () => {
   });
 
   it("closes modal when close button is clicked", async () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     // Open modal first
     const viewDetailsButton = screen.getByTestId("view-details-1");
@@ -242,7 +295,7 @@ describe("JSDashboard", () => {
   });
 
   it("triggers assignment refresh and payout refresh when status changes", async () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     // Open modal
     const viewDetailsButton = screen.getByTestId("view-details-1");
@@ -263,7 +316,7 @@ describe("JSDashboard", () => {
   });
 
   it("displays user rating in stats card", () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByTestId("stats-card")).toBeTruthy();
     expect(screen.getByText("Rating")).toBeTruthy();
@@ -271,19 +324,19 @@ describe("JSDashboard", () => {
   });
 
   it("shows default rating when profile has no rating", () => {
-    mockUseUserProfile.profileData = {
+    (mockUseUserProfile as any).profileData = {
       first_name: "John",
       last_name: "Doe",
       display: { rating: undefined }
     };
     
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByText("0.0")).toBeTruthy();
   });
 
   it("renders payout summary card and monthly calendar", () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByTestId("payout-summary-card")).toBeTruthy();
     expect(screen.getByTestId("monthly-calendar")).toBeTruthy();
@@ -299,7 +352,7 @@ describe("JSDashboard", () => {
     
     mockUseAssignments.assignments = testAssignments;
     
-    render(<Dashboard />);
+    renderDashboard();
 
     // The status mapping logic transforms statuses:
     // confirmed -> upcoming, completed -> completed, cancel_by_employer -> cancel_by_employer
@@ -313,9 +366,13 @@ describe("JSDashboard", () => {
       assignment_id: "incomplete",
       job_title: "Basic Job",
       company_name: "Basic Company",
+      employee_name: "John Doe",
+      employer_name: "Basic Company Manager",
+      employee_id: "emp-1",
       start_time: new Date().toISOString(),
       end_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
       job_location: "Unknown Location",
+      postal_code: "000000",
       pay_rate: 0,
       job_description: "",
       job_requirements: "",
@@ -324,12 +381,14 @@ describe("JSDashboard", () => {
       contact_email: "",
       job_type: "",
       break_hours: 0,
+      check_in_time: null,
+      check_out_time: null,
       created_at: new Date().toISOString(),
     };
     
     mockUseAssignments.assignments = [incompleteAssignment];
     
-    render(<Dashboard />);
+    renderDashboard();
 
     // Should render with default values
     expect(screen.getByTestId("assignment-card-incomplete")).toBeTruthy();
@@ -346,7 +405,7 @@ describe("JSDashboard", () => {
     
     mockUseAssignments.assignments = [...mockAssignments, nextWeekAssignment];
     
-    render(<Dashboard />);
+    renderDashboard();
 
     // Should only show current week assignments
     expect(screen.getByTestId("assignment-card-1")).toBeTruthy();
@@ -361,14 +420,14 @@ describe("JSDashboard", () => {
       display: { rating: 0 }
     };
     
-    render(<Dashboard />);
+    renderDashboard();
 
     expect(screen.getByText("Jane Smith")).toBeTruthy();
     expect(screen.getByText("0.0")).toBeTruthy(); // Default rating
   });
 
   it("displays proper layout structure", () => {
-    render(<Dashboard />);
+    renderDashboard();
 
     // Check main layout sections are present
     expect(screen.getByText("Upcoming Assignments")).toBeTruthy();

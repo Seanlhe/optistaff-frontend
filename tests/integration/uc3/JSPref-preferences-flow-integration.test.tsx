@@ -16,7 +16,7 @@ import JSPref from "../../../src/pages/employee/JSPref";
 const mockSavePreferences = vi.fn();
 const mockGetFormData = vi.fn();
 
-vi.mock("../../src/hooks/usePreferencesForm", () => ({
+vi.mock("../../../src/hooks/usePreferencesForm", () => ({
   usePreferencesForm: () => ({
     savePreferences: mockSavePreferences,
     loading: false,
@@ -28,7 +28,7 @@ vi.mock("../../src/hooks/usePreferencesForm", () => ({
 }));
 
 // Mock child components minimally to keep rendering simple and deterministic
-vi.mock("../../src/components/PreferencesMaximum", () => ({
+vi.mock("../../../src/components/PreferencesMaximum", () => ({
   default: ({ formData, setFormData }: any) => (
     <div data-testid="preferences-maximum">
       <input
@@ -51,7 +51,7 @@ vi.mock("../../src/components/PreferencesMaximum", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PreferencesPay", () => ({
+vi.mock("../../../src/components/PreferencesPay", () => ({
   default: ({ formData, setFormData }: any) => (
     <div data-testid="preferences-pay">
       <span>${formData.payRate}</span>
@@ -77,7 +77,7 @@ vi.mock("../../src/components/PreferencesPay", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PreferencesJobType", () => ({
+vi.mock("../../../src/components/PreferencesJobType", () => ({
   default: ({ formData, setFormData }: any) => (
     <div data-testid="preferences-job-type">
       <input
@@ -98,7 +98,7 @@ vi.mock("../../src/components/PreferencesJobType", () => ({
   ),
 }));
 
-vi.mock("../../src/components/LocationAwareMap", () => ({
+vi.mock("../../../src/components/LocationAwareMap", () => ({
   LocationAwareMap: ({ onRadiusChange, travelRadius }: any) => (
     <div data-testid="location-aware-map">
       <span>Travel Radius: {travelRadius}km</span>
@@ -112,7 +112,7 @@ vi.mock("../../src/components/LocationAwareMap", () => ({
   ),
 }));
 
-vi.mock("../../src/components/LocationErrorBoundary", () => ({
+vi.mock("../../../src/components/LocationErrorBoundary", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),

@@ -20,7 +20,7 @@ import PreferencesJobType from "../../../src/components/PreferencesJobType";
 import { PreferencesFormData } from "../../../src/types/hooks";
 
 // Mock only Supabase client with method chaining for job types data
-vi.mock("../../src/integrations/supabase/client", () => {
+vi.mock("../../../src/integrations/supabase/client", () => {
   const mockChain = {
     select: vi.fn(() => mockChain),
     eq: vi.fn(() => mockChain),

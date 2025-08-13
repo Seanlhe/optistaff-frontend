@@ -21,7 +21,7 @@ const mockSavePreferences = vi.fn();
 const mockGetFormData = vi.fn();
 
 // Mock the usePreferencesForm hook directly with stable return values
-vi.mock("../../src/hooks/usePreferencesForm", () => ({
+vi.mock("../../../src/hooks/usePreferencesForm", () => ({
   usePreferencesForm: () => ({
     savePreferences: mockSavePreferences,
     loading: false,
@@ -33,7 +33,7 @@ vi.mock("../../src/hooks/usePreferencesForm", () => ({
 }));
 
 // Mock child components to prevent complex rendering issues
-vi.mock("../../src/components/PreferencesMaximum", () => ({
+vi.mock("../../../src/components/PreferencesMaximum", () => ({
   default: ({ formData, setFormData }: any) => (
     <div data-testid="preferences-maximum">
       <label>Maximum Hours per Week</label>
@@ -54,7 +54,7 @@ vi.mock("../../src/components/PreferencesMaximum", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PreferencesPay", () => ({
+vi.mock("../../../src/components/PreferencesPay", () => ({
   default: ({ formData, setFormData }: any) => (
     <div data-testid="preferences-pay">
       <h3>Desired Hourly Pay Rate ($):</h3>
@@ -78,7 +78,7 @@ vi.mock("../../src/components/PreferencesPay", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PreferencesJobType", () => ({
+vi.mock("../../../src/components/PreferencesJobType", () => ({
   default: ({ formData, setFormData }: any) => (
     <div data-testid="preferences-job-type">
       <h3>Preferred Job Type</h3>
@@ -98,7 +98,7 @@ vi.mock("../../src/components/PreferencesJobType", () => ({
   ),
 }));
 
-vi.mock("../../src/components/LocationAwareMap", () => ({
+vi.mock("../../../src/components/LocationAwareMap", () => ({
   LocationAwareMap: ({ onRadiusChange, travelRadius }: any) => (
     <div data-testid="location-aware-map">
       <span>Travel Radius: {travelRadius}km</span>
@@ -112,7 +112,7 @@ vi.mock("../../src/components/LocationAwareMap", () => ({
   ),
 }));
 
-vi.mock("../../src/components/LocationErrorBoundary", () => ({
+vi.mock("../../../src/components/LocationErrorBoundary", () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
