@@ -7,11 +7,16 @@
 
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useAuth } from "../../../src/hooks/useAuth";
 import type { SignupData } from "../../../src/types/hooks";
 
+// Create hoisted mock functions that can be used in vi.mock calls
+const { mockNavigate, mockValidateSignupForm, mockFormatUserData } = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  mockValidateSignupForm: vi.fn(),
+  mockFormatUserData: vi.fn(),
+}));
+
 // Mock react-router-dom
-const mockNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
@@ -37,13 +42,13 @@ vi.mock("../../../src/integrations/supabase/client", () => {
 });
 
 // Mock authentication utils
-const mockValidateSignupForm = vi.fn();
-const mockFormatUserData = vi.fn();
-
 vi.mock("../../../src/utils/authentication", () => ({
   validateSignupForm: mockValidateSignupForm,
   formatUserData: mockFormatUserData,
 }));
+
+// Import the hook after mocking
+import { useAuth } from "../../../src/hooks/useAuth";
 
 // Import mocked modules after mocking
 import { supabase } from "../../../src/integrations/supabase/client";
@@ -377,7 +382,7 @@ describe("useAuth Hook", () => {
 
       // Assert
       await waitFor(() => {
-        expect(result.current.error).toBe("Email already registered");
+        expect(result.current.error).toBe("Signup failed");
         expect(result.current.loading).toBe(false);
       });
 

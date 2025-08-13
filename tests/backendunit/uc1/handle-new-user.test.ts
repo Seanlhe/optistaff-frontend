@@ -17,7 +17,6 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
   describe("Database Logic Tests - User Profile Creation", () => {
     test("should create job_seekers record when user_type is 'job-seeker'", async () => {
       // Arrange - Prepare test data
-      const testUserId = crypto.randomUUID();
       const testEmail = "jobseeker@test.com";
       const userData = {
         user_type: "job-seeker",
@@ -29,14 +28,33 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
         postal_code: "123456",
       };
 
+      // First create an auth user to satisfy foreign key constraint
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: "testpassword123",
+        email_confirm: true,
+        user_metadata: {
+          user_type: userData.user_type,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          phone_number: userData.phone_number,
+          date_of_birth: userData.date_of_birth,
+          address: userData.address,
+          postal_code: userData.postal_code,
+        }
+      });
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      const actualUserId = authData.user!.id;
+
       // Act - Simulate what handle_new_user function does for job-seeker
       const { error: insertJobSeekerError } = await testSupabase
         .from("job_seekers")
         .insert({
-          user_id: testUserId,
+          user_id: actualUserId,
           first_name: userData.first_name || testEmail.split('@')[0],
           last_name: userData.last_name || '',
-          phone: userData.phone_number,
+          phone_number: userData.phone_number,
           date_of_birth: userData.date_of_birth,
           address: userData.address,
           postal_code: userData.postal_code,
@@ -47,7 +65,7 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
 
       const { error: insertPreferencesError } = await testSupabase
         .from("preferences")
-        .insert({ user_id: testUserId });
+        .insert({ user_id: actualUserId });
 
       expect(insertPreferencesError).toBeNull();
 
@@ -55,15 +73,15 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       const { data: jobSeeker, error: jobSeekerError } = await testSupabase
         .from("job_seekers")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
 
       expect(jobSeekerError).toBeNull();
       expect(jobSeeker).toBeTruthy();
-      expect(jobSeeker.user_id).toBe(testUserId);
+      expect(jobSeeker.user_id).toBe(actualUserId);
       expect(jobSeeker.first_name).toBe("John");
       expect(jobSeeker.last_name).toBe("Doe");
-      expect(jobSeeker.phone).toBe("91234567");
+      expect(jobSeeker.phone_number).toBe("91234567");
       expect(jobSeeker.address).toBe("123 Test Street, Singapore");
       expect(jobSeeker.postal_code).toBe("123456");
       expect(jobSeeker.status).toBe("ACTIVE");
@@ -72,18 +90,17 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       const { data: preferences, error: prefError } = await testSupabase
         .from("preferences")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
 
       expect(prefError).toBeNull();
       expect(preferences).toBeTruthy();
-      expect(preferences.user_id).toBe(testUserId);
+      expect(preferences.user_id).toBe(actualUserId);
     });
 
     test("should create clients record when user_type is 'client'", async () => {
       // Arrange
       const testEmail = "employer@company.com";
-      const testUserId = crypto.randomUUID();
       const userData = {
         user_type: "client",
         first_name: "Jane",
@@ -95,11 +112,31 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
         office_number: "10-01",
       };
 
+      // First create an auth user to satisfy foreign key constraint
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: "testpassword123",
+        email_confirm: true,
+        user_metadata: {
+          user_type: userData.user_type,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          company_name: userData.company_name,
+          phone_number: userData.phone_number,
+          address: userData.address,
+          postal_code: userData.postal_code,
+          office_number: userData.office_number,
+        }
+      });
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      const actualUserId = authData.user!.id;
+
       // Act - Simulate what handle_new_user function does for client
       const { error: insertClientError } = await testSupabase
         .from("clients")
         .insert({
-          client_id: testUserId,
+          client_id: actualUserId,
           company_name: userData.company_name || 'My Company',
           first_name: userData.first_name || testEmail.split('@')[0],
           last_name: userData.last_name || '',
@@ -115,12 +152,12 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       const { data: client, error: clientError } = await testSupabase
         .from("clients")
         .select("*")
-        .eq("client_id", testUserId)
+        .eq("client_id", actualUserId)
         .single();
 
       expect(clientError).toBeNull();
       expect(client).toBeTruthy();
-      expect(client.client_id).toBe(testUserId);
+      expect(client.client_id).toBe(actualUserId);
       expect(client.first_name).toBe("Jane");
       expect(client.last_name).toBe("Smith");
       expect(client.company_name).toBe("Test Company Pte Ltd");
@@ -134,7 +171,7 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       const { data: preferences, error: prefError } = await testSupabase
         .from("preferences")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
 
       expect(prefError).toBeTruthy(); // Should error because no record exists
@@ -144,38 +181,50 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
     test("should handle missing metadata gracefully", async () => {
       // Arrange
       const testEmail = "minimal@test.com";
-      const testUserId = crypto.randomUUID();
       const userData = {
         user_type: "job-seeker",
         // Missing other fields
       };
 
+      // First create an auth user to satisfy foreign key constraint
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: "testpassword123",
+        email_confirm: true,
+        user_metadata: {
+          user_type: userData.user_type,
+        }
+      });
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      const actualUserId = authData.user!.id;
+
       // Act - Simulate handle_new_user behavior for missing metadata
       const { error: insertJobSeekerError } = await testSupabase
         .from("job_seekers")
         .insert({
-          user_id: testUserId,
+          user_id: actualUserId,
           first_name: testEmail.split('@')[0], // Use email prefix since no first_name
           last_name: '',
-          phone: null, // No phone_number in userData
+          phone_number: null, // No phone_number in userData
           status: 'ACTIVE'
         });
       expect(insertJobSeekerError).toBeNull();
 
       const { error: insertPreferencesError } = await testSupabase
         .from("preferences")
-        .insert({ user_id: testUserId });
+        .insert({ user_id: actualUserId });
       expect(insertPreferencesError).toBeNull();
 
       // Assert
       const { data: jobSeeker, error: jobSeekerError } = await testSupabase
         .from("job_seekers")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
 
       expect(jobSeekerError).toBeNull();
-      expect(jobSeeker.user_id).toBe(testUserId);
+      expect(jobSeeker.user_id).toBe(actualUserId);
       expect(jobSeeker.first_name).toBe("minimal");
       expect(jobSeeker.last_name).toBe("");
       expect(jobSeeker.status).toBe("ACTIVE");
@@ -184,7 +233,6 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
     test("should handle invalid date_of_birth gracefully", async () => {
       // Arrange
       const testEmail = "invaliddate@test.com";
-      const testUserId = crypto.randomUUID();
       const userData = {
         user_type: "job-seeker",
         first_name: "Test",
@@ -192,11 +240,27 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
         date_of_birth: "invalid-date",
       };
 
+      // First create an auth user to satisfy foreign key constraint
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: "testpassword123",
+        email_confirm: true,
+        user_metadata: {
+          user_type: userData.user_type,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          date_of_birth: userData.date_of_birth,
+        }
+      });
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      const actualUserId = authData.user!.id;
+
       // Act - Simulate handle_new_user behavior with invalid date
       const { error: insertJobSeekerError } = await testSupabase
         .from("job_seekers")
         .insert({
-          user_id: testUserId,
+          user_id: actualUserId,
           first_name: userData.first_name,
           last_name: userData.last_name,
           date_of_birth: null, // Function would set invalid dates to null
@@ -208,7 +272,7 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       const { data: jobSeeker } = await testSupabase
         .from("job_seekers")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
 
       expect(jobSeeker.date_of_birth).toBeNull();
@@ -301,12 +365,24 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
 
   describe("Cleanup and Cascade Behavior", () => {
     test("should simulate cascade delete behavior", async () => {
-      // Arrange - Create job_seeker record
+      // Arrange - Create auth user first, then job_seeker record
       const testEmail = "cascade@test.com";
-      const testUserId = crypto.randomUUID();
+
+      // Create auth user
+      const { data: authData, error: authError } = await testSupabaseAdmin.auth.admin.createUser({
+        email: testEmail,
+        password: "testpassword123",
+        email_confirm: true,
+        user_metadata: {
+          user_type: "job-seeker",
+        }
+      });
+      expect(authError).toBeNull();
+      expect(authData.user).toBeTruthy();
+      const actualUserId = authData.user!.id;
 
       await testSupabase.from("job_seekers").insert({
-        user_id: testUserId,
+        user_id: actualUserId,
         first_name: "Test",
         last_name: "User",
         status: "ACTIVE"
@@ -316,7 +392,7 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       const { data: jobSeekerBefore } = await testSupabase
         .from("job_seekers")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
       expect(jobSeekerBefore).toBeTruthy();
 
@@ -324,13 +400,13 @@ describe("handle_new_user() - True Backend Database Unit Tests", () => {
       await testSupabase
         .from("job_seekers")
         .delete()
-        .eq("user_id", testUserId);
+        .eq("user_id", actualUserId);
 
       // Assert - job_seeker should be deleted
       const { data: jobSeekerAfter } = await testSupabase
         .from("job_seekers")
         .select("*")
-        .eq("user_id", testUserId)
+        .eq("user_id", actualUserId)
         .single();
 
       expect(jobSeekerAfter).toBeNull();

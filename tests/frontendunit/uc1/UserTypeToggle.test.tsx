@@ -5,7 +5,7 @@ import React from "react";
 import { UserTypeToggle } from "../../../src/components/auth/UserTypeToggle";
 
 // Mock UI components
-vi.mock("../../src/components/ui/button", () => ({
+vi.mock("../../../src/components/ui/button", () => ({
   Button: ({ children, onClick, className, variant, type, ...props }: any) => (
     <button
       onClick={onClick}
@@ -21,7 +21,7 @@ vi.mock("../../src/components/ui/button", () => ({
 }));
 
 // Mock the cn utility function
-vi.mock("../../src/lib/utils", () => ({
+vi.mock("../../../src/lib/utils", () => ({
   cn: (...classes: any[]) => classes.filter(Boolean).join(" "),
 }));
 

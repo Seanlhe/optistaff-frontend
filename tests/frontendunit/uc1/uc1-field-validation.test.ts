@@ -67,7 +67,7 @@ describe("UC1 Field Validation - Used Functions Only", () => {
 
       test("should limit to 6 digits", () => {
         expect(formatters.postalCode("1234567890")).toBe("123456");
-        expect(formatters.postalCode("12345abc789")).toBe("123456");
+        expect(formatters.postalCode("123456abc789")).toBe("123456");
       });
 
       test("should handle edge cases", () => {
