@@ -5,7 +5,7 @@ import ClientHistory from "../../../src/pages/employer/ClientHistory"
 import { Shift, Assignment} from '../../../src/types/hooks';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 
-vi.mock("../../src/components/HistoryAssignedStaff", () => ({
+vi.mock("../../../src/components/HistoryAssignedStaff", () => ({
   default: vi.fn(({ assignments }: { assignments: Assignment[] }) => (
     <div data-testid="history-assigned-staff">
       {assignments.map((a) => (
@@ -15,7 +15,7 @@ vi.mock("../../src/components/HistoryAssignedStaff", () => ({
   )),
 }));
 
-vi.mock("../../src/components/HistoryPastShifts", () => ({
+vi.mock("../../../src/components/HistoryPastShifts", () => ({
   default: vi.fn(({ pastShifts, handleSelectShift }: { pastShifts: Shift[], handleSelectShift: Function }) => (
     <div data-testid="history-past-shifts">
       {pastShifts.map((shift) => (
@@ -164,13 +164,13 @@ const mockedFetchAssignments = vi.fn(async (shift_id: string) => {
   return mockedAssignments;
 });
 
-vi.mock("../../src/hooks/useShifts", () => ({
+vi.mock("../../../src/hooks/useShifts", () => ({
   useShifts: () => ({
     shifts: mockedShifts
   })
 }));
 
-vi.mock("../../src/hooks/useAssignments", () => ({
+vi.mock("../../../src/hooks/useAssignments", () => ({
   useAssignments: () => ({
     fetchAssignmentsByShift: mockedFetchAssignments
   })

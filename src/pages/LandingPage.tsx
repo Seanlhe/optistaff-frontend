@@ -44,6 +44,7 @@ export default function LandingPage() {
           </Link>
         </div>
       </div>
+
       <div id="landing-content" className="flex flex-col gap-43">
         <div
           id="landing-call-to-action"
@@ -59,7 +60,7 @@ export default function LandingPage() {
               using cutting-edge technology to match employers with the right
               people.
             </p>
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4 items-center">
               <Link
                 to="/auth?mode=signup"
                 className="hover:cursor-pointer hover:opacity-80 hover:bg-gray-100 px-4 py-5 border-2 border-primary-blue bg-white text-primary-blue font-montserrat rounded-xl"
@@ -68,7 +69,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 to="/auth?mode=signup"
-                className="hover:cursor-pointer hover:opacity-80 px-4 py-5 bg-primary-blue text-white rounded-xl font-montserrat "
+                className="hover:cursor-pointer hover:opacity-80 px-4 py-5 bg-primary-blue border-2 border-primary-blue text-white rounded-xl font-montserrat "
               >
                 Start Working
               </Link>
@@ -96,40 +97,42 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+        
         <div
           id="landing-benefits"
-          className="grid grid-cols-3 justify-between bg-landing-bg gap-25 px-37.5 py-15"
+          className="grid grid-cols-3 justify-between gap-10 px-37.5 py-15"
         >
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 ">
             <img className="h-12 w-12" src="/icons/calendaricon.svg" />
-            <p className="font-montserrat-smb text-justify text-2xl text-black">
+            <p className="font-montserrat-smb text-justify text-xl text-black">
               Hands free rostering
             </p>
-            <p className="font-montserrat text-justify text-xl text-black">
+            <p className="font-montserrat text-justify text-base text-black">
               We take care of scheduling so you can focus on what matters most.
             </p>
           </div>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 ">
             <img className="h-12 w-12" src="/icons/calendaricon.svg" />
-            <p className="font-montserrat-smb text-justify text-2xl text-black">
+            <p className="font-montserrat-smb text-justify text-xl text-black">
               Work with trusted staff
             </p>
-            <p className="font-montserrat text-justify text-xl text-black">
+            <p className="font-montserrat text-justify text-base text-black">
               We match you with employees based on past ratings, your
               preferences and job requirements.
             </p>
           </div>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 ">
             <img className="h-12 w-12" src="/icons/calendaricon.svg" />
-            <p className="font-montserrat-smb text-justify text-2xl text-black">
+            <p className="font-montserrat-smb text-justify text-xl text-black">
               Reliable replacements, fast
             </p>
-            <p className="font-montserrat text-justify text-xl text-black">
+            <p className="font-montserrat text-justify text-base text-black">
               If someone drops out, we’ll quickly find a suitable replacement so
               your operations stay smooth.
             </p>
           </div>
         </div>
+
         <div
           id="landing-instructions"
           className="bg-gradient-to-b from-[#85CEEC] to-[#FFFFFF] grid grid-cols-2 items-center px-37.5 py-25 gap-y-38.5 gap-x-50 rounded-t-[37.5rem]"
@@ -175,57 +178,59 @@ export default function LandingPage() {
             src="/images/dashboard.svg"
           />
         </div>
+
         <div
           id="landing-testimonials"
           className="grid grid-cols-2 gap-x-37.5 px-37.5 justify-between"
         >
-          <div className="relative flex flex-col gap-15 p-15 rounded-4xl rounded-bl-none bg-landing-bg">
+          <div className="relative flex flex-col gap-8 p-10 rounded-4xl rounded-bl-none bg-landing-bg">
             <img
-              className="absolute -top-15 -left-10 h-32.5 w-32.5"
+              className="absolute -top-15 -left-10 h-28 w-28"
               src="/icons/quotationicon.svg"
             />
             <div className="col-span-2 flex flex-row items-center gap-5">
               <img
-                className="h-20 w-20 rounded-full"
+                className="h-16 w-16 rounded-full"
                 src="/icons/personicon.svg"
               />
-              <p className="font-montserrat-smb text-2xl/10">
-                Sean Leng
+              <p className="font-montserrat-smb text-xl/8">
+                John Tan
                 <br />
-                <span className="font-montserrat text-2xl/10">
+                <span className="font-montserrat text-lg/10">
                   HR Lead at FinAscend
                 </span>
               </p>
             </div>
-            <p className="col-span-2 font-montserrat text-2xl/10">
+            <p className="col-span-2 font-montserrat text-base/10">
               I used to spend days working spreadsheets and advertising to get
               manpower. With FlexiStaff{" "}
-              <span className="font-montserrat-smb text-2xl/10">
+              <span className="font-montserrat-smb text-base/10">
                 I can upload my job details and leave it aside.
               </span>
             </p>
           </div>
-          <div className="relative col-span-1 flex flex-col gap-15 p-15 rounded-4xl rounded-bl-none bg-landing-bg">
+
+          <div className="relative col-span-1 flex flex-col gap-8 p-10 rounded-4xl rounded-bl-none bg-landing-bg">
             <img
-              className="absolute -top-15 -right-10 -scale-x-100 h-32.5 w-32.5"
+              className="absolute -top-15 -right-10 -scale-x-100 h-28 w-28"
               src="/icons/quotationicon.svg"
             />
             <div className="col-span-2 flex flex-row items-center gap-5">
               <img
-                className="h-20 w-20 rounded-full"
+                className="h-16 w-16 rounded-full"
                 src="/icons/personicon.svg"
               />
-              <p className="font-montserrat-smb text-2xl/10">
+              <p className="font-montserrat-b text-xl/8">
                 Aaron Lim
                 <br />
-                <span className="font-montserrat text-2xl/10">
+                <span className="font-montserrat text-lg/8">
                   University Student
                 </span>
               </p>
             </div>
-            <p className="col-span-2 font-montserrat text-2xl/10">
+            <p className="col-span-2 font-montserrat text-base/10">
               As a part-time student, having the{" "}
-              <span className="font-montserrat-smb text-2xl/10">
+              <span className="font-montserrat-b text-base/10">
                 flexibility to choose when I work{" "}
               </span>{" "}
               perfectly suits my lifestyle. It’s the first time I truly feel I
@@ -243,20 +248,26 @@ export default function LandingPage() {
           <p className="text-justify font-montserrat-smb text-2xl">
             Searching for a job that works for you?
           </p>
-          <p className="text-justify font-montserrat text-2xl">
+          <p className="text-justify font-montserrat text-xl/8">
             Let OptiStaff handle your future staffing needs with next-generation
             scheduling technology.
           </p>
-          <p className="text-justify font-montserrat text-2xl">
+          <p className="text-justify font-montserrat text-xl/8">
             Optistaff matches you with work, on your terms. Enjoy flexible
             working hours, competitive pay and discover jobs you love.
           </p>
-          <button className="hover:cursor-pointer hover:opacity-80 bg-primary-blue font-montserrat text-xl text-white p-2.5 rounded-xl">
-            Start hiring
-          </button>
-          <button className="hover:cursor-pointer hover:bg-gray-100 border-2 bg-white border-primary-blue font-montserrat text-xl text-primary-blue p-2.5 rounded-xl">
-            Start working
-          </button>
+          <Link
+                to="/auth?mode=signup"
+                className="hover:cursor-pointer hover:opacity-80 hover:bg-gray-100 px-4 py-5 border-2 border-primary-blue bg-white text-primary-blue font-montserrat rounded-xl text-xl"
+              >
+                Start Hiring
+          </Link>
+          <Link
+                to="/auth?mode=signup"
+                className="hover:cursor-pointer hover:opacity-80 px-4 py-5 bg-primary-blue border-2 border-primary-blue text-white rounded-xl font-montserrat text-xl"
+              >
+                Start Working
+          </Link>
         </div>
       </div>
       <div

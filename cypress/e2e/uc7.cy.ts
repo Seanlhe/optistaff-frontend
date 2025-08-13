@@ -220,7 +220,6 @@ describe("UC7 Create Feedback E2E test suite", () => {
     setupLoginEmployer();
     stubShiftHistoryData();
     cy.get("a[href='/employer/history']").should("be.visible").click();
-    
     // Wait for the specific API calls your app makes
     cy.wait('@getShiftsByEmployer');
     cy.wait('@getAssignmentsByJobseeker'); 

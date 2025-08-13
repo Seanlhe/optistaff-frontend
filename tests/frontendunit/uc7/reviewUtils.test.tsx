@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { validateReview } from '../../../src/utils/review';
 
 describe('Review Utils', () => {
-  it('validates valid review', () => {
+  it('validates valid review, UC7 Steps 15-16', () => {
     const validFeedback = {
       rating_score: 5,
       comment: 'Great work!'
@@ -14,7 +14,7 @@ describe('Review Utils', () => {
     expect(result.comment).toBeNull();
   });
 
-  it('rejects zero rating', () => {
+  it('rejects zero rating, UC7 Steps 15-16', () => {
     const invalidFeedback = {
       rating_score: 0,
       comment: 'Good work'
@@ -26,7 +26,7 @@ describe('Review Utils', () => {
     expect(result.comment).toBeNull();
   });
 
-  it('rejects empty comment', () => {
+  it('rejects empty comment, UC7 Steps 15-16', () => {
     const invalidFeedback = {
       rating_score: 4,
       comment: ''
@@ -38,7 +38,7 @@ describe('Review Utils', () => {
     expect(result.comment).toBe('Please provide a valid comment.');
   });
 
-  it('rejects whitespace-only comment', () => {
+  it('rejects whitespace-only comment, UC7 Steps 15-16', () => {
     const invalidFeedback = {
       rating_score: 3,
       comment: '   '
@@ -49,7 +49,7 @@ describe('Review Utils', () => {
     expect(result.comment).toBe('Please provide a valid comment.');
   });
 
-  it('rejects missing comment', () => {
+  it('rejects missing comment, UC7 Steps 15-16', () => {
     const invalidFeedback = {
       rating_score: 4
       // no comment field
@@ -60,7 +60,7 @@ describe('Review Utils', () => {
     expect(result.comment).toBe('Please provide a valid comment.');
   });
 
-  it('handles multiple validation errors', () => {
+  it('handles multiple validation errors, UC7 Steps 15-16', () => {
     const invalidFeedback = {
       rating_score: 0,
       comment: ''

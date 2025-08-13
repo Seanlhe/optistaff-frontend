@@ -52,7 +52,7 @@ describe("HistoryAssignedStaff test suite", ()=>{
         expect(screen.queryAllByTestId("mock-employee-card").length).toBe(1)
     })
 
-    it("Assignment array with multiple assignments", ()=>{
+    it("Assignment array with multiple assignments UC7 Step 14", ()=>{
         mockedAssignments.push({
             assignment_id: "asg-654321",
             company_name: "BrightClean Services",

@@ -152,19 +152,19 @@ const mockedFetchAssignments = vi.fn(async (shift_id: string) => {
   return mockedAssignments;
 });
 
-vi.mock("../../src/hooks/useShifts", () => ({
+vi.mock("../../../src/hooks/useShifts", () => ({
   useShifts: () => ({
     shifts: mockedShifts
   })
 }));
 
-vi.mock("../../src/hooks/useAssignments", () => ({
+vi.mock("../../../src/hooks/useAssignments", () => ({
   useAssignments: () => ({
     fetchAssignmentsByShift: mockedFetchAssignments
   })
 }));
 
-vi.mock('../../src/hooks/useFeedback', () => ({
+vi.mock('../../../src/hooks/useFeedback', () => ({
   useFeedback: () => mockFeedbackHook,
 }));
 
