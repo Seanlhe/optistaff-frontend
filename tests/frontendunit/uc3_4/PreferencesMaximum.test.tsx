@@ -19,7 +19,7 @@ describe("PreferencesMaximum", () => {
     vi.clearAllMocks();
   });
 
-  it("renders both input fields with correct labels", () => {
+  it("TC-UC3-U13: renders both input fields with correct labels", () => {
     // UC3 Steps 12-14: PreferencesForm displays complete_form with all preference sections including maximum hours
     render(
       <PreferencesMaximum
@@ -38,7 +38,7 @@ describe("PreferencesMaximum", () => {
     expect(shiftInput).toBeTruthy();
   });
 
-  it("displays correct input attributes for maximum hours per week", () => {
+  it("TC-UC3-U13: displays correct input attributes for maximum hours per week", () => {
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -61,7 +61,7 @@ describe("PreferencesMaximum", () => {
     expect(weeklyInput.className).toContain("w-24");
   });
 
-  it("displays correct input attributes for maximum hours per shift", () => {
+  it("TC-UC3-U13: displays correct input attributes for maximum hours per shift", () => {
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -84,7 +84,7 @@ describe("PreferencesMaximum", () => {
     expect(shiftInput.className).toContain("w-24");
   });
 
-  it("handles maximum hours per week change correctly", () => {
+  it("TC-UC3-U15: handles maximum hours per week change correctly", () => {
     // UC3 Step 15: Jobseeker updates preferences including maximum hours per week constraint
     render(
       <PreferencesMaximum
@@ -102,7 +102,7 @@ describe("PreferencesMaximum", () => {
     });
   });
 
-  it("handles maximum hours per shift change correctly", () => {
+  it("TC-UC3-U15: handles maximum hours per shift change correctly", () => {
     // UC3 Step 15: Jobseeker updates preferences including maximum hours per shift constraint
     render(
       <PreferencesMaximum
@@ -120,7 +120,7 @@ describe("PreferencesMaximum", () => {
     });
   });
 
-  it("handles empty input values by setting to 0", () => {
+  it("TC-UC3-U15: handles empty input values by setting to 0", () => {
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -137,7 +137,7 @@ describe("PreferencesMaximum", () => {
     });
   });
 
-  it("handles non-numeric input by setting to 0", () => {
+  it("TC-UC3-U15: handles non-numeric input by setting to 0", () => {
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -154,7 +154,7 @@ describe("PreferencesMaximum", () => {
     });
   });
 
-  it("displays empty string when form data values are 0 or undefined", () => {
+  it("TC-UC3-U13: displays empty string when form data values are 0 or undefined", () => {
     const formDataWithZeros: PreferencesFormData = {
       ...defaultFormData,
       maxHoursPerWeek: 0,
@@ -173,7 +173,7 @@ describe("PreferencesMaximum", () => {
     expect((inputs[1] as HTMLInputElement).value).toBe("");
   });
 
-  it("displays empty string when form data values are undefined", () => {
+  it("TC-UC3-U13: displays empty string when form data values are undefined", () => {
     const formDataWithUndefined: PreferencesFormData = {
       ...defaultFormData,
       maxHoursPerWeek: undefined as any,
@@ -192,7 +192,7 @@ describe("PreferencesMaximum", () => {
     expect((inputs[1] as HTMLInputElement).value).toBe("");
   });
 
-  it("handles decimal input by converting to integer", () => {
+  it("TC-UC3-U15: handles decimal input by converting to integer", () => {
     render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -209,7 +209,7 @@ describe("PreferencesMaximum", () => {
     });
   });
 
-  it("renders with correct layout classes", () => {
+  it("TC-UC3-U13: renders with correct layout classes", () => {
     const { container } = render(
       <PreferencesMaximum
         formData={defaultFormData}
@@ -232,7 +232,7 @@ describe("PreferencesMaximum", () => {
     });
   });
 
-  it("has correct label styling", () => {
+  it("TC-UC3-U13: has correct label styling", () => {
     render(
       <PreferencesMaximum
         formData={defaultFormData}

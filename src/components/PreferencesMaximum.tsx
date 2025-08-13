@@ -38,6 +38,7 @@ const PreferencesMaximum: React.FC<PreferencesMaximumProps> = ({
           placeholder="20"
           value={formData.maxHoursPerWeek || ""}
           onChange={handleMaxHoursPerWeekChange}
+          data-testid="max-hours-week-input"
         />
       </div>
       <div className="flex flex-col">
@@ -52,6 +53,7 @@ const PreferencesMaximum: React.FC<PreferencesMaximumProps> = ({
           placeholder="8"
           value={formData.maxHoursPerShift || ""}
           onChange={handleMaxHoursPerShiftChange}
+          data-testid="max-hours-shift-input"
         />
       </div>
     </div>

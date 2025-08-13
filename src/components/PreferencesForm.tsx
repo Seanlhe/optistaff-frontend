@@ -108,7 +108,7 @@ const PreferencesForm = () => {
         <div className="flex-1 mr-4">
           {/* General error display inline */}
           {error && (
-            <div className="p-3 bg-red/10 border border-red text-red-dark rounded-lg">
+            <div className="p-3 bg-red/10 border border-red text-red-dark rounded-lg" data-testid="error-message">
               <div className="flex items-center">
                 <div>
                   <h3 className="text-sm font-montserrat-smb text-red-dark">
@@ -148,7 +148,7 @@ const PreferencesForm = () => {
 
           {/* Success message inline */}
           {submitSuccess && (
-            <div className="p-3 bg-green/10 border border-green text-green-dark rounded-lg">
+            <div className="p-3 bg-green/10 border border-green text-green-dark rounded-lg" data-testid="success-message">
               <div className="flex items-center">
                 <span className="text-sm font-montserrat">
                   Preferences saved successfully!
@@ -161,6 +161,7 @@ const PreferencesForm = () => {
         <button
           onClick={handleSubmit}
           disabled={loading || validating}
+          data-testid="save-preferences-button"
           className="px-6 py-3 bg-primary-blue text-white rounded-lg font-montserrat-smb hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
         >
           {validating

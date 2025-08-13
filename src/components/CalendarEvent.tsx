@@ -294,6 +294,7 @@ export const CalendarEvent = ({
   return (
     <div
       ref={eventRef}
+      data-testid="calendar-event"
       className={`
         absolute left-1 right-1 rounded border p-1 cursor-grab select-none
         ${

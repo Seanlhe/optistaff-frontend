@@ -36,18 +36,16 @@ export const PreferenceJobType: React.FC<PreferenceJobTypeProps> = ({
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
 
-    // Update local state
-    setSelectedJobs((prev) => ({
-      ...prev, // Copies the previous state to not lose other selections
-      [name]: checked, // Updates the state for the clicked item
-    }));
-
-    // Update parent form data
+    // Calculate the updated selected jobs immediately with the new change
     const updatedSelectedJobs = { ...selectedJobs, [name]: checked };
     const selectedJobNames = Object.keys(updatedSelectedJobs).filter(
       (jobName) => updatedSelectedJobs[jobName],
     );
 
+    // Update local state
+    setSelectedJobs(updatedSelectedJobs);
+
+    // Update parent form data with the correct selected job names
     setFormData({
       ...formData,
       selectedJobNames,

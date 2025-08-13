@@ -92,8 +92,8 @@ describe("Preferences Sub-Components Integration Tests", () => {
   // PreferencesMaximum Integration Tests (2 tests)
   // ========================================
   describe("PreferencesMaximum Integration", () => {
-    // UC: User can set maximum hours per week
-    test("updates max hours per week when input changes", async () => {
+    // TC-UC3-I15: User can set maximum hours per week
+    test("TC-UC3-I15: updates max hours per week when input changes", async () => {
       render(
         <PreferencesMaximum 
           formData={mockFormData} 
@@ -115,8 +115,8 @@ describe("Preferences Sub-Components Integration Tests", () => {
       });
     });
 
-    // UC: User can set maximum hours per shift  
-    test("updates max hours per shift when input changes", async () => {
+    // TC-UC3-I15: User can set maximum hours per shift  
+    test("TC-UC3-I15: updates max hours per shift when input changes", async () => {
       render(
         <PreferencesMaximum 
           formData={mockFormData} 
@@ -143,8 +143,8 @@ describe("Preferences Sub-Components Integration Tests", () => {
   // PreferencesPay Integration Tests (2 tests)
   // ========================================
   describe("PreferencesPay Integration", () => {
-    // UC: User can set desired pay rate using slider
-    test("updates pay rate when slider changes", async () => {
+    // TC-UC3-I15: User can set desired pay rate using slider
+    test("TC-UC3-I15: updates pay rate when slider changes", async () => {
       render(
         <PreferencesPay 
           formData={mockFormData} 
@@ -167,8 +167,8 @@ describe("Preferences Sub-Components Integration Tests", () => {
       });
     });
 
-    // UC: User can toggle "consider lower rate" option
-    test("toggles consider lower rate when checkbox clicked", async () => {
+    // TC-UC3-I15: User can toggle "consider lower rate" option
+    test("TC-UC3-I15: toggles consider lower rate when checkbox clicked", async () => {
       const user = userEvent.setup();
       
       render(
@@ -200,8 +200,8 @@ describe("Preferences Sub-Components Integration Tests", () => {
   // PreferencesJobType Integration Tests (2 tests)
   // ========================================
   describe("PreferencesJobType Integration", () => {
-    // UC: User can view available job types - simplified test for now
-    test("loads job types from useJobTypes hook and displays loading or content", async () => {
+    // TC-UC3-I8-12: User can view available job types - simplified test for now
+    test("TC-UC3-I8-12: loads job types from useJobTypes hook and displays loading or content", async () => {
       render(
         <PreferencesJobType 
           formData={mockFormData} 
@@ -228,8 +228,8 @@ describe("Preferences Sub-Components Integration Tests", () => {
       });
     });
 
-    // UC: User can select/deselect job types
-    test("updates selected job types when checkboxes are clicked", async () => {
+    // TC-UC3-I15-16: User can select/deselect job types
+    test("TC-UC3-I15-16: updates selected job types when checkboxes are clicked", async () => {
       const user = userEvent.setup();
       
       render(

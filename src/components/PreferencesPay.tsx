@@ -40,6 +40,7 @@ export const PreferencesPay: React.FC<PreferencesPayProps> = ({
           max="30" // Maximum selectable pay rate
           value={formData.payRate}
           onChange={handlePayRateChange}
+          data-testid="pay-rate-slider"
           className="
             w-1/3 h-2 bg-secondary-bg rounded-full appearance-none cursor-pointer
     accent-primary-blue
@@ -54,6 +55,7 @@ export const PreferencesPay: React.FC<PreferencesPayProps> = ({
           id="consider-lower-rate"
           checked={formData.considerLowerRate}
           onChange={handleConsiderLowerChange}
+          data-testid="consider-lower-rate-checkbox"
           className="
             h-5 w-5 rounded border-border cursor-pointer
            focus:ring-primary-blue

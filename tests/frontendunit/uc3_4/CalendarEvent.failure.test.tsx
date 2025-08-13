@@ -56,7 +56,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     );
   });
 
-  it("should handle invalid date objects gracefully", () => {
+  it("TC-UC4-U22: should handle invalid date objects gracefully", () => {
     const invalidEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("invalid"), // Invalid date
@@ -80,7 +80,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle missing event properties gracefully", () => {
+  it("TC-UC4-U22: should handle missing event properties gracefully", () => {
     const incompleteEvent: UI_Event = {
       id: "", // Empty ID
       startTime: null as any, // Null time
@@ -103,7 +103,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle negative duration events gracefully", () => {
+  it("TC-UC4-U22: should handle negative duration events gracefully", () => {
     const negativeEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T11:00:00Z"), // End before start
@@ -127,7 +127,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle invalid day_of_week values gracefully", () => {
+  it("TC-UC4-U22: should handle invalid day_of_week values gracefully", () => {
     const invalidDayEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T10:00:00Z"),
@@ -150,7 +150,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle drag operations with invalid coordinates gracefully", () => {
+  it("TC-UC4-U22: should handle drag operations with invalid coordinates gracefully", () => {
     const validEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T10:00:00Z"),
@@ -181,7 +181,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle keyboard events with invalid properties gracefully", () => {
+  it("TC-UC4-U22: should handle keyboard events with invalid properties gracefully", () => {
     const validEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T10:00:00Z"),
@@ -212,7 +212,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle resize operations with boundary violations gracefully", () => {
+  it("TC-UC4-U22: should handle resize operations with boundary violations gracefully", () => {
     const validEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T10:00:00Z"),
@@ -246,7 +246,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(updatedEventElement).toBeTruthy();
   });
 
-  it("should handle null or undefined callback functions gracefully", () => {
+  it("TC-UC4-U22: should handle null or undefined callback functions gracefully", () => {
     const validEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T10:00:00Z"),
@@ -278,7 +278,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(finalEventElement).toBeTruthy();
   });
 
-  it("should handle extreme time values gracefully", () => {
+  it("TC-UC4-U22: should handle extreme time values gracefully", () => {
     const extremeEvent: UI_Event = {
       id: "event-1",
       startTime: new Date(0), // Unix epoch start
@@ -301,7 +301,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(eventElement).toBeTruthy();
   });
 
-  it("should handle rapid interaction events gracefully", () => {
+  it("TC-UC4-U22: should handle rapid interaction events gracefully", () => {
     const validEvent: UI_Event = {
       id: "event-1",
       startTime: new Date("2024-01-01T10:00:00Z"),
@@ -337,7 +337,7 @@ describe("CalendarEvent - Failure Scenarios", () => {
     expect(rapidEventElement).toBeTruthy();
   });
 
-  it("should handle corrupted event data structure gracefully", () => {
+  it("TC-UC4-U22: should handle corrupted event data structure gracefully", () => {
     const corruptedEvent = {
       id: { toString: () => "corrupted-id" }, // Non-string ID
       startTime: "2024-01-01T10:00:00Z", // String instead of Date

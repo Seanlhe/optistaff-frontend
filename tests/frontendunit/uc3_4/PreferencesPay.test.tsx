@@ -19,7 +19,7 @@ describe("PreferencesPay", () => {
     vi.clearAllMocks();
   });
 
-  it("renders correctly with all elements", () => {
+  it("TC-UC3-U13: renders correctly with all elements", () => {
     // UC3 Steps 12-14: PreferencesForm displays complete_form with all preference sections including pay rate settings
     render(
       <PreferencesPay
@@ -41,7 +41,7 @@ describe("PreferencesPay", () => {
     ).toBeTruthy();
   });
 
-  it("displays correct pay rate value", () => {
+  it("TC-UC3-U13: displays correct pay rate value", () => {
     const formDataWithHighPay: PreferencesFormData = {
       ...defaultFormData,
       payRate: 25,
@@ -57,7 +57,7 @@ describe("PreferencesPay", () => {
     expect(screen.getByText("$25")).toBeTruthy();
   });
 
-  it("has correct slider attributes and styling", () => {
+  it("TC-UC3-U13: has correct slider attributes and styling", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -75,7 +75,7 @@ describe("PreferencesPay", () => {
     expect(slider.className).toContain("h-2");
   });
 
-  it("handles pay rate change correctly", () => {
+  it("TC-UC3-U15: handles pay rate change correctly", () => {
     // UC3 Step 15: Jobseeker updates preferences including desired pay rate
     render(
       <PreferencesPay
@@ -93,7 +93,7 @@ describe("PreferencesPay", () => {
     });
   });
 
-  it("handles minimum pay rate correctly", () => {
+  it("TC-UC3-U15: handles minimum pay rate correctly", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -116,7 +116,7 @@ describe("PreferencesPay", () => {
     });
   });
 
-  it("handles maximum pay rate correctly", () => {
+  it("TC-UC3-U15: handles maximum pay rate correctly", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -139,7 +139,7 @@ describe("PreferencesPay", () => {
     });
   });
 
-  it("displays checkbox in unchecked state by default", () => {
+  it("TC-UC3-U13: displays checkbox in unchecked state by default", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -151,7 +151,7 @@ describe("PreferencesPay", () => {
     expect(checkbox.checked).toBe(false);
   });
 
-  it("displays checkbox in checked state when considerLowerRate is true", () => {
+  it("TC-UC3-U13: displays checkbox in checked state when considerLowerRate is true", () => {
     const formDataWithLowerRate: PreferencesFormData = {
       ...defaultFormData,
       considerLowerRate: true,
@@ -168,7 +168,7 @@ describe("PreferencesPay", () => {
     expect(checkbox.checked).toBe(true);
   });
 
-  it("handles checkbox change correctly when checking", () => {
+  it("TC-UC3-U15: handles checkbox change correctly when checking", () => {
     // UC3 Step 15: Jobseeker updates preferences including willingness to consider lower pay rates
     render(
       <PreferencesPay
@@ -186,7 +186,7 @@ describe("PreferencesPay", () => {
     });
   });
 
-  it("handles checkbox change correctly when unchecking", () => {
+  it("TC-UC3-U15: handles checkbox change correctly when unchecking", () => {
     // UC3 Step 15: Jobseeker updates preferences including changing lower pay rate consideration
     const formDataWithLowerRate: PreferencesFormData = {
       ...defaultFormData,
@@ -209,7 +209,7 @@ describe("PreferencesPay", () => {
     });
   });
 
-  it("has correct checkbox attributes and styling", () => {
+  it("TC-UC3-U13: has correct checkbox attributes and styling", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -225,7 +225,7 @@ describe("PreferencesPay", () => {
     expect(checkbox.className).toContain("w-5");
   });
 
-  it("has correct label attributes", () => {
+  it("TC-UC3-U13: has correct label attributes", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -241,7 +241,7 @@ describe("PreferencesPay", () => {
     expect(label.className).toContain("text-sm");
   });
 
-  it("renders with correct container styling", () => {
+  it("TC-UC3-U13: renders with correct container styling", () => {
     const { container } = render(
       <PreferencesPay
         formData={defaultFormData}
@@ -254,7 +254,7 @@ describe("PreferencesPay", () => {
     expect(mainDiv.className).toContain("bg-card-color");
   });
 
-  it("has correct header styling", () => {
+  it("TC-UC3-U13: has correct header styling", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -267,7 +267,7 @@ describe("PreferencesPay", () => {
     expect(header.className).toContain("font-semibold");
   });
 
-  it("has correct pay rate display styling", () => {
+  it("TC-UC3-U13: has correct pay rate display styling", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -280,7 +280,7 @@ describe("PreferencesPay", () => {
     expect(payDisplay.className).toContain("font-bold");
   });
 
-  it("handles string input for pay rate slider", () => {
+  it("TC-UC3-U15: handles string input for pay rate slider", () => {
     render(
       <PreferencesPay
         formData={defaultFormData}
@@ -297,7 +297,7 @@ describe("PreferencesPay", () => {
     });
   });
 
-  it("updates pay rate display when slider changes", () => {
+  it("TC-UC3-U15: updates pay rate display when slider changes", () => {
     const { rerender } = render(
       <PreferencesPay
         formData={defaultFormData}

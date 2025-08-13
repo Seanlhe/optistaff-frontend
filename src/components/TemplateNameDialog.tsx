@@ -56,6 +56,7 @@ export const TemplateNameDialog = ({
               className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-blue focus:border-transparent bg-card-color text-primary-text"
               disabled={loading}
               autoFocus
+              data-testid="template-name-input"
             />
           </div>
 
@@ -72,6 +73,7 @@ export const TemplateNameDialog = ({
               type="submit"
               disabled={!templateName.trim() || loading}
               className="px-4 py-2 text-sm bg-primary-blue text-white rounded-md hover:bg-primary-blue/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="save-template-button"
             >
               {loading ? "Saving..." : "Save Template"}
             </button>

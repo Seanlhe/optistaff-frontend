@@ -15,3 +15,6 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+// Modern Cypress 12+ approach - no global cookie preservation needed
+// Individual tests will use cy.session() for authentication
