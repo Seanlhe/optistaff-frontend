@@ -27,6 +27,10 @@
     "test:backend:coverage": "supabase start && vitest run --coverage --config vitest.backend.config.ts",
     "test:backend:watch": "supabase start && vitest --watch --config vitest.backend.config.ts",
     "test:preferences": "supabase start && vitest run --config vitest.backend.config.ts tests/unit/preferences-validation.test.ts tests/integration/usePreferences-simple.test.tsx",
+    "test:integration": "supabase start && vitest run --config vitest.integration.config.ts",
+    "test:integration:watch": "supabase start && vitest --config vitest.integration.config.ts",
+    "test:integration:uc2": "supabase start && vitest run --config vitest.integration.config.ts tests/integration/uc2/",
+    "db:reset": "./scripts/reset-db.sh",
     "test:pure": "vitest run --config vitest.pure.config.ts tests/unit",
     "test:pure:watch": "vitest --config vitest.pure.config.ts tests/unit",
     "cy:open": "cypress open"
