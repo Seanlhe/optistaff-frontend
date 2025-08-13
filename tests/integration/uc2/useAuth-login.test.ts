@@ -238,7 +238,7 @@ describe("useAuth Hook - UC2 Sign In Integration Tests", () => {
 
       // Assert - UC2 Step 5: Verify error handling
       await waitFor(() => {
-        expect(result.current.error).toBe("Login failed");
+        expect(result.current.error).toBe("Invalid credentials");
         expect(result.current.user).toBeNull();
         expect(result.current.loading).toBe(false);
       });
@@ -272,7 +272,7 @@ describe("useAuth Hook - UC2 Sign In Integration Tests", () => {
 
       // Assert - UC2 Step 6: Verify unverified email error handling
       await waitFor(() => {
-        expect(result.current.error).toBe("Login failed");
+        expect(result.current.error).toBe("Please verify your email");
         expect(result.current.user).toBeNull();
         expect(result.current.loading).toBe(false);
       });
@@ -456,7 +456,7 @@ describe("useAuth Hook - UC2 Sign In Integration Tests", () => {
       await result.current.login("test@test.com", "wrongpassword");
       
       await waitFor(() => {
-        expect(result.current.error).toBe("Login failed");
+        expect(result.current.error).toBe("Invalid credentials");
       });
 
       // Clear error
