@@ -41,7 +41,7 @@ const mockOnClose = vi.fn();
 const mockOnStatusChange = vi.fn();
 
 // Mock Supabase client operations
-vi.mock("../../src/integrations/supabase/client", () => {
+vi.mock("../../../src/integrations/supabase/client", () => {
   const mockRpc = vi.fn();
   const mockFrom = vi.fn();
   
@@ -54,7 +54,7 @@ vi.mock("../../src/integrations/supabase/client", () => {
 });
 
 // Mock useAuth to return test user
-vi.mock("../../src/hooks/useAuth", () => ({
+vi.mock("../../../src/hooks/useAuth", () => ({
   useAuth: vi.fn(() => ({
     user: mockUser,
     loading: false,
@@ -63,7 +63,7 @@ vi.mock("../../src/hooks/useAuth", () => ({
 }));
 
 // Mock UI components
-vi.mock("../../src/components/ui/dialog", () => ({
+vi.mock("../../../src/components/ui/dialog", () => ({
   Dialog: ({ children, open, onOpenChange }: any) =>
     open ? (
       <div data-testid="modal-container">
@@ -86,7 +86,7 @@ vi.mock("../../src/components/ui/dialog", () => ({
   ),
 }));
 
-vi.mock("../../src/components/ui/button", () => ({
+vi.mock("../../../src/components/ui/button", () => ({
   Button: ({ children, onClick, className, variant, ...props }: any) => (
     <button
       onClick={onClick}

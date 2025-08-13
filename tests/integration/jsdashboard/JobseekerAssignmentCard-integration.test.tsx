@@ -18,7 +18,7 @@ import { JobseekerAssignmentCard } from "../../../src/components/JobseekerAssign
 import type { JobseekerAssignmentCard as AssignmentCardType } from "../../../src/components/JobseekerAssignmentCard";
 
 // Mock UI components to simplify rendering but keep behavior
-vi.mock("../../src/components/ui/button", () => ({
+vi.mock("../../../src/components/ui/button", () => ({
   Button: ({ children, onClick, className, "aria-label": ariaLabel, ...props }: any) => (
     <button 
       onClick={onClick} 
@@ -32,7 +32,7 @@ vi.mock("../../src/components/ui/button", () => ({
   ),
 }));
 
-vi.mock("../../src/components/ui/card", () => ({
+vi.mock("../../../src/components/ui/card", () => ({
   Card: ({ children, className, ...props }: any) => (
     <div className={className} data-testid="assignment-card" {...props}>
       {children}

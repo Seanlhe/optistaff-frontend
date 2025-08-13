@@ -126,7 +126,7 @@ const getOutsideWeekAssignments = () => {
 const mockRefreshFunction = vi.fn();
 
 // Mock Supabase client operations
-vi.mock("../../src/integrations/supabase/client", () => {
+vi.mock("../../../src/integrations/supabase/client", () => {
   const mockRpc = vi.fn();
   const mockFrom = vi.fn();
   
@@ -139,7 +139,7 @@ vi.mock("../../src/integrations/supabase/client", () => {
 });
 
 // Mock useAuth to return test user
-vi.mock("../../src/hooks/useAuth", () => ({
+vi.mock("../../../src/hooks/useAuth", () => ({
   useAuth: vi.fn(() => ({
     user: mockUser,
     loading: false,
@@ -148,7 +148,7 @@ vi.mock("../../src/hooks/useAuth", () => ({
 }));
 
 // Mock child components to focus on layout integration
-vi.mock("../../src/components/StatsCard", () => ({
+vi.mock("../../../src/components/StatsCard", () => ({
   default: ({ title, value, icon }: any) => (
     <div data-testid={`stats-card-${title.toLowerCase()}`}>
       <div data-testid="stats-title">{title}</div>
@@ -158,7 +158,7 @@ vi.mock("../../src/components/StatsCard", () => ({
   ),
 }));
 
-vi.mock("../../src/components/PayoutWeeklySummaryCard", () => ({
+vi.mock("../../../src/components/PayoutWeeklySummaryCard", () => ({
   default: ({ refreshTrigger }: any) => (
     <div data-testid="payout-summary-card">
       <div data-testid="payout-refresh-trigger">{refreshTrigger}</div>
@@ -167,7 +167,7 @@ vi.mock("../../src/components/PayoutWeeklySummaryCard", () => ({
   ),
 }));
 
-vi.mock("../../src/components/MonthlyCalendar", () => ({
+vi.mock("../../../src/components/MonthlyCalendar", () => ({
   default: () => (
     <div data-testid="monthly-calendar">
       <div>Calendar Component</div>
@@ -175,7 +175,7 @@ vi.mock("../../src/components/MonthlyCalendar", () => ({
   ),
 }));
 
-vi.mock("../../src/components/JobseekerAssignmentCard", () => ({
+vi.mock("../../../src/components/JobseekerAssignmentCard", () => ({
   JobseekerAssignmentCard: ({ assignment, onViewDetails }: any) => (
     <div 
       data-testid={`assignment-card-${assignment.id}`}
@@ -191,7 +191,7 @@ vi.mock("../../src/components/JobseekerAssignmentCard", () => ({
   ),
 }));
 
-vi.mock("../../src/components/JobseekerAssignmentDetailModals", () => ({
+vi.mock("../../../src/components/JobseekerAssignmentDetailModals", () => ({
   AssignmentDetailsModal: ({ assignment, isOpen, onClose, onStatusChange }: any) =>
     isOpen ? (
       <div data-testid="assignment-details-modal">
@@ -216,7 +216,7 @@ vi.mock("lucide-react", () => ({
 }));
 
 // Mock useLocationGeocoding
-vi.mock("../../src/hooks/useLocationGeocoding", () => ({
+vi.mock("../../../src/hooks/useLocationGeocoding", () => ({
   useLocationGeocoding: vi.fn(() => ({
     geocodeAddress: vi.fn(),
     reverseGeocode: vi.fn(),

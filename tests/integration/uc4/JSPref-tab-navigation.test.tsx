@@ -13,11 +13,11 @@ import userEvent from "@testing-library/user-event";
 import JSPref from "../../../src/pages/employee/JSPref";
 
 // Mock child components to avoid complex dependencies
-vi.mock("../../src/components/PreferencesForm", () => ({
+vi.mock("../../../src/components/PreferencesForm", () => ({
   default: () => <div data-testid="preferences-page">Preferences Form Component</div>,
 }));
 
-vi.mock("../../src/components/Availability", () => ({
+vi.mock("../../../src/components/Availability", () => ({
   default: () => <div data-testid="availability-page">Availability Component</div>,
 }));
 
@@ -34,9 +34,9 @@ describe("JSPref Tab Navigation Tests", () => {
     test("TC-UC3-I1: renders with PreferencesForm tab active by default", () => {
       render(<JSPref />);
 
-      // Verify both tab buttons are present
-      const preferencesTab = screen.getByRole("button", { name: /preferences/i });
-      const availabilityTab = screen.getByRole("button", { name: /availability/i });
+      // Verify both tab buttons are present using data-testid
+      const preferencesTab = screen.getByTestId("preferences-tab");
+      const availabilityTab = screen.getByTestId("availability-tab");
       
       expect(preferencesTab).toBeTruthy();
       expect(availabilityTab).toBeTruthy();
@@ -58,11 +58,11 @@ describe("JSPref Tab Navigation Tests", () => {
       render(<JSPref />);
 
       // Click Availability tab
-      const availabilityTab = screen.getByRole("button", { name: /availability/i });
+      const availabilityTab = screen.getByTestId("availability-tab");
       await user.click(availabilityTab);
 
       // Verify Availability tab is now active
-      const preferencesTab = screen.getByRole("button", { name: /preferences/i });
+      const preferencesTab = screen.getByTestId("preferences-tab");
       expect(availabilityTab.className).toContain("bg-white");
       expect(availabilityTab.className).not.toContain("hover:bg-white/60");
       expect(preferencesTab.className).toContain("hover:bg-white/60");
@@ -79,14 +79,14 @@ describe("JSPref Tab Navigation Tests", () => {
       render(<JSPref />);
 
       // First switch to Availability tab
-      const availabilityTab = screen.getByRole("button", { name: /availability/i });
+      const availabilityTab = screen.getByTestId("availability-tab");
       await user.click(availabilityTab);
       
       // Verify we're on Availability tab
       expect(screen.getByTestId("availability-page")).toBeTruthy();
 
       // Now switch back to Preferences tab
-      const preferencesTab = screen.getByRole("button", { name: /preferences/i });
+      const preferencesTab = screen.getByTestId("preferences-tab");
       await user.click(preferencesTab);
 
       // Verify PreferencesForm tab is active again
@@ -110,12 +110,12 @@ describe("JSPref Tab Navigation Tests", () => {
       render(<JSPref />);
 
       // Verify component renders without crashing
-      expect(screen.getByRole("button", { name: /preferences/i })).toBeTruthy();
-      expect(screen.getByRole("button", { name: /availability/i })).toBeTruthy();
+      expect(screen.getByTestId("preferences-tab")).toBeTruthy();
+      expect(screen.getByTestId("availability-tab")).toBeTruthy();
 
       // Test that clicking tabs doesn't crash the component
-      const preferencesTab = screen.getByRole("button", { name: /preferences/i });
-      const availabilityTab = screen.getByRole("button", { name: /availability/i });
+      const preferencesTab = screen.getByTestId("preferences-tab");
+      const availabilityTab = screen.getByTestId("availability-tab");
 
       // These should not throw errors (testing the try-catch in handleTabChange)
       fireEvent.click(availabilityTab);
