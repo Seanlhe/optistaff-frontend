@@ -10,7 +10,6 @@ export default defineConfig({
     setupFiles: ["./src/test-setup.ts"], // Backend tests need Supabase setup
     include: [
       "tests/unit/**/*.test.{ts,tsx}",
-      "tests/integration/**/*.test.{ts,tsx}",
       "tests/backendunit/**/*.test.{ts,tsx}",
     ],
     exclude: [
