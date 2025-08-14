@@ -31,12 +31,12 @@ export default function JSNav() {
   };
 
   const adminNavItems: NavItemProps[] = [
-    { name: "Dashboard", src: "/icons/calendaricon.svg", to: "dashboard" },
+    { name: "Dashboard", src: "/icons/dashboardicon.svg", to: "dashboard" },
     { name: "My Jobs", src: "/icons/calendaricon.svg", to: "schedule" },
-    { name: "Earnings", src: "/icons/uploadicon.svg", to: "earnings" },
+    // { name: "Earnings", src: "/icons/uploadicon.svg", to: "earnings" },
   ];
   const prefNavItems: NavItemProps[] = [
-    { name: "Account", src: "/icons/gearicon.svg", to: "settings" },
+    { name: "Account", src: "/icons/person.svg", to: "settings" },
     { name: "Preferences", src: "/icons/gearicon.svg", to: "preferences" },
   ];
 
