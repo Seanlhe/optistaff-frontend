@@ -102,17 +102,17 @@ export default function LandingPage() {
           id="landing-benefits"
           className="grid grid-cols-3 justify-between gap-10 px-37.5 py-15"
         >
-          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 ">
-            <img className="h-12 w-12" src="/icons/calendaricon.svg" />
+          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 items-center">
+            <img className="h-12 w-12 self-center" src="/icons/landingpagecalendar.svg" />
             <p className="font-montserrat-smb text-justify text-xl text-black">
               Hands free rostering
             </p>
-            <p className="font-montserrat text-justify text-base text-black">
+            <p className=" font-montserrat text-justify text-base text-black">
               We take care of scheduling so you can focus on what matters most.
             </p>
           </div>
-          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 ">
-            <img className="h-12 w-12" src="/icons/calendaricon.svg" />
+          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 items-center ">
+            <img className="h-12 w-12 self-center" src="/icons/landingpageperson.svg" />
             <p className="font-montserrat-smb text-justify text-xl text-black">
               Work with trusted staff
             </p>
@@ -121,9 +121,9 @@ export default function LandingPage() {
               preferences and job requirements.
             </p>
           </div>
-          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 ">
-            <img className="h-12 w-12" src="/icons/calendaricon.svg" />
-            <p className="font-montserrat-smb text-justify text-xl text-black">
+          <div className="flex flex-col gap-8 border-2 border-landing-bg rounded-lg px-10 py-10 items-center">
+            <img className="h-12 w-12 self-center" src="/icons/landingpagerefresh.svg" />
+            <p className="self-center font-montserrat-smb text-justify text-xl text-black">
               Reliable replacements, fast
             </p>
             <p className="font-montserrat text-justify text-base text-black">

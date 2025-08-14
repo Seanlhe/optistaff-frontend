@@ -12,9 +12,6 @@ export default function ClientNav() {
     { name: "Roster", src: "/icons/calendaricon.svg", to: "roster" },
     { name: "Upload Jobs", src: "/icons/uploadicon.svg", to: "uploadjobs" },
     { name: "History", src: "/icons/history.svg", to: "history" },
-  ];
-  const prefNavItems: NavItemProps[] = [
-    { name: "Profile", src: "/icons/person.svg", to: "profile" },
     { name: "Settings", src: "/icons/gearicon.svg", to: "settings" },
   ];
   const [selected, setSelected] = useState<string>("Dashboard");
@@ -63,9 +60,6 @@ export default function ClientNav() {
         )}
       </div>
       <div className="flex flex-col mb-8">
-        <h3 className="text-white font-montserrat text-xs mb-5 opacity-80">
-          Admin Tools
-        </h3>
         <ul className="flex flex-col gap-3">
           {adminNavItems.map((navItemProps) => (
             <NavItem
@@ -75,31 +69,15 @@ export default function ClientNav() {
               onClick={() => handleClick(navItemProps.name)}
             />
           ))}
+          <button
+                onClick={() => handleClick("Logout")}
+                className="w-full flex items-center gap-4 px-4 py-3 pt-4 text-white hover:bg-white/10 rounded-lg transition-colors"
+          >
+          <img src="/icons/dooricon.svg" alt="logout" className="w-5 h-5" />
+          <span className="font-montserrat text-sm">Logout</span>
+          </button>
         </ul>
-      </div>
-      <div className="nav-body">
-        <h3 className="text-white font-montserrat text-xs mb-5 opacity-80">
-          Preferences
-        </h3>
-        <ul className="flex flex-col gap-3">
-          {prefNavItems.map((navItemProps) => (
-            <NavItem
-              key={navItemProps.name}
-              {...navItemProps}
-              selected={selected}
-              onClick={() => handleClick(navItemProps.name)}
-            />
-          ))}
-          <li>
-            <button
-              onClick={() => handleClick("Logout")}
-              className="w-full flex items-center gap-4 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-colors"
-            >
-              <img src="/icons/dooricon.svg" alt="logout" className="w-5 h-5" />
-              <span className="font-montserrat text-sm">Logout</span>
-            </button>
-          </li>
-        </ul>
+        
       </div>
     </div>
   );

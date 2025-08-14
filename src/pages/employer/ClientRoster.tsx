@@ -197,7 +197,7 @@ export default function ClientRoster() {
   if (!filteredShifts || filteredShifts.length === 0) {
     return (
       <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
-        <h1 className="text-3xl text-secondary-text font-montserrat-b">
+        <h1 className="text-xl text-secondary-text font-montserrat-b">
           Weekly Roster
         </h1>
         <div className="flex items-center justify-center h-64">
@@ -223,8 +223,8 @@ export default function ClientRoster() {
   }
 
   return (
-    <div className="bg-tertiary-bg min-h-screen flex flex-col px-16 py-8 gap-8">
-      <p className="text-3xl text-primary-text font-montserrat-b">
+    <div className="bg-tertiary-bg min-h-screen flex flex-col px-12 py-6 gap-8">
+      <p className="text-xl text-primary-text font-montserrat-b">
         Weekly Roster
       </p>
 

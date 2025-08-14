@@ -7,11 +7,10 @@ import { startOfWeek, endOfWeek, isWithinInterval, addDays, subDays } from "date
 
 export const getShiftsThisWeek = (shifts: Shift[]) => {
   const now = new Date();
-  const startOfCurrentWeek = startOfWeek(now, { weekStartsOn: 1 }); // 1 = Monday
-  const endOfCurrentWeek = endOfWeek(now, { weekStartsOn: 1 });
+  // const startOfCurrentWeek = startOfWeek(now, { weekStartsOn: 1 }); // 1 = Monday
+  // const endOfCurrentWeek = addDays(now, 7);
   return shifts.filter(shift => {
-    const shiftStartTime = new Date(shift.start_time);
-    return isWithinInterval(shiftStartTime, { start: startOfCurrentWeek, end: endOfCurrentWeek }) && shift.status != "cancel_by_employer";
+    return shift.end_time > now && shift.status != "completed" && shift.status!="cancel_by_employer"
   });
 };
 
