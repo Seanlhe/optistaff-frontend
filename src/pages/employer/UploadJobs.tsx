@@ -200,9 +200,9 @@ export default function UploadJobs() {
   }
 
   return (
-    <div id="upload-jobs-content" className="min-h-screen bg-bg p-8">
-      <div id="upload-jobs-header" className="flex flex-col gap-3 mb-6">
-        <h1 className="text-black font-montserrat-b text-2xl">
+    <div id="upload-jobs-content" className="min-h-screen bg-bg px-12 py-6">
+      <div id="upload-jobs-header" className="flex flex-col gap-1 mb-6">
+        <h1 className="text-black font-montserrat-b text-xl">
           Create Listing
         </h1>
         <h2 className="text-secondary-text font-montserrat-smb text-base">
