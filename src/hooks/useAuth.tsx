@@ -134,9 +134,7 @@ export const useAuth = () => {
       // Navigate to appropriate dashboard if needed (only for login, not page refresh)
       if (shouldNavigate) {
         const targetRoute =
-          role === "jobseeker"
-            ? "/employee/preferences"
-            : "/employer/dashboard";
+          role === "jobseeker" ? "/employee/dashboard" : "/employer/dashboard";
         console.log("🔍 Auth Debug - Navigating to:", targetRoute);
         navigate(targetRoute);
       }
@@ -305,8 +303,11 @@ export const useAuth = () => {
     }
 
     // Check if user already exists in our custom tables
-    console.log("🔍 Signup Debug - Checking if email already exists:", signupData.email);
-    
+    console.log(
+      "🔍 Signup Debug - Checking if email already exists:",
+      signupData.email
+    );
+
     try {
       // Check both job_seekers and clients tables for existing email
       const [jobSeekerCheck, clientCheck] = await Promise.allSettled([
@@ -319,17 +320,19 @@ export const useAuth = () => {
           .from("clients")
           .select("email")
           .eq("email", signupData.email)
-          .single()
+          .single(),
       ]);
 
-      const jobSeekerExists = jobSeekerCheck.status === "fulfilled" && jobSeekerCheck.value.data;
-      const clientExists = clientCheck.status === "fulfilled" && clientCheck.value.data;
+      const jobSeekerExists =
+        jobSeekerCheck.status === "fulfilled" && jobSeekerCheck.value.data;
+      const clientExists =
+        clientCheck.status === "fulfilled" && clientCheck.value.data;
 
       if (jobSeekerExists || clientExists) {
         console.log("🔍 Signup Debug - Email found in custom tables");
         console.log("🔍 Signup Debug - Job seeker exists:", jobSeekerExists);
         console.log("🔍 Signup Debug - Client exists:", clientExists);
-        
+
         setAuthState((prev) => ({
           ...prev,
           loading: false,
@@ -337,16 +340,24 @@ export const useAuth = () => {
         }));
         return;
       }
-      
-      console.log("🔍 Signup Debug - Email not found in custom tables, proceeding with signup");
+
+      console.log(
+        "🔍 Signup Debug - Email not found in custom tables, proceeding with signup"
+      );
     } catch (checkError) {
-      console.log("🔍 Signup Debug - Error checking custom tables:", checkError);
+      console.log(
+        "🔍 Signup Debug - Error checking custom tables:",
+        checkError
+      );
       // Continue with signup if we can't check
     }
 
     try {
-      console.log("🔍 Signup Debug - Attempting signup for email:", signupData.email);
-      
+      console.log(
+        "🔍 Signup Debug - Attempting signup for email:",
+        signupData.email
+      );
+
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
@@ -390,7 +401,7 @@ export const useAuth = () => {
         const now = new Date();
         const timeDiff = now.getTime() - userCreatedAt.getTime();
         const isNewUser = timeDiff < 5000; // Created within last 5 seconds
-        
+
         console.log("🔍 Signup Debug - User created successfully");
         console.log("🔍 Signup Debug - User created at:", data.user.created_at);
         console.log("🔍 Signup Debug - Is new user:", isNewUser);
@@ -399,14 +410,15 @@ export const useAuth = () => {
           "🔍 Signup Debug - User metadata stored:",
           data.user.user_metadata
         );
-        
+
         // If this is not a new user (existing unconfirmed user), show appropriate message
         if (!isNewUser) {
           console.log("🔍 Signup Debug - Existing unconfirmed user detected");
           setAuthState((prev) => ({
             ...prev,
             loading: false,
-            error: "Email already registered but not confirmed. Please check your email for the confirmation link, or try signing in.",
+            error:
+              "Email already registered but not confirmed. Please check your email for the confirmation link, or try signing in.",
           }));
           return;
         }
@@ -416,7 +428,7 @@ export const useAuth = () => {
         console.log(
           "🔍 Signup Debug - Signup successful, redirecting to login for email confirmation"
         );
-        
+
         // Set a success message and navigate to login page
         setAuthState({
           user: null,
