@@ -88,7 +88,7 @@ export function DashboardUpcoming({
         </h1>
       </div>
       {shifts && (
-        <div className="overflow-auto max-h-[calc(100vh-240px)]">
+        <div className="overflow-auto h-[calc(100vh-240px)]">
           <ul className="z-50 flex flex-col gap-4 animate-slidedown">
             {shifts.map((shift) =>
               shift.staff_assigned == shift.staff_needed ? (
@@ -180,7 +180,7 @@ export function DashboardInProgress({
           In Progress
         </h1>
       </div>
-      <div className="overflow-auto max-h-[calc(100vh-240px)]">
+      <div className="overflow-auto h-[calc(100vh-240px)]">
         <ul className="flex flex-col gap-4 animate-slidedown">
           {shifts.map((shift) =>
             shift.staff_assigned < shift.staff_needed ? (

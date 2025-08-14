@@ -230,7 +230,7 @@ function UpdateForm({shift, onClose}: {shift: Shift, onClose: Function}){
                         onClick={handleCancel}
                         disabled={isSubmitting}
                     >
-                        Cancel
+                        Back
                     </button>
                 </div>
 
