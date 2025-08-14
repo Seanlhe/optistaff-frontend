@@ -17,13 +17,13 @@ export default function ClientCalendarDay({
   selectedShift,
   onShiftClick,
 }: CalendarDayProps) {
+  const today = new Date();
   const dayShifts = shiftData
     .filter((shift) => {
-      // Parse the day date (format: "22 May 2025")
       const dayDate = new Date(day.date);
-
-      // Get the shift date
       const shiftDate = new Date(shift.start_time);
+
+      if (shiftDate < today) return false;
 
       // Check if same day and location
       const sameDay = isSameDay(dayDate, shiftDate);
@@ -31,13 +31,15 @@ export default function ClientCalendarDay({
         return sameDay;
       }
 
+      const isCompleted = shift.status === "completed";
+
       const sameLocation = shift.job_location === selectedLocation;
 
-      return sameDay && sameLocation;
+      return sameDay && sameLocation && !isCompleted;
     })
     .sort(
       (a, b) =>
-        new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
+        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
     );
 
   return (
